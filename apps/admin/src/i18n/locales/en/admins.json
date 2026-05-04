@@ -1,0 +1,97 @@
+{
+  "showingResults": "Showing {count} of {total} results",
+  "lastUpdated": "Last updated:",
+  "addNewAdmin": "Add new",
+  "email": "Email",
+  "password": "Password",
+  "confirmPassword": "Confirm Password",
+  "createAdmin": "Create Admin",
+  "fullNamePlaceholder": "Enter full name",
+  "emailPlaceholder": "Enter admin email address",
+  "passwordPlaceholder": "Enter secure password (min 12 characters)",
+  "confirmPasswordPlaceholder": "Confirm password",
+  "emailRequired": "Email is required",
+  "emailInvalid": "Please enter a valid email address",
+  "emailExists": "An administrator with this email already exists",
+  "fullNameRequired": "Full name is required",
+  "passwordRequired": "Password is required",
+  "passwordTooShort": "Password must be at least 12 characters long",
+  "passwordComplexity": "Password must include uppercase, lowercase, number, and special character",
+  "confirmPasswordRequired": "Please confirm your password",
+  "passwordMismatch": "Passwords do not match",
+  "passwordWeak": "Weak",
+  "passwordFair": "Fair",
+  "passwordGood": "Good",
+  "passwordStrong": "Strong",
+  "emailAddress": "Email Address",
+  "isSystemAdmin": "System Admin",
+  "lastUpdatedDate": "Last Updated Date",
+  "fullName": "Full Name",
+  "status": "Status",
+  "createdDate": "Created Date",
+  "lastLoginDate": "Last Login Date",
+  "actionsColumn": "Actions",
+  "searchPlaceholder": "Search by email...",
+  "loading": "Loading...",
+  "delete": "Delete",
+  "activate": "Activate",
+  "deactivate": "Deactivate",
+  "allStatus": "All Status",
+  "active": "Active",
+  "inactive": "Inactive",
+  "allAdmins": "All Admins",
+  "regularAdmin": "Regular Admin",
+  "systemAdmin": "System Admin",
+  "alerts": {
+    "success": {
+      "title": "Success!",
+      "message": "Admin {email} has been created successfully and can now access the system."
+    },
+    "error": {
+      "title": "Creation Failed",
+      "message": "Unable to create admin account. Please check the information and try again."
+    }
+  },
+  "actions": {
+    "deleteAdmin": {
+      "title": "Delete Admin",
+      "message": "Are you sure you want to delete admin \"{email}\"? This action cannot be undone."
+    }
+  },
+  "notifications": {
+    "deleteSuccess": {
+      "title": "Deleted Successfully",
+      "message": "Admin {email} has been deleted successfully."
+    },
+    "deleteFailed": {
+      "title": "Delete Failed",
+      "message": "Unable to delete admin. Please try again."
+    },
+    "statusUpdateSuccess": {
+      "title": "Status Updated",
+      "message": "Admin {email} has been {status}."
+    },
+    "statusUpdateFailed": {
+      "title": "Update Failed",
+      "message": "Unable to update admin status. Please try again."
+    }
+  },
+  "values": {
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive",
+      "activated": "activated",
+      "deactivated": "deactivated"
+    },
+    "type": {
+      "system": "System Admin",
+      "regular": "Regular Admin"
+    },
+    "lastLogin": {
+      "never": "Never"
+    },
+    "user": "user"
+  },
+  "noAdminsFound": "No administrators found",
+  "noAdminsFoundDescription": "Try adjusting your search filters or add new administrators to get started."
+}

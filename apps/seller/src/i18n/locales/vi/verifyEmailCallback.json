@@ -1,0 +1,45 @@
+{
+  "title": "Xác Thực Email",
+  "states": {
+    "verifying": "Đang Xác Thực Email",
+    "success": "Xác Thực Email Thành Công",
+    "error": "Xác Thực Thất Bại"
+  },
+  "messages": {
+    "verifying": "Vui lòng đợi trong khi chúng tôi xác thực địa chỉ email của bạn...",
+    "success": "Địa chỉ email của bạn đã được xác thực thành công! Bây giờ bạn có thể truy cập tất cả các tính năng của tài khoản.",
+    "redirecting": "Chuyển hướng trong {seconds} giây...",
+    "invalidToken": "Liên kết xác thực không hợp lệ hoặc đã hết hạn. Vui lòng yêu cầu email xác thực mới.",
+    "alreadyVerified": "Địa chỉ email của bạn đã được xác thực rồi.",
+    "generalError": "Đã xảy ra lỗi khi xác thực email. Vui lòng thử lại hoặc yêu cầu email xác thực mới."
+  },
+  "error": {
+    "title": "Xác Thực Thất Bại",
+    "subtitle": "Không thể xác thực địa chỉ email của bạn.",
+    "noToken": "Liên kết xác thực thiếu thông tin cần thiết. Vui lòng sử dụng liên kết từ email của bạn.",
+    "noUserId": "Liên kết xác thực chưa hoàn chỉnh. Vui lòng sử dụng liên kết đầy đủ từ email của bạn.",
+    "sendNewEmail": "Yêu Cầu Email Xác Thực Mới",
+    "backToHome": "Về Trang Chủ"
+  },
+  "success": {
+    "title": "Xác Thực Email Thành Công",
+    "subtitle": "Địa chỉ email của bạn đã được xác thực thành công!",
+    "redirectMessage": "Chuyển hướng trong {seconds} giây...",
+    "clickToRedirect": "Tiếp Tục",
+    "backToHome": "Về Trang Chủ"
+  },
+  "loading": {
+    "title": "Đang Xác Thực Email",
+    "subtitle": "Vui lòng đợi trong khi chúng tôi xác thực địa chỉ email của bạn..."
+  },
+  "actions": {
+    "goToLogin": "Đi Tới Đăng Nhập",
+    "requestNewVerification": "Yêu Cầu Xác Thực Mới",
+    "goToHomepage": "Về Trang Chủ",
+    "continueToDestination": "Tiếp Tục"
+  },
+  "help": {
+    "troubleshooting": "Nếu bạn tiếp tục gặp sự cố, vui lòng liên hệ với đội ngũ hỗ trợ của chúng tôi.",
+    "newVerification": "Bạn có thể yêu cầu email xác thực mới từ trang xác thực."
+  }
+}

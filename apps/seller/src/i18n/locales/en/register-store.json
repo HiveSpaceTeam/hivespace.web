@@ -1,0 +1,40 @@
+{
+  "title": "Seller Registration",
+  "subtitle": "Complete your seller profile to start selling on HiveSpace",
+  "storeInformation": "Store Information",
+  "fields": {
+    "storeName": "Store Name",
+    "storeDescription": "Store Description",
+    "storeLogo": "Store Logo",
+    "storeAddress": "Store Address"
+  },
+  "placeholders": {
+    "storeName": "Enter your store name",
+    "storeDescription": "Describe your store and products",
+    "storeAddress": "Enter your store address"
+  },
+  "actions": {
+    "submit": "Register",
+    "editAddress": "Edit"
+  },
+  "errors": {
+    "storeNameRequired": "Store name is required",
+    "storeDescriptionRequired": "Store description is required",
+    "storeLogoRequired": "Store logo is required",
+    "storeAddressRequired": "Store address is required",
+    "invalidFileType": "Please upload an image file",
+    "fileTooLarge": "File size must be less than 5MB"
+  },
+  "messages": {
+    "success": "Success!",
+    "error": "Error!",
+    "registrationInProgress": "Registering your store...",
+    "registrationSuccess": "Seller registration completed successfully!",
+    "registrationFailed": "Registration failed. Please check your information and try again.",
+    "validationFailed": "Please fill in all required fields correctly."
+  },
+  "fileInput": {
+    "chooseLogo": "Choose Logo",
+    "logoHelpText": "Upload your store logo (JPG, PNG, max 5MB)"
+  }
+}

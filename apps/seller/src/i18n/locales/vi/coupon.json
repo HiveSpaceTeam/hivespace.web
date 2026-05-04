@@ -1,0 +1,196 @@
+{
+  "title": "Danh sách Mã giảm giá",
+  "creationGateway": {
+    "title": "Tạo Coupon",
+    "description": "Tạo Mã giảm giá toàn shop hoặc Mã giảm giá sản phẩm ngay bây giờ để thu hút người mua.",
+    "shopCoupon": {
+      "title": "Coupon toàn Shop",
+      "description": "Coupon áp dụng cho tất cả sản phẩm trong Shop của bạn.",
+      "button": "Tạo"
+    },
+    "productCoupon": {
+      "title": "Coupon sản phẩm",
+      "description": "Coupon chỉ áp dụng cho những sản phẩm nhất định mà Shop chọn.",
+      "button": "Tạo"
+    },
+    "privateCoupon": {
+      "title": "Coupon riêng tư",
+      "description": "Coupon áp dụng cho nhóm Khách hàng Shop muốn thông qua mã Voucher",
+      "button": "Tạo"
+    }
+  },
+  "list": {
+    "title": "Danh sách mã giảm giá",
+    "loading": "Đang tải...",
+    "tabs": {
+      "all": "Tất cả",
+      "ongoing": "Đang diễn ra",
+      "upcoming": "Sắp diễn ra",
+      "expired": "Đã kết thúc"
+    },
+    "searchPlaceholder": "Tên Coupon / Mã coupon",
+    "searchButton": "Tìm",
+    "table": {
+      "nameAndCode": "Tên Coupon | Mã coupon",
+      "type": "Loại mã",
+      "applicableProducts": "Sản phẩm áp dụng",
+      "discount": "Giảm giá",
+      "usage": "Lượt sử dụng",
+      "usageQuantity": "Số lượng sử dụng",
+      "duration": "Thời gian lưu",
+      "actions": "Thao tác",
+      "emptyText": "Không có Mã giảm giá nào"
+    },
+    "codePrefix": "Mã: ",
+    "productCount": "{count} sản phẩm",
+    "allProducts": "Tất cả sản phẩm",
+    "minSpend": "Đơn tối thiểu:",
+    "discountOff": "% GIẢM",
+    "discountMax": "Tối đa"
+  },
+  "detail": {
+    "titleCreate": "Tạo Coupon mới",
+    "titleEdit": "Chỉnh sửa Coupon",
+    "basicInfo": {
+      "title": "Thông tin cơ bản",
+      "status": "Trạng thái",
+      "type": "Loại mã",
+      "typeEntireShop": "Coupon toàn Shop",
+      "typeSpecificProducts": "Coupon sản phẩm",
+      "programName": "Tên chương trình giảm giá",
+      "programNameHint": "Tên Coupon sẽ không được hiển thị cho Người mua",
+      "couponCode": "Mã coupon",
+      "couponCodePrefix": "Vui lòng chỉ nhập các kí tự chữ cái (A-Z), số (0-9); tối đa 5 kí tự.",
+      "couponCodeFull": "Mã giảm giá đầy đủ là",
+      "usagePeriod": "Thời gian sử dụng mã",
+      "allowEarlySave": "Cho phép lưu mã trước Thời gian sử dụng",
+      "displayEarlyTime": "Thời gian hiển thị mã sớm",
+      "earlySaveHint": "Khi voucher có hiệu lực sử dụng, mục này sẽ không được chỉnh sửa",
+      "smartCoupon": "Mã giảm giá thông minh",
+      "startDatePlaceholder": "Ngày bắt đầu",
+      "endDatePlaceholder": "Ngày kết thúc",
+      "earlySaveDatePlaceholder": "Ngày hiển thị sớm"
+    },
+    "discountSettings": {
+      "title": "Thiết lập mã giảm giá",
+      "rewardType": "Loại Coupon",
+      "rewardTypeDiscount": "Khuyến Mãi",
+      "rewardTypeCoin": "Hoàn Xu",
+      "discountType": "Loại giảm giá | Mức giảm",
+      "discountTypeFixed": "Theo số tiền",
+      "discountTypePercentage": "Theo phần trăm",
+      "discountTypePercentageSuffix": "% GIẢM",
+      "maxDiscount": "Mức giảm tối đa",
+      "maxDiscountLimit": "Giới hạn",
+      "maxDiscountNoLimit": "Không giới hạn",
+      "minOrderValue": "Giá trị đơn hàng tối thiểu",
+      "totalMaxUsages": "Tổng lượt sử dụng tối đa",
+      "totalMaxUsagesHint": "Tổng số Mã giảm giá có thể sử dụng",
+      "maxUsagesPerBuyer": "Lượt sử dụng tối đa/Người mua",
+      "currency": "Đơn vị tiền tệ"
+    },
+    "displayAndProducts": {
+      "title": "Hiển thị mã giảm giá và các sản phẩm áp dụng",
+      "displaySettings": "Thiết lập hiển thị",
+      "displayPublic": "Hiển thị nhiều nơi",
+      "displayCodeOnly": "Chia sẻ thông qua mã Coupon",
+      "displayCodeOnlyFixed": "Chia sẻ thông qua Mã giảm giá",
+      "applicableProducts": "Sản phẩm được áp dụng",
+      "allProducts": "Tất cả sản phẩm",
+      "allProductsDescription": "Bao gồm tất cả sản phẩm hiện có, ngoại trừ các sản phẩm bị hạn chế khuyến mãi theo quy định của pháp luật hiện hành và các sản phẩm độc quyền cho thành viên. Tìm hiểu thêm",
+      "specificProducts": "Một (số) sản phẩm",
+      "addProducts": "Thêm sản phẩm",
+      "productsSelected": "{count} sản phẩm đã chọn",
+      "table": {
+        "products": "Sản phẩm",
+        "originalPrice": "Giá gốc",
+        "stock": "Kho hàng",
+        "action": "Thao tác"
+      }
+    },
+    "actions": {
+      "cancel": "Hủy",
+      "confirm": "Xác nhận",
+      "backToList": "Quay lại danh sách"
+    },
+    "notifications": {
+      "createSuccess": {
+        "title": "Tạo Coupon thành công",
+        "message": "Coupon của bạn đã được tạo thành công."
+      },
+      "createError": {
+        "title": "Tạo thất bại",
+        "message": "Đã xảy ra lỗi khi tạo coupon. Vui lòng thử lại."
+      },
+      "loadError": {
+        "title": "Tải thất bại",
+        "message": "Đã xảy ra lỗi khi tải chi tiết coupon. Vui lòng thử lại."
+      }
+    },
+    "validation": {
+      "nameRequired": "Tên chương trình giảm giá là bắt buộc.",
+      "nameTooLong": "Tên không được vượt quá 100 ký tự.",
+      "codeRequired": "Mã coupon là bắt buộc.",
+      "codeAlphanumeric": "Mã coupon chỉ được chứa chữ cái (A-Z) và số (0-9).",
+      "codeTooLong": "Mã coupon chỉ được tối đa 5 ký tự.",
+      "startDateRequired": "Ngày bắt đầu là bắt buộc.",
+      "startDateFuture": "Ngày bắt đầu phải ở trong tương lai.",
+      "endDateRequired": "Ngày kết thúc là bắt buộc.",
+      "endDateAfterStart": "Ngày kết thúc phải sau ngày bắt đầu.",
+      "discountAmountRequired": "Số tiền giảm giá là bắt buộc và phải lớn hơn 0.",
+      "discountPercentageRequired": "Phần trăm giảm giá là bắt buộc.",
+      "discountPercentageRange": "Phần trăm giảm giá phải nằm trong khoảng 1 đến 100.",
+      "maxDiscountAmountRequired": "Số tiền giảm tối đa là bắt buộc và phải lớn hơn 0.",
+      "maxDiscountAmountTooSmall": "Người mua không thể tận hưởng trọn vẹn phần trăm giảm giá, vui lòng chọn: 1. Giảm đơn tối thiểu xuống {suggestedMinOrder} 2. Giảm % xuống {suggestedPercentage}% 3. Tăng mức giảm tối đa lên {suggestedMaxDiscount}",
+      "minOrderValueRequired": "Giá trị đơn hàng tối thiểu phải lớn hơn 0.",
+      "totalUsagesRequired": "Tổng số lần sử dụng tối đa là bắt buộc và phải lớn hơn 0.",
+      "maxUsagesPerBuyerRequired": "Số lần sử dụng tối đa mỗi người mua là bắt buộc và phải lớn hơn 0.",
+      "earlySaveBeforeStart": "Thời gian hiển thị mã sớm phải trước ngày bắt đầu sử dụng."
+    },
+    "selectProductsModal": {
+      "title": "Chọn Sản Phẩm",
+      "tabs": {
+        "select": "Chọn",
+        "upload": "Tải Lên Danh Sách Sản Phẩm"
+      },
+      "category": "Ngành hàng",
+      "allCategories": "Tất cả ngành hàng",
+      "search": "Tìm kiếm",
+      "searchProductName": "Tên sản phẩm",
+      "searchBtn": "Tìm",
+      "resetBtn": "Thiết lập lại",
+      "showAvailableOnly": "Chỉ hiển thị các sản phẩm có sẵn",
+      "table": {
+        "products": "Sản phẩm",
+        "sales": "Doanh số",
+        "price": "Giá",
+        "stock": "Kho"
+      },
+      "cancel": "Hủy",
+      "confirm": "Xác nhận"
+    }
+  },
+  "actions": {
+    "view": "Xem",
+    "edit": "Chỉnh sửa",
+    "end": "Kết thúc",
+    "duplicate": "Sao chép",
+    "delete": "Xóa"
+  },
+  "notifications": {
+    "endConfirm": "Bạn có chắc chắn muốn kết thúc mã giảm giá \"{name}\" sớm hơn dự kiến? Sau khi kết thúc, người dùng sẽ không thể lưu hoặc sử dụng mã này nữa.",
+    "deleteConfirm": "Bạn có chắc chắn muốn xóa mã giảm giá \"{name}\"? Hành động này không thể hoàn tác.",
+    "endSuccess": {
+      "title": "Kết thúc thành công",
+      "message": "Mã giảm giá đã được kết thúc."
+    },
+    "deleteSuccess": {
+      "title": "Xóa thành công",
+      "message": "Mã giảm giá đã được xóa vĩnh viễn."
+    },
+    "fetchError": {
+      "title": "Tải thất bại",
+      "message": "Đã xảy ra lỗi khi tải danh sách mã giảm giá."
+    }
+  }
+}

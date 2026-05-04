@@ -1,0 +1,274 @@
+- generic [active] [ref=e7]:
+  - generic [ref=e9]:
+    - complementary [ref=e10]:
+      - link "Logo" [ref=e12] [cursor=pointer]:
+        - /url: /
+        - img "Logo" [ref=e13]
+      - generic [ref=e14]:
+        - navigation [ref=e15]:
+          - generic [ref=e17]:
+            - heading "Menu" [level=2] [ref=e18]
+            - list [ref=e19]:
+              - listitem [ref=e20]:
+                - button "Quản Lý Đơn Hàng" [ref=e21] [cursor=pointer]:
+                  - img [ref=e23]
+                  - generic [ref=e25]: Quản Lý Đơn Hàng
+                  - img [ref=e26]
+                - list [ref=e29]:
+                  - listitem [ref=e30]:
+                    - link "Tất cả" [ref=e31] [cursor=pointer]:
+                      - /url: /orders/all
+              - listitem [ref=e32]:
+                - button "Sản phẩm" [ref=e33] [cursor=pointer]:
+                  - img [ref=e35]
+                  - generic [ref=e37]: Sản phẩm
+                  - img [ref=e38]
+              - listitem [ref=e40]:
+                - button "Marketing" [ref=e41] [cursor=pointer]:
+                  - img [ref=e43]
+                  - generic [ref=e45]: Marketing
+                  - img [ref=e46]
+              - listitem [ref=e48]:
+                - link "Demo" [ref=e49] [cursor=pointer]:
+                  - /url: /demo
+                  - img [ref=e51]
+                  - generic [ref=e53]: Demo
+        - link "Open HiveSpace website" [ref=e55] [cursor=pointer]:
+          - /url: https://tailadmin.com/pricing
+    - generic [ref=e56]:
+      - banner [ref=e57]:
+        - generic [ref=e59]:
+          - button "Mở thanh bên" [ref=e60] [cursor=pointer]:
+            - img [ref=e61]
+          - button "Mở menu ứng dụng" [ref=e63] [cursor=pointer]:
+            - img [ref=e64]
+          - link "Menu" [ref=e66] [cursor=pointer]:
+            - /url: /
+            - img "Menu" [ref=e67]
+          - button [ref=e68] [cursor=pointer]:
+            - img [ref=e69]
+      - generic [ref=e71]:
+        - generic [ref=e72]:
+          - heading "Quản lý đơn hàng" [level=2] [ref=e73]
+          - navigation [ref=e74]:
+            - list [ref=e75]:
+              - listitem [ref=e76]:
+                - link "Trang chủ" [ref=e77] [cursor=pointer]:
+                  - /url: /
+                  - text: Trang chủ
+                  - img [ref=e78]
+              - listitem [ref=e80]: Quản lý đơn hàng
+        - generic [ref=e81]:
+          - heading "Tất cả" [level=1] [ref=e83]
+          - generic [ref=e84]:
+            - generic [ref=e87]:
+              - button "Tất cả" [ref=e88] [cursor=pointer]
+              - button "Chờ xác nhận (0)" [ref=e89] [cursor=pointer]
+              - button "Chờ lấy hàng (0)" [ref=e90] [cursor=pointer]
+              - button "Đang giao (0)" [ref=e91] [cursor=pointer]
+              - button "Đã giao" [ref=e92] [cursor=pointer]
+              - button "Trả hàng/Hoàn tiền/Huỷ (0)" [ref=e93] [cursor=pointer]
+            - generic [ref=e97]:
+              - generic [ref=e98]:
+                - button "Mã đơn hàng" [ref=e101] [cursor=pointer]:
+                  - generic [ref=e102]: Mã đơn hàng
+                  - img [ref=e103]
+                - textbox "Nhập Mã đơn hàng" [ref=e105]
+              - generic [ref=e106]:
+                - button "Áp dụng" [ref=e107] [cursor=pointer]
+                - button "Đặt lại" [ref=e108] [cursor=pointer]
+            - generic [ref=e109]:
+              - generic [ref=e110]: 5 Kiện hàng
+              - generic [ref=e111]:
+                - generic [ref=e112]:
+                  - img [ref=e113]
+                  - generic [ref=e115]: "Sắp xếp theo: Hạn gửi hàng (Xa - Gần nhất)"
+                - button "Giao Hàng Loạt" [ref=e116] [cursor=pointer]:
+                  - img [ref=e118]
+                  - text: Giao Hàng Loạt
+            - table [ref=e121]:
+              - rowgroup [ref=e122]:
+                - row "Sản phẩm Tổng số tiền Người mua thanh toán Trạng thái Đếm ngược ? Thao tác" [ref=e123]:
+                  - columnheader "Sản phẩm" [ref=e124]:
+                    - paragraph [ref=e125]: Sản phẩm
+                  - columnheader "Tổng số tiền Người mua thanh toán" [ref=e126]:
+                    - paragraph [ref=e127]: Tổng số tiền Người mua thanh toán
+                  - columnheader "Trạng thái" [ref=e128]:
+                    - paragraph [ref=e129]: Trạng thái
+                  - columnheader "Đếm ngược ?" [ref=e130]:
+                    - paragraph [ref=e131]:
+                      - text: Đếm ngược
+                      - generic [ref=e132]: "?"
+                  - columnheader "Thao tác" [ref=e133]:
+                    - paragraph [ref=e134]: Thao tác
+              - rowgroup [ref=e135]:
+                - row "Alice Mã đơn hàng ORD-20260503020845-980231" [ref=e136]:
+                  - cell "Alice Mã đơn hàng ORD-20260503020845-980231" [ref=e137]:
+                    - generic [ref=e138]:
+                      - generic [ref=e139]:
+                        - img [ref=e142]
+                        - generic [ref=e144]: Alice
+                        - img [ref=e145]
+                      - generic [ref=e147]: Mã đơn hàng ORD-20260503020845-980231
+                - 'row "Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng cod Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng Variation: Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng x1 đ236.600 Chờ xác nhận 09:08:45 3/5/2026 Xem chi tiết" [ref=e148]':
+                  - 'cell "Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng cod Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng Variation: Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng x1" [ref=e149]':
+                    - generic [ref=e150]:
+                      - img "Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng" [ref=e152]
+                      - generic [ref=e153]:
+                        - generic [ref=e154]: cod
+                        - paragraph [ref=e155]: Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng
+                        - paragraph [ref=e156]: "Variation: Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng"
+                      - generic [ref=e157]: x1
+                  - cell "đ236.600" [ref=e158]:
+                    - paragraph [ref=e159]: đ236.600
+                    - paragraph
+                  - cell "Chờ xác nhận" [ref=e160]:
+                    - paragraph [ref=e161]: Chờ xác nhận
+                  - cell "09:08:45 3/5/2026" [ref=e162]
+                  - cell "Xem chi tiết" [ref=e163]:
+                    - button "Xem chi tiết" [ref=e164] [cursor=pointer]
+                - 'row "[NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng cod [NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng Variation: [NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng x1" [ref=e165]':
+                  - 'cell "[NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng cod [NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng Variation: [NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng x1" [ref=e166]':
+                    - generic [ref=e167]:
+                      - img "[NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng" [ref=e169]
+                      - generic [ref=e170]:
+                        - generic [ref=e171]: cod
+                        - paragraph [ref=e172]: "[NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng"
+                        - paragraph [ref=e173]: "Variation: [NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng"
+                      - generic [ref=e174]: x1
+              - rowgroup [ref=e175]:
+                - row "Alice Smith Mã đơn hàng ORD-20260429073558-304639" [ref=e176]:
+                  - cell "Alice Smith Mã đơn hàng ORD-20260429073558-304639" [ref=e177]:
+                    - generic [ref=e178]:
+                      - generic [ref=e179]:
+                        - img [ref=e182]
+                        - generic [ref=e184]: Alice Smith
+                        - img [ref=e185]
+                      - generic [ref=e187]: Mã đơn hàng ORD-20260429073558-304639
+                - 'row "Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng cod Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng Variation: x1 đ179.000 COD Chờ lấy hàng 15:24:58 29/4/2026 Xem chi tiết" [ref=e188]':
+                  - 'cell "Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng cod Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng Variation: x1" [ref=e189]':
+                    - generic [ref=e190]:
+                      - img "Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng" [ref=e192]
+                      - generic [ref=e193]:
+                        - generic [ref=e194]: cod
+                        - paragraph [ref=e195]: Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng
+                        - paragraph [ref=e196]: "Variation:"
+                      - generic [ref=e197]: x1
+                  - cell "đ179.000 COD" [ref=e198]:
+                    - paragraph [ref=e199]: đ179.000
+                    - paragraph [ref=e200]: COD
+                  - cell "Chờ lấy hàng" [ref=e201]:
+                    - paragraph [ref=e202]: Chờ lấy hàng
+                  - cell "15:24:58 29/4/2026" [ref=e203]
+                  - cell "Xem chi tiết" [ref=e204]:
+                    - button "Xem chi tiết" [ref=e205] [cursor=pointer]
+              - rowgroup [ref=e206]:
+                - row "Bob Mã đơn hàng ORD-20260429052841-805215" [ref=e207]:
+                  - cell "Bob Mã đơn hàng ORD-20260429052841-805215" [ref=e208]:
+                    - generic [ref=e209]:
+                      - generic [ref=e210]:
+                        - img [ref=e213]
+                        - generic [ref=e215]: Bob
+                        - img [ref=e216]
+                      - generic [ref=e218]: Mã đơn hàng ORD-20260429052841-805215
+                - 'row "Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster - miếng xốp lau chùi đa năng cod Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster - miếng xốp lau chùi đa năng Variation: Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster - miếng xốp lau chùi đa năng x1 đ103.800 Đang giao 12:28:41 29/4/2026 Xem chi tiết" [ref=e219]':
+                  - 'cell "Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster - miếng xốp lau chùi đa năng cod Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster - miếng xốp lau chùi đa năng Variation: Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster - miếng xốp lau chùi đa năng x1" [ref=e220]':
+                    - generic [ref=e221]:
+                      - img "Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster - miếng xốp lau chùi đa năng" [ref=e223]
+                      - generic [ref=e224]:
+                        - generic [ref=e225]: cod
+                        - paragraph [ref=e226]: Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster - miếng xốp lau chùi đa năng
+                        - paragraph [ref=e227]: "Variation: Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster - miếng xốp lau chùi đa năng"
+                      - generic [ref=e228]: x1
+                  - cell "đ103.800" [ref=e229]:
+                    - paragraph [ref=e230]: đ103.800
+                    - paragraph
+                  - cell "Đang giao" [ref=e231]:
+                    - paragraph [ref=e232]: Đang giao
+                  - cell "12:28:41 29/4/2026" [ref=e233]
+                  - cell "Xem chi tiết" [ref=e234]:
+                    - button "Xem chi tiết" [ref=e235] [cursor=pointer]
+                - 'row "1 gói Diệt chuột dạng viên Hợp Trí Storm 0.005% gói 20 viên cod 1 gói Diệt chuột dạng viên Hợp Trí Storm 0.005% gói 20 viên Variation: 1 gói Diệt chuột dạng viên Hợp Trí Storm 0.005% gói 20 viên x1" [ref=e236]':
+                  - 'cell "1 gói Diệt chuột dạng viên Hợp Trí Storm 0.005% gói 20 viên cod 1 gói Diệt chuột dạng viên Hợp Trí Storm 0.005% gói 20 viên Variation: 1 gói Diệt chuột dạng viên Hợp Trí Storm 0.005% gói 20 viên x1" [ref=e237]':
+                    - generic [ref=e238]:
+                      - img "1 gói Diệt chuột dạng viên Hợp Trí Storm 0.005% gói 20 viên" [ref=e240]
+                      - generic [ref=e241]:
+                        - generic [ref=e242]: cod
+                        - paragraph [ref=e243]: 1 gói Diệt chuột dạng viên Hợp Trí Storm 0.005% gói 20 viên
+                        - paragraph [ref=e244]: "Variation: 1 gói Diệt chuột dạng viên Hợp Trí Storm 0.005% gói 20 viên"
+                      - generic [ref=e245]: x1
+              - rowgroup [ref=e246]:
+                - row "Bob Mã đơn hàng ORD-20260429052841-159759" [ref=e247]:
+                  - cell "Bob Mã đơn hàng ORD-20260429052841-159759" [ref=e248]:
+                    - generic [ref=e249]:
+                      - generic [ref=e250]:
+                        - img [ref=e253]
+                        - generic [ref=e255]: Bob
+                        - img [ref=e256]
+                      - generic [ref=e258]: Mã đơn hàng ORD-20260429052841-159759
+                - 'row "Bình giữ nhiệt gia đình inox 304 Elmich EL8299 dung tích 900ml - Hàng chính hãng cod Bình giữ nhiệt gia đình inox 304 Elmich EL8299 dung tích 900ml - Hàng chính hãng Variation: Bình giữ nhiệt gia đình inox 304 Elmich EL8299 dung tích 900ml - Hàng chính hãng x1 đ585.000 Trả hàng/Hoàn tiền/Huỷ 12:28:41 29/4/2026 Xem chi tiết" [ref=e259]':
+                  - 'cell "Bình giữ nhiệt gia đình inox 304 Elmich EL8299 dung tích 900ml - Hàng chính hãng cod Bình giữ nhiệt gia đình inox 304 Elmich EL8299 dung tích 900ml - Hàng chính hãng Variation: Bình giữ nhiệt gia đình inox 304 Elmich EL8299 dung tích 900ml - Hàng chính hãng x1" [ref=e260]':
+                    - generic [ref=e261]:
+                      - img "Bình giữ nhiệt gia đình inox 304 Elmich EL8299 dung tích 900ml - Hàng chính hãng" [ref=e263]
+                      - generic [ref=e264]:
+                        - generic [ref=e265]: cod
+                        - paragraph [ref=e266]: Bình giữ nhiệt gia đình inox 304 Elmich EL8299 dung tích 900ml - Hàng chính hãng
+                        - paragraph [ref=e267]: "Variation: Bình giữ nhiệt gia đình inox 304 Elmich EL8299 dung tích 900ml - Hàng chính hãng"
+                      - generic [ref=e268]: x1
+                  - cell "đ585.000" [ref=e269]:
+                    - paragraph [ref=e270]: đ585.000
+                    - paragraph
+                  - cell "Trả hàng/Hoàn tiền/Huỷ" [ref=e271]:
+                    - paragraph [ref=e272]: Trả hàng/Hoàn tiền/Huỷ
+                  - cell "12:28:41 29/4/2026" [ref=e273]
+                  - cell "Xem chi tiết" [ref=e274]:
+                    - button "Xem chi tiết" [ref=e275] [cursor=pointer]
+                - 'row "Chảo chống dính Elmich EL5972 cod Chảo chống dính Elmich EL5972 Variation: Chảo chống dính Elmich EL5972 x1" [ref=e276]':
+                  - 'cell "Chảo chống dính Elmich EL5972 cod Chảo chống dính Elmich EL5972 Variation: Chảo chống dính Elmich EL5972 x1" [ref=e277]':
+                    - generic [ref=e278]:
+                      - img "Chảo chống dính Elmich EL5972" [ref=e280]
+                      - generic [ref=e281]:
+                        - generic [ref=e282]: cod
+                        - paragraph [ref=e283]: Chảo chống dính Elmich EL5972
+                        - paragraph [ref=e284]: "Variation: Chảo chống dính Elmich EL5972"
+                      - generic [ref=e285]: x1
+              - rowgroup [ref=e286]:
+                - row "Alice Mã đơn hàng ORD-20260429052841-384915" [ref=e287]:
+                  - cell "Alice Mã đơn hàng ORD-20260429052841-384915" [ref=e288]:
+                    - generic [ref=e289]:
+                      - generic [ref=e290]:
+                        - img [ref=e293]
+                        - generic [ref=e295]: Alice
+                        - img [ref=e296]
+                      - generic [ref=e298]: Mã đơn hàng ORD-20260429052841-384915
+                - 'row "Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng cod Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng Variation: Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng x1 đ311.000 Chờ lấy hàng 12:28:41 29/4/2026 Xem chi tiết" [ref=e299]':
+                  - 'cell "Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng cod Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng Variation: Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng x1" [ref=e300]':
+                    - generic [ref=e301]:
+                      - img "Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng" [ref=e303]
+                      - generic [ref=e304]:
+                        - generic [ref=e305]: cod
+                        - paragraph [ref=e306]: Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng
+                        - paragraph [ref=e307]: "Variation: Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng"
+                      - generic [ref=e308]: x1
+                  - cell "đ311.000" [ref=e309]:
+                    - paragraph [ref=e310]: đ311.000
+                    - paragraph
+                  - cell "Chờ lấy hàng" [ref=e311]:
+                    - paragraph [ref=e312]: Chờ lấy hàng
+                  - cell "12:28:41 29/4/2026" [ref=e313]
+                  - cell "Xem chi tiết" [ref=e314]:
+                    - button "Xem chi tiết" [ref=e315] [cursor=pointer]
+                - 'row "Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml cod Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml Variation: Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml x1" [ref=e316]':
+                  - 'cell "Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml cod Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml Variation: Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml x1" [ref=e317]':
+                    - generic [ref=e318]:
+                      - img "Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml" [ref=e320]
+                      - generic [ref=e321]:
+                        - generic [ref=e322]: cod
+                        - paragraph [ref=e323]: Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml
+                        - paragraph [ref=e324]: "Variation: Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml"
+                      - generic [ref=e325]: x1
+  - generic [ref=e1]:
+    - generic "Toggle devtools panel" [ref=e2] [cursor=pointer]:
+      - img [ref=e3]
+    - generic "Toggle Component Inspector" [ref=e327] [cursor=pointer]:
+      - img [ref=e328]

@@ -1,0 +1,76 @@
+{
+  "title": "Order Management",
+  "breadcrumb": "All Orders",
+  "orderCode": "Order ID",
+  "tabs": {
+    "all": "All",
+    "pendingConfirmation": "Pending Confirmation",
+    "readyToShip": "Ready to Ship",
+    "shipping": "Shipping",
+    "delivered": "Delivered",
+    "returnCancel": "Return/Refund/Cancel"
+  },
+  "status": {
+    "created": "Created",
+    "paid": "Paid",
+    "cod": "Cash on Delivery",
+    "confirmed": "Confirmed",
+    "rejected": "Rejected",
+    "shipped": "Shipped",
+    "delivered": "Delivered",
+    "completed": "Completed",
+    "cancelled": "Cancelled",
+    "claimed": "Claimed",
+    "refunding": "Refunding",
+    "refunded": "Refunded",
+    "solved": "Solved",
+    "expired": "Expired",
+    "readyToShip": "Ready to Ship"
+  },
+  "search": {
+    "fieldOrderCode": "Order ID",
+    "fieldCustomerName": "Buyer Name",
+    "fieldProduct": "Product Name",
+    "placeholder": "Enter {field}",
+    "apply": "Apply",
+    "reset": "Reset"
+  },
+  "table": {
+    "product": "Product",
+    "totalAmount": "Total Buyer Payment",
+    "status": "Status",
+    "countdown": "Countdown",
+    "shippingUnit": "Shipping Provider",
+    "variation": "Variation: {value}",
+    "noVariation": "No variation",
+    "actions": "Actions",
+    "emptyText": "No orders found"
+  },
+  "itemCount": "{count} Orders",
+  "sort": {
+    "label": "Sort by: Deadline (Furthest - Nearest)"
+  },
+  "actions": {
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "prepareGoods": "Prepare Goods",
+    "viewDetail": "View Detail",
+    "export": "Export",
+    "exportHistory": "Export History",
+    "bulkShip": "Bulk Ship"
+  },
+  "notifications": {
+    "confirmSuccess": {
+      "title": "Order Confirmed",
+      "message": "Order has been confirmed and is now ready to ship"
+    },
+    "cancelConfirm": {
+      "message": "Are you sure you want to cancel this order?",
+      "defaultReason": "Cancelled by seller"
+    },
+    "cancelSuccess": {
+      "title": "Order Cancelled",
+      "message": "Order has been cancelled"
+    }
+  }
+}

@@ -1,0 +1,196 @@
+{
+  "title": "Coupon Management",
+  "creationGateway": {
+    "title": "Create Coupon",
+    "description": "Create a Shop Coupon or Product Coupon now to attract buyers.",
+    "shopCoupon": {
+      "title": "Shop Coupon",
+      "description": "Coupons applicable for all your products to boost shopwide sales",
+      "button": "Create"
+    },
+    "productCoupon": {
+      "title": "Product Coupon",
+      "description": "Coupons applicable for selected products to run specific promotions",
+      "button": "Create"
+    },
+    "privateCoupon": {
+      "title": "Private Coupon",
+      "description": "Coupons that are only sharable via code to targeted customers",
+      "button": "Create"
+    }
+  },
+  "list": {
+    "title": "List of Coupons",
+    "loading": "Loading...",
+    "tabs": {
+      "all": "All",
+      "ongoing": "Ongoing",
+      "upcoming": "Upcoming",
+      "expired": "Expired"
+    },
+    "searchPlaceholder": "Coupon Name / Coupon Code",
+    "searchButton": "Search",
+    "table": {
+      "nameAndCode": "Coupon Name | Code",
+      "type": "Coupon Type",
+      "applicableProducts": "Applicable Products",
+      "discount": "Discount",
+      "usage": "Usage",
+      "usageQuantity": "Usage Quantity",
+      "duration": "Duration",
+      "actions": "Actions",
+      "emptyText": "No Coupons found"
+    },
+    "codePrefix": "Code: ",
+    "productCount": "{count} Products",
+    "allProducts": "All Products",
+    "minSpend": "Min spend:",
+    "discountOff": "% OFF",
+    "discountMax": "Max"
+  },
+  "detail": {
+    "titleCreate": "Create new Coupon",
+    "titleEdit": "Edit Coupon",
+    "basicInfo": {
+      "title": "Basic Information",
+      "status": "Status",
+      "type": "Coupon Type",
+      "typeEntireShop": "Shop Coupon",
+      "typeSpecificProducts": "Product Coupon",
+      "programName": "Discount Program Name",
+      "programNameHint": "Coupon Name will not be displayed to Buyers",
+      "couponCode": "Coupon Code",
+      "couponCodePrefix": "Please input only characters (A-Z), numbers (0-9); max 5 characters.",
+      "couponCodeFull": "Full discount code is",
+      "usagePeriod": "Usage Period",
+      "allowEarlySave": "Allow code saving before Usage Time",
+      "displayEarlyTime": "Display voucher early time",
+      "earlySaveHint": "Once voucher starts displaying, this section can no longer be edited",
+      "smartCoupon": "Smart Coupon",
+      "startDatePlaceholder": "Start Date",
+      "endDatePlaceholder": "End Date",
+      "earlySaveDatePlaceholder": "Early Save Date"
+    },
+    "discountSettings": {
+      "title": "Discount Settings",
+      "rewardType": "Coupon Reward Type",
+      "rewardTypeDiscount": "Discount",
+      "rewardTypeCoin": "Coin Cashback",
+      "discountType": "Discount Type | Amount",
+      "discountTypeFixed": "Fixed Amount",
+      "discountTypePercentage": "Percentage",
+      "discountTypePercentageSuffix": "% OFF",
+      "maxDiscount": "Max Discount",
+      "maxDiscountLimit": "Limit",
+      "maxDiscountNoLimit": "No limit",
+      "minOrderValue": "Minimum Order Value",
+      "totalMaxUsages": "Total Maximum Usages",
+      "totalMaxUsagesHint": "Total number of discount codes that can be used",
+      "maxUsagesPerBuyer": "Maximum usages / Buyer",
+      "currency": "Currency"
+    },
+    "displayAndProducts": {
+      "title": "Discount Code Display and Application",
+      "displaySettings": "Display Settings",
+      "displayPublic": "Display in many places",
+      "displayCodeOnly": "Share via Coupon code",
+      "displayCodeOnlyFixed": "To be shared through voucher code",
+      "applicableProducts": "Applicable Products",
+      "allProducts": "All products",
+      "allProductsDescription": "For selected products only, some products are prohibited from promotions due to regulations in your country or because they are member-exclusive. Learn More",
+      "specificProducts": "Specific product(s)",
+      "addProducts": "Add Products",
+      "productsSelected": "{count} product(s) selected",
+      "table": {
+        "products": "Products",
+        "originalPrice": "Original Price",
+        "stock": "Stock",
+        "action": "Action"
+      }
+    },
+    "actions": {
+      "cancel": "Cancel",
+      "confirm": "Confirm",
+      "backToList": "Back to List"
+    },
+    "notifications": {
+      "createSuccess": {
+        "title": "Coupon Created",
+        "message": "Your coupon has been created successfully."
+      },
+      "createError": {
+        "title": "Creation Failed",
+        "message": "An error occurred while creating the coupon. Please try again."
+      },
+      "loadError": {
+        "title": "Load Failed",
+        "message": "Failed to load coupon details. Please try again."
+      }
+    },
+    "validation": {
+      "nameRequired": "Discount program name is required.",
+      "nameTooLong": "Name must be at most 100 characters.",
+      "codeRequired": "Coupon code is required.",
+      "codeAlphanumeric": "Coupon code must contain only letters (A-Z) and numbers (0-9).",
+      "codeTooLong": "Coupon code suffix must be at most 5 characters.",
+      "startDateRequired": "Start date is required.",
+      "startDateFuture": "Start date must be in the future.",
+      "endDateRequired": "End date is required.",
+      "endDateAfterStart": "End date must be after the start date.",
+      "discountAmountRequired": "Discount amount is required and must be greater than 0.",
+      "discountPercentageRequired": "Discount percentage is required.",
+      "discountPercentageRange": "Discount percentage must be between 1 and 100.",
+      "maxDiscountAmountRequired": "Maximum discount amount is required and must be greater than 0.",
+      "maxDiscountAmountTooSmall": "User can't enjoy full discount percentage, please adjust with the following options 1. Reduce the min basket to {suggestedMinOrder} 2. Reduce the discount percentage to {suggestedPercentage}% 3. Increase the max discount to {suggestedMaxDiscount}",
+      "minOrderValueRequired": "Minimum order value must be greater than 0.",
+      "totalUsagesRequired": "Total number of usages is required and must be greater than 0.",
+      "maxUsagesPerBuyerRequired": "Maximum usages per buyer is required and must be greater than 0.",
+      "earlySaveBeforeStart": "Early save date must be before the usage start date."
+    },
+    "selectProductsModal": {
+      "title": "Select Products",
+      "tabs": {
+        "select": "Select",
+        "upload": "Upload Product List"
+      },
+      "category": "Category",
+      "allCategories": "All Categories",
+      "search": "Search",
+      "searchProductName": "Product Name",
+      "searchBtn": "Search",
+      "resetBtn": "Reset",
+      "showAvailableOnly": "Show available products only",
+      "table": {
+        "products": "Products",
+        "sales": "Sales",
+        "price": "Price",
+        "stock": "Stock"
+      },
+      "cancel": "Cancel",
+      "confirm": "Confirm"
+    }
+  },
+  "actions": {
+    "view": "View",
+    "edit": "Edit",
+    "end": "End",
+    "duplicate": "Duplicate",
+    "delete": "Delete"
+  },
+  "notifications": {
+    "endConfirm": "Are you sure you want to end the coupon \"{name}\" earlier than scheduled? Once ended, users will no longer be able to claim or use this coupon.",
+    "deleteConfirm": "Are you sure you want to delete the coupon \"{name}\"? This action cannot be undone.",
+    "endSuccess": {
+      "title": "Coupon Ended",
+      "message": "The coupon has been successfully ended."
+    },
+    "deleteSuccess": {
+      "title": "Coupon Deleted",
+      "message": "The coupon has been permanently removed."
+    },
+    "fetchError": {
+      "title": "Fetch Failed",
+      "message": "There was an error while retrieving the coupon list."
+    }
+  }
+}

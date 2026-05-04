@@ -1,0 +1,14 @@
+{
+  "name": "@hivespace/eslint-config",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "main": "./index.ts",
+  "peerDependencies": { "eslint": "^9.0.0" },
+  "dependencies": {
+    "@softarc/eslint-plugin-sheriff": "latest",
+    "@vue/eslint-config-typescript": "^14.3.0",
+    "@vue/eslint-config-prettier": "^10.1.0",
+    "eslint-plugin-vue": "^9.32.0"
+  }
+}

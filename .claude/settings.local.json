@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(\\\\.json)",
+      "Bash(\\\\.ts)",
+      "Bash(\\\\.js)",
+      "Bash(\\\\.env)",
+      "Bash(\\\\.config\")",
+      "Bash(grep -E \"\\\\.\\(ts|json|env\\)$|^\\\\.\")",
+      "Bash(grep -E \"\\\\.\\(json|ts|js|env|config|yml|yaml\\)$\")",
+      "Bash(grep -v \"^\\\\.\\\\.\\\\?$\")",
+      "Bash(pnpm type-check *)",
+      "Bash(pnpm lint *)",
+      "Bash(claude mcp *)",
+      "Bash(Get-ChildItem -Path \"E:\\\\Project\\\\HivespaceProject\\\\hivespace.web\" -Force)",
+      "Bash(Select-Object Name, PSIsContainer)",
+      "Bash(Get-ChildItem -Path \"E:\\\\Project\\\\HivespaceProject\\\\hivespace.web\\\\packages\\\\ui\\\\src\\\\modal\" -ErrorAction SilentlyContinue)",
+      "Bash(Select-Object -Property Name, FullName)",
+      "Bash(gh pr *)",
+      "Bash(Get-ChildItem -Force)",
+      "Bash(Select-Object Name)",
+      "Bash(Get-ChildItem -Path \"E:\\\\Project\\\\HivespaceProject\\\\hivespace.web\\\\apps\" -Directory)",
+      "Bash(Remove-Item \"E:\\\\Project\\\\HivespaceProject\\\\hivespace.web\\\\apps\\\\admin\\\\src\\\\components\\\\layout\\\\AppHeader.vue\" -Force)",
+      "Bash(Remove-Item \"E:\\\\Project\\\\HivespaceProject\\\\hivespace.web\\\\apps\\\\admin\\\\src\\\\components\\\\layout\\\\AppSidebar.vue\" -Force)",
+      "Bash(Remove-Item \"E:\\\\Project\\\\HivespaceProject\\\\hivespace.web\\\\apps\\\\seller\\\\src\\\\components\\\\layout\\\\AppHeader.vue\" -Force)",
+      "Bash(Remove-Item \"E:\\\\Project\\\\HivespaceProject\\\\hivespace.web\\\\apps\\\\seller\\\\src\\\\components\\\\layout\\\\AppSidebar.vue\" -Force)",
+      "Bash(Write-Output \"Deleted 4 files\")",
+      "Bash(Get-ChildItem -Path \"E:\\\\Project\\\\HivespaceProject\\\\hivespace.web\\\\apps\\\\admin\\\\src\\\\types\" -File -Recurse)",
+      "Bash(Select-Object FullName)",
+      "Bash(Get-ChildItem -Path \"E:\\\\Project\\\\HivespaceProject\\\\hivespace.web\\\\packages\\\\shared\\\\src\\\\types\" -File)",
+      "Bash(grep -E \"\\\\.ts$|\\\\.js$\")",
+      "Bash(Get-ChildItem *)",
+      "Bash(Select-Object -First 20)",
+      "PowerShell(Get-ChildItem -Path \"E:\\\\Project\\\\HivespaceProject\\\\hivespace.web\\\\packages\\\\shared\\\\src\" -Recurse -Directory | Select-Object -First 30 | ForEach-Object { $_.FullName })",
+      "Bash(xargs grep *)"
+    ]
+  }
+}

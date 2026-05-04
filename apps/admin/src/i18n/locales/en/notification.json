@@ -1,0 +1,21 @@
+{
+  "title": "Notifications",
+  "empty": "You have no notifications",
+  "loadMore": "Load more",
+  "loading": "Loading...",
+  "events": {
+    "newUser": "New user registered: {userName} ({email})",
+    "newSeller": "New seller application: {sellerName} - {storeName}",
+    "generic": "Event: {eventType}"
+  },
+  "toast": {
+    "close": "Dismiss notification",
+    "justNow": "Just now"
+  },
+  "errors": {
+    "markReadFailed": {
+      "title": "Could not mark as read",
+      "message": "Please try again."
+    }
+  }
+}

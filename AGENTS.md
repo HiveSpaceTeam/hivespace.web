@@ -1,0 +1,355 @@
+# AGENTS.md
+
+This file provides guidance to Codex (Codex.ai/code) when working with code in this repository.
+
+## Documentation Sync
+
+`AGENTS.md` and `CLAUDE.md` must stay in sync. Any change made to one file must be applied to the other file in the same update so both instruction files remain aligned.
+
+## Behavioral Guidelines
+
+Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
+
+**Tradeoff:** These guidelines bias toward caution over speed. For trivial tasks, use judgment.
+
+### 1. Think Before Coding
+
+**Don't assume. Don't hide confusion. Surface tradeoffs.**
+
+Before implementing:
+- State your assumptions explicitly. If uncertain, ask.
+- If multiple interpretations exist, present them; don't pick silently.
+- If a simpler approach exists, say so. Push back when warranted.
+- If something is unclear, stop. Name what's confusing. Ask.
+
+### 2. Simplicity First
+
+**Minimum code that solves the problem. Nothing speculative.**
+
+- No features beyond what was asked.
+- No abstractions for single-use code.
+- No "flexibility" or "configurability" that wasn't requested.
+- No error handling for impossible scenarios.
+- If you write 200 lines and it could be 50, rewrite it.
+
+Ask yourself: "Would a senior engineer say this is overcomplicated?" If yes, simplify.
+
+### 3. Surgical Changes
+
+**Touch only what you must. Clean up only your own mess.**
+
+When editing existing code:
+- Don't "improve" adjacent code, comments, or formatting.
+- Don't refactor things that aren't broken.
+- Match existing style, even if you'd do it differently.
+- If you notice unrelated dead code, mention it; don't delete it.
+
+When your changes create orphans:
+- Remove imports/variables/functions that your changes made unused.
+- Don't remove pre-existing dead code unless asked.
+
+The test: Every changed line should trace directly to the user's request.
+
+### 4. Goal-Driven Execution
+
+**Define success criteria. Loop until verified.**
+
+Transform tasks into verifiable goals:
+- "Add validation" -> "Write tests for invalid inputs, then make them pass"
+- "Fix the bug" -> "Write a test that reproduces it, then make it pass"
+- "Refactor X" -> "Ensure tests pass before and after"
+
+For multi-step tasks, state a brief plan:
+
+```text
+1. [Step] -> verify: [check]
+2. [Step] -> verify: [check]
+3. [Step] -> verify: [check]
+```
+
+Strong success criteria let you loop independently. Weak criteria ("make it work") require constant clarification.
+
+**These guidelines are working if:** fewer unnecessary changes in diffs, fewer rewrites due to overcomplication, and clarifying questions come before implementation rather than after mistakes.
+
+## Repository Overview
+
+`hivespace.web` is a **pnpm monorepo** using **Turbo** for task orchestration. It bundles three production Vue 3 apps plus a shared UI library that all apps consume.
+
+| Workspace | Package Name | Purpose | Dev Port |
+|---|---|---|---|
+| `apps/admin/` | `@hivespace/admin` | Platform admin dashboard | 5173 |
+| `apps/seller/` | `@hivespace/seller` | Seller-facing dashboard | 5174 |
+| `apps/storefront/` | `@hivespace/storefront` | Customer-facing storefront | 5175 |
+| `packages/shared/` | `@hivespace/shared` | Shared component library consumed by all apps | - |
+| `packages/eslint-config/` | `@hivespace/eslint-config` | Shared ESLint rules with architectural boundary enforcement | - |
+| `packages/tsconfig/` | `@hivespace/tsconfig` | Shared TypeScript configurations | - |
+| `packages/demo/` | `@hivespace/demo` | Dev-only demo pages (injected into admin & seller in DEV mode) | - |
+
+> **Note:** `apps/storefront/` has not been scaffolded yet. Storefront-specific guidance in this document describes the intended design for when development begins.
+
+## Commands
+
+### Root (run from monorepo root)
+
+```bash
+pnpm dev              # Start all apps concurrently
+pnpm dev:admin        # Admin app only
+pnpm dev:seller       # Seller app only
+pnpm build            # Build all apps (Turbo-cached)
+pnpm type-check       # Type-check across the monorepo
+pnpm lint             # Lint all workspaces
+pnpm format           # Prettier format all workspaces
+```
+
+### Per-App (run from `apps/{admin|seller|storefront}/`)
+
+```bash
+pnpm dev              # Dev server
+pnpm build            # Build with type-check
+pnpm build-only       # Build without type-check
+pnpm type-check       # Vue-tsc validation
+pnpm lint             # ESLint with auto-fix (admin & seller only)
+pnpm format           # Prettier formatting (admin & seller only)
+```
+
+### Shared UI Library (`packages/shared/`)
+
+```bash
+pnpm build            # Vite library build -> dist/
+pnpm dev              # Watch mode (vite build --watch)
+```
+
+**No test framework is configured** - there are no test commands.
+
+For known lint/type-check baseline failures, see `Verification`.
+
+## Core Rules
+
+### Environment Setup
+
+Create `.env` in each app root. Key variables (ports differ per app):
+
+```env
+VITE_APP_CLIENT_ID=your-oidc-client-id
+VITE_GATEWAY_BASE_URL=https://localhost:7001
+VITE_APP_REDIRECT_URI=http://localhost:{PORT}/callback/login
+VITE_APP_POST_LOGOUT_REDIRECT_URI=http://localhost:{PORT}/callback/logout
+VITE_APP_SCOPE=openid profile email offline_access   # storefront also adds: catalog order
+VITE_APP_ENVIRONMENT=development
+VITE_ENABLE_LOGGING=true
+VITE_ENABLE_DEBUG=true
+```
+
+Config singleton built at startup in `src/config/index.ts`. Gateway URL resolves via `VITE_GATEWAY_BASE_URL` -> `VITE_API_BASE_URL` -> `VITE_API_URL`. In admin, use `buildApiUrl(path)` from `@/config` to construct versioned API URLs - it auto-prefixes `/api/v1/`.
+
+### Architecture
+
+All three apps share the same `src/` layout:
+
+```text
+src/
+|- components/   # Reusable UI (common/, charts/, forms/, layout/, tables/)
+|- pages/        # Page-level route components
+|- stores/       # Pinia stores (`[module].store.ts`)
+|- services/     # api.ts (ApiService instance) + *.service.ts per domain
+|- types/        # Flat {domain}.types.ts files per domain; all exported from index.ts
+|- composables/  # Reusable Composition API logic
+|- router/       # Vue Router + beforeEach auth guard
+|- i18n/         # locales/{en,vi}/{module}.json merged in src/i18n/index.ts
+`- config/       # Env config singleton
+```
+
+### Dependency Boundaries
+
+Apps may only import from `@hivespace/shared`. Cross-app imports are forbidden and will produce a lint error.
+
+### Reuse Shared First
+
+Do **not** re-implement anything already exported by `@hivespace/shared`, including:
+- `useAuth`, `useAppStore`, `ApiService`, `AppUser`
+- `Pagination`, `Status`, `UserType`, `AuthConfig`, `AppUser` helper methods
+- Layout shells: `Default`, `Maintenance`, `NotFound`, `ServerError`, `demoRoutes`
+- Shared icons from `packages/shared/src/icons/`
+- Shared i18n base translations
+
+The package exports through `packages/shared/src/internal.ts` to avoid circular dependencies.
+
+Before creating app-local code:
+- Check `packages/shared/src/components/` before building any new UI component.
+- Check `packages/shared/src/composables/` and existing `@hivespace/shared` exports before adding reusable logic.
+- Extend shared components or icons when a new variant is needed instead of creating local duplicates.
+- Keep generic concerns such as modal state, auth/session helpers, validation rules, date/time formatting, debounce/cooldown, number-input formatting, or notification wiring in shared unless behavior is app-specific.
+
+### Shared UI Primitives
+
+Always use `useModal` from `@hivespace/shared`. Never create a local `ref<boolean>` to control modal visibility.
+
+```typescript
+import { useModal } from '@hivespace/shared'
+
+const { openModal, closeModal } = useModal()
+
+const result = await openModal(MyModalComponent, { prop1: value1 })
+```
+
+- `ModalManager` must exist in `App.vue`; add it if missing.
+- Use `ModalWrapper` for consistent modal chrome.
+- Use `ConfirmModal` for all destructive confirmation flows.
+- The component passed to `openModal()` resolves the promise with `closeModal(result)`.
+
+Never write raw `<div class="animate-spin ...">` inline. Use shared loading components:
+- Use `<Spinner />` when the rest of the page stays interactive.
+- Use `<FullscreenLoader :visible="bool" :message="string" />` when the user must wait before interacting.
+
+`Spinner` supports `size: 'sm' | 'md' | 'lg'` and defaults to `'md'`. `FullscreenLoader` takes `visible` and optional `message`, and should be placed at the template root so it teleports to `<body>`.
+
+### Store and Service Ownership
+
+- Pinia stores only - no prop drilling.
+- Import `useAppStore` directly from `@hivespace/shared`; do not re-export it from local stores.
+- Services own HTTP calls only and must import the singleton from `@/services/api`.
+- Stores are the single source of truth for loading, error, and data state.
+- Components and views consume store actions/state and must not call service methods directly.
+- Use `storeToRefs` when destructuring stores to preserve reactivity.
+- In store actions, call `useAppStore().setLoading(true/false)` via `try/finally`.
+- Show toast notifications through `useAppStore().notifySuccess/notifyError/notifyInfo`.
+
+### Shared Feature Modules
+
+- `notification`, `media upload`, and `user settings` use shared feature modules under `packages/shared/src/features/`.
+- Use store-first shared feature APIs:
+  - stateful shared features expose `create[Feature]Store.ts`
+  - shared HTTP adapters expose `[feature].service.ts`
+  - shared contracts expose `[feature].types.ts`
+  - optional helpers keep explicit names such as `useNotificationRealtime.ts`
+- Keep feature folders kebab-case, for example:
+  - `packages/shared/src/features/notifications/`
+  - `packages/shared/src/features/media-upload/`
+  - `packages/shared/src/features/user-settings/`
+- `user settings` must use a dedicated `user-settings.store.ts` flow in apps. Keep `setUserSettings`, `fetchUserSettings`, `updateUserSettings`, `updateTheme`, and `updateCulture` in the shared user-settings feature, not app-local `user.store.ts`.
+- Keep notification message mapping and route resolution app-local when event handling differs by app, but reuse the shared notification service, store factory, and realtime helper.
+- Keep media upload entity-specific orchestration app-local when needed, but reuse the shared media-upload service/store contracts and flow.
+
+## Implementation Workflow
+
+For each new backend or feature domain, follow this order:
+
+1. **Reuse check** - inspect `@hivespace/shared` components, composables, icons, and types first.
+2. **Types** - add `src/types/{module}.types.ts` and export from `src/types/index.ts`.
+3. **Service** - add `src/services/{module}.service.ts` using the app's singleton `apiService` or `apiClient`.
+4. **Store** - add `src/stores/{module}.store.ts`, keep HTTP out of components, and export from `src/stores/index.ts`.
+5. **Components / pages** - place reusable UI in `src/components/` and page orchestration in `src/pages/`.
+6. **Route** - register route entries in `src/router/index.ts` where needed.
+7. **i18n** - add `src/i18n/locales/en/{module}.json` and `src/i18n/locales/vi/{module}.json`, then import them in `src/i18n/index.ts`.
+8. **Verify** - run the required checks from `Verification` and ensure no equivalent shared helper was introduced locally.
+
+### API Layer
+
+Each app has a singleton `apiService` (admin/seller) or `apiClient` (storefront) in `src/services/api.ts`, configured with:
+- Base URL from `config.api.baseUrl`
+- `ensureFreshUser` callback that runs refresh-token exchange via `src/services/refresh.service.ts` and forces logout on `invalid_grant`
+- `notifyCallback` that calls `useAppStore().notifyError(...)` for HTTP error toasts with i18n-sourced messages
+
+Never construct `ApiService` directly inside a feature service.
+
+### Type Naming
+
+- Domain models use plain singular names such as `Order`, `OrderItem`, `Coupon`, `User`.
+- Query contracts use action-prefixed `*Query` names such as `GetUserListQuery`.
+- Request contracts use action-prefixed `*Request` names such as `CreateProductRequest`.
+- Response contracts use action-prefixed `*Response` names such as `GetOrderDetailResponse`.
+- Reusable app models stay as plain entity names; use `*Request`, `*Query`, and `*Response` for endpoint contracts.
+- Reserve `*Params` for actual route params only, not list/search filters.
+- All paged responses must use `PaginationMetadata` from `@hivespace/shared`.
+- Do not use `Api` suffixes in app-facing type names, and avoid `Dto` unless temporarily mirroring an unavoidable backend contract.
+- Prefer explicit names over broad contracts such as `PagedResponse` or `CategoryResponse`, and avoid aliases that add no meaning.
+
+### i18n
+
+- Default locale: Vietnamese (`vi`); fallback: English (`en`).
+- Files live in `src/i18n/locales/{en,vi}/{module}.json`.
+- Shared translations merge first; local keys override them.
+- New backend error codes go into `backend-errors.json`.
+- All user-facing strings must go through `$t('module.key')`.
+
+## App-Specific Rules
+
+### Admin
+
+- Use `buildApiUrl(path)` from `@/config` for versioned API routes; it auto-prefixes `/api/v1/`.
+- Auth flow in `src/router/index.ts`:
+  1. `meta.allowAnonymous: true` -> skip auth
+  2. Unauthenticated -> redirect to OIDC login
+  3. Authenticated but not admin/system-admin -> logout
+  4. Admin/system-admin -> pass through
+
+### Seller
+
+- Auth flow in `src/router/index.ts`:
+  1. `meta.allowAnonymous: true` -> skip auth
+  2. Admins/system-admins -> logout
+  3. Non-seller with unverified email -> `/verify-email`
+  4. Non-seller with verified email -> `/register-seller`
+  5. Verified seller -> pass through
+
+### Storefront (Planned)
+
+`apps/storefront/` is not scaffolded yet. Apply these rules once storefront development begins:
+
+- Name the singleton client `apiClient` in `src/services/api.ts`.
+- Auth flow in `src/router/index.ts`:
+  1. `meta.allowAnonymous: true` -> skip auth
+  2. Unauthenticated on protected route -> redirect to OIDC login
+  3. Authenticated -> pass through
+- Storefront i18n key prefixes should follow `storefront.module.key` or `checkout.key`.
+- `App.vue` should conditionally wrap routes in `StorefrontLayout` based on `route.meta.layout`.
+- Routes with `meta.layout: 'none'` should render without the standard header/footer and use dedicated flows such as Cart or Checkout headers.
+
+### UI Coding From Design Images
+
+When given a design image (screenshot, mockup, Figma export):
+
+1. Scan `packages/shared/src/components/` first and identify reusable shared primitives.
+2. Ask before coding by listing the shared components that map to the design.
+3. Prefer extending shared components over building local copies.
+4. Never create a local `Button.vue`, `Modal.vue`, or similar duplicate when one already exists in `@hivespace/shared`.
+5. Apply the same rule to icons by reusing or extending `packages/shared/src/icons/`.
+
+## Code Conventions
+
+- Components: `<script setup lang="ts">` only - no Options API.
+- Styling: Tailwind CSS v4 utility classes only; use custom CSS only when no utility class applies.
+- Functions: arrow functions only, except top-level declarations that require hoisting.
+- Naming: PascalCase `.vue` files, kebab-case `.ts` service/util files, camelCase variables/functions.
+- Types: use `import type { Foo } from '@/types'` for shared app types; keep component-local types inside the component.
+- Props/emits: always type `defineProps<{ ... }>()` and `defineEmits<{ ... }>()`.
+- Error handling: use `try/finally` with `useAppStore().setLoading(true/false)` in stores and display errors via `notifyError`.
+- Formatting: 100-char line width, single quotes, no semicolons, 2-space indent (`.prettierrc.json`).
+- TypeScript: strict mode, `noUnusedLocals`, `noUnusedParameters`.
+- Temp files: delete any task-created temporary files before finishing the task.
+
+## Verification
+
+After completing any task in an app, always run lint and type-check for that app and fix all introduced issues before reporting done:
+
+```bash
+# From the affected app directory (apps/admin, apps/seller, or apps/storefront)
+pnpm lint        # storefront has no lint script - skip there
+pnpm type-check  # Vue-tsc validation
+```
+
+If you introduced a new helper or composable, verify before finishing that an equivalent shared composable does not already exist in `packages/shared/src/composables/`.
+
+**Known baseline failures that must not be treated as new errors** (admin & seller only):
+- `type-check`: ~11 pre-existing errors from missing `@/services/user.service`, missing `quill-image-uploader` types, and TS strict violations in demo files
+- `lint`: ~15 pre-existing errors in demo components
+- `build` still succeeds despite the above
+
+Fix any errors introduced by the task. Do not fix pre-existing baseline errors unless the task explicitly targets those files.
+
+## CI/CD
+
+GitHub Actions pipeline (`.github/workflows/ci-pipeline.yml` inside each app):
+- Triggers on PR to master, push to master, and manual dispatch
+- Steps: Install -> Lint -> Build -> Upload artifacts
+- Deploys to **Azure Static Web Apps** (dev on master, prod on release branches)

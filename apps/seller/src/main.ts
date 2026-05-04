@@ -1,0 +1,81 @@
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
+import './assets/main.css'
+import '@hivespace/shared/style.css'
+// Import Swiper styles
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/pagination'
+import 'jsvectormap/dist/jsvectormap.css'
+import 'flatpickr/dist/flatpickr.css'
+import 'vue-final-modal/style.css'
+
+import { createVfm } from 'vue-final-modal'
+import i18n from './i18n'
+import { createApp } from 'vue'
+import App from '@/App.vue'
+import router from '@/router'
+import VueApexCharts from 'vue3-apexcharts'
+import { createPinia } from 'pinia'
+import { useUserSettingsStore } from '@/stores/user-settings.store'
+import {
+  useAuth,
+  CULTURE_TEXT,
+  THEME_TEXT,
+  stringToNumericCulture,
+  numericToStringCulture,
+  stringToNumericTheme,
+  initializeAuth,
+  getCookie,
+} from '@hivespace/shared'
+import config from './config'
+
+const initializeApp = async () => {
+  const app = createApp(App)
+  const pinia = createPinia()
+  const vfm = createVfm()
+
+  // 1. Install Core Plugins
+  app.use(pinia)
+  // 2. Install UI Plugins
+  app.use(vfm)
+  app.use(i18n)
+  app.use(VueApexCharts)
+
+  // 3. Initialize Business Logic (Auth)
+  initializeAuth(config.auth.oidc)
+
+  app.use(router)
+
+  // 4. Use logic that depends on plugins/auth
+  const { isAuthenticated } = useAuth()
+  const userSettingsStore = useUserSettingsStore()
+  if (await isAuthenticated.value) {
+    const settings = await userSettingsStore.fetchUserSettings()
+    i18n.global.locale.value = numericToStringCulture(settings.culture)
+  } else {
+    // For unauthenticated users, read from cookies or use defaults
+    // Initialize culture from cookie
+    const cookieCulture = getCookie('culture')
+    const cultureText = cookieCulture || CULTURE_TEXT.VIETNAMESE
+    const numericCulture = stringToNumericCulture(cultureText)
+    const validCultureText = numericToStringCulture(numericCulture)
+    i18n.global.locale.value = validCultureText
+
+    // Initialize theme from cookie
+    const cookieTheme = getCookie('theme')
+    const themeTextCookie = cookieTheme || THEME_TEXT.LIGHT
+    const numericTheme = stringToNumericTheme(themeTextCookie)
+
+    userSettingsStore.setUserSettings({
+      culture: numericCulture,
+      theme: numericTheme,
+    })
+  }
+
+  return app
+}
+
+// Initialize and mount the app
+initializeApp().then((app) => {
+  app.mount('#app')
+})

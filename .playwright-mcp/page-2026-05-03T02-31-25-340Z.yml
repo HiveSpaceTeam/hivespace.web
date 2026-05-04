@@ -1,0 +1,40 @@
+- generic [ref=e6]:
+  - button "VI" [ref=e9] [cursor=pointer]:
+    - img [ref=e10]
+    - generic [ref=e13]: VI
+    - img [ref=e14]
+  - generic [ref=e16]:
+    - heading "Đăng nhập" [level=1] [ref=e17]
+    - paragraph [ref=e18]: Nhập email và mật khẩu để đăng nhập!
+  - generic [ref=e19]:
+    - link "Google Tiếp tục với Google" [ref=e21] [cursor=pointer]:
+      - /url: /externallogin/challenge?scheme=google&returnurl=%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3Dsellercenter%26redirect_uri%3Dhttp%253a%252f%252flocalhost%253a5174%252fcallback%252flogin%26response_type%3Dcode%26scope%3Dopenid%2520profile%2520offline_access%2520user.fullaccess%2520catalog.fullaccess%2520order.fullaccess%2520notification.fullaccess%26state%3Df78833e5bed34bdeabae52159afba05f%26code_challenge%3D8rhx0tvtnlsirjmrnxlfxlri34pmm44mkyzlicecz9y%26code_challenge_method%3Ds256%26response_mode%3Dquery%26culture%3Dvi
+      - img "Google" [ref=e22]
+      - text: Tiếp tục với Google
+    - generic [ref=e26]: Hoặc
+    - generic [ref=e27]:
+      - generic [ref=e28]:
+        - generic [ref=e29]: Email *
+        - textbox "Email *" [active] [ref=e30]:
+          - /placeholder: Nhập email của bạn
+      - generic [ref=e31]:
+        - generic [ref=e32]: Mật khẩu *
+        - generic [ref=e33]:
+          - textbox "Mật khẩu *" [ref=e34]:
+            - /placeholder: Nhập mật khẩu
+          - button "Toggle password visibility" [ref=e35] [cursor=pointer]:
+            - img [ref=e36]
+      - generic [ref=e39]:
+        - generic [ref=e41] [cursor=pointer]:
+          - checkbox "Giữ tôi đăng nhập"
+          - generic [ref=e42]:
+            - generic:
+              - img
+          - generic [ref=e43]: Giữ tôi đăng nhập
+        - link "Quên mật khẩu?" [ref=e44] [cursor=pointer]:
+          - /url: /Account/ForgotPassword
+      - button "Đăng nhập" [ref=e46] [cursor=pointer]
+    - generic [ref=e47]:
+      - text: Chưa có tài khoản?
+      - link "Đăng ký" [ref=e48] [cursor=pointer]:
+        - /url: /Account/Register?ReturnUrl=%2Fconnect%2Fauthorize%2Fcallback%3Fclient_id%3Dsellercenter%26redirect_uri%3Dhttp%253A%252F%252Flocalhost%253A5174%252Fcallback%252Flogin%26response_type%3Dcode%26scope%3Dopenid%2520profile%2520offline_access%2520user.fullaccess%2520catalog.fullaccess%2520order.fullaccess%2520notification.fullaccess%26state%3Df78833e5bed34bdeabae52159afba05f%26code_challenge%3D8rhX0TvTNLsIrJMRnxLFXlrI34pMM44mKyzLIceCZ9Y%26code_challenge_method%3DS256%26response_mode%3Dquery%26culture%3Dvi

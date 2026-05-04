@@ -1,0 +1,85 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - link "Logo" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "Logo" [ref=e7]
+      - generic [ref=e8]:
+        - navigation [ref=e9]:
+          - generic [ref=e11]:
+            - heading "Menu" [level=2] [ref=e12]
+            - list [ref=e13]:
+              - listitem [ref=e14]:
+                - button "Quản Lý Đơn Hàng" [ref=e15] [cursor=pointer]:
+                  - img [ref=e17]
+                  - generic [ref=e19]: Quản Lý Đơn Hàng
+                  - img [ref=e20]
+              - listitem [ref=e22]:
+                - button "Sản phẩm" [ref=e23] [cursor=pointer]:
+                  - img [ref=e25]
+                  - generic [ref=e27]: Sản phẩm
+                  - img [ref=e28]
+                - list [ref=e31]:
+                  - listitem [ref=e32]:
+                    - link "Danh sách sản phẩm" [ref=e33] [cursor=pointer]:
+                      - /url: /product/list
+                  - listitem [ref=e34]:
+                    - link "Thêm sản phẩm mới" [ref=e35] [cursor=pointer]:
+                      - /url: /product/new
+              - listitem [ref=e36]:
+                - button "Marketing" [ref=e37] [cursor=pointer]:
+                  - img [ref=e39]
+                  - generic [ref=e41]: Marketing
+                  - img [ref=e42]
+              - listitem [ref=e44]:
+                - link "Demo" [ref=e45] [cursor=pointer]:
+                  - /url: /demo
+                  - img [ref=e47]
+                  - generic [ref=e49]: Demo
+        - link "Open HiveSpace website" [ref=e51] [cursor=pointer]:
+          - /url: https://tailadmin.com/pricing
+    - generic [ref=e52]:
+      - banner [ref=e53]:
+        - generic [ref=e55]:
+          - button "Mở thanh bên" [ref=e56] [cursor=pointer]:
+            - img [ref=e57]
+          - button "Mở menu ứng dụng" [ref=e59] [cursor=pointer]:
+            - img [ref=e60]
+          - link "Menu" [ref=e62] [cursor=pointer]:
+            - /url: /
+            - img "Menu" [ref=e63]
+          - button [ref=e64] [cursor=pointer]:
+            - img [ref=e65]
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - heading "Danh sách sản phẩm" [level=2] [ref=e69]
+          - navigation [ref=e70]:
+            - list [ref=e71]:
+              - listitem [ref=e72]:
+                - link "Trang chủ" [ref=e73] [cursor=pointer]:
+                  - /url: /
+                  - text: Trang chủ
+                  - img [ref=e74]
+              - listitem [ref=e76]: Danh sách sản phẩm
+        - generic [ref=e78]:
+          - heading "Danh sách sản phẩm" [level=3] [ref=e80]
+          - generic [ref=e83]:
+            - generic [ref=e85]:
+              - generic [ref=e86]:
+                - textbox "Tìm tên sản phẩm, SKU sản phẩm" [ref=e90]
+                - button "Tất cả trạng thái" [ref=e93] [cursor=pointer]:
+                  - generic [ref=e94]: Tất cả trạng thái
+                  - img [ref=e95]
+              - generic [ref=e98]:
+                - button "Thêm sản phẩm mới" [ref=e99] [cursor=pointer]:
+                  - img [ref=e101]
+                  - text: Thêm sản phẩm mới
+                - button "Làm mới" [ref=e103] [cursor=pointer]:
+                  - img [ref=e105]
+                  - text: Làm mới
+            - paragraph [ref=e109]: Đang tải...
+  - generic [ref=e110]:
+    - generic "Toggle devtools panel" [ref=e111] [cursor=pointer]:
+      - img [ref=e112]
+    - generic "Toggle Component Inspector" [ref=e117] [cursor=pointer]:
+      - img [ref=e118]

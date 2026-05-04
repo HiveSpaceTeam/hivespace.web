@@ -1,0 +1,38 @@
+{
+  "accounts": "TÃ i khoáº£n",
+  "userManagement": "Quáº£n lÃ½ ngÆ°á»i dÃ¹ng",
+  "adminManagement": "Quáº£n lÃ½ quáº£n trá»‹ viÃªn",
+  "listOfUsers": "Danh sÃ¡ch ngÆ°á»i dÃ¹ng",
+  "listOfAdmins": "Danh sÃ¡ch quáº£n trá»‹ viÃªn",
+  "maintenance": {
+    "title": "Báº¢O TRÃŒ",
+    "message": "Trang web Ä‘ang Ä‘Æ°á»£c báº£o trÃ¬. ChÃºng tÃ´i sáº½ sá»›m quay trá»Ÿ láº¡i. Cáº£m Æ¡n báº¡n Ä‘Ã£ kiÃªn nháº«n."
+  },
+  "notFound": {
+    "title": "Lá»–I",
+    "message": "ChÃºng tÃ´i khÃ´ng thá»ƒ tÃ¬m tháº¥y trang báº¡n Ä‘ang tÃ¬m!"
+  },
+  "serverError": {
+    "title": "Lá»–I",
+    "message": "ÄÃ£ xáº£y ra sá»± cá»‘ tá»« phÃ­a chÃºng tÃ´i. Vui lÃ²ng thá»­ láº¡i sau hoáº·c liÃªn há»‡ há»— trá»£ náº¿u váº¥n Ä‘á» váº«n tiáº¿p diá»…n."
+  },
+  "common": {
+    "backHome": "Quay láº¡i trang chá»§"
+  },
+  "default": {
+    "welcome": "ChÃ o má»«ng Ä‘áº¿n HiveSpace Admin Portal.",
+    "signIn": "ÄÄƒng nháº­p",
+    "signUp": "ÄÄƒng kÃ½"
+  },
+  "icons": {
+    "title": "Bo suu tap bieu tuong",
+    "description": "Tat ca bieu tuong co san trong du an. Bam vao moi bieu tuong de sao chep ten cua no.",
+    "totalLabel": "Tong so bieu tuong",
+    "copiedMessage": "Da sao chep ten bieu tuong vao bo nho tam!",
+    "copyTitle": "Bam de sao chep: {name}"
+  },
+  "header": {
+    "openApplicationMenu": "Má»Ÿ menu á»©ng dá»¥ng",
+    "closeApplicationMenu": "ÄÃ³ng menu á»©ng dá»¥ng"
+  }
+}

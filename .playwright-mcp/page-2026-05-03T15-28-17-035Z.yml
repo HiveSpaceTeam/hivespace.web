@@ -1,0 +1,231 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - complementary [ref=e4]:
+      - link "Logo" [ref=e6] [cursor=pointer]:
+        - /url: /
+        - img "Logo" [ref=e7]
+      - generic [ref=e8]:
+        - navigation [ref=e9]:
+          - generic [ref=e11]:
+            - heading "Menu" [level=2] [ref=e12]
+            - list [ref=e13]:
+              - listitem [ref=e14]:
+                - button "Quản Lý Đơn Hàng" [ref=e15] [cursor=pointer]:
+                  - img [ref=e17]
+                  - generic [ref=e19]: Quản Lý Đơn Hàng
+                  - img [ref=e20]
+              - listitem [ref=e22]:
+                - button "Sản phẩm" [ref=e23] [cursor=pointer]:
+                  - img [ref=e25]
+                  - generic [ref=e27]: Sản phẩm
+                  - img [ref=e28]
+                - list [ref=e31]:
+                  - listitem [ref=e32]:
+                    - link "Danh sách sản phẩm" [ref=e33] [cursor=pointer]:
+                      - /url: /product/list
+                  - listitem [ref=e34]:
+                    - link "Thêm sản phẩm mới" [ref=e35] [cursor=pointer]:
+                      - /url: /product/new
+              - listitem [ref=e36]:
+                - button "Marketing" [ref=e37] [cursor=pointer]:
+                  - img [ref=e39]
+                  - generic [ref=e41]: Marketing
+                  - img [ref=e42]
+              - listitem [ref=e44]:
+                - link "Demo" [ref=e45] [cursor=pointer]:
+                  - /url: /demo
+                  - img [ref=e47]
+                  - generic [ref=e49]: Demo
+        - link "Open HiveSpace website" [ref=e51] [cursor=pointer]:
+          - /url: https://tailadmin.com/pricing
+    - generic [ref=e52]:
+      - banner [ref=e53]:
+        - generic [ref=e55]:
+          - button "Mở thanh bên" [ref=e56] [cursor=pointer]:
+            - img [ref=e57]
+          - button "Mở menu ứng dụng" [ref=e59] [cursor=pointer]:
+            - img [ref=e60]
+          - link "Menu" [ref=e62] [cursor=pointer]:
+            - /url: /
+            - img "Menu" [ref=e63]
+          - button [ref=e64] [cursor=pointer]:
+            - img [ref=e65]
+      - generic [ref=e67]:
+        - generic [ref=e68]:
+          - heading "Danh sách sản phẩm" [level=2] [ref=e69]
+          - navigation [ref=e70]:
+            - list [ref=e71]:
+              - listitem [ref=e72]:
+                - link "Trang chủ" [ref=e73] [cursor=pointer]:
+                  - /url: /
+                  - text: Trang chủ
+                  - img [ref=e74]
+              - listitem [ref=e76]: Danh sách sản phẩm
+        - generic [ref=e78]:
+          - heading "Danh sách sản phẩm" [level=3] [ref=e80]
+          - generic [ref=e83]:
+            - generic [ref=e85]:
+              - generic [ref=e86]:
+                - textbox "Tìm tên sản phẩm, SKU sản phẩm" [ref=e90]
+                - button "Tất cả trạng thái" [ref=e93] [cursor=pointer]:
+                  - generic [ref=e94]: Tất cả trạng thái
+                  - img [ref=e95]
+              - generic [ref=e98]:
+                - button "Thêm sản phẩm mới" [ref=e99] [cursor=pointer]:
+                  - img [ref=e101]
+                  - text: Thêm sản phẩm mới
+                - button "Làm mới" [ref=e103] [cursor=pointer]:
+                  - img [ref=e105]
+                  - text: Làm mới
+            - table [ref=e108]:
+              - rowgroup [ref=e109]:
+                - row "Tên sản phẩm Giá Số lượng Hành động" [ref=e110]:
+                  - columnheader "Tên sản phẩm" [ref=e111]:
+                    - paragraph [ref=e112]: Tên sản phẩm
+                  - columnheader "Giá" [ref=e113]:
+                    - paragraph [ref=e114]: Giá
+                  - columnheader "Số lượng" [ref=e115]:
+                    - paragraph [ref=e116]: Số lượng
+                  - columnheader "Hành động" [ref=e117]:
+                    - paragraph [ref=e118]: Hành động
+              - rowgroup [ref=e119]:
+                - row "Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng $149,000.00 100" [ref=e120]:
+                  - cell "Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng" [ref=e121]:
+                    - generic [ref=e122]: Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng
+                  - cell "$149,000.00" [ref=e123]:
+                    - generic [ref=e124]: $149,000.00
+                  - cell "100" [ref=e125]:
+                    - generic [ref=e126]: "100"
+                  - cell [ref=e127]:
+                    - generic [ref=e128]:
+                      - button [ref=e129] [cursor=pointer]:
+                        - img [ref=e131]
+                      - button [ref=e133] [cursor=pointer]:
+                        - img [ref=e135]
+                - row "Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml $147,000.00 100" [ref=e137]:
+                  - cell "Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml" [ref=e138]:
+                    - generic [ref=e139]: Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml
+                  - cell "$147,000.00" [ref=e140]:
+                    - generic [ref=e141]: $147,000.00
+                  - cell "100" [ref=e142]:
+                    - generic [ref=e143]: "100"
+                  - cell [ref=e144]:
+                    - generic [ref=e145]:
+                      - button [ref=e146] [cursor=pointer]:
+                        - img [ref=e148]
+                      - button [ref=e150] [cursor=pointer]:
+                        - img [ref=e152]
+                - row "Chảo chống dính Elmich EL5972 $212,000.00 100" [ref=e154]:
+                  - cell "Chảo chống dính Elmich EL5972" [ref=e155]:
+                    - generic [ref=e156]: Chảo chống dính Elmich EL5972
+                  - cell "$212,000.00" [ref=e157]:
+                    - generic [ref=e158]: $212,000.00
+                  - cell "100" [ref=e159]:
+                    - generic [ref=e160]: "100"
+                  - cell [ref=e161]:
+                    - generic [ref=e162]:
+                      - button [ref=e163] [cursor=pointer]:
+                        - img [ref=e165]
+                      - button [ref=e167] [cursor=pointer]:
+                        - img [ref=e169]
+                - row "Bình giữ nhiệt gia đình inox 304 Elmich EL8299 dung tích 900ml - Hàng chính hãng $358,000.00 100" [ref=e171]:
+                  - cell "Bình giữ nhiệt gia đình inox 304 Elmich EL8299 dung tích 900ml - Hàng chính hãng" [ref=e172]:
+                    - generic [ref=e173]: Bình giữ nhiệt gia đình inox 304 Elmich EL8299 dung tích 900ml - Hàng chính hãng
+                  - cell "$358,000.00" [ref=e174]:
+                    - generic [ref=e175]: $358,000.00
+                  - cell "100" [ref=e176]:
+                    - generic [ref=e177]: "100"
+                  - cell [ref=e178]:
+                    - generic [ref=e179]:
+                      - button [ref=e180] [cursor=pointer]:
+                        - img [ref=e182]
+                      - button [ref=e184] [cursor=pointer]:
+                        - img [ref=e186]
+                - row "Bộ nồi Inox dập nguyên khối Elmich Trimax Classic EL-2110OL Size 18, 20, 24, chảo 26cm $2,059,000.00 100" [ref=e188]:
+                  - cell "Bộ nồi Inox dập nguyên khối Elmich Trimax Classic EL-2110OL Size 18, 20, 24, chảo 26cm" [ref=e189]:
+                    - generic [ref=e190]: Bộ nồi Inox dập nguyên khối Elmich Trimax Classic EL-2110OL Size 18, 20, 24, chảo 26cm
+                  - cell "$2,059,000.00" [ref=e191]:
+                    - generic [ref=e192]: $2,059,000.00
+                  - cell "100" [ref=e193]:
+                    - generic [ref=e194]: "100"
+                  - cell [ref=e195]:
+                    - generic [ref=e196]:
+                      - button [ref=e197] [cursor=pointer]:
+                        - img [ref=e199]
+                      - button [ref=e201] [cursor=pointer]:
+                        - img [ref=e203]
+                - row "Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng $119,000.00 100" [ref=e205]:
+                  - cell "Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng" [ref=e206]:
+                    - generic [ref=e207]: Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng
+                  - cell "$119,000.00" [ref=e208]:
+                    - generic [ref=e209]: $119,000.00
+                  - cell "100" [ref=e210]:
+                    - generic [ref=e211]: "100"
+                  - cell [ref=e212]:
+                    - generic [ref=e213]:
+                      - button [ref=e214] [cursor=pointer]:
+                        - img [ref=e216]
+                      - button [ref=e218] [cursor=pointer]:
+                        - img [ref=e220]
+                - row "[NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng $102,600.00 100" [ref=e222]:
+                  - cell "[NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng" [ref=e223]:
+                    - generic [ref=e224]: "[NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng"
+                  - cell "$102,600.00" [ref=e225]:
+                    - generic [ref=e226]: $102,600.00
+                  - cell "100" [ref=e227]:
+                    - generic [ref=e228]: "100"
+                  - cell [ref=e229]:
+                    - generic [ref=e230]:
+                      - button [ref=e231] [cursor=pointer]:
+                        - img [ref=e233]
+                      - button [ref=e235] [cursor=pointer]:
+                        - img [ref=e237]
+                - row "Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster - miếng xốp lau chùi đa năng $63,200.00 100" [ref=e239]:
+                  - cell "Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster - miếng xốp lau chùi đa năng" [ref=e240]:
+                    - generic [ref=e241]: Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster - miếng xốp lau chùi đa năng
+                  - cell "$63,200.00" [ref=e242]:
+                    - generic [ref=e243]: $63,200.00
+                  - cell "100" [ref=e244]:
+                    - generic [ref=e245]: "100"
+                  - cell [ref=e246]:
+                    - generic [ref=e247]:
+                      - button [ref=e248] [cursor=pointer]:
+                        - img [ref=e250]
+                      - button [ref=e252] [cursor=pointer]:
+                        - img [ref=e254]
+                - row "1 gói Diệt chuột dạng viên Hợp Trí Storm 0.005% gói 20 viên $25,600.00 100" [ref=e256]:
+                  - cell "1 gói Diệt chuột dạng viên Hợp Trí Storm 0.005% gói 20 viên" [ref=e257]:
+                    - generic [ref=e258]: 1 gói Diệt chuột dạng viên Hợp Trí Storm 0.005% gói 20 viên
+                  - cell "$25,600.00" [ref=e259]:
+                    - generic [ref=e260]: $25,600.00
+                  - cell "100" [ref=e261]:
+                    - generic [ref=e262]: "100"
+                  - cell [ref=e263]:
+                    - generic [ref=e264]:
+                      - button [ref=e265] [cursor=pointer]:
+                        - img [ref=e267]
+                      - button [ref=e269] [cursor=pointer]:
+                        - img [ref=e271]
+                - row "Màng bọc thực phẩm PE Ringo, An toàn, Dùng được trong tủ lạnh, lò vi sóng, có lưỡi cắt dạng trượt $13,600.00 100" [ref=e273]:
+                  - cell "Màng bọc thực phẩm PE Ringo, An toàn, Dùng được trong tủ lạnh, lò vi sóng, có lưỡi cắt dạng trượt" [ref=e274]:
+                    - generic [ref=e275]: Màng bọc thực phẩm PE Ringo, An toàn, Dùng được trong tủ lạnh, lò vi sóng, có lưỡi cắt dạng trượt
+                  - cell "$13,600.00" [ref=e276]:
+                    - generic [ref=e277]: $13,600.00
+                  - cell "100" [ref=e278]:
+                    - generic [ref=e279]: "100"
+                  - cell [ref=e280]:
+                    - generic [ref=e281]:
+                      - button [ref=e282] [cursor=pointer]:
+                        - img [ref=e284]
+                      - button [ref=e286] [cursor=pointer]:
+                        - img [ref=e288]
+            - generic [ref=e290]:
+              - generic [ref=e291]: Hiển thị 11 - 19 trên 19
+              - generic [ref=e292]:
+                - button "Trước" [ref=e293] [cursor=pointer]
+                - button "Tiếp" [disabled] [ref=e294]
+  - generic [ref=e295]:
+    - generic "Toggle devtools panel" [ref=e296] [cursor=pointer]:
+      - img [ref=e297]
+    - generic "Toggle Component Inspector" [ref=e302] [cursor=pointer]:
+      - img [ref=e303]

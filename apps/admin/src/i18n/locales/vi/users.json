@@ -1,0 +1,59 @@
+{
+  "showingResults": "Hiển thị {count} trong {total} người dùng",
+  "lastUpdated": "Cập nhật lần cuối:",
+  "username": "Tên đăng nhập",
+  "email": "Email",
+  "seller": "Người bán",
+  "fullName": "Họ và tên",
+  "status": "Trạng thái",
+  "createdDate": "Ngày tạo",
+  "lastLoginDate": "Lần đăng nhập cuối",
+  "actionsColumn": "Thao tác",
+  "searchPlaceholder": "Tìm kiếm theo email...",
+  "loading": "Đang tải...",
+  "delete": "Xóa",
+  "activate": "Kích hoạt",
+  "deactivate": "Vô hiệu hóa",
+  "allStatus": "Tất cả trạng thái",
+  "active": "Hoạt động",
+  "inactive": "Tạm khóa",
+  "allUsers": "Tất cả người dùng",
+  "sellersOnly": "Chỉ người bán",
+  "nonSellers": "Không phải người bán",
+  "values": {
+    "status": {
+      "active": "Hoạt động",
+      "inactive": "Tạm khóa"
+    }
+  },
+  "noUsersFound": "Không tìm thấy người dùng",
+  "noUsersFoundDescription": "Thử điều chỉnh bộ lọc tìm kiếm hoặc thêm người dùng mới để bắt đầu.",
+  "actions": {
+    "deleteUser": {
+      "title": "Xóa Người dùng",
+      "message": "Bạn có chắc chắn muốn xóa người dùng \"{email}\"? Hành động này không thể hoàn tác."
+    }
+  },
+  "notifications": {
+    "deleteSuccess": {
+      "title": "Xóa thành công",
+      "message": "Người dùng {email} đã được xóa thành công."
+    },
+    "deleteFailed": {
+      "title": "Xóa thất bại",
+      "message": "Không thể xóa người dùng. Vui lòng thử lại."
+    },
+    "statusUpdateSuccess": {
+      "title": "Cập nhật trạng thái",
+      "message": "Người dùng {email} đã được {status}."
+    },
+    "statusUpdateFailed": {
+      "title": "Cập nhật thất bại",
+      "message": "Không thể cập nhật trạng thái người dùng. Vui lòng thử lại."
+    },
+    "loadFailed": {
+      "title": "Tải thất bại",
+      "message": "Không thể tải danh sách người dùng. Vui lòng thử lại."
+    }
+  }
+}

@@ -1,0 +1,45 @@
+{
+  "title": "Email Verification",
+  "states": {
+    "verifying": "Verifying Email",
+    "success": "Email Verified Successfully",
+    "error": "Verification Failed"
+  },
+  "messages": {
+    "verifying": "Please wait while we verify your email address...",
+    "success": "Your email address has been successfully verified! You can now access all features of your account.",
+    "redirecting": "Redirecting you in {seconds} seconds...",
+    "invalidToken": "The verification link is invalid or has expired. Please request a new verification email.",
+    "alreadyVerified": "Your email address has already been verified.",
+    "generalError": "An error occurred while verifying your email. Please try again or request a new verification email."
+  },
+  "error": {
+    "title": "Verification Failed",
+    "subtitle": "Unable to verify your email address.",
+    "noToken": "The verification link is missing required information. Please use the link from your email.",
+    "noUserId": "The verification link is incomplete. Please use the complete link from your email.",
+    "sendNewEmail": "Request New Verification Email",
+    "backToHome": "Back to Home"
+  },
+  "success": {
+    "title": "Email Verified Successfully",
+    "subtitle": "Your email address has been successfully verified!",
+    "redirectMessage": "Redirecting you in {seconds} seconds...",
+    "clickToRedirect": "Continue",
+    "backToHome": "Go to Home"
+  },
+  "loading": {
+    "title": "Verifying Your Email",
+    "subtitle": "Please wait while we verify your email address..."
+  },
+  "actions": {
+    "goToLogin": "Go to Login",
+    "requestNewVerification": "Request New Verification",
+    "goToHomepage": "Go to Homepage",
+    "continueToDestination": "Continue"
+  },
+  "help": {
+    "troubleshooting": "If you continue to experience issues, please contact our support team.",
+    "newVerification": "You can request a new verification email from the verification page."
+  }
+}

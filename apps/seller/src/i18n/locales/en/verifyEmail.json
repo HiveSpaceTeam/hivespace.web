@@ -1,0 +1,34 @@
+{
+  "title": "Verify Your Email",
+  "subtitle": "We'll send a verification link to your email address to confirm your account",
+  "fields": {
+    "emailAddress": "Email Address"
+  },
+  "placeholders": {
+    "emailAddress": "Enter your email address"
+  },
+  "actions": {
+    "sendVerification": "Send Verification Email",
+    "resendVerification": "Resend Email",
+    "editEmail": "Edit Email"
+  },
+  "messages": {
+    "success": "Verification Email Sent",
+    "verificationSent": "A verification link has been sent to your email address. Please check your inbox and spam folder.",
+    "error": "Email Verification Failed",
+    "validationFailed": "Please correct the errors below and try again.",
+    "cooldownActive": "Please wait before requesting another verification email.",
+    "emailUpdated": "Email Updated",
+    "emailUpdatedSuccess": "Email address has been updated successfully."
+  },
+  "errors": {
+    "emailRequired": "Email address is required",
+    "emailInvalid": "Please enter a valid email address"
+  },
+  "help": {
+    "checkInbox": "Check your inbox and spam folder for the verification email.",
+    "clickLink": "Click the link in the email to verify your account.",
+    "resendInfo": "Didn't receive the email? You can request a new one after {seconds} seconds.",
+    "contactSupport": "Still having issues? Contact our support team for assistance."
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "accounts": "Accounts",
+  "userManagement": "User Management",
+  "adminManagement": "Admin Management",
+  "listOfUsers": "List of user",
+  "listOfAdmins": "List of admin",
+  "maintenance": {
+    "title": "MAINTENANCE",
+    "message": "Our site is currently under maintenance. We will be back shortly. Thank you for your patience."
+  },
+  "notFound": {
+    "title": "ERROR",
+    "message": "We can't seem to find the page you are looking for!"
+  },
+  "serverError": {
+    "title": "ERROR",
+    "message": "Something went wrong on our end. Please try again in a moment or contact support if the issue persists."
+  },
+  "common": {
+    "backHome": "Back to Home Page"
+  },
+  "default": {
+    "welcome": "Welcome to HiveSpace Admin Portal.",
+    "signIn": "Sign in",
+    "signUp": "Sign up"
+  },
+  "icons": {
+    "title": "Icons Gallery",
+    "description": "All available icons in this project. Click on any icon to copy its name.",
+    "totalLabel": "Total Icons",
+    "copiedMessage": "Icon name copied to clipboard!",
+    "copyTitle": "Click to copy: {name}"
+  },
+  "header": {
+    "openApplicationMenu": "Open application menu",
+    "closeApplicationMenu": "Close application menu"
+  }
+}

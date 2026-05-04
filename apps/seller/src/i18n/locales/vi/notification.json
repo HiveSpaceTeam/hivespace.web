@@ -1,0 +1,21 @@
+{
+  "title": "Thông báo",
+  "empty": "Bạn không có thông báo nào",
+  "loadMore": "Tải thêm",
+  "loading": "Đang tải...",
+  "events": {
+    "newOrder": "{buyerName} vừa đặt một đơn hàng tại shop của bạn, mã đơn hàng: #{orderCode}",
+    "lowStock": "{productName} sắp hết hàng (còn {remaining})",
+    "generic": "Sự kiện: {eventType}"
+  },
+  "toast": {
+    "close": "Đóng thông báo",
+    "justNow": "Vừa xong"
+  },
+  "errors": {
+    "markReadFailed": {
+      "title": "Không thể đánh dấu đã đọc",
+      "message": "Vui lòng thử lại."
+    }
+  }
+}

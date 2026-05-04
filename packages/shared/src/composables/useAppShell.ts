@@ -1,0 +1,34 @@
+import { provide, inject } from 'vue'
+import type { Ref } from 'vue'
+import type { SidebarMenuGroup } from '../types/sidebar.types'
+import type { MenuItem } from '../types/component.common'
+import type { InAppNotification } from '../features/notifications/notifications.types'
+
+const AppShellSymbol = Symbol('AppShell')
+
+export interface AppShellContext {
+  menuGroups: Ref<SidebarMenuGroup[]>
+  menuItems?: MenuItem[]
+  fullHeight?: boolean
+  notifications: Ref<InAppNotification[]>
+  unreadCount: Ref<number>
+  notificationLoading: Ref<boolean>
+  hasMore: Ref<boolean>
+  markAsRead: (id: string) => void
+  fetchNotifications: (unreadOnly: boolean) => void
+  loadMore: () => void
+  themeChange: (theme: string) => Promise<void>
+  cultureChange: (culture: string) => Promise<void>
+}
+
+export function provideAppShell(context: AppShellContext): void {
+  provide(AppShellSymbol, context)
+}
+
+export function useAppShell(): AppShellContext {
+  const context = inject<AppShellContext>(AppShellSymbol)
+  if (!context) {
+    throw new Error('useAppShell must be used within a component that has provideAppShell as an ancestor')
+  }
+  return context
+}

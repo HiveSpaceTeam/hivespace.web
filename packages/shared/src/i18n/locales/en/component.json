@@ -1,0 +1,17 @@
+{
+  "pagination": {
+    "previous": "Previous",
+    "next": "Next",
+    "summary": "Showing {from} to {to} of {total} entries",
+    "pageSize": "Number lines/pages"
+  },
+  "fileInput": {
+    "addPhoto": "Add Photo",
+    "chooseFile": "Choose File",
+    "validation": {
+      "required": "This field is required",
+      "imageOnly": "Please select an image file",
+      "maxSize": "File size must be less than {size}"
+    }
+  }
+}

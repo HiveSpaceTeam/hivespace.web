@@ -1,0 +1,11 @@
+{
+  "extends": "../../packages/tsconfig/vue-app.json",
+  "include": ["src/**/*", "src/**/*.vue"],
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./src/*"],
+      "@hivespace/shared": ["../shared/dist/index.d.ts"]
+    },
+    "skipLibCheck": true
+  }
+}

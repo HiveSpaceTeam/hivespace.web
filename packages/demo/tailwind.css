@@ -1,0 +1,11 @@
+/*
+  Tailwind CSS v4 source scanning for the @hivespace/demo package.
+
+  Apps that use the demo package must @import this file AFTER `@import 'tailwindcss'`
+  so that Tailwind scans the demo source directory and includes all utility classes
+  used by demo components in the generated CSS bundle.
+
+  Usage in your app's main.css:
+    @import '@hivespace/demo/tailwind.css';
+*/
+@source "./src";

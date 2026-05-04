@@ -1,0 +1,40 @@
+{
+  "title": "Đăng ký người bán",
+  "subtitle": "Hoàn thành hồ sơ người bán để bắt đầu bán hàng trên HiveSpace",
+  "storeInformation": "Thông tin Shop",
+  "fields": {
+    "storeName": "Tên Shop",
+    "storeDescription": "Mô tả Shop",
+    "storeLogo": "Logo Shop",
+    "storeAddress": "Địa chỉ Shop"
+  },
+  "placeholders": {
+    "storeName": "Nhập tên shop của bạn",
+    "storeDescription": "Mô tả về shop và sản phẩm của bạn",
+    "storeAddress": "Nhập địa chỉ shop của bạn"
+  },
+  "actions": {
+    "submit": "Đăng ký",
+    "editAddress": "Chỉnh sửa"
+  },
+  "errors": {
+    "storeNameRequired": "Tên shop là bắt buộc",
+    "storeDescriptionRequired": "Mô tả shop là bắt buộc",
+    "storeLogoRequired": "Logo shop là bắt buộc",
+    "storeAddressRequired": "Địa chỉ shop là bắt buộc",
+    "invalidFileType": "Vui lòng tải lên file hình ảnh",
+    "fileTooLarge": "Kích thước file phải nhỏ hơn 5MB"
+  },
+  "messages": {
+    "registrationInProgress": "Đang đăng ký cửa hàng...",
+    "success": "Thành công!",
+    "error": "Lỗi!",
+    "registrationSuccess": "Đăng ký người bán hoàn thành thành công!",
+    "registrationFailed": "Đăng ký thất bại. Vui lòng kiểm tra thông tin và thử lại.",
+    "validationFailed": "Vui lòng điền đầy đủ các trường bắt buộc."
+  },
+  "fileInput": {
+    "chooseLogo": "Chọn Logo",
+    "logoHelpText": "Tải lên logo cửa hàng của bạn (JPG, PNG, tối đa 5MB)"
+  }
+}

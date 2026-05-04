@@ -1,0 +1,59 @@
+{
+  "showingResults": "Showing {count} of {total} users",
+  "lastUpdated": "Last updated:",
+  "username": "Username",
+  "email": "Email",
+  "seller": "Seller",
+  "fullName": "Full Name",
+  "status": "Status",
+  "createdDate": "Created Date",
+  "lastLoginDate": "Last Login Date",
+  "actionsColumn": "Actions",
+  "searchPlaceholder": "Search by email...",
+  "loading": "Loading...",
+  "delete": "Delete",
+  "activate": "Activate",
+  "deactivate": "Deactivate",
+  "allStatus": "All Status",
+  "active": "Active",
+  "inactive": "Inactive",
+  "allUsers": "All Users",
+  "sellersOnly": "Sellers Only",
+  "nonSellers": "Non-Sellers",
+  "values": {
+    "status": {
+      "active": "Active",
+      "inactive": "Inactive"
+    }
+  },
+  "noUsersFound": "No users found",
+  "noUsersFoundDescription": "Try adjusting your search filters or add new users to get started.",
+  "actions": {
+    "deleteUser": {
+      "title": "Delete User",
+      "message": "Are you sure you want to delete user \"{email}\"? This action cannot be undone."
+    }
+  },
+  "notifications": {
+    "deleteSuccess": {
+      "title": "Deleted Successfully",
+      "message": "User {email} has been deleted successfully."
+    },
+    "deleteFailed": {
+      "title": "Delete Failed",
+      "message": "Unable to delete user. Please try again."
+    },
+    "statusUpdateSuccess": {
+      "title": "Status Updated",
+      "message": "User {email} has been {status}."
+    },
+    "statusUpdateFailed": {
+      "title": "Update Failed",
+      "message": "Unable to update user status. Please try again."
+    },
+    "loadFailed": {
+      "title": "Load Failed",
+      "message": "Unable to load users. Please try again."
+    }
+  }
+}

@@ -1,0 +1,21 @@
+{
+  "title": "Notifications",
+  "empty": "You have no notifications",
+  "loadMore": "Load more",
+  "loading": "Loading...",
+  "events": {
+    "newOrder": "{buyerName} has placed an order in your shop, order code: #{orderCode}",
+    "lowStock": "{productName} is running low ({remaining} left)",
+    "generic": "Event: {eventType}"
+  },
+  "toast": {
+    "close": "Dismiss notification",
+    "justNow": "Just now"
+  },
+  "errors": {
+    "markReadFailed": {
+      "title": "Could not mark as read",
+      "message": "Please try again."
+    }
+  }
+}

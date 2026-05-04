@@ -1,0 +1,44 @@
+{
+  "home": "Trang chủ",
+  "menu": "Menu",
+  "cancel": "Hủy",
+  "save": "Lưu",
+  "actions": {
+    "delete": "Xóa",
+    "activate": "Kích hoạt",
+    "deactivate": "Vô hiệu hóa",
+    "refresh": "Làm mới"
+  },
+  "action": "Hành động",
+  "sidebar": {
+    "menu": "Menu",
+    "open": "Mở thanh bên",
+    "close": "Đóng thanh bên"
+  },
+  "profile": {
+    "editProfile": "Chỉnh sửa hồ sơ",
+    "accountSettings": "Cài đặt tài khoản",
+    "support": "Hỗ trợ",
+    "signOut": "Đăng xuất"
+  },
+  "auth": {
+    "signIn": "Đăng nhập",
+    "signUp": "Đăng ký"
+  },
+  "notifications": {
+    "notification": "Thông báo",
+    "requestsPermission": "yêu cầu quyền thay đổi",
+    "project": "Dự án",
+    "all": "Tất cả",
+    "unread": "Chưa đọc",
+    "new": "Mới",
+    "viewAll": "Xem tất cả thông báo",
+    "viewAllShort": "Xem tất cả",
+    "empty": "Không có thông báo nào",
+    "justNow": "Vừa xong",
+    "minutesAgo": "{count} phút trước",
+    "hoursAgo": "{count} giờ trước",
+    "close": "Đóng thông báo",
+    "loadMore": "Xem thông báo trước đó"
+  }
+}

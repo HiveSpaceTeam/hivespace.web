@@ -1,0 +1,97 @@
+{
+  "showingResults": "Hiển thị {count} trên tổng số {total} kết quả",
+  "lastUpdated": "Cập nhật lần cuối:",
+  "addNewAdmin": "Thêm mới",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "confirmPassword": "Xác nhận mật khẩu",
+  "createAdmin": "Tạo Quản trị viên",
+  "fullNamePlaceholder": "Nhập họ và tên",
+  "emailPlaceholder": "Nhập địa chỉ email quản trị viên",
+  "passwordPlaceholder": "Nhập mật khẩu bảo mật (tối thiểu 12 ký tự)",
+  "confirmPasswordPlaceholder": "Xác nhận mật khẩu",
+  "emailRequired": "Email là bắt buộc",
+  "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ",
+  "emailExists": "Đã tồn tại quản trị viên với email này",
+  "fullNameRequired": "Họ và tên là bắt buộc",
+  "passwordRequired": "Mật khẩu là bắt buộc",
+  "passwordTooShort": "Mật khẩu phải có ít nhất 12 ký tự",
+  "passwordComplexity": "Mật khẩu phải bao gồm chữ hoa, chữ thường, số và ký tự đặc biệt",
+  "confirmPasswordRequired": "Vui lòng xác nhận mật khẩu của bạn",
+  "passwordMismatch": "Mật khẩu không khớp",
+  "passwordWeak": "Yếu",
+  "passwordFair": "Trung bình",
+  "passwordGood": "Tốt",
+  "passwordStrong": "Mạnh",
+  "emailAddress": "Địa chỉ Email",
+  "isSystemAdmin": "Quản trị viên hệ thống",
+  "lastUpdatedDate": "Ngày cập nhật cuối",
+  "fullName": "Họ và tên",
+  "status": "Trạng thái",
+  "createdDate": "Ngày tạo",
+  "lastLoginDate": "Lần đăng nhập cuối",
+  "actionsColumn": "Thao tác",
+  "searchPlaceholder": "Tìm kiếm theo email...",
+  "loading": "Đang tải...",
+  "delete": "Xóa",
+  "activate": "Kích hoạt",
+  "deactivate": "Vô hiệu hóa",
+  "allStatus": "Tất cả trạng thái",
+  "active": "Hoạt động",
+  "inactive": "Tạm khóa",
+  "allAdmins": "Tất cả Quản trị viên",
+  "regularAdmin": "Quản trị viên thường",
+  "systemAdmin": "Quản trị viên hệ thống",
+  "alerts": {
+    "success": {
+      "title": "Thành công!",
+      "message": "Quản trị viên {email} đã được tạo thành công và có thể truy cập hệ thống."
+    },
+    "error": {
+      "title": "Tạo thất bại",
+      "message": "Không thể tạo tài khoản quản trị viên. Vui lòng kiểm tra thông tin và thử lại."
+    }
+  },
+  "actions": {
+    "deleteAdmin": {
+      "title": "Xóa Quản trị viên",
+      "message": "Bạn có chắc chắn muốn xóa quản trị viên \"{email}\"? Hành động này không thể hoàn tác."
+    }
+  },
+  "notifications": {
+    "deleteSuccess": {
+      "title": "Xóa thành công",
+      "message": "Quản trị viên {email} đã được xóa thành công."
+    },
+    "deleteFailed": {
+      "title": "Xóa thất bại",
+      "message": "Không thể xóa quản trị viên. Vui lòng thử lại."
+    },
+    "statusUpdateSuccess": {
+      "title": "Cập nhật trạng thái",
+      "message": "Quản trị viên {email} đã được {status}."
+    },
+    "statusUpdateFailed": {
+      "title": "Cập nhật thất bại",
+      "message": "Không thể cập nhật trạng thái quản trị viên. Vui lòng thử lại."
+    }
+  },
+  "values": {
+    "status": {
+      "active": "Hoạt động",
+      "inactive": "Tạm khóa",
+      "activated": "đã kích hoạt",
+      "deactivated": "đã tạm khóa"
+    },
+    "type": {
+      "system": "Quản trị viên hệ thống",
+      "regular": "Quản trị viên thường"
+    },
+    "lastLogin": {
+      "never": "Chưa bao giờ"
+    },
+    "user": "người dùng"
+  },
+  "noAdminsFound": "Không tìm thấy quản trị viên",
+  "noAdminsFoundDescription": "Thử điều chỉnh bộ lọc tìm kiếm hoặc thêm quản trị viên mới để bắt đầu."
+}

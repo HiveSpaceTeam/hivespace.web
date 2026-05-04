@@ -1,0 +1,76 @@
+{
+  "title": "Quản lý đơn hàng",
+  "breadcrumb": "Tất cả",
+  "orderCode": "Mã đơn hàng",
+  "tabs": {
+    "all": "Tất cả",
+    "pendingConfirmation": "Chờ xác nhận",
+    "readyToShip": "Chờ lấy hàng",
+    "shipping": "Đang giao",
+    "delivered": "Đã giao",
+    "returnCancel": "Trả hàng/Hoàn tiền/Huỷ"
+  },
+  "status": {
+    "created": "Mới tạo",
+    "paid": "Đã thanh toán",
+    "cod": "Thanh toán khi nhận hàng",
+    "confirmed": "Đã xác nhận",
+    "rejected": "Đã từ chối",
+    "shipped": "Đã gửi hàng",
+    "delivered": "Đã giao",
+    "completed": "Hoàn tất",
+    "cancelled": "Đã huỷ",
+    "claimed": "Đang khiếu nại",
+    "refunding": "Đang hoàn tiền",
+    "refunded": "Đã hoàn tiền",
+    "solved": "Đã xử lý xong",
+    "expired": "Hết hạn",
+    "readyToShip": "Chờ lấy hàng"
+  },
+  "search": {
+    "fieldOrderCode": "Mã đơn hàng",
+    "fieldCustomerName": "Tên người mua",
+    "fieldProduct": "Tên sản phẩm",
+    "placeholder": "Nhập {field}",
+    "apply": "Áp dụng",
+    "reset": "Đặt lại"
+  },
+  "table": {
+    "product": "Sản phẩm",
+    "totalAmount": "Tổng số tiền Người mua thanh toán",
+    "status": "Trạng thái",
+    "countdown": "Đếm ngược",
+    "shippingUnit": "Đơn vị vận chuyển",
+    "variation": "Phân loại: {value}",
+    "noVariation": "Không có phân loại",
+    "actions": "Thao tác",
+    "emptyText": "Không có đơn hàng nào"
+  },
+  "itemCount": "{count} Kiện hàng",
+  "sort": {
+    "label": "Sắp xếp theo: Hạn gửi hàng (Xa - Gần nhất)"
+  },
+  "actions": {
+    "confirm": "Xác nhận",
+    "cancel": "Huỷ",
+    "prepareGoods": "Chuẩn bị hàng",
+    "viewDetail": "Xem chi tiết",
+    "export": "Xuất",
+    "exportHistory": "Lịch sử Xuất Báo cáo",
+    "bulkShip": "Giao Hàng Loạt"
+  },
+  "notifications": {
+    "confirmSuccess": {
+      "title": "Xác nhận thành công",
+      "message": "Đơn hàng đã được xác nhận và chuyển sang trạng thái chờ lấy hàng"
+    },
+    "cancelConfirm": {
+      "message": "Bạn có chắc muốn huỷ đơn hàng này không?",
+      "defaultReason": "Người bán huỷ đơn"
+    },
+    "cancelSuccess": {
+      "title": "Huỷ thành công",
+      "message": "Đơn hàng đã được huỷ"
+    }
+  }
+}
