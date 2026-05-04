@@ -1,54 +1,74 @@
-# hivespace.shared
+# `@hivespace/shared`
 
-Shared Vue package for HiveSpace projects, including UI, shared composables, stores, and app utilities.
+Shared Vue package for HiveSpace apps. It contains reusable UI components, composables, feature modules, and app utilities consumed by workspace apps in this monorepo.
 
-## Release Guide (NPM)
+For monorepo setup, shared prerequisites, and root commands, start with the [root README](../../README.md).
 
-This document explains how to publish a new version of `@hivespace/shared` using the GitHub workflow in `.github/workflows/publish-new-version.yml`.
+## Local Development
 
-## Important Workflow Behavior
+Run these from `packages/shared`:
+
+```bash
+pnpm dev
+pnpm build
+pnpm type-check
+```
+
+Or from the repo root:
+
+```bash
+pnpm build:shared
+```
+
+`pnpm dev` runs `vite build --watch`, which is useful while iterating on changes consumed by the apps.
+
+## Release Guide
+
+This package is published through the GitHub workflows in this repository.
+
+### Workflow Triggers
 
 Publish workflow in `.github/workflows/publish-new-version.yml` triggers on:
 
-- Manual run: `workflow_dispatch`
-- Push tag matching `v*.*.*`
+- manual dispatch
+- pushed tags matching `v*.*.*`
 
 Version automation workflow in `.github/workflows/auto-bump-and-tag.yml` triggers on:
 
-- Push to `master` (including PR merge)
+- push to `master`
 
 What this means:
 
-- Opening a PR does not trigger publish.
-- Merging a PR to `master` triggers auto bump + auto tag.
-- Auto-created tag (for example `v1.1.5`) triggers publish.
-- Publish always happens from tag event, not directly from merge.
+- opening a PR does not publish
+- merging to `master` triggers auto bump and auto tag
+- the pushed tag triggers publish
+- publish happens from the tag event, not directly from the merge
 
-## Prerequisites
+## Release Prerequisites
 
-- You can push branches and tags to this repository.
-- Repository has `NPM_TOKEN` configured in GitHub secrets.
-- Repository has `RELEASE_PAT` configured in GitHub secrets for `.github/workflows/auto-bump-and-tag.yml`.
+- You can push branches and tags to the repository.
+- Repository secrets include `NPM_TOKEN`.
+- Repository secrets include `RELEASE_PAT` for `.github/workflows/auto-bump-and-tag.yml`.
 - You are authenticated locally for git operations.
 
-## Recommended Team Release Flow
+## Recommended Release Flow
 
-### 1) Create release branch
+1. Create a release branch:
 
 ```bash
 git checkout -b release/vX.Y.Z
 ```
 
-### 2) Validate locally
+2. Validate locally:
 
 ```bash
-npm ci
-npm run type-check
-npm run build
+pnpm install
+pnpm --filter @hivespace/shared type-check
+pnpm --filter @hivespace/shared build
 npm publish --dry-run
 ```
 
-### 3) Commit and push
+3. Commit and push:
 
 ```bash
 git add .
@@ -56,50 +76,47 @@ git commit -m "feat/fix/chore: your changes"
 git push -u origin release/vX.Y.Z
 ```
 
-### 4) Open PR to `master`
+4. Open a PR to `master` and merge after approval.
 
-- Create PR from `release/vX.Y.Z` to `master`.
-- Get approvals and merge.
+5. After merge, automation will:
 
-### 5) Automatic release after merge
-
-After merge to `master`, GitHub Actions will automatically:
-
-- bump patch version in `package.json` and `package-lock.json`
+- bump patch version in the package manifest
 - commit the version bump to `master`
-- create and push matching tag `vX.Y.Z`
-- trigger publish workflow from the pushed tag
+- create and push a matching `vX.Y.Z` tag
+- trigger the publish workflow from that tag
 
-The auto bump workflow skips its own release-bump commits by commit-message guard, avoiding recursion without using `[skip ci]`.
+The auto bump workflow skips its own release-bump commits by commit-message guard, avoiding recursion without `[skip ci]`.
 
 Tag-based publish validates that:
 
-- `package.json` version equals tag version (without `v`)
-- Version does not already exist on npm
-
-Then the workflow publishes to npm.
+- `package.json` version matches the tag version without the `v`
+- the version is not already published on npm
 
 ## Troubleshooting
 
 ### `npm run patch` fails
 
-Expected in this repo because `patch` script does not exist. Use `npm version patch --no-git-tag-version`.
+Expected in this repo because there is no `patch` script. Use:
 
-### Workflow fails with version mismatch
+```bash
+npm version patch --no-git-tag-version
+```
 
-On a tag-triggered run, ensure:
+### Publish workflow fails with version mismatch
 
-- Tag: `v1.2.3`
+Ensure these match:
+
+- tag: `v1.2.3`
 - `package.json` version: `1.2.3`
 
-### Workflow fails: version already exists
+### Publish fails because version already exists
 
-That version is already published on npm. Bump to a new version and run again.
+Bump to a new version and run the flow again.
 
-### Auto bump workflow cannot push to master
+### Auto bump cannot push to `master`
 
-If branch protection blocks workflow pushes, allow GitHub Actions bot to push to `master` or use a PAT-based workflow.
+If branch protection blocks workflow pushes, allow the GitHub Actions bot to push or keep using a PAT-based workflow.
 
-### Auto bump runs but publish workflow does not trigger
+### Auto bump runs but publish does not trigger
 
-If auto bump pushes with `GITHUB_TOKEN`, downstream workflows are not triggered. Configure `RELEASE_PAT` and use it for checkout/push so tag push triggers `.github/workflows/publish-new-version.yml`.
+If the auto bump uses `GITHUB_TOKEN`, downstream workflows may not trigger. Use `RELEASE_PAT` for the push that creates the tag.

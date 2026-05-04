@@ -7,8 +7,9 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { numericToStringCulture, useAuth } from '@hivespace/shared'
-import { useUserSettingsStore } from '@/stores/user-settings.store';
-import i18n from '@/i18n';
+import i18n from '@/i18n'
+import { useProfileStore } from '@/stores/profile.store'
+import { useUserSettingsStore } from '@/stores/user-settings.store'
 
 const router = useRouter()
 const { handleLoginCallback } = useAuth()
@@ -26,13 +27,22 @@ onMounted(async () => {
     return
   }
 
-  // Settings fetch is non-fatal — failure must not sign the user out
-  try {
-    const userSettingsStore = useUserSettingsStore()
-    const settings = await userSettingsStore.fetchUserSettings()
-    i18n.global.locale.value = numericToStringCulture(settings.culture)
-  } catch (error) {
-    console.error('Failed to load user settings, using defaults:', error)
+  // Settings and profile fetch are non-fatal - failure must not sign the user out.
+  const userSettingsStore = useUserSettingsStore()
+  const profileStore = useProfileStore()
+  const [settingsResult, profileResult] = await Promise.allSettled([
+    userSettingsStore.fetchUserSettings(),
+    profileStore.fetchMyProfile(),
+  ])
+
+  if (settingsResult.status === 'fulfilled') {
+    i18n.global.locale.value = numericToStringCulture(settingsResult.value.culture)
+  } else {
+    console.error('Failed to load user settings, using defaults:', settingsResult.reason)
+  }
+
+  if (profileResult.status === 'rejected') {
+    console.error('Failed to load user profile, using token fallback:', profileResult.reason)
   }
 
   router.push({ path: returnToUrl })

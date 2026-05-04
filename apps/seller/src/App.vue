@@ -37,15 +37,29 @@ import {
   stringToNumericTheme,
   stringToNumericCulture,
 } from '@hivespace/shared'
-import { useNotificationStore, useUserSettingsStore } from '@/stores'
+import { useNotificationStore, useProfileStore, useUserSettingsStore } from '@/stores'
 import { config, isDevelopment } from '@/config'
 
 const appStore = useAppStore()
 const router = useRouter()
 const { t } = useI18n()
 const notificationStore = useNotificationStore()
+const profileStore = useProfileStore()
 const userSettingsStore = useUserSettingsStore()
 const { notifications, unreadCount, isLoading: notificationLoading, hasMore, toastQueue } = storeToRefs(notificationStore)
+const { myProfile } = storeToRefs(profileStore)
+
+const currentUserDisplayName = computed(() => {
+  return myProfile.value?.userName?.trim() || myProfile.value?.fullName?.trim() || ''
+})
+
+const currentUserFullName = computed(() => {
+  return myProfile.value?.fullName?.trim() || myProfile.value?.userName?.trim() || ''
+})
+
+const currentUserEmail = computed(() => myProfile.value?.email?.trim() || '')
+
+const currentUserAvatarSrc = computed(() => myProfile.value?.avatarUrl?.trim() || '')
 
 useNotificationRealtime({
   hubBaseUrl: config.api.baseUrl,
@@ -96,6 +110,10 @@ provideAppShell({
   menuGroups,
   menuItems,
   fullHeight: false,
+  currentUserDisplayName,
+  currentUserFullName,
+  currentUserEmail,
+  currentUserAvatarSrc,
   notifications,
   unreadCount,
   notificationLoading,

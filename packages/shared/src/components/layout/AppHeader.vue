@@ -38,14 +38,23 @@
             @filter-change="(unreadOnly: boolean) => fetchNotifications(unreadOnly)"
             @load-more="loadMore" @view-all="() => router.push('/notifications')" />
         </div>
-        <UserMenu :user="user" :menu-items="menuItems ?? []" :show-sign-out="true" @sign-out="logout" />
+        <UserMenu
+          :user="user"
+          :menu-items="menuItems ?? []"
+          :display-name="resolvedDisplayName"
+          :full-name="resolvedFullName"
+          :email="resolvedEmail"
+          :avatar-src="resolvedAvatarSrc"
+          :show-sign-out="true"
+          @sign-out="logout"
+        />
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import CloseMenuIcon from '../../icons/CloseMenuIcon.vue'
 import MenuIcon from '../../icons/MenuIcon.vue'
@@ -64,12 +73,29 @@ const props = withDefaults(defineProps<{ showSidebarToggle?: boolean }>(), { sho
 const {
   notifications, unreadCount, notificationLoading, hasMore,
   menuItems, markAsRead, fetchNotifications, loadMore,
+  currentUserDisplayName, currentUserFullName, currentUserEmail, currentUserAvatarSrc,
   themeChange, cultureChange,
 } = useAppShell()
 
 const { currentUser: user, getCurrentUser, logout } = useAuth()
 const router = useRouter()
 const { toggleSidebar, toggleMobileSidebar, isMobileOpen } = useSidebar()
+
+const tokenUserName = computed(() => {
+  return typeof user.value?.profile?.username === 'string' ? user.value.profile.username : ''
+})
+
+const tokenFullName = computed(() => {
+  return typeof user.value?.profile?.name === 'string' ? user.value.profile.name : ''
+})
+
+const tokenEmail = computed(() => {
+  return typeof user.value?.profile?.email === 'string' ? user.value.profile.email : ''
+})
+
+const tokenAvatarSrc = computed(() => {
+  return typeof user.value?.profile?.picture === 'string' ? user.value.profile.picture : ''
+})
 
 const handleToggle = () => {
   if (window.innerWidth >= 1024) {
@@ -80,6 +106,31 @@ const handleToggle = () => {
 }
 
 const isApplicationMenuOpen = ref(false)
+
+const resolvedDisplayName = computed(() => {
+  return currentUserDisplayName?.value
+    || tokenUserName.value
+    || tokenFullName.value
+    || ''
+})
+
+const resolvedFullName = computed(() => {
+  return currentUserFullName?.value
+    || tokenFullName.value
+    || resolvedDisplayName.value
+})
+
+const resolvedEmail = computed(() => {
+  return currentUserEmail?.value
+    || tokenEmail.value
+    || ''
+})
+
+const resolvedAvatarSrc = computed(() => {
+  return currentUserAvatarSrc?.value
+    || tokenAvatarSrc.value
+    || ''
+})
 
 const toggleApplicationMenu = () => {
   isApplicationMenuOpen.value = !isApplicationMenuOpen.value

@@ -1,5 +1,6 @@
 // User settings types
 export * from '../features/user-settings/user-settings.types'
+export * from '../features/user-profile/user-profile.types'
 
 // API common types (kept under api for backend contracts)
 export * from './common.types'

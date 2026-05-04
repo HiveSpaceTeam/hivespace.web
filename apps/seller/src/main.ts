@@ -16,6 +16,7 @@ import App from '@/App.vue'
 import router from '@/router'
 import VueApexCharts from 'vue3-apexcharts'
 import { createPinia } from 'pinia'
+import { useProfileStore } from '@/stores/profile.store'
 import { useUserSettingsStore } from '@/stores/user-settings.store'
 import {
   useAuth,
@@ -48,10 +49,17 @@ const initializeApp = async () => {
 
   // 4. Use logic that depends on plugins/auth
   const { isAuthenticated } = useAuth()
+  const profileStore = useProfileStore()
   const userSettingsStore = useUserSettingsStore()
   if (await isAuthenticated.value) {
-    const settings = await userSettingsStore.fetchUserSettings()
-    i18n.global.locale.value = numericToStringCulture(settings.culture)
+    const [settingsResult] = await Promise.allSettled([
+      userSettingsStore.fetchUserSettings(),
+      profileStore.fetchMyProfile(),
+    ])
+
+    if (settingsResult.status === 'fulfilled') {
+      i18n.global.locale.value = numericToStringCulture(settingsResult.value.culture)
+    }
   } else {
     // For unauthenticated users, read from cookies or use defaults
     // Initialize culture from cookie
@@ -70,6 +78,7 @@ const initializeApp = async () => {
       culture: numericCulture,
       theme: numericTheme,
     })
+    profileStore.clearMyProfile()
   }
 
   return app

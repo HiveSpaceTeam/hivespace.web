@@ -7,14 +7,17 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@hivespace/shared'
 import type { SignoutResponse } from 'oidc-client-ts'
+import { useProfileStore } from '@/stores/profile.store'
 
 type SignoutUserState = { redirectTo?: string } | undefined
 
 const { userManager } = useAuth()
 const router = useRouter()
+const profileStore = useProfileStore()
 
 onMounted(async () => {
   try {
+    profileStore.clearMyProfile()
     // Process the redirect response from the IdP
     const response = (await userManager?.signoutRedirectCallback()) as SignoutResponse
     // response.userState may contain the object you passed as `state`

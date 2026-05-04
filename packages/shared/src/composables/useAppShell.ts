@@ -10,6 +10,10 @@ export interface AppShellContext {
   menuGroups: Ref<SidebarMenuGroup[]>
   menuItems?: MenuItem[]
   fullHeight?: boolean
+  currentUserDisplayName?: Ref<string>
+  currentUserFullName?: Ref<string>
+  currentUserEmail?: Ref<string>
+  currentUserAvatarSrc?: Ref<string>
   notifications: Ref<InAppNotification[]>
   unreadCount: Ref<number>
   notificationLoading: Ref<boolean>
