@@ -1,17 +1,9 @@
-import { apiService } from './api'
-import { buildApiUrl } from '@/config'
 import { OrderProcessStatus } from '@/types'
 import type { GetOrderListQuery, GetOrderListResponse } from '@/types'
+import { BaseService } from './base.service'
 
-const ORDER_ENDPOINTS = {
-  SELLER: '/orders/seller',
-  CONFIRM: (id: string) => `/orders/${id}/confirm`,
-  REJECT: (id: string) => `/orders/${id}/reject`,
-} as const
-
-class OrderService {
+class OrderService extends BaseService {
   async getOrders(query: GetOrderListQuery): Promise<GetOrderListResponse> {
-    const url = buildApiUrl(ORDER_ENDPOINTS.SELLER)
     const params: Record<string, string | number> = {
       page: query.page,
       pageSize: query.pageSize,
@@ -21,19 +13,15 @@ class OrderService {
     if (query.searchValue) params.searchValue = query.searchValue
     if (query.processStatus !== OrderProcessStatus.All) params.processStatus = query.processStatus
 
-    const response = await apiService.get<GetOrderListResponse>(url, { params })
-
-    return response
+    return this.get<GetOrderListResponse>('/orders/seller', { params })
   }
 
   async confirmOrder(orderId: string): Promise<void> {
-    const url = buildApiUrl(ORDER_ENDPOINTS.CONFIRM(orderId))
-    await apiService.post(url, {})
+    return this.post<void>(`/orders/${orderId}/confirm`, {})
   }
 
   async rejectOrder(orderId: string, reason: string): Promise<void> {
-    const url = buildApiUrl(ORDER_ENDPOINTS.REJECT(orderId))
-    await apiService.post(url, { reason })
+    return this.post<void>(`/orders/${orderId}/reject`, { reason })
   }
 }
 

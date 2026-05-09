@@ -1,0 +1,39 @@
+{
+  "detail": {
+    "title": "Order Detail",
+    "orderCode": "Order Code",
+    "deliveryAddress": "Delivery Address",
+    "paymentMethod": "Payment Method",
+    "subTotal": "Subtotal",
+    "shippingFee": "Shipping Fee",
+    "total": "Total",
+    "items": "Items",
+    "free": "Free",
+    "back": "Back to Orders",
+    "timeline": {
+      "placed": "Order Placed",
+      "paid": "Payment Confirmed",
+      "confirmed": "Order Confirmed",
+      "shipping": "Out for Delivery",
+      "delivered": "Delivered"
+    },
+    "status": {
+      "Created": "Placed",
+      "Paid": "Paid",
+      "COD": "COD",
+      "Confirmed": "Confirmed",
+      "ReadyToShip": "Ready to Ship",
+      "Shipped": "Shipping",
+      "Delivered": "Delivered",
+      "Completed": "Completed",
+      "Cancelled": "Cancelled",
+      "Rejected": "Rejected",
+      "Expired": "Expired",
+      "Refunding": "Refunding",
+      "Refunded": "Refunded"
+    }
+  },
+  "errors": {
+    "notFound": "Order not found"
+  }
+}

@@ -255,8 +255,21 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AppShell } from '@hivespace/shared'
-import { PageBreadcrumb, ComponentCard, Button, Input, Tabs, useFormatDate, Badge, DropdownMenu, useConfirmModal, useAppStore, Pagination, Spinner } from '@hivespace/shared'
+import {
+  AppShell,
+  PageBreadcrumb,
+  ComponentCard,
+  Button,
+  Input,
+  Tabs,
+  useFormatDate,
+  Badge,
+  DropdownMenu,
+  useConfirmModal,
+  useAppStore,
+  Pagination,
+  Spinner,
+} from '@hivespace/shared'
 import {
   BoxIcon,
   CloseIcon,

@@ -6,52 +6,27 @@ import type {
   Product,
   UpdateProductRequest,
 } from '@/types'
-import { apiService } from './api'
-import { buildApiUrl } from '@/config'
+import { BaseService } from './base.service'
 
-const PRODUCT_ENDPOINTS = {
-  PRODUCTS: '/products',
-} as const
-
-class ProductService {
-  /**
-   * Create a new product
-   */
+class ProductService extends BaseService {
   async createProduct(productData: CreateProductRequest): Promise<CreateProductResponse> {
-    const url = buildApiUrl(PRODUCT_ENDPOINTS.PRODUCTS)
-    return await apiService.post<CreateProductResponse>(url, productData)
+    return this.post<CreateProductResponse>('/products', productData)
   }
 
-  /**
-   * Retrieve products list
-   */
   async getProducts(params: GetProductListQuery): Promise<GetProductListResponse> {
-    const url = buildApiUrl(PRODUCT_ENDPOINTS.PRODUCTS)
-    return await apiService.get<GetProductListResponse>(url, { params })
+    return this.get<GetProductListResponse>('/products', { params })
   }
 
-  /**
-   * Retrieve a single product by id
-   */
   async getProductById(id: string): Promise<Product> {
-    const url = buildApiUrl(`${PRODUCT_ENDPOINTS.PRODUCTS}/${id}`)
-    return await apiService.get<Product>(url)
+    return this.get<Product>(`/products/${id}`)
   }
 
-  /**
-   * Update a product
-   */
   async updateProduct(id: string, payload: UpdateProductRequest): Promise<void> {
-    const url = buildApiUrl(`${PRODUCT_ENDPOINTS.PRODUCTS}/${id}`)
-    await apiService.put<void>(url, payload)
+    return this.put<void>(`/products/${id}`, payload)
   }
 
-  /**
-   * Delete a product
-   */
   async deleteProduct(id: string): Promise<void> {
-    const url = buildApiUrl(`${PRODUCT_ENDPOINTS.PRODUCTS}/${id}`)
-    await apiService.delete<void>(url)
+    return this.delete<void>(`/products/${id}`)
   }
 }
 

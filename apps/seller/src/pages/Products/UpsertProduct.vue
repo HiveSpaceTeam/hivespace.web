@@ -397,12 +397,22 @@ import { ref, onMounted, watch, computed } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import { useRoute, useRouter } from 'vue-router'
-import { Button, Select, Input, PageBreadcrumb, ComponentCard, MultipleSelect, FileInput } from '@hivespace/shared'
-import { AppShell } from '@hivespace/shared'
+import {
+  Button,
+  Select,
+  Input,
+  PageBreadcrumb,
+  ComponentCard,
+  MultipleSelect,
+  FileInput,
+  AppShell,
+  EyeIcon,
+  PlusIcon,
+  TrashIcon,
+  useAppStore,
+} from '@hivespace/shared'
 import { QuillEditor } from '@vueup/vue-quill'
 import ImageUploader from 'quill-image-uploader'
-import { EyeIcon, PlusIcon, TrashIcon } from '@hivespace/shared'
-import { useAppStore } from '@hivespace/shared'
 import { useProductStore } from '@/stores'
 import type {
   CreateProductRequest,
@@ -443,6 +453,8 @@ const product = ref<Product>({
   variants: [],
   skus: [],
   images: [],
+  thumbnailUrl: null,
+  currentSeller: null,
 })
 const quillRef = ref<{
   setHTML: (html: string) => void
@@ -868,6 +880,8 @@ const resetForm = () => {
     variants: [],
     skus: [],
     images: [],
+    thumbnailUrl: null,
+    currentSeller: null,
   }
   // Reset category selection and attributes UI state
   formData.value.selectInput = ''
@@ -933,6 +947,7 @@ const onSave = async () => {
       // For new uploads, we store File objects temporarily - backend will handle them
       ...productImageFiles.value.map((file) => ({
         fileId: file.name,
+        imageUrl: null,
       })),
     ]
 

@@ -1,0 +1,21 @@
+{
+  "title": "Thông báo",
+  "empty": "Bạn không có thông báo nào",
+  "loadMore": "Tải thêm",
+  "loading": "Đang tải...",
+  "events": {
+    "orderConfirmed": "{storeName} đã xác nhận đơn hàng #{orderCode} của bạn",
+    "orderCancelled": "Đơn hàng #{orderCode} của bạn đã bị hủy",
+    "generic": "Thông báo: {eventType}"
+  },
+  "toast": {
+    "close": "Đóng",
+    "justNow": "Vừa xong"
+  },
+  "errors": {
+    "markReadFailed": {
+      "title": "Không thể đánh dấu đã đọc",
+      "message": "Vui lòng thử lại."
+    }
+  }
+}

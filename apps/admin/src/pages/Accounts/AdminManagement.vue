@@ -114,14 +114,14 @@
                     </div>
                   </td>
                 </tr>
-                <tr v-for="(admin, index) in admins" :key="admin.id"
+                <tr v-for="admin in admins" :key="admin.id"
                   class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/5">
                   <!-- Email Address -->
                   <td class="px-3 py-3 sm:px-4">
                     <div class="flex items-center">
                       <div class="shrink-0 h-10 w-10">
                         <img class="h-10 w-10 rounded-full object-cover"
-                          :src="admin.avatarUrl || `/images/user/user-0${(index % 9) + 1}.jpg`" :alt="admin.email"
+                          :src="admin.avatarUrl || '/images/user/default-avatar.svg'" :alt="admin.email"
                           loading="lazy" />
                       </div>
                       <div class="ml-4">
@@ -242,10 +242,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted } from 'vue'
+import { computed, ref, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AppShell } from '@hivespace/shared'
 import {
+  AppShell,
   BigPlusIcon,
   PageBreadcrumb,
   ComponentCard,
@@ -264,16 +264,18 @@ import {
   ToggleOffIcon,
   ToggleOnIcon,
   TrashRedIcon,
+  useModal,
+  useConfirmModal,
+  useFormatDate,
+  useDebounce,
+  useAppStore,
+  useAuth,
   type AppUser,
 } from '@hivespace/shared'
-import { useModal, useConfirmModal, useFormatDate, useDebounce } from '@hivespace/shared'
-import { useAppStore } from '@hivespace/shared'
 import AdminDetailModal from './Popups/AdminDetailModal.vue'
 import { useAdminStore } from '@/stores/admin.store'
 import type { Admin, GetAdminListQuery } from '@/types'
 import { RoleFilter, StatusFilter, Status } from '@/types'
-import { watch } from 'vue'
-import { useAuth } from '@hivespace/shared'
 // Local params for server queries
 import { storeToRefs } from 'pinia'
 

@@ -12,3 +12,6 @@ export * from './admin.types'
 
 // User types
 export * from './user.types'
+
+// Merchant types
+export * from './merchant.types'

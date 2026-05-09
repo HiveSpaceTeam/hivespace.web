@@ -188,10 +188,10 @@ import { onMounted, reactive, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useAuth, useAppStore } from '@hivespace/shared'
-import { useFieldValidation } from '@hivespace/shared'
-import type { ErrorResponse } from '@hivespace/shared'
 import {
+  useAuth,
+  useAppStore,
+  useFieldValidation,
   AppHeader,
   Button,
   CheckIcon,
@@ -204,6 +204,7 @@ import {
   useCooldown,
   validateEmail as validateEmailRule,
   validateRequired,
+  type ErrorResponse,
 } from '@hivespace/shared'
 import { useAccountStore } from '@/stores'
 

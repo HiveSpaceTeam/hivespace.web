@@ -20,8 +20,7 @@
 //   }
 // }
 
-import { ref, computed, onMounted, onUnmounted, provide, inject } from 'vue'
-import type { Ref } from 'vue' //
+import { ref, computed, onMounted, onUnmounted, provide, inject, type Ref } from 'vue'
 
 interface SidebarContextType {
   isExpanded: Ref<boolean>

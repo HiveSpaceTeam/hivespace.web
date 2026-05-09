@@ -22,6 +22,12 @@ import {
   UserCircleIcon,
   SettingsIcon,
   SupportIcon,
+  LayoutDashboardIcon,
+  UserGroupIcon,
+  ListIcon,
+  ShieldIcon,
+  WarningIcon,
+  TaskIcon,
   type SidebarMenuGroup,
   type SidebarMenuItem,
   type MenuItem,
@@ -59,20 +65,29 @@ const menuItems: MenuItem[] = [
 ]
 
 const menuGroups = computed<SidebarMenuGroup[]>(() => {
-  const items: SidebarMenuItem[] = [
-    {
-      name: t('pages.accounts'),
-      icon: TableIcon,
-      subItems: [
-        { name: t('pages.userManagement'), path: '/account/user-management' },
-        { name: t('pages.adminManagement'), path: '/account/admin-management' },
-      ],
-    },
+  const platformItems: SidebarMenuItem[] = [
+    { name: t('pages.dashboard.title'), icon: LayoutDashboardIcon, path: '/dashboard' },
+    { name: t('pages.adminManagement'), icon: TableIcon, path: '/account/admin-management' },
+    { name: t('pages.buyer'), icon: UserCircleIcon, path: '/account/user-management' },
+    { name: t('pages.merchants.title'), icon: UserGroupIcon, path: '/merchants' },
+    { name: t('pages.auditLog'), icon: ListIcon, path: '#' },
+    { name: t('pages.configuration.title'), icon: SettingsIcon, path: '/configuration' },
   ]
+
   if (isDevelopment()) {
-    items.push({ icon: GridIcon, name: 'Demo', path: '/demo' })
+    platformItems.push({ icon: GridIcon, name: 'Demo', path: '/demo' })
   }
-  return [{ title: t('common.sidebar.menu'), items }]
+
+  const complianceItems: SidebarMenuItem[] = [
+    { name: t('pages.kycQueue'), icon: ShieldIcon, path: '#' },
+    { name: t('pages.disputes'), icon: WarningIcon, path: '#' },
+    { name: t('pages.scheduledJobs'), icon: TaskIcon, path: '#' },
+  ]
+
+  return [
+    { title: 'Platform', items: platformItems },
+    { title: 'Compliance', items: complianceItems },
+  ]
 })
 
 provideAppShell({

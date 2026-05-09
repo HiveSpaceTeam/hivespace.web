@@ -69,7 +69,7 @@ const mainRoutes = [
     path: '/',
     name: 'Default',
     component: Default,
-    props: { redirectPath: '/account/user-management', showSignUp: false },
+    props: { redirectPath: '/dashboard', showSignUp: false },
     meta: { title: 'HiveSpace - Admin Portal', allowAnonymous: true },
   },
   ...devDemoRoutes,
@@ -87,6 +87,24 @@ const router = createRouter({
     return savedPosition || { left: 0, top: 0 }
   },
   routes: [
+    {
+      path: '/dashboard',
+      name: 'Dashboard',
+      component: () => import('@/pages/Dashboard.vue'),
+      meta: { title: 'Dashboard' },
+    },
+    {
+      path: '/merchants',
+      name: 'Merchants',
+      component: () => import('@/pages/Merchants/MerchantManagement.vue'),
+      meta: { title: 'Merchants' },
+    },
+    {
+      path: '/configuration',
+      name: 'Configuration',
+      component: () => import('@/pages/Configuration/Configuration.vue'),
+      meta: { title: 'Configuration' },
+    },
     {
       path: '/account',
       children: [

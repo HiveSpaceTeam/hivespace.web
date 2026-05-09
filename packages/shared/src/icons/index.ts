@@ -124,6 +124,8 @@ import SendIcon from './SendIcon.vue'
 export { SendIcon }
 import SettingsIcon from './SettingsIcon.vue'
 export { SettingsIcon }
+import ShieldIcon from './ShieldIcon.vue'
+export { ShieldIcon }
 import ShowPasswordIcon from './ShowPasswordIcon.vue'
 export { ShowPasswordIcon }
 import SortAscIcon from './SortAscIcon.vue'

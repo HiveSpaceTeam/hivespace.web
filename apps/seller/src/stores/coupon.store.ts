@@ -1,8 +1,7 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import i18n from '@/i18n'
-import { useAppStore } from '@hivespace/shared'
-import type { PaginationMetadata } from '@hivespace/shared'
+import { useAppStore, type PaginationMetadata } from '@hivespace/shared'
 import { CouponStatus } from '@/types'
 import type {
     CreateCouponRequest,

@@ -1,38 +1,222 @@
 {
-  "accounts": "TÃ i khoáº£n",
-  "userManagement": "Quáº£n lÃ½ ngÆ°á»i dÃ¹ng",
-  "adminManagement": "Quáº£n lÃ½ quáº£n trá»‹ viÃªn",
-  "listOfUsers": "Danh sÃ¡ch ngÆ°á»i dÃ¹ng",
-  "listOfAdmins": "Danh sÃ¡ch quáº£n trá»‹ viÃªn",
+  "accounts": "Tài khoản",
+  "buyer": "Người mua",
+  "userManagement": "Quản lý người dùng",
+  "adminManagement": "Quản lý quản trị viên",
+  "listOfUsers": "Danh sách người dùng",
+  "listOfAdmins": "Danh sách quản trị viên",
+  "auditLog": "Nhật ký kiểm tra",
+  "kycQueue": "Hàng đợi KYC / KYB",
+  "disputes": "Tranh chấp",
+  "scheduledJobs": "Công việc định kỳ",
+  "dashboard": {
+    "title": "Tổng quan",
+    "pageTitle": "Tổng quan nền tảng",
+    "actions": {
+      "exportAudit": "Xuất nhật ký",
+      "inviteAdmin": "Mời quản trị viên"
+    },
+    "kpi": {
+      "activeMerchants": "Thương nhân đang hoạt động",
+      "gmvLast24h": "GMV 24 giờ qua",
+      "openDisputes": "Khiếu nại đang mở",
+      "kycPending": "KYC chờ xử lý",
+      "vsLast30d": "so với 30 ngày qua"
+    },
+    "chart": { "title": "Xu hướng GMV" },
+    "activity": { "title": "Hoạt động gần đây" },
+    "adminTable": {
+      "title": "Tài khoản quản trị",
+      "viewAll": "Xem tất cả",
+      "email": "Email",
+      "fullName": "Họ và tên",
+      "status": "Trạng thái",
+      "systemAdmin": "Quản trị viên hệ thống",
+      "created": "Ngày tạo",
+      "lastLogin": "Đăng nhập lần cuối"
+    }
+  },
+  "merchants": {
+    "title": "Thương nhân",
+    "actions": {
+      "exportCsv": "Xuất CSV",
+      "sendAnnouncement": "Gửi thông báo",
+      "inviteMerchant": "Mời thương nhân"
+    },
+    "kpi": {
+      "activeMerchants": "Thương nhân đang hoạt động",
+      "gmv7d": "GMV 7 ngày",
+      "pendingKyb": "KYB chờ xử lý",
+      "suspended": "Đã đình chỉ",
+      "avgActivation": "Thời gian kích hoạt TB",
+      "timeToFirstSale": "đến lần bán đầu tiên"
+    },
+    "tabs": {
+      "all": "Tất cả",
+      "active": "Đang hoạt động",
+      "review": "Đang xét duyệt",
+      "pendingKyb": "Chờ KYB",
+      "suspended": "Đã đình chỉ"
+    },
+    "filters": {
+      "searchPlaceholder": "Tìm kiếm thương nhân...",
+      "allCategories": "Tất cả danh mục",
+      "allTiers": "Tất cả hạng",
+      "tier1": "Hạng 1",
+      "tier2": "Hạng 2",
+      "tier3": "Hạng 3",
+      "tier4": "Hạng 4",
+      "allRegions": "Tất cả khu vực",
+      "hcm": "Hồ Chí Minh",
+      "hanoi": "Hà Nội",
+      "danang": "Đà Nẵng"
+    },
+    "bulk": {
+      "selected": "{count} đã chọn",
+      "approveKyb": "Phê duyệt KYB",
+      "suspend": "Đình chỉ",
+      "archive": "Lưu trữ",
+      "clear": "Xóa chọn"
+    },
+    "table": {
+      "merchant": "Thương nhân",
+      "status": "Trạng thái",
+      "tier": "Hạng",
+      "gmv30d": "GMV 30 ngày",
+      "orders": "Đơn hàng",
+      "joined": "Ngày tham gia"
+    },
+    "status": {
+      "active": "Đang hoạt động",
+      "review": "Đang xét duyệt",
+      "pendingKyb": "Chờ KYB",
+      "suspended": "Đã đình chỉ"
+    },
+    "pagination": { "showing": "Hiển thị {count} trong tổng số {total} thương nhân" },
+    "kyc": { "title": "KYC chờ xử lý", "reviewAll": "Xem tất cả" },
+    "gmvByCategory": "GMV theo danh mục"
+  },
+  "configuration": {
+    "title": "Cấu hình",
+    "searchPlaceholder": "Tìm kiếm cài đặt...",
+    "nav": {
+      "workspace": "Không gian làm việc",
+      "commerce": "Thương mại"
+    },
+    "tabs": {
+      "payments": "Thanh toán",
+      "tax": "Thuế",
+      "localization": "Địa phương hóa",
+      "api": "API & Webhooks"
+    },
+    "payments": {
+      "title": "Thanh toán",
+      "providers": {
+        "vnpay": "VNPay",
+        "vnpayDesc": "Cổng thanh toán nội địa",
+        "momo": "MoMo",
+        "momoDesc": "Ví điện tử",
+        "stripe": "Stripe",
+        "stripeDesc": "Quốc tế",
+        "zalopay": "ZaloPay",
+        "zalopayDesc": "Ví điện tử"
+      },
+      "platformFee": "Phí nền tảng theo hạng",
+      "table": {
+        "tier": "Hạng",
+        "feeRate": "Tỷ lệ phí",
+        "minThreshold": "Ngưỡng GMV tối thiểu"
+      },
+      "payoutSchedule": "Lịch thanh toán",
+      "payout": {
+        "daily": "Hàng ngày",
+        "weekly": "Hàng tuần",
+        "monthly": "Hàng tháng"
+      },
+      "toggles": {
+        "autoRefund": "Hoàn tiền tự động khi hủy",
+        "autoRefundDesc": "Hoàn tiền trong 24 giờ cho đơn hàng bị hủy",
+        "splitPayment": "Hỗ trợ thanh toán trả góp",
+        "splitPaymentDesc": "Cho phép trả góp qua các ngân hàng đối tác",
+        "fraudBlock": "Chặn gian lận (AI)",
+        "fraudBlockDesc": "Tự động giữ giao dịch đáng ngờ > ₫5M",
+        "escrowHold": "Giữ tiền ký quỹ",
+        "escrowHoldDesc": "Giữ tiền đến khi xác nhận giao hàng"
+      }
+    },
+    "tax": {
+      "title": "Thuế",
+      "taxId": "Mã số thuế (MST)",
+      "taxIdPlaceholder": "0312345678",
+      "vatRate": "Thuế VAT (%)",
+      "vatRatePlaceholder": "10"
+    },
+    "localization": {
+      "title": "Địa phương hóa",
+      "currencies": "Đồng tiền được hỗ trợ",
+      "default": "(mặc định)",
+      "language": "Ngôn ngữ",
+      "timezone": "Múi giờ",
+      "languages": {
+        "vi": "Tiếng Việt",
+        "en": "Tiếng Anh"
+      },
+      "timezones": {
+        "hcm": "Asia/Ho_Chi_Minh (UTC+7)",
+        "utc": "UTC",
+        "sg": "Asia/Singapore (UTC+8)"
+      }
+    },
+    "api": {
+      "title": "API & Webhooks",
+      "endpoint": "Đầu cuối API",
+      "apiKey": "Khóa API",
+      "show": "Hiển thị",
+      "hide": "Ẩn",
+      "webhookUrl": "URL Webhook",
+      "deliveryMode": "Chế độ gửi",
+      "toggles": {
+        "autoRetry": "Thử lại tự động",
+        "autoRetryDesc": "Thử lại webhook thất bại tối đa 5 lần",
+        "asyncDelivery": "Gửi bất đồng bộ",
+        "asyncDeliveryDesc": "Gửi webhook không chặn luồng"
+      }
+    },
+    "saveBar": {
+      "unsavedChanges": "{count} thay đổi chưa lưu",
+      "discard": "Hủy bỏ",
+      "save": "Lưu"
+    }
+  },
   "maintenance": {
-    "title": "Báº¢O TRÃŒ",
-    "message": "Trang web Ä‘ang Ä‘Æ°á»£c báº£o trÃ¬. ChÃºng tÃ´i sáº½ sá»›m quay trá»Ÿ láº¡i. Cáº£m Æ¡n báº¡n Ä‘Ã£ kiÃªn nháº«n."
+    "title": "BẢO TRÌ",
+    "message": "Trang web đang được bảo trì. Chúng tôi sẽ sớm quay trở lại. Cảm ơn bạn đã kiên nhẫn."
   },
   "notFound": {
-    "title": "Lá»–I",
-    "message": "ChÃºng tÃ´i khÃ´ng thá»ƒ tÃ¬m tháº¥y trang báº¡n Ä‘ang tÃ¬m!"
+    "title": "LỖI",
+    "message": "Chúng tôi không thể tìm thấy trang bạn đang tìm!"
   },
   "serverError": {
-    "title": "Lá»–I",
-    "message": "ÄÃ£ xáº£y ra sá»± cá»‘ tá»« phÃ­a chÃºng tÃ´i. Vui lÃ²ng thá»­ láº¡i sau hoáº·c liÃªn há»‡ há»— trá»£ náº¿u váº¥n Ä‘á» váº«n tiáº¿p diá»…n."
+    "title": "LỖI",
+    "message": "Đã xảy ra sự cố từ phía chúng tôi. Vui lòng thử lại sau hoặc liên hệ hỗ trợ nếu vấn đề vẫn tiếp diễn."
   },
   "common": {
-    "backHome": "Quay láº¡i trang chá»§"
+    "backHome": "Quay lại trang chủ"
   },
   "default": {
-    "welcome": "ChÃ o má»«ng Ä‘áº¿n HiveSpace Admin Portal.",
-    "signIn": "ÄÄƒng nháº­p",
-    "signUp": "ÄÄƒng kÃ½"
+    "welcome": "Chào mừng đến HiveSpace Admin Portal.",
+    "signIn": "Đăng nhập",
+    "signUp": "Đăng ký"
   },
   "icons": {
-    "title": "Bo suu tap bieu tuong",
-    "description": "Tat ca bieu tuong co san trong du an. Bam vao moi bieu tuong de sao chep ten cua no.",
-    "totalLabel": "Tong so bieu tuong",
-    "copiedMessage": "Da sao chep ten bieu tuong vao bo nho tam!",
-    "copyTitle": "Bam de sao chep: {name}"
+    "title": "Bộ sưu tập biểu tượng",
+    "description": "Tất cả biểu tượng có sẵn trong dự án. Bấm vào mỗi biểu tượng để sao chép tên của nó.",
+    "totalLabel": "Tổng số biểu tượng",
+    "copiedMessage": "Đã sao chép tên biểu tượng vào bộ nhớ tạm!",
+    "copyTitle": "Bấm để sao chép: {name}"
   },
   "header": {
-    "openApplicationMenu": "Má»Ÿ menu á»©ng dá»¥ng",
-    "closeApplicationMenu": "ÄÃ³ng menu á»©ng dá»¥ng"
+    "openApplicationMenu": "Mở menu ứng dụng",
+    "closeApplicationMenu": "Đóng menu ứng dụng"
   }
 }

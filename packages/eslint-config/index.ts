@@ -1,9 +1,10 @@
 import type { Linter } from 'eslint'
+export { default as iconsIndexPlugin } from './icons-index.plugin'
 
 const APP_PACKAGES = [
   { app: 'admin',      pkg: '@hivespace/admin' },
   { app: 'seller',     pkg: '@hivespace/seller' },
-  { app: 'storefront', pkg: '@hivespace/storefront' },
+  { app: 'buyer', pkg: '@hivespace/buyer' },
 ] as const
 
 const crossAppRestrictions: Linter.Config[] = APP_PACKAGES.map(({ app, pkg }) => ({

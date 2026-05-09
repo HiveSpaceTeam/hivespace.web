@@ -58,11 +58,9 @@
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
-import { Spinner } from '@hivespace/shared'
+import { Spinner, NotificationBellIcon, AppShell } from '@hivespace/shared'
 import { useNotificationStore } from '@/stores'
 import NotificationRow from './components/NotificationRow.vue'
-import { NotificationBellIcon } from '@hivespace/shared'
-import { AppShell } from '@hivespace/shared'
 
 const router = useRouter()
 const notificationStore = useNotificationStore()

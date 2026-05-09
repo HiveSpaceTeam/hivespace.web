@@ -1,0 +1,39 @@
+{
+  "detail": {
+    "title": "Chi tiết đơn hàng",
+    "orderCode": "Mã đơn hàng",
+    "deliveryAddress": "Địa chỉ nhận hàng",
+    "paymentMethod": "Phương thức thanh toán",
+    "subTotal": "Tổng tiền hàng",
+    "shippingFee": "Phí vận chuyển",
+    "total": "Thành tiền",
+    "items": "Sản phẩm",
+    "free": "Miễn phí",
+    "back": "Quay lại đơn hàng",
+    "timeline": {
+      "placed": "Đơn Hàng Đã Đặt",
+      "paid": "Đã Thanh Toán",
+      "confirmed": "Đã Xác Nhận",
+      "shipping": "Đang Giao Hàng",
+      "delivered": "Đã Nhận Hàng"
+    },
+    "status": {
+      "Created": "Đã đặt",
+      "Paid": "Đã thanh toán",
+      "COD": "COD",
+      "Confirmed": "Đã xác nhận",
+      "ReadyToShip": "Sẵn sàng giao",
+      "Shipped": "Đang giao hàng",
+      "Delivered": "Đã giao",
+      "Completed": "Hoàn thành",
+      "Cancelled": "Đã hủy",
+      "Rejected": "Đã từ chối",
+      "Expired": "Hết hạn",
+      "Refunding": "Đang hoàn tiền",
+      "Refunded": "Đã hoàn tiền"
+    }
+  },
+  "errors": {
+    "notFound": "Không tìm thấy đơn hàng"
+  }
+}

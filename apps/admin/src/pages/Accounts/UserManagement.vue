@@ -106,14 +106,14 @@
                     </div>
                   </td>
                 </tr>
-                <tr v-for="(user, index) in filteredUsers" :key="user.id"
+                <tr v-for="user in filteredUsers" :key="user.id"
                   class="border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-white/5">
                   <!-- Username -->
                   <td class="px-3 py-3 sm:px-4">
                     <div class="flex items-center">
                       <div class="shrink-0 h-10 w-10">
                         <img class="h-10 w-10 rounded-full object-cover"
-                          :src="user.avatarUrl || `/images/user/user-0${(index % 9) + 1}.jpg`" :alt="user.email"
+                          :src="user.avatarUrl || '/images/user/default-avatar.svg'" :alt="user.email"
                           loading="lazy" />
                       </div>
                       <div class="ml-4">
@@ -228,8 +228,8 @@
 defineOptions({ name: 'UserManagement' })
 import { computed, ref, onMounted, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AppShell } from '@hivespace/shared'
 import {
+  AppShell,
   PageBreadcrumb,
   ComponentCard,
   DropdownMenu,
@@ -239,8 +239,6 @@ import {
   Input,
   Pagination,
   Spinner,
-} from '@hivespace/shared'
-import {
   CheckGreenIcon,
   HorizontalDots,
   RefreshIcon,
@@ -253,8 +251,8 @@ import {
   useConfirmModal,
   useFormatDate,
   useDebounce,
+  useAppStore,
 } from '@hivespace/shared'
-import { useAppStore } from '@hivespace/shared'
 import { useUserStore } from '@/stores/user.store'
 import type { GetUserListQuery, User } from '@/types'
 import { RoleFilter, StatusFilter, Status } from '@/types'

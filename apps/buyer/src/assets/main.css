@@ -1,0 +1,42 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Montserrat:wght@400;500;600;700&subset=latin,vietnamese&display=swap')
+layer(base);
+
+@import 'tailwindcss';
+
+@import '@hivespace/shared/theme.css';
+@import '@hivespace/shared/base.css';
+@import '@hivespace/shared/utilities.css';
+@source "../../node_modules/@hivespace/shared/dist";
+/* Storefront custom theme overrides */
+@theme {
+  --color-primary: var(--color-blue-600);
+  --color-primary-dark: var(--color-blue-700);
+  --color-primary-light: var(--color-blue-500);
+  --color-secondary: #222;
+  --color-surface: #fff;
+  --color-surface-dark: #1a1a2e;
+  --color-card: #fff;
+  --color-card-dark: #16213e;
+}
+
+/* Override container max-width for storefront */
+.container {
+  max-width: 1440px;
+}
+
+@font-face {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url(https://fonts.gstatic.com/s/inter/v20/UcC73FwrK3iLTeHuS_nVMrMxCp50SjIa2JL7SUc.woff2)
+    format('woff2');
+  unicode-range:
+    U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+
+html {
+  font-size: 16px;
+  font-family: Inter, Arial, sans-serif;
+  background-color: #efefef;
+}

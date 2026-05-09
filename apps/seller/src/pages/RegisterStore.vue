@@ -113,19 +113,21 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { useAuth, useAppStore } from '@hivespace/shared'
-import { useStoreStore, useMediaStore } from '@/stores'
-import { useFieldValidation, validateRequired } from '@hivespace/shared'
-import type { ErrorResponse } from '@hivespace/shared'
-import refreshToken from '@/services/refresh.service'
 import {
+  useAuth,
+  useAppStore,
+  useFieldValidation,
+  validateRequired,
   AppHeader,
   Button,
   FileInput,
   FullscreenLoader,
   Input,
   TextArea,
+  type ErrorResponse,
 } from '@hivespace/shared'
+import { useStoreStore, useMediaStore } from '@/stores'
+import refreshToken from '@/services/refresh.service'
 
 const router = useRouter()
 const { t } = useI18n()

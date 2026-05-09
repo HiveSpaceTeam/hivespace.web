@@ -5,75 +5,32 @@ import type {
   GetCouponListQuery,
   GetCouponListResponse,
 } from '@/types'
-import { apiService } from './api'
-import { buildApiUrl } from '@/config'
+import { BaseService } from './base.service'
 
-// ────────────────────────────────────────────────────────────
-// Coupon Service
-// Handles all HTTP interactions with the Order Service coupon
-// endpoints routed through the API gateway.
-// ────────────────────────────────────────────────────────────
+class CouponService extends BaseService {
+  async createCoupon(payload: CreateCouponRequest): Promise<CouponDto> {
+    return this.post<CouponDto>('/coupons', payload)
+  }
 
-const COUPON_ENDPOINTS = {
-    COUPONS: '/coupons',
-} as const
+  async updateCoupon(payload: UpdateCouponRequest): Promise<CouponDto> {
+    return this.put<CouponDto>(`/coupons/${payload.id}`, payload)
+  }
 
-class CouponService {
-    /**
-     * Create a new coupon.
-     * POST /api/v1/coupons
-     * Returns the created CouponDto (HTTP 201 Created).
-     */
-    async createCoupon(payload: CreateCouponRequest): Promise<CouponDto> {
-        const url = buildApiUrl(COUPON_ENDPOINTS.COUPONS)
-        return await apiService.post<CouponDto>(url, payload)
-    }
+  async getCoupons(params: GetCouponListQuery): Promise<GetCouponListResponse> {
+    return this.get<GetCouponListResponse>('/coupons', { params })
+  }
 
-    /**
-     * Update an existing coupon.
-     * PUT /api/v1/coupons/:id
-     * Returns the updated CouponDto.
-     */
-    async updateCoupon(payload: UpdateCouponRequest): Promise<CouponDto> {
-        const url = buildApiUrl(`${COUPON_ENDPOINTS.COUPONS}/${payload.id}`)
-        return await apiService.put<CouponDto>(url, payload)
-    }
+  async getCouponById(id: string): Promise<CouponDto> {
+    return this.get<CouponDto>(`/coupons/${id}`)
+  }
 
-    /**
-     * Fetch a paginated list of coupons.
-     * GET /api/v1/coupons
-     */
-    async getCoupons(params: GetCouponListQuery): Promise<GetCouponListResponse> {
-        const url = buildApiUrl(COUPON_ENDPOINTS.COUPONS)
-        return await apiService.get<GetCouponListResponse>(url, { params })
-    }
+  async deleteCoupon(id: string): Promise<void> {
+    return this.delete<void>(`/coupons/${id}`)
+  }
 
-    /**
-     * Fetch a single coupon by its ID.
-     * GET /api/v1/coupons/:id
-     */
-    async getCouponById(id: string): Promise<CouponDto> {
-        const url = buildApiUrl(`${COUPON_ENDPOINTS.COUPONS}/${id}`)
-        return await apiService.get<CouponDto>(url)
-    }
-
-    /**
-     * Delete a single coupon by its ID.
-     * DELETE /api/v1/coupons/:id
-     */
-    async deleteCoupon(id: string): Promise<void> {
-        const url = buildApiUrl(`${COUPON_ENDPOINTS.COUPONS}/${id}`)
-        return await apiService.delete(url)
-    }
-
-    /**
-     * End a single coupon by its ID.
-     * POST /api/v1/coupons/:id/end
-     */
-    async endCoupon(id: string): Promise<CouponDto> {
-        const url = buildApiUrl(`${COUPON_ENDPOINTS.COUPONS}/${id}/end`)
-        return await apiService.post<CouponDto>(url)
-    }
+  async endCoupon(id: string): Promise<CouponDto> {
+    return this.post<CouponDto>(`/coupons/${id}/end`)
+  }
 }
 
 export const couponService = new CouponService()

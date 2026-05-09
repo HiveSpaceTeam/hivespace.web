@@ -137,10 +137,21 @@ import { computed, onMounted, ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
-import { AppShell } from '@hivespace/shared'
-import { Button, Select, Input, PageBreadcrumb, ComponentCard, Spinner } from '@hivespace/shared'
-import { useConfirmModal, useAppStore } from '@hivespace/shared'
-import { BigPlusIcon, EditIcon, RefreshIcon, TrashRedIcon } from '@hivespace/shared'
+import {
+  AppShell,
+  Button,
+  Select,
+  Input,
+  PageBreadcrumb,
+  ComponentCard,
+  Spinner,
+  useConfirmModal,
+  useAppStore,
+  BigPlusIcon,
+  EditIcon,
+  RefreshIcon,
+  TrashRedIcon,
+} from '@hivespace/shared'
 import { useProductStore } from '@/stores'
 import type { GetProductListQuery, Product } from '@/types'
 

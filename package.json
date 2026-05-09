@@ -7,7 +7,7 @@
     "dev":            "turbo run dev",
     "dev:admin":      "turbo run dev --filter=@hivespace/admin",
     "dev:seller":     "turbo run dev --filter=@hivespace/seller",
-    "dev:storefront": "turbo run dev --filter=@hivespace/storefront",
+    "dev:buyer":      "turbo run dev --filter=@hivespace/buyer",
     "build":          "turbo run build",
     "build:shared":   "turbo run build --filter=@hivespace/shared",
     "type-check":     "turbo run type-check",

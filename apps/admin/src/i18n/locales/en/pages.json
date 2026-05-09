@@ -1,9 +1,193 @@
 {
   "accounts": "Accounts",
+  "buyer": "Buyer",
   "userManagement": "User Management",
   "adminManagement": "Admin Management",
   "listOfUsers": "List of user",
   "listOfAdmins": "List of admin",
+  "auditLog": "Audit Log",
+  "kycQueue": "KYC / KYB Queue",
+  "disputes": "Disputes",
+  "scheduledJobs": "Scheduled Jobs",
+  "dashboard": {
+    "title": "Dashboard",
+    "pageTitle": "Platform overview",
+    "actions": {
+      "exportAudit": "Export audit",
+      "inviteAdmin": "Invite admin"
+    },
+    "kpi": {
+      "activeMerchants": "Active merchants",
+      "gmvLast24h": "GMV last 24h",
+      "openDisputes": "Open disputes",
+      "kycPending": "KYC pending",
+      "vsLast30d": "vs last 30d"
+    },
+    "chart": { "title": "GMV trend" },
+    "activity": { "title": "Recent activity" },
+    "adminTable": {
+      "title": "Admin accounts",
+      "viewAll": "View all",
+      "email": "Email",
+      "fullName": "Full name",
+      "status": "Status",
+      "systemAdmin": "System admin",
+      "created": "Created",
+      "lastLogin": "Last login"
+    }
+  },
+  "merchants": {
+    "title": "Merchants",
+    "actions": {
+      "exportCsv": "Export CSV",
+      "sendAnnouncement": "Send announcement",
+      "inviteMerchant": "Invite merchant"
+    },
+    "kpi": {
+      "activeMerchants": "Active merchants",
+      "gmv7d": "GMV 7d",
+      "pendingKyb": "Pending KYB",
+      "suspended": "Suspended",
+      "avgActivation": "Avg. activation",
+      "timeToFirstSale": "time to first sale"
+    },
+    "tabs": {
+      "all": "All",
+      "active": "Active",
+      "review": "In review",
+      "pendingKyb": "Pending KYB",
+      "suspended": "Suspended"
+    },
+    "filters": {
+      "searchPlaceholder": "Search merchants...",
+      "allCategories": "All categories",
+      "allTiers": "All tiers",
+      "tier1": "Tier 1",
+      "tier2": "Tier 2",
+      "tier3": "Tier 3",
+      "tier4": "Tier 4",
+      "allRegions": "All regions",
+      "hcm": "Ho Chi Minh",
+      "hanoi": "Hanoi",
+      "danang": "Da Nang"
+    },
+    "bulk": {
+      "selected": "{count} selected",
+      "approveKyb": "Approve KYB",
+      "suspend": "Suspend",
+      "archive": "Archive",
+      "clear": "Clear"
+    },
+    "table": {
+      "merchant": "Merchant",
+      "status": "Status",
+      "tier": "Tier",
+      "gmv30d": "GMV 30d",
+      "orders": "Orders",
+      "joined": "Joined"
+    },
+    "status": {
+      "active": "Active",
+      "review": "In review",
+      "pendingKyb": "Pending KYB",
+      "suspended": "Suspended"
+    },
+    "pagination": { "showing": "Showing {count} of {total} merchants" },
+    "kyc": { "title": "KYC pending", "reviewAll": "Review all" },
+    "gmvByCategory": "GMV by category"
+  },
+  "configuration": {
+    "title": "Configuration",
+    "searchPlaceholder": "Search settings...",
+    "nav": {
+      "workspace": "Workspace",
+      "commerce": "Commerce"
+    },
+    "tabs": {
+      "payments": "Payments",
+      "tax": "Tax",
+      "localization": "Localization",
+      "api": "API & Webhooks"
+    },
+    "payments": {
+      "title": "Payments",
+      "providers": {
+        "vnpay": "VNPay",
+        "vnpayDesc": "Local gateway",
+        "momo": "MoMo",
+        "momoDesc": "E-wallet",
+        "stripe": "Stripe",
+        "stripeDesc": "International",
+        "zalopay": "ZaloPay",
+        "zalopayDesc": "E-wallet"
+      },
+      "platformFee": "Platform fee by tier",
+      "table": {
+        "tier": "Tier",
+        "feeRate": "Fee rate",
+        "minThreshold": "Min. GMV threshold"
+      },
+      "payoutSchedule": "Payout schedule",
+      "payout": {
+        "daily": "Daily",
+        "weekly": "Weekly",
+        "monthly": "Monthly"
+      },
+      "toggles": {
+        "autoRefund": "Auto-refund on cancellation",
+        "autoRefundDesc": "Refund within 24h for cancelled orders",
+        "splitPayment": "Split payment support",
+        "splitPaymentDesc": "Allow instalment plans via partner banks",
+        "fraudBlock": "Fraud block (AI-assisted)",
+        "fraudBlockDesc": "Auto-hold suspicious transactions > ₫5M",
+        "escrowHold": "Escrow hold",
+        "escrowHoldDesc": "Hold funds until delivery confirmation"
+      }
+    },
+    "tax": {
+      "title": "Tax",
+      "taxId": "Tax ID (MST)",
+      "taxIdPlaceholder": "0312345678",
+      "vatRate": "VAT rate (%)",
+      "vatRatePlaceholder": "10"
+    },
+    "localization": {
+      "title": "Localization",
+      "currencies": "Supported currencies",
+      "default": "(default)",
+      "language": "Language",
+      "timezone": "Timezone",
+      "languages": {
+        "vi": "Vietnamese",
+        "en": "English"
+      },
+      "timezones": {
+        "hcm": "Asia/Ho_Chi_Minh (UTC+7)",
+        "utc": "UTC",
+        "sg": "Asia/Singapore (UTC+8)"
+      }
+    },
+    "api": {
+      "title": "API & Webhooks",
+      "endpoint": "API endpoint",
+      "apiKey": "API key",
+      "show": "Show",
+      "hide": "Hide",
+      "webhookUrl": "Webhook URL",
+      "deliveryMode": "Delivery mode",
+      "toggles": {
+        "autoRetry": "Automatic retry",
+        "autoRetryDesc": "Retry failed webhooks up to 5 times",
+        "asyncDelivery": "Async delivery",
+        "asyncDeliveryDesc": "Non-blocking webhook dispatch"
+      }
+    },
+    "saveBar": {
+      "unsavedChanges": "{count} unsaved changes",
+      "discard": "Discard",
+      "save": "Save"
+    }
+  },
   "maintenance": {
     "title": "MAINTENANCE",
     "message": "Our site is currently under maintenance. We will be back shortly. Thank you for your patience."

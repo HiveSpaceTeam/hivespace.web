@@ -1,0 +1,21 @@
+{
+  "title": "Notifications",
+  "empty": "You have no notifications",
+  "loadMore": "Load more",
+  "loading": "Loading...",
+  "events": {
+    "orderConfirmed": "{storeName} has confirmed your order #{orderCode}",
+    "orderCancelled": "Your order #{orderCode} has been cancelled",
+    "generic": "Notification: {eventType}"
+  },
+  "toast": {
+    "close": "Dismiss",
+    "justNow": "Just now"
+  },
+  "errors": {
+    "markReadFailed": {
+      "title": "Could not mark as read",
+      "message": "Please try again."
+    }
+  }
+}

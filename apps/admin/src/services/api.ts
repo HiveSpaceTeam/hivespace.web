@@ -1,5 +1,4 @@
-import { ApiService } from '@hivespace/shared'
-import type { ApiConfig } from '@hivespace/shared'
+import { ApiService, type ApiConfig } from '@hivespace/shared'
 import { config } from '@/config'
 import i18n from '@/i18n'
 

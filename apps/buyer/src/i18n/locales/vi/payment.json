@@ -1,0 +1,23 @@
+{
+  "verifying": "Đang xác nhận thanh toán của bạn...",
+  "verifyingSubtext": "Vui lòng không đóng tab này.",
+  "successTitle": "Thanh toán thành công!",
+  "successSubtext": "Cảm ơn bạn đã mua hàng.",
+  "orderReference": "Mã đơn hàng",
+  "amountPaid": "Số tiền đã thanh toán",
+  "transactionId": "Mã giao dịch",
+  "paidAt": "Thời gian thanh toán",
+  "continueShopping": "Tiếp tục mua sắm",
+  "failedTitle": "Thanh toán thất bại",
+  "failedSubtext": "Thanh toán của bạn không thể được xử lý.",
+  "cancelledTitle": "Thanh toán bị hủy",
+  "cancelledSubtext": "Thanh toán của bạn đã bị hủy.",
+  "expiredTitle": "Hết hạn thanh toán",
+  "expiredSubtext": "Liên kết thanh toán đã hết hạn.",
+  "tryAgain": "Thử lại",
+  "goHome": "Về trang chủ",
+  "pendingTitle": "Đang chờ xác nhận",
+  "pendingSubtext": "Chúng tôi đang chờ xác nhận thanh toán. Vui lòng chờ một chút.",
+  "refresh": "Kiểm tra lại",
+  "invalidReference": "Mã thanh toán không hợp lệ."
+}

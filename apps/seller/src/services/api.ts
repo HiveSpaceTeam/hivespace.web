@@ -1,5 +1,4 @@
-import { useAuth, ApiService } from '@hivespace/shared'
-import type { ApiConfig, AppUser } from '@hivespace/shared'
+import { useAuth, ApiService, type ApiConfig, type AppUser } from '@hivespace/shared'
 import refreshToken from '@/services/refresh.service'
 import { config } from '@/config'
 import i18n from '@/i18n'

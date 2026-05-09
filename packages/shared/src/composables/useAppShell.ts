@@ -1,5 +1,4 @@
-import { provide, inject } from 'vue'
-import type { Ref } from 'vue'
+import { provide, inject, type Ref } from 'vue'
 import type { SidebarMenuGroup } from '../types/sidebar.types'
 import type { MenuItem } from '../types/component.common'
 import type { InAppNotification } from '../features/notifications/notifications.types'

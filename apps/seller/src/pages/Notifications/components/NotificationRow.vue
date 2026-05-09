@@ -35,8 +35,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { NotificationBellIcon } from '@hivespace/shared'
-import { useFormatDate, type InAppNotification } from '@hivespace/shared'
+import { NotificationBellIcon, useFormatDate, type InAppNotification } from '@hivespace/shared'
 
 const defaultAvatar =
   `data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='20' fill='%23e5e7eb'/%3E%3Ccircle cx='20' cy='15' r='7' fill='%239ca3af'/%3E%3Cellipse cx='20' cy='34' rx='12' ry='8' fill='%239ca3af'/%3E%3C/svg%3E`

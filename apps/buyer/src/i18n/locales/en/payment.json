@@ -1,0 +1,23 @@
+{
+  "verifying": "Verifying your payment...",
+  "verifyingSubtext": "Please do not close this tab.",
+  "successTitle": "Payment Successful!",
+  "successSubtext": "Thank you for your purchase.",
+  "orderReference": "Order Reference",
+  "amountPaid": "Amount Paid",
+  "transactionId": "Transaction ID",
+  "paidAt": "Paid At",
+  "continueShopping": "Continue Shopping",
+  "failedTitle": "Payment Failed",
+  "failedSubtext": "Your payment could not be processed.",
+  "cancelledTitle": "Payment Cancelled",
+  "cancelledSubtext": "Your payment was cancelled.",
+  "expiredTitle": "Payment Expired",
+  "expiredSubtext": "The payment link has expired.",
+  "tryAgain": "Try Again",
+  "goHome": "Back to Home",
+  "pendingTitle": "Payment Pending",
+  "pendingSubtext": "We are still confirming your payment. This may take a moment.",
+  "refresh": "Check Again",
+  "invalidReference": "Invalid payment reference."
+}

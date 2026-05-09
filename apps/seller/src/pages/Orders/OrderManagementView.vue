@@ -206,8 +206,8 @@
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { AppShell } from '@hivespace/shared'
 import {
+  AppShell,
   PageBreadcrumb,
   Button,
   Tabs,
@@ -216,11 +216,13 @@ import {
   Avatar,
   Spinner,
   useFormatDate,
+  ArrowDownRedIcon,
+  ListIcon,
+  MailIcon,
+  useConfirmModal,
 } from '@hivespace/shared'
-import { ArrowDownRedIcon, ListIcon, MailIcon } from '@hivespace/shared'
 import { OrderProcessStatus, OrderStatus } from '@/types'
 import { useOrderStore } from '@/stores/order.store'
-import { useConfirmModal } from '@hivespace/shared'
 import ProductCell from './components/ProductCell.vue'
 
 const { t } = useI18n()

@@ -20,6 +20,7 @@ export interface ProductSkuImage {
 export interface ProductImage {
   skuId?: string
   fileId: string
+  imageUrl: string | null
 }
 
 export interface ProductSku {
@@ -37,6 +38,12 @@ export interface ProductSku {
   images?: ProductSkuImage[]
 }
 
+export interface CurrentSeller {
+  id: string
+  storeName: string
+  logoUrl: string | null
+}
+
 export interface Product {
   id?: number
   name: string
@@ -45,7 +52,8 @@ export interface Product {
   variants: ProductVariant[]
   skus: ProductSku[]
   images?: ProductImage[]
-  // Add more fields as needed
+  thumbnailUrl: string | null
+  currentSeller: CurrentSeller | null
 }
 
 // Search/paging contracts
@@ -80,7 +88,8 @@ export interface CreateProductResponse {
   productSkus: ProductSku[]
   createdAt: string
   updatedAt?: string
-  // Add more fields as needed
+  thumbnailUrl: string | null
+  currentSeller: CurrentSeller | null
 }
 
 // Update request shares the same payload shape as create for now
@@ -91,7 +100,8 @@ export interface Category {
   id: string
   name: string
   displayName: string
-  fileImageId: string
+  imageFileId: string | null
+  imageUrl: string | null
 }
 
 export interface CategoryAttribute {

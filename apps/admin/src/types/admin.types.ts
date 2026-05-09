@@ -1,5 +1,4 @@
-import type { PaginationMetadata } from '@hivespace/shared'
-import { Status } from '@hivespace/shared'
+import { Status, type PaginationMetadata } from '@hivespace/shared'
 
 export { Status } from '@hivespace/shared'
 export interface CreateAdminRequest {

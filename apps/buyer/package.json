@@ -1,0 +1,51 @@
+{
+  "name": "@hivespace/buyer",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "run-p type-check \"build-only {@}\" --",
+    "preview": "vite preview",
+    "build-only": "vite build",
+    "type-check": "vue-tsc --build",
+    "lint": "eslint . --fix",
+    "format": "prettier --write src/"
+  },
+  "dependencies": {
+    "@hivespace/demo": "workspace:*",
+    "@hivespace/shared": "workspace:*",
+    "@tailwindcss/forms": "^0.5.11",
+    "@tailwindcss/typography": "^0.5.19",
+    "@tailwindcss/vite": "^4.2.1",
+    "lucide-vue-next": "^0.474.0",
+    "oidc-client-ts": "^3.3.0",
+    "pinia": "^3.0.4",
+    "swiper": "^11.2.10",
+    "vue": "^3.5.25",
+    "vue-final-modal": "^4.5.5",
+    "vue-i18n": "^9.14.5",
+    "vue-router": "^4.6.4"
+  },
+  "devDependencies": {
+    "@hivespace/eslint-config": "workspace:*",
+    "@hivespace/tsconfig": "workspace:*",
+    "@hivespace/vite-config": "workspace:*",
+    "@types/node": "^22.10.7",
+    "@vitejs/plugin-vue": "^5.2.1",
+    "@vitejs/plugin-vue-jsx": "^4.1.1",
+    "@vue/eslint-config-prettier": "^10.1.0",
+    "@vue/eslint-config-typescript": "^14.3.0",
+    "eslint": "^9.18.0",
+    "eslint-plugin-vue": "^9.32.0",
+    "jiti": "^2.4.2",
+    "npm-run-all2": "^7.0.2",
+    "prettier": "^3.6.2",
+    "sass-embedded": "^1.97.3",
+    "tailwindcss": "^4.2.1",
+    "typescript": "~5.7.3",
+    "vite": "^6.0.11",
+    "vite-plugin-vue-devtools": "^7.7.0",
+    "vue-tsc": "^2.2.0"
+  }
+}

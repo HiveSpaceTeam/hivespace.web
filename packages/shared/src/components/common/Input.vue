@@ -71,8 +71,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, onMounted, onUpdated, watch, nextTick } from 'vue'
-import { useAttrs } from 'vue'
+import { computed, ref, onMounted, onUpdated, watch, nextTick, useAttrs } from 'vue'
 
 const attrs = useAttrs()
 
