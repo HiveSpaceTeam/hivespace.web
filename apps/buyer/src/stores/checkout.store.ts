@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { checkoutService } from '@/services/checkout.service'
 import { cartService } from '@/services/cart.service'
 import { useAsyncAction } from '@/composables/useAsyncAction'
+import { isStoreCouponEqual, arePlatformCouponsEqual, areInvalidCouponsEqual } from './coupon-equality'
 import type {
   AppliedPlatformCoupon,
   CheckoutItem,
@@ -12,16 +13,6 @@ import type {
   DeliveryPackage,
   InvalidAppliedCoupon,
 } from '@/types'
-
-const isStoreCouponEqual = (
-  left?: DeliveryPackage['appliedStoreCoupon'],
-  right?: DeliveryPackage['appliedStoreCoupon'],
-) => {
-  if (!left && !right) return true
-  if (!left || !right) return false
-
-  return left.storeId === right.storeId && left.couponCode === right.couponCode
-}
 
 const areCheckoutItemsEqual = (left: CheckoutItem, right: CheckoutItem) =>
   left.cartItemId === right.cartItemId &&
@@ -47,29 +38,6 @@ const areDeliveryPackagesEqual = (left: DeliveryPackage, right: DeliveryPackage)
   left.subtotal === right.subtotal &&
   left.packageTotal === right.packageTotal &&
   isStoreCouponEqual(left.appliedStoreCoupon, right.appliedStoreCoupon)
-
-const arePlatformCouponsEqual = (
-  left: AppliedPlatformCoupon[],
-  right: AppliedPlatformCoupon[],
-) =>
-  left.length === right.length &&
-  left.every((coupon, index) => coupon.couponCode === right[index]?.couponCode)
-
-const areInvalidCouponsEqual = (
-  left: InvalidAppliedCoupon[],
-  right: InvalidAppliedCoupon[],
-) =>
-  left.length === right.length &&
-  left.every((coupon, index) => {
-    const nextCoupon = right[index]
-    return (
-      coupon.couponCode === nextCoupon?.couponCode &&
-      coupon.ownerType === nextCoupon.ownerType &&
-      coupon.storeId === nextCoupon.storeId &&
-      coupon.reasonCode === nextCoupon.reasonCode &&
-      coupon.message === nextCoupon.message
-    )
-  })
 
 const isPreviewMetaEqual = (left: CheckoutPreview, right: CheckoutPreview) =>
   left.originalSubtotal === right.originalSubtotal &&

@@ -3,7 +3,12 @@
     <AppSidebar :menu-groups="menuGroups" />
     <Backdrop />
 
-    <div class="min-w-0 flex-1 lg:ml-[260px]">
+    <div
+      :class="[
+        'min-w-0 flex-1 transition-[margin] duration-200',
+        isExpanded || isHovered ? 'lg:ml-[260px]' : 'lg:ml-[90px]',
+      ]"
+    >
       <AppHeader />
 
       <main
@@ -23,6 +28,8 @@ import Backdrop from './Backdrop.vue'
 import AppSidebar from './AppSidebar.vue'
 import AppHeader from './AppHeader.vue'
 import { useAppShell } from '../../composables/useAppShell'
+import { useSidebar } from '../../composables/useSidebar'
 
 const { menuGroups, fullHeight } = useAppShell()
+const { isExpanded, isHovered } = useSidebar()
 </script>

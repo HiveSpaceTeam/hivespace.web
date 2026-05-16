@@ -3,6 +3,7 @@ import { ref } from 'vue'
 import { useAppStore } from '@hivespace/shared'
 import i18n from '@/i18n'
 import { cartService } from '@/services/cart.service'
+import { isStoreCouponEqual, arePlatformCouponsEqual, areInvalidCouponsEqual } from './coupon-equality'
 import type {
   AddCartItemRequest,
   AddCartItemResponse,
@@ -53,16 +54,6 @@ const mapApiGroup = (group: CartStoreGroupResponse): CartGroup => ({
   items: group.items.map(mapApiItem),
 })
 
-const isStoreCouponEqual = (
-  left?: CartGroup['appliedStoreCoupon'],
-  right?: CartGroup['appliedStoreCoupon'],
-) => {
-  if (!left && !right) return true
-  if (!left || !right) return false
-
-  return left.storeId === right.storeId && left.couponCode === right.couponCode
-}
-
 const areCartItemsEqual = (left: CartItem, right: CartItem) =>
   left.id === right.id &&
   left.cartItemId === right.cartItemId &&
@@ -85,29 +76,6 @@ const areCartGroupsEqual = (left: CartGroup, right: CartGroup) =>
   left.isMall === right.isMall &&
   left.selected === right.selected &&
   isStoreCouponEqual(left.appliedStoreCoupon, right.appliedStoreCoupon)
-
-const arePlatformCouponsEqual = (
-  left: AppliedPlatformCoupon[],
-  right: AppliedPlatformCoupon[],
-) =>
-  left.length === right.length &&
-  left.every((coupon, index) => coupon.couponCode === right[index]?.couponCode)
-
-const areInvalidCouponsEqual = (
-  left: InvalidAppliedCoupon[],
-  right: InvalidAppliedCoupon[],
-) =>
-  left.length === right.length &&
-  left.every((coupon, index) => {
-    const nextCoupon = right[index]
-    return (
-      coupon.couponCode === nextCoupon?.couponCode &&
-      coupon.ownerType === nextCoupon.ownerType &&
-      coupon.storeId === nextCoupon.storeId &&
-      coupon.reasonCode === nextCoupon.reasonCode &&
-      coupon.message === nextCoupon.message
-    )
-  })
 
 const isSummaryEqual = (left: CartSummary, right: CartSummary) =>
   left.discountAmount === right.discountAmount &&

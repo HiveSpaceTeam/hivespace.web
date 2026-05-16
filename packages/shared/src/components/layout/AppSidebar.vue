@@ -1,22 +1,36 @@
 <template>
   <aside
     :class="[
-      'fixed inset-y-0 left-0 z-999 flex w-[260px] flex-col border-r border-gray-200 bg-white px-4 py-5 transition-transform duration-200 dark:border-gray-800 dark:bg-gray-900',
+      'fixed inset-y-0 left-0 z-999 flex flex-col border-r border-gray-200 bg-white transition-all duration-200 dark:border-gray-800 dark:bg-gray-900',
       isMobileOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
+      isExpanded || isHovered ? 'lg:w-[260px] px-4 py-5' : 'lg:w-[90px] px-2 py-5',
     ]"
+    @mouseenter="!isExpanded && setIsHovered(true)"
+    @mouseleave="setIsHovered(false)"
   >
-    <div class="px-3 pb-4">
+    <div :class="['pb-4', isExpanded || isHovered || isMobileOpen ? 'px-3' : 'flex justify-center']">
       <router-link to="/" class="block">
-        <img class="dark:hidden h-7 w-auto" src="/images/logo/logo-light.svg" alt="Logo" />
-        <img class="hidden dark:block h-7 w-auto" src="/images/logo/logo-dark.svg" alt="Logo" />
+        <template v-if="isExpanded || isHovered || isMobileOpen">
+          <img class="dark:hidden h-7 w-auto" src="/images/logo/logo-light.svg" alt="Logo" />
+          <img class="hidden dark:block h-7 w-auto" src="/images/logo/logo-dark.svg" alt="Logo" />
+        </template>
+        <img v-else class="h-7 w-auto" src="/images/logo/logo-icon.svg" alt="Logo" />
       </router-link>
     </div>
 
     <nav class="flex-1 overflow-y-auto pr-1">
       <div class="space-y-6">
         <div v-for="(menuGroup, groupIndex) in props.menuGroups" :key="groupIndex">
-          <h2 class="px-3 text-[11px] font-bold uppercase tracking-[0.08em] text-gray-500">
-            {{ menuGroup.title }}
+          <h2
+            :class="[
+              'text-[11px] font-bold uppercase tracking-[0.08em] text-gray-500',
+              isExpanded || isHovered || isMobileOpen ? 'px-3' : 'flex justify-center',
+            ]"
+          >
+            <template v-if="isExpanded || isHovered || isMobileOpen">
+              {{ menuGroup.title }}
+            </template>
+            <HorizontalDots v-else />
           </h2>
 
           <ul class="mt-2 space-y-1">
@@ -26,14 +40,19 @@
                 @click="toggleSubmenu(groupIndex, index)"
                 :class="[
                   'flex w-full items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors',
+                  isExpanded || isHovered || isMobileOpen ? 'justify-start' : 'lg:justify-center',
                   isSubmenuOpen(groupIndex, index)
-                    ? 'bg-brand-50 font-medium text-brand-700 dark:bg-brand-500/15 dark:text-brand-400'
+                    ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-400'
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-white/5',
                 ]"
               >
                 <component :is="item.icon" class="h-5 w-5 shrink-0" />
-                <span class="font-semibold">{{ item.name }}</span>
-                <ChevronDownIcon class="ml-auto h-4 w-4 transition-transform" :class="isSubmenuOpen(groupIndex, index) ? 'rotate-180' : ''" />
+                <span v-if="isExpanded || isHovered || isMobileOpen" class="font-semibold">{{ item.name }}</span>
+                <ChevronDownIcon
+                  v-if="isExpanded || isHovered || isMobileOpen"
+                  class="ml-auto h-4 w-4 transition-transform"
+                  :class="isSubmenuOpen(groupIndex, index) ? 'rotate-180' : ''"
+                />
               </button>
 
               <router-link
@@ -41,15 +60,16 @@
                 :to="item.path"
                 :class="[
                   'flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-semibold transition-colors',
+                  isExpanded || isHovered || isMobileOpen ? 'justify-start' : 'lg:justify-center',
                   isActive(item.path)
-                    ? 'bg-brand-50 font-medium text-brand-700 dark:bg-brand-500/15 dark:text-brand-400'
+                    ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-400'
                     : 'text-gray-700 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-white/5',
                 ]"
               >
                 <component :is="item.icon" class="h-5 w-5 shrink-0" />
-                <span class="font-semibold">{{ item.name }}</span>
+                <span v-if="isExpanded || isHovered || isMobileOpen" class="font-semibold">{{ item.name }}</span>
                 <span
-                  v-if="item.badge"
+                  v-if="item.badge && (isExpanded || isHovered || isMobileOpen)"
                   :class="[
                     'ml-auto inline-flex rounded-full px-2 py-0.5 text-[11px] font-medium',
                     badgeClasses[item.badgeTone ?? 'primary'],
@@ -60,7 +80,7 @@
               </router-link>
 
               <transition @enter="startTransition" @after-enter="endTransition" @before-leave="startTransition" @after-leave="endTransition">
-                <div v-show="isSubmenuOpen(groupIndex, index)">
+                <div v-show="isSubmenuOpen(groupIndex, index) && (isExpanded || isHovered || isMobileOpen)">
                   <ul class="ml-8 mt-2 space-y-1">
                     <li v-for="subItem in item.subItems" :key="subItem.name">
                       <router-link
@@ -68,7 +88,7 @@
                         :class="[
                           'block rounded-lg px-3 py-2 text-sm font-semibold',
                           isActive(subItem.path)
-                            ? 'bg-brand-50 font-medium text-brand-700 dark:bg-brand-500/15 dark:text-brand-400'
+                            ? 'bg-brand-50 text-brand-700 dark:bg-brand-500/15 dark:text-brand-400'
                             : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-400 dark:hover:bg-white/5',
                         ]"
                       >
@@ -90,6 +110,7 @@
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
 import ChevronDownIcon from '../../icons/ChevronDownIcon.vue'
+import HorizontalDots from '../../icons/HorizontalDots.vue'
 import { useSidebar } from '../../composables/useSidebar'
 import type { SidebarMenuGroup } from '../../types/sidebar.types'
 
@@ -105,7 +126,7 @@ const badgeClasses = {
 }
 
 const route = useRoute()
-const { isMobileOpen, openSubmenu } = useSidebar()
+const { isExpanded, isHovered, isMobileOpen, openSubmenu, setIsHovered } = useSidebar()
 
 const isActive = (path: string) => route.path === path
 
