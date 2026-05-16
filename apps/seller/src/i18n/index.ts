@@ -2,6 +2,7 @@ import { createI18n } from 'vue-i18n'
 import { CULTURE_TEXT, en as sharedEn, vi as sharedVi } from '@hivespace/shared'
 
 // Import English translation files
+import enCommon from './locales/en/common.json'
 import enPages from './locales/en/pages.json'
 import enBackendErrors from './locales/en/backend-errors.json'
 import enRegisterStore from './locales/en/register-store.json'
@@ -13,6 +14,7 @@ import enOrder from './locales/en/order.json'
 import enNotification from './locales/en/notification.json'
 
 // Import Vietnamese translation files
+import viCommon from './locales/vi/common.json'
 import viPages from './locales/vi/pages.json'
 import viBackendErrors from './locales/vi/backend-errors.json'
 import viRegisterStore from './locales/vi/register-store.json'
@@ -26,6 +28,10 @@ import viNotification from './locales/vi/notification.json'
 // Merge translations for each language
 const en = {
   ...sharedEn,
+  common: {
+    ...sharedEn.common,
+    ...enCommon,
+  },
   pages: enPages,
   backendErrors: enBackendErrors,
   registerStore: enRegisterStore,
@@ -39,6 +45,10 @@ const en = {
 
 const vi = {
   ...sharedVi,
+  common: {
+    ...sharedVi.common,
+    ...viCommon,
+  },
   product: viProduct,
   pages: viPages,
   backendErrors: viBackendErrors,

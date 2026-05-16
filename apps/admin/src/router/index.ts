@@ -1,6 +1,14 @@
 import { useAuth, ServerError, Maintenance, NotFound, Default } from '@hivespace/shared'
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
+import i18n from '@/i18n'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    titleKey?: string
+    allowAnonymous?: boolean
+  }
+}
 
 const buildDemoRoutes = (demoRoutes: RouteRecordRaw[]): RouteRecordRaw[] =>
   demoRoutes.map((route): RouteRecordRaw => {
@@ -10,7 +18,7 @@ const buildDemoRoutes = (demoRoutes: RouteRecordRaw[]): RouteRecordRaw[] =>
         if (child.path === 'icons') {
           return {
             ...child,
-            component: () => import('@/pages/Icons.vue'),
+            component: () => import('@/pages/IconsPage.vue'),
           } as RouteRecordRaw
         }
         return child
@@ -21,8 +29,8 @@ const buildDemoRoutes = (demoRoutes: RouteRecordRaw[]): RouteRecordRaw[] =>
         children.push({
           path: 'icons',
           name: 'Icons',
-          component: () => import('@/pages/Icons.vue'),
-          meta: { title: 'Icons' },
+          component: () => import('@/pages/IconsPage.vue'),
+          meta: { titleKey: 'icons.title' },
         })
       }
 
@@ -44,40 +52,40 @@ const mainRoutes = [
   {
     path: '/callback/logout',
     name: 'LogoutCallback',
-    component: () => import('@/pages/Callback/LogoutCallback.vue'),
+    component: () => import('@/pages/Callback/LogoutCallbackPage.vue'),
     meta: { allowAnonymous: true },
   },
   {
     path: '/callback/login',
     name: 'Callback',
-    component: () => import('@/pages/Callback/LoginCallback.vue'),
+    component: () => import('@/pages/Callback/LoginCallbackPage.vue'),
     meta: { allowAnonymous: true },
   },
   {
     path: '/server-error',
     name: 'ServerError',
     component: ServerError,
-    meta: { title: 'Server Error', allowAnonymous: true },
+    meta: { titleKey: 'common.serverError.title', allowAnonymous: true },
   },
   {
     path: '/maintenance',
     name: 'Maintenance',
     component: Maintenance,
-    meta: { title: 'Maintenance', allowAnonymous: true },
+    meta: { titleKey: 'common.maintenance.title', allowAnonymous: true },
   },
   {
     path: '/',
     name: 'Default',
     component: Default,
     props: { redirectPath: '/dashboard', showSignUp: false },
-    meta: { title: 'HiveSpace - Admin Portal', allowAnonymous: true },
+    meta: { titleKey: 'common.default.title', allowAnonymous: true },
   },
   ...devDemoRoutes,
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: NotFound,
-    meta: { title: 'Not Found', allowAnonymous: true },
+    meta: { titleKey: 'common.notFound.title', allowAnonymous: true },
   },
 ]
 
@@ -90,41 +98,68 @@ const router = createRouter({
     {
       path: '/dashboard',
       name: 'Dashboard',
-      component: () => import('@/pages/Dashboard.vue'),
-      meta: { title: 'Dashboard' },
+      component: () => import('@/pages/DashboardPage.vue'),
+      meta: { titleKey: 'dashboard.title' },
     },
     {
       path: '/merchants',
       name: 'Merchants',
-      component: () => import('@/pages/Merchants/MerchantManagement.vue'),
-      meta: { title: 'Merchants' },
+      component: () => import('@/pages/Merchants/MerchantsPage.vue'),
+      meta: { titleKey: 'merchants.title' },
     },
     {
       path: '/configuration',
       name: 'Configuration',
-      component: () => import('@/pages/Configuration/Configuration.vue'),
-      meta: { title: 'Configuration' },
+      component: () => import('@/pages/Configuration/ConfigurationPage.vue'),
+      meta: { titleKey: 'configuration.title' },
+    },
+    {
+      path: '/accounts',
+      name: 'Accounts',
+      component: () => import('@/pages/Accounts/AccountsPage.vue'),
+      meta: { titleKey: 'accounts.title' },
+    },
+    {
+      path: '/buyers',
+      name: 'Buyers',
+      component: () => import('@/pages/Buyers/BuyersPage.vue'),
+      meta: { titleKey: 'buyers.title' },
+    },
+    {
+      path: '/audit-log',
+      name: 'Audit Log',
+      component: () => import('@/pages/AuditLog/AuditLogPage.vue'),
+      meta: { titleKey: 'auditLog.title' },
+    },
+    {
+      path: '/kyc-queue',
+      name: 'KycQueue',
+      component: () => import('@/pages/KycQueue/KycQueuePage.vue'),
+      meta: { titleKey: 'common.kycQueue' },
+    },
+    {
+      path: '/disputes',
+      name: 'Disputes',
+      component: () => import('@/pages/Disputes/DisputesPage.vue'),
+      meta: { titleKey: 'common.disputes' },
+    },
+    {
+      path: '/scheduled-jobs',
+      name: 'ScheduledJobs',
+      component: () => import('@/pages/ScheduledJobs/ScheduledJobsPage.vue'),
+      meta: { titleKey: 'common.scheduledJobs' },
     },
     {
       path: '/account',
-      children: [
-        {
-          path: '',
-          redirect: '/account/user-management',
-        },
-        {
-          path: 'user-management',
-          name: 'User management',
-          component: () => import('@/pages/Accounts/UserManagement.vue'),
-          meta: { title: 'User management' },
-        },
-        {
-          path: 'admin-management',
-          name: 'Admin management',
-          component: () => import('@/pages/Accounts/AdminManagement.vue'),
-          meta: { title: 'Admin management' },
-        },
-      ],
+      redirect: '/buyers',
+    },
+    {
+      path: '/account/admin-management',
+      redirect: '/accounts',
+    },
+    {
+      path: '/account/user-management',
+      redirect: '/buyers',
     },
     ...mainRoutes,
   ],
@@ -133,7 +168,7 @@ const router = createRouter({
 export default router
 
 router.beforeEach(async (to, _from, next) => {
-  document.title = `${to.meta.title}`
+  document.title = to.meta.titleKey ? i18n.global.t(to.meta.titleKey) : 'HiveSpace'
   if (to.meta.allowAnonymous) {
     next()
     return

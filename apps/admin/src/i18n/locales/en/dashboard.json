@@ -1,0 +1,31 @@
+{
+  "title": "Dashboard",
+  "pageTitle": "Platform overview",
+  "actions": {
+    "exportAudit": "Export audit",
+    "inviteAdmin": "Invite admin"
+  },
+  "kpi": {
+    "activeMerchants": "Active merchants",
+    "gmvLast24h": "GMV last 24h",
+    "openDisputes": "Open disputes",
+    "kycPending": "KYC pending",
+    "vsLast30d": "vs last 30d",
+    "gmvUnit": "B"
+  },
+  "chart": {
+    "title": "GMV trend",
+    "gmvSeries": "GMV (₫B)",
+    "tooltipUnit": "₫{value}B"
+  },
+  "activity": {
+    "title": "Recent activity"
+  },
+  "adminTable": {
+    "title": "Recent admin sign-ins",
+    "subtitle": "Last 24h · staff activity at a glance",
+    "viewAll": "View all admins",
+    "footerStats": "21 active admins · 3 pending invites · ",
+    "manageAll": "manage all"
+  }
+}

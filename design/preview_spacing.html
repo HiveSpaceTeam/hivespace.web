@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HiveSpace · Radii &amp; Shadows</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<style>
+  body { margin: 0; padding: 40px; background: var(--gray-50); }
+  .wrap { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 32px; }
+  h2 { font-size: 13px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 20px 0; }
+  .card {
+    background: #fff; border: 1px solid var(--gray-200); border-radius: 12px;
+    padding: 32px;
+  }
+  .grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+  .tile {
+    display: flex; flex-direction: column; align-items: center; gap: 10px;
+    font-family: var(--font-mono); font-size: 11px; color: var(--gray-500);
+  }
+  .rad-box, .sh-box {
+    width: 120px; height: 80px; background: #fff;
+    display: flex; align-items: center; justify-content: center;
+    color: var(--brand-500); font-size: 14px; font-weight: 600; font-family: var(--font-sans);
+  }
+  .rad-box { border: 2px solid var(--brand-500); }
+  .rad-sm { border-radius: 6px; }
+  .rad-md { border-radius: 8px; }
+  .rad-lg { border-radius: 12px; }
+  .rad-xl { border-radius: 16px; }
+  .rad-full { border-radius: 9999px; }
+  .rad-none { border-radius: 0; }
+
+  .sh-wrap { padding: 24px; background: var(--gray-50); border-radius: 8px; }
+  .sh-xs  { box-shadow: var(--shadow-xs); }
+  .sh-sm  { box-shadow: var(--shadow-sm); }
+  .sh-md  { box-shadow: var(--shadow-md); }
+  .sh-lg  { box-shadow: var(--shadow-lg); }
+  .sh-xl  { box-shadow: var(--shadow-xl); }
+  .sh-ring{ box-shadow: var(--shadow-focus-ring); }
+
+  .space-scale { display: flex; flex-direction: column; gap: 8px; }
+  .space-row {
+    display: grid; grid-template-columns: 80px 80px 1fr;
+    align-items: center; gap: 12px;
+    font-family: var(--font-mono); font-size: 12px; color: var(--gray-500);
+  }
+  .space-bar { height: 8px; background: var(--brand-500); border-radius: 2px; }
+</style>
+</head>
+<body>
+  <div class="wrap">
+
+    <div class="card">
+      <h2>Radii · used everywhere</h2>
+      <div class="grid">
+        <div class="tile"><div class="rad-box rad-sm">sm</div><span>6px · sparingly</span></div>
+        <div class="tile"><div class="rad-box rad-md">md</div><span>8px · buttons, inputs</span></div>
+        <div class="tile"><div class="rad-box rad-lg">lg</div><span>12px · cards</span></div>
+        <div class="tile"><div class="rad-box rad-xl">xl</div><span>16px · modals</span></div>
+        <div class="tile"><div class="rad-box rad-full">full</div><span>9999px · pills, avatars</span></div>
+        <div class="tile"><div class="rad-box rad-none">none</div><span>0 · edge-to-edge</span></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Shadow elevation</h2>
+      <div class="grid">
+        <div class="tile"><div class="sh-wrap"><div class="sh-box sh-xs">xs</div></div><span>inputs, default btn</span></div>
+        <div class="tile"><div class="sh-wrap"><div class="sh-box sh-sm">sm</div></div><span>menu items, chips</span></div>
+        <div class="tile"><div class="sh-wrap"><div class="sh-box sh-md">md</div></div><span>popovers, drawers</span></div>
+        <div class="tile"><div class="sh-wrap"><div class="sh-box sh-lg">lg</div></div><span>modals</span></div>
+        <div class="tile"><div class="sh-wrap"><div class="sh-box sh-xl">xl</div></div><span>toasts, command-k</span></div>
+        <div class="tile"><div class="sh-wrap"><div class="sh-box sh-ring">focus</div></div><span>focus ring · brand/12</span></div>
+      </div>
+    </div>
+
+    <div class="card" style="grid-column: 1 / -1;">
+      <h2>Spacing scale · 4px base</h2>
+      <div class="space-scale">
+        <div class="space-row"><span>space-1</span><span>4px</span><div class="space-bar" style="width:4px"></div></div>
+        <div class="space-row"><span>space-2</span><span>8px</span><div class="space-bar" style="width:8px"></div></div>
+        <div class="space-row"><span>space-3</span><span>12px</span><div class="space-bar" style="width:12px"></div></div>
+        <div class="space-row"><span>space-4</span><span>16px</span><div class="space-bar" style="width:16px"></div></div>
+        <div class="space-row"><span>space-5</span><span>20px</span><div class="space-bar" style="width:20px"></div></div>
+        <div class="space-row"><span>space-6</span><span>24px</span><div class="space-bar" style="width:24px"></div></div>
+        <div class="space-row"><span>space-8</span><span>32px</span><div class="space-bar" style="width:32px"></div></div>
+        <div class="space-row"><span>space-10</span><span>40px</span><div class="space-bar" style="width:40px"></div></div>
+        <div class="space-row"><span>space-12</span><span>48px</span><div class="space-bar" style="width:48px"></div></div>
+        <div class="space-row"><span>space-16</span><span>64px</span><div class="space-bar" style="width:64px"></div></div>
+      </div>
+    </div>
+
+  </div>
+</body>
+</html>

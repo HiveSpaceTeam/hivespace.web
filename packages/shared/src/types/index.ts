@@ -4,6 +4,7 @@ export * from '../features/user-profile/user-profile.types'
 
 // API common types (kept under api for backend contracts)
 export * from './common.types'
+export * from './coupon.types'
 
 // Utility types - Helper and common types
 export * from './util.type'

@@ -1,0 +1,7 @@
+{
+  "title": "Bộ sưu tập biểu tượng",
+  "description": "Tất cả biểu tượng có sẵn trong dự án. Bấm vào mỗi biểu tượng để sao chép tên của nó.",
+  "totalLabel": "Tổng số biểu tượng",
+  "copiedMessage": "Đã sao chép tên biểu tượng vào bộ nhớ tạm!",
+  "copyTitle": "Bấm để sao chép: {name}"
+}

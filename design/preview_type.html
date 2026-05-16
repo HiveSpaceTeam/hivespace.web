@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HiveSpace · Type</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<style>
+  body { margin: 0; padding: 40px; background: #fff; }
+  .wrap { max-width: 1200px; margin: 0 auto; }
+  h1.head { font-size: 13px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 32px 0; }
+  .row {
+    display: grid; grid-template-columns: 120px 80px 1fr auto;
+    gap: 24px; align-items: baseline;
+    padding: 20px 0; border-bottom: 1px solid var(--gray-200);
+  }
+  .tag { font-family: var(--font-mono); font-size: 12px; color: var(--gray-500); text-transform: uppercase; }
+  .size { font-family: var(--font-mono); font-size: 12px; color: var(--gray-500); }
+  .sample { color: var(--gray-900); font-family: var(--font-sans); }
+  .weight-note { font-family: var(--font-mono); font-size: 11px; color: var(--gray-400); }
+  .s-2xl { font-size: 72px; line-height: 90px; font-weight: 700; letter-spacing: -0.02em; }
+  .s-xl  { font-size: 60px; line-height: 72px; font-weight: 700; letter-spacing: -0.02em; }
+  .s-lg  { font-size: 48px; line-height: 60px; font-weight: 700; letter-spacing: -0.015em; }
+  .s-md  { font-size: 36px; line-height: 44px; font-weight: 600; letter-spacing: -0.01em; }
+  .s-sm  { font-size: 30px; line-height: 38px; font-weight: 600; letter-spacing: -0.01em; }
+  .s-txl { font-size: 20px; line-height: 30px; font-weight: 500; }
+  .s-base{ font-size: 16px; line-height: 24px; }
+  .s-tsm { font-size: 14px; line-height: 20px; }
+  .s-txs { font-size: 12px; line-height: 18px; }
+
+  .stack { display: flex; flex-direction: column; gap: 4px; }
+  .family-block {
+    display: grid; grid-template-columns: 200px 1fr; gap: 32px; align-items: center;
+    padding: 24px 0; border-bottom: 1px solid var(--gray-200);
+  }
+  .family-block h3 { margin: 0; font-size: 32px; color: var(--gray-900); font-weight: 500; }
+  .family-block p { margin: 0; font-size: 13px; color: var(--gray-500); font-family: var(--font-mono); }
+  .weights { display: flex; gap: 24px; font-size: 18px; color: var(--gray-900); }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <h1 class="head">Type — Montserrat / scale</h1>
+
+    <div class="family-block">
+      <div>
+        <p>Primary · Montserrat</p>
+      </div>
+      <div class="weights">
+        <span style="font-weight:400">Regular 400</span>
+        <span style="font-weight:500">Medium 500</span>
+        <span style="font-weight:600">Semibold 600</span>
+        <span style="font-weight:700">Bold 700</span>
+      </div>
+    </div>
+
+    <div class="row">
+      <span class="tag">title-2xl</span><span class="size">72 / 90</span>
+      <div class="sample s-2xl">Aa</div>
+      <span class="weight-note">bold 700</span>
+    </div>
+    <div class="row">
+      <span class="tag">title-xl</span><span class="size">60 / 72</span>
+      <div class="sample s-xl">Scale is discipline.</div>
+      <span class="weight-note">bold 700</span>
+    </div>
+    <div class="row">
+      <span class="tag">title-lg</span><span class="size">48 / 60</span>
+      <div class="sample s-lg">Bring the whole team on board</div>
+      <span class="weight-note">bold 700</span>
+    </div>
+    <div class="row">
+      <span class="tag">title-md</span><span class="size">36 / 44</span>
+      <div class="sample s-md">Dashboard · HiveSpace Admin</div>
+      <span class="weight-note">semibold 600</span>
+    </div>
+    <div class="row">
+      <span class="tag">title-sm</span><span class="size">30 / 38</span>
+      <div class="sample s-sm">Product catalogue</div>
+      <span class="weight-note">semibold 600</span>
+    </div>
+    <div class="row">
+      <span class="tag">theme-xl</span><span class="size">20 / 30</span>
+      <div class="sample s-txl">Section heading &amp; card titles</div>
+      <span class="weight-note">medium 500</span>
+    </div>
+    <div class="row">
+      <span class="tag">base</span><span class="size">16 / 24</span>
+      <div class="sample s-base">Body text. The lazy dog jumps over seven quick foxes before noon.</div>
+      <span class="weight-note">regular 400</span>
+    </div>
+    <div class="row">
+      <span class="tag">theme-sm</span><span class="size">14 / 20</span>
+      <div class="sample s-tsm">Default UI — buttons, inputs, table rows, nav items all sit here.</div>
+      <span class="weight-note">regular 400 / medium 500</span>
+    </div>
+    <div class="row">
+      <span class="tag">theme-xs</span><span class="size">12 / 18</span>
+      <div class="sample s-txs">Captions, table headers, helper text, timestamps.</div>
+      <span class="weight-note">regular 400 / medium 500</span>
+    </div>
+  </div>
+</body>
+</html>

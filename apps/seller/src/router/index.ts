@@ -1,6 +1,14 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { useAuth, Maintenance, NotFound, ServerError, Default } from '@hivespace/shared'
 import type { RouteRecordRaw } from 'vue-router'
+import i18n from '@/i18n'
+
+declare module 'vue-router' {
+  interface RouteMeta {
+    titleKey?: string
+    allowAnonymous?: boolean
+  }
+}
 
 const buildDemoRoutes = (demoRoutes: RouteRecordRaw[]): RouteRecordRaw[] =>
   demoRoutes.map((route): RouteRecordRaw => {
@@ -10,7 +18,7 @@ const buildDemoRoutes = (demoRoutes: RouteRecordRaw[]): RouteRecordRaw[] =>
         if (child.path === 'icons') {
           return {
             ...child,
-            component: () => import('@/pages/Icons.vue'),
+            component: () => import('@/pages/IconsPage.vue'),
           } as RouteRecordRaw
         }
         return child
@@ -21,18 +29,18 @@ const buildDemoRoutes = (demoRoutes: RouteRecordRaw[]): RouteRecordRaw[] =>
         children.push({
           path: 'icons',
           name: 'Icons',
-          component: () => import('@/pages/Icons.vue'),
-          meta: { title: 'Icons' },
+          component: () => import('@/pages/IconsPage.vue'),
+          meta: { titleKey: 'pages.icons' },
         })
       }
 
       return {
         ...route,
-        component: () => import('@/pages/DemoWrapper.vue'),
+        component: () => import('@/pages/DemoWrapperPage.vue'),
         children,
       } as RouteRecordRaw
     }
-    return { ...route, component: () => import('@/pages/DemoWrapper.vue') } as RouteRecordRaw
+    return { ...route, component: () => import('@/pages/DemoWrapperPage.vue') } as RouteRecordRaw
   })
 
 const devDemoRoutes = import.meta.env.DEV
@@ -47,46 +55,46 @@ const mainRoutes = [
   {
     path: '/callback/logout',
     name: 'LogoutCallback',
-    component: () => import('@/pages/Callback/LogoutCallback.vue'),
+    component: () => import('@/pages/Callback/LogoutCallbackPage.vue'),
     meta: { allowAnonymous: true },
   },
   {
     path: '/callback/login',
     name: 'Callback',
-    component: () => import('@/pages/Callback/LoginCallback.vue'),
+    component: () => import('@/pages/Callback/LoginCallbackPage.vue'),
     meta: { allowAnonymous: true },
   },
   {
     path: '/verify-email-callback',
     name: 'Verify Email Callback',
-    component: () => import('@/pages/Callback/VerifyEmailCallback.vue'),
-    meta: { title: 'Verify Email', allowAnonymous: true },
+    component: () => import('@/pages/Callback/VerifyEmailCallbackPage.vue'),
+    meta: { titleKey: 'verifyEmailCallback.title', allowAnonymous: true },
   },
   {
     path: '/server-error',
     name: 'ServerError',
     component: ServerError,
-    meta: { title: 'Server Error', allowAnonymous: true },
+    meta: { titleKey: 'common.serverError.title', allowAnonymous: true },
   },
   {
     path: '/maintenance',
     name: 'Maintenance',
     component: Maintenance,
-    meta: { title: 'Maintenance', allowAnonymous: true },
+    meta: { titleKey: 'common.maintenance.title', allowAnonymous: true },
   },
   {
     path: '/',
     name: 'Default',
     component: Default,
     props: { redirectPath: '/product/list', showSignUp: true },
-    meta: { title: 'HiveSpace - Seller Center', allowAnonymous: true },
+    meta: { titleKey: 'common.default.title', allowAnonymous: true },
   },
   ...devDemoRoutes,
   {
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: NotFound,
-    meta: { title: 'Not Found', allowAnonymous: true },
+    meta: { titleKey: 'common.notFound.title', allowAnonymous: true },
   },
 ]
 
@@ -106,20 +114,20 @@ const router = createRouter({
         {
           path: 'list',
           name: 'List product',
-          component: () => import('@/pages/Products/ProductList.vue'),
-          meta: { title: 'Product List' },
+          component: () => import('@/pages/Products/ProductListPage.vue'),
+          meta: { titleKey: 'pages.productList' },
         },
         {
           path: 'new',
           name: 'New Product',
-          component: () => import('@/pages/Products/UpsertProduct.vue'),
-          meta: { title: 'Add product' },
+          component: () => import('@/pages/Products/UpsertProductPage.vue'),
+          meta: { titleKey: 'product.createProduct' },
         },
         {
           path: ':id',
           name: 'Edit Product',
-          component: () => import('@/pages/Products/UpsertProduct.vue'),
-          meta: { title: 'Edit product' },
+          component: () => import('@/pages/Products/UpsertProductPage.vue'),
+          meta: { titleKey: 'product.editProduct' },
         },
       ],
     },
@@ -133,8 +141,8 @@ const router = createRouter({
         {
           path: 'all',
           name: 'Order Management',
-          component: () => import('@/pages/Orders/OrderManagementView.vue'),
-          meta: { title: 'Quản lý đơn hàng' },
+          component: () => import('@/pages/Orders/OrderManagementPage.vue'),
+          meta: { titleKey: 'order.title' },
         },
       ],
     },
@@ -148,40 +156,40 @@ const router = createRouter({
         {
           path: 'coupons',
           name: 'Coupon Management',
-          component: () => import('@/pages/Marketing/CouponList.vue'),
-          meta: { title: 'Coupon Management' },
+          component: () => import('@/pages/Marketing/CouponListPage.vue'),
+          meta: { titleKey: 'coupon.title' },
         },
         {
           path: 'coupons/create',
           name: 'Create Coupon',
-          component: () => import('@/pages/Marketing/CouponDetail.vue'),
-          meta: { title: 'Create Coupon' },
+          component: () => import('@/pages/Marketing/CouponDetailPage.vue'),
+          meta: { titleKey: 'coupon.detail.titleCreate' },
         },
         {
           path: 'coupons/detail/:id',
           name: 'Coupon Detail',
-          component: () => import('@/pages/Marketing/CouponDetail.vue'),
-          meta: { title: 'Coupon Detail' },
+          component: () => import('@/pages/Marketing/CouponDetailPage.vue'),
+          meta: { titleKey: 'coupon.detail.titleEdit' },
         }
       ],
     },
     {
       path: '/notifications',
       name: 'Notifications',
-      component: () => import('@/pages/Notifications/NotificationsView.vue'),
-      meta: { title: 'Notifications' },
+      component: () => import('@/pages/Notifications/NotificationsPage.vue'),
+      meta: { titleKey: 'notification.title' },
     },
     {
       path: '/register-seller',
       name: 'Register Seller',
-      component: () => import('@/pages/RegisterStore.vue'),
-      meta: { title: 'Register Seller' },
+      component: () => import('@/pages/RegisterStorePage.vue'),
+      meta: { titleKey: 'registerStore.title' },
     },
     {
       path: '/verify-email',
       name: 'Verify Email',
-      component: () => import('@/pages/VerifyEmail.vue'),
-      meta: { title: 'Verify Email' },
+      component: () => import('@/pages/VerifyEmailPage.vue'),
+      meta: { titleKey: 'verifyEmail.title' },
     },
     // Grouped block (callbacks, pages, default, demo, notFound)
     ...mainRoutes,
@@ -191,7 +199,7 @@ const router = createRouter({
 export default router
 
 router.beforeEach(async (to, _from, next) => {
-  document.title = `${to.meta.title}`
+  document.title = to.meta.titleKey ? i18n.global.t(to.meta.titleKey) : 'HiveSpace'
   // Let callback/error routes through without auth checks
   if (to.meta.allowAnonymous) {
     next()

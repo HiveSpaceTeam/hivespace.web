@@ -22,13 +22,13 @@ const routes = [
   {
     path: '/callback/logout',
     name: 'LogoutCallback',
-    component: () => import('@/pages/Callback/LogoutCallback.vue'),
+    component: () => import('@/pages/Callback/LogoutCallbackPage.vue'),
     meta: { allowAnonymous: true },
   },
   {
     path: '/callback/login',
     name: 'Callback',
-    component: () => import('@/pages/Callback/LoginCallback.vue'),
+    component: () => import('@/pages/Callback/LoginCallbackPage.vue'),
     meta: { allowAnonymous: true },
   },
   {
@@ -52,12 +52,12 @@ const routes = [
   {
     path: '/product',
     name: 'Product',
-    component: () => import('@/pages/Product/ProductDetail.vue'),
+    component: () => import('@/pages/Product/ProductDetailPage.vue'),
     meta: { titleKey: 'storefront.pageTitle.product', allowAnonymous: true },
   },
   {
     path: '/profile',
-    name: 'Profile',
+    name: 'BuyerProfile',
     component: () => import('@/pages/Profile/ProfilePage.vue'),
     meta: { titleKey: 'storefront.pageTitle.profile' },
   },
@@ -83,13 +83,13 @@ const routes = [
     path: '/server-error',
     name: 'ServerError',
     component: ServerError,
-    meta: { titleKey: 'storefront.pageTitle.serverError', allowAnonymous: true },
+    meta: { titleKey: 'storefront.pageTitle.serverError', allowAnonymous: true, layout: 'none' },
   },
   {
     path: '/maintenance',
     name: 'Maintenance',
     component: Maintenance,
-    meta: { titleKey: 'storefront.pageTitle.maintenance', allowAnonymous: true },
+    meta: { titleKey: 'storefront.pageTitle.maintenance', allowAnonymous: true, layout: 'none' },
   },
   {
     path: '/payment/result',
@@ -100,7 +100,7 @@ const routes = [
   {
     path: '/notifications',
     name: 'Notifications',
-    component: () => import('@/pages/Notifications/NotificationsView.vue'),
+    component: () => import('@/pages/Notifications/NotificationsPage.vue'),
     meta: { titleKey: 'storefront.pageTitle.notifications' },
   },
   ...devDemoRoutes,
@@ -108,7 +108,7 @@ const routes = [
     path: '/:pathMatch(.*)*',
     name: 'NotFound',
     component: NotFound,
-    meta: { titleKey: 'storefront.pageTitle.notFound', allowAnonymous: true },
+    meta: { titleKey: 'storefront.pageTitle.notFound', allowAnonymous: true, layout: 'none' },
   },
 ]
 

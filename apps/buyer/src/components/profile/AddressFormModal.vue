@@ -1,18 +1,6 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg">
-    <!-- Header -->
-    <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-700">
-      <h2 class="text-base font-semibold text-gray-800 dark:text-gray-100">
-        {{ isEdit ? $t('storefront.address.modalEditTitle') : $t('storefront.address.modalAddTitle') }}
-      </h2>
-      <button type="button" @click="handleClose"
-        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-        <X class="w-5 h-5" />
-      </button>
-    </div>
-
-    <!-- Form -->
-    <form @submit.prevent="handleSubmit" class="px-6 py-5 flex flex-col gap-4">
+  <div class="-mx-6 -mb-6">
+    <form @submit.prevent="handleSubmit" class="px-6 pb-5 flex flex-col gap-4">
       <!-- Name + Phone row -->
       <div class="grid grid-cols-2 gap-3">
         <Input
@@ -67,8 +55,7 @@
       </label>
     </form>
 
-    <!-- Footer -->
-    <div class="flex justify-end gap-3 px-6 pb-6">
+    <div class="flex justify-end gap-3 border-t border-gray-100 dark:border-gray-700 px-6 py-4">
       <Button type="button" variant="outline" :onClick="handleClose">
         {{ $t('storefront.address.cancel') }}
       </Button>
@@ -80,10 +67,9 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, computed } from 'vue'
+import { reactive, watch } from 'vue'
 import { Input, TextArea, Button, useModal } from '@hivespace/shared'
 import { storeToRefs } from 'pinia'
-import { X } from 'lucide-vue-next'
 import { useAddressStore } from '@/stores'
 import type { UserAddress, AddressFormData } from '@/types'
 
@@ -92,8 +78,6 @@ const props = defineProps<{ address?: UserAddress | null }>()
 const { closeModal } = useModal()
 const addressStore = useAddressStore()
 const { isLoading } = storeToRefs(addressStore)
-
-const isEdit = computed(() => !!props.address)
 
 const formData = reactive<AddressFormData>({
   fullName: '',

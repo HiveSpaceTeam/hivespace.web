@@ -15,6 +15,16 @@
           <MoreVertical class="w-6 h-6" />
         </button>
         <HeaderLogo />
+
+        <div class="relative hidden lg:block lg:ml-6 lg:min-w-[280px] lg:max-w-[420px] lg:flex-1">
+          <SearchIcon class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <input
+            type="search"
+            :placeholder="$t('storefront.header.searchPlaceholder')"
+            class="h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-10 text-sm text-gray-700 outline-none placeholder:text-gray-400 focus:border-brand-300 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-200"
+          />
+        </div>
+
         <button @click="toggleApplicationMenu"
           :aria-label="isApplicationMenuOpen ? $t('storefront.header.closeApplicationMenu') : $t('storefront.header.openApplicationMenu')"
           :aria-expanded="isApplicationMenuOpen" aria-controls="application-menu"
@@ -57,8 +67,8 @@ import { useRouter } from 'vue-router'
 import {
   useAuth,
   type MenuItem,
-  stringToNumericTheme,
-  stringToNumericCulture,
+  type ThemeText,
+  type CultureText,
   HeaderLogo,
   ThemeToggler,
   LanguageSwitcher,
@@ -66,6 +76,7 @@ import {
   UserMenu
 } from '@hivespace/shared'
 import { MoreVertical, UserCircle, ShoppingBag } from 'lucide-vue-next'
+import { SearchIcon } from '@hivespace/shared'
 import { useUserSettingsStore } from '@/stores/user-settings.store'
 import { useNotificationStore } from '@/stores'
 
@@ -101,12 +112,12 @@ const toggleApplicationMenu = () => {
   isApplicationMenuOpen.value = !isApplicationMenuOpen.value
 }
 
-const handleThemeChange = async (theme: string) => {
-  await userStore.updateTheme(stringToNumericTheme(theme))
+const handleThemeChange = async (theme: ThemeText) => {
+  await userStore.updateTheme(theme)
 }
 
-const handleCultureChange = async (culture: string) => {
-  await userStore.updateCulture(stringToNumericCulture(culture))
+const handleCultureChange = async (culture: CultureText) => {
+  await userStore.updateCulture(culture)
 }
 
 onMounted(async () => {

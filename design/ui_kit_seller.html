@@ -1,0 +1,1332 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HiveSpace · Seller Center UI Kit</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="components.css">
+<style>
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--gray-50); font-family: 'Montserrat','Inter',sans-serif; }
+  .app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+  /* ===== SIDEBAR ===== */
+  .side {
+    background: #fff; border-right: 1px solid var(--gray-200);
+    display: flex; flex-direction: column; overflow-y: auto; position: sticky; top: 0; height: 100vh;
+  }
+  .side-logo { padding: 18px 20px 12px; display: flex; align-items: center; gap: 10px; border-bottom: 1px solid var(--gray-100); }
+  .side-logo img { height: 26px; }
+  .side-logo .seller-tag { font-size: 11px; color: var(--gray-400); background: var(--gray-100); padding: 2px 8px; border-radius: 9999px; font-weight: 500; }
+
+  .shop-chip {
+    margin: 14px 12px 8px; padding: 12px 14px; border-radius: 10px;
+    background: linear-gradient(135deg, var(--brand-500) 0%, #ee46bc 120%);
+    color: #fff; display: flex; align-items: center; gap: 12px;
+  }
+  .shop-av { width: 38px; height: 38px; border-radius: 8px; background: rgba(255,255,255,0.2); display: inline-flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
+  .shop-meta .name { font-size: 13px; font-weight: 600; line-height: 1.2; }
+  .shop-meta .tier { font-size: 11px; opacity: .8; margin-top: 2px; }
+
+  /* Nav */
+  .nav-section { padding: 16px 12px 4px; }
+  .nav-menu-label { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.08em; padding: 0 8px; margin-bottom: 8px; }
+
+  /* Accordion parent item */
+  .nav-parent {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500;
+    color: var(--gray-700); transition: background .15s; user-select: none;
+    border: 1.5px solid transparent;
+  }
+  .nav-parent:hover { background: var(--gray-50); }
+  .nav-parent.open { color: var(--brand-500); }
+  .nav-parent.active-section { border-color: var(--brand-500); border-radius: 8px; }
+  .nav-parent svg.nav-icon { width: 18px; height: 18px; flex-shrink: 0; color: var(--brand-500); }
+  .nav-parent .chevron { margin-left: auto; width: 16px; height: 16px; transition: transform .2s; flex-shrink: 0; }
+  .nav-parent .chevron.up { transform: rotate(180deg); }
+  .nav-parent .badge { margin-left: auto; }
+
+  /* Sub-items */
+  .nav-children { overflow: hidden; max-height: 0; transition: max-height .2s ease; }
+  .nav-children.open { max-height: 200px; }
+  .nav-child {
+    display: flex; align-items: center; padding: 8px 12px 8px 40px;
+    font-size: 13px; color: var(--gray-600); cursor: pointer; border-radius: 8px;
+    transition: background .12s; margin: 1px 0;
+  }
+  .nav-child:hover { background: var(--gray-50); color: var(--gray-900); }
+  .nav-child.active { background: var(--brand-50); color: var(--brand-500); font-weight: 500; }
+
+  /* Standalone nav item */
+  .nav-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px 12px;
+    border-radius: 8px; cursor: pointer; font-size: 14px; font-weight: 500;
+    color: var(--gray-700); transition: background .15s;
+  }
+  .nav-item:hover { background: var(--gray-50); }
+  .nav-item.active { background: var(--brand-50); color: var(--brand-500); }
+  .nav-item svg { width: 18px; height: 18px; flex-shrink: 0; color: inherit; }
+  .nav-item .badge-ml { margin-left: auto; }
+
+  .side-bottom { margin-top: auto; padding: 16px 12px; border-top: 1px solid var(--gray-100); }
+  .side-promo { background: linear-gradient(135deg, var(--brand-50), #fff); border: 1px solid var(--brand-100); border-radius: 10px; padding: 14px; }
+  .side-promo .t { font-size: 13px; font-weight: 600; color: var(--brand-700); }
+  .side-promo .b { font-size: 12px; color: var(--gray-600); line-height: 1.5; margin-top: 4px; }
+  .side-promo .cta { margin-top: 8px; font-size: 12px; color: var(--brand-500); font-weight: 600; }
+
+  /* ===== TOPBAR ===== */
+  .topbar { background: #fff; border-bottom: 1px solid var(--gray-200); height: 64px; padding: 0 20px; display: flex; align-items: center; justify-content: space-between; gap: 16px; position: sticky; top: 0; z-index: 50; }
+  .topbar-left { display: flex; align-items: center; gap: 12px; }
+  .hamburger { width: 36px; height: 36px; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; color: var(--gray-600); border-radius: 6px; }
+  .hamburger:hover { background: var(--gray-100); }
+  .topbar-right { display: flex; align-items: center; gap: 8px; }
+  .t-icon { width: 36px; height: 36px; border-radius: 9999px; border: 1px solid var(--gray-200); background: #fff; display: inline-flex; align-items: center; justify-content: center; color: var(--gray-500); cursor: pointer; position: relative; flex-shrink: 0; }
+  .t-icon svg { width: 18px; height: 18px; }
+  .t-icon .notif-badge { position: absolute; top: -4px; right: -4px; min-width: 18px; height: 18px; border-radius: 9999px; background: var(--warning-500); color: #fff; font-size: 10px; font-weight: 700; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; border: 2px solid #fff; }
+  .lang-btn { display: flex; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 6px; border: 1px solid var(--gray-200); background: #fff; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--gray-700); }
+  .flag { width: 20px; height: 14px; border-radius: 2px; display: inline-block; overflow: hidden; flex-shrink: 0; background: linear-gradient(180deg, #003399 33%, #fff 33% 66%, #cc0000 66%); }
+  .lang-chevron { width: 12px; height: 12px; color: var(--gray-400); }
+  .user-av { width: 30px; height: 30px; border-radius: 9999px; background: var(--gray-200); color: var(--gray-600); font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+  .user-name { font-size: 13px; font-weight: 500; color: var(--gray-700); cursor: pointer; }
+
+  /* Notification + User dropdowns (shared topbar pattern) */
+  .notif-area { position: relative; }
+  .notif-dropdown {
+    position: absolute; top: calc(100% + 10px); right: 0; width: 380px;
+    background: #fff; border: 1px solid var(--gray-200); border-radius: 12px;
+    box-shadow: var(--shadow-xl); z-index: 300; overflow: hidden; display: none;
+  }
+  .notif-dropdown.open { display: block; }
+  .notif-head { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--gray-200); }
+  .notif-head h3 { margin: 0; font-size: 16px; font-weight: 600; color: var(--gray-900); }
+  .notif-head a { font-size: 13px; color: var(--brand-500); text-decoration: none; font-weight: 500; }
+  .notif-tabs { display: flex; gap: 4px; padding: 10px 16px; border-bottom: 1px solid var(--gray-100); }
+  .notif-tab { padding: 6px 14px; border-radius: 9999px; border: 1px solid var(--gray-200); font-size: 13px; font-weight: 500; color: var(--gray-600); cursor: pointer; background: #fff; font-family: inherit; }
+  .notif-tab.active { background: var(--brand-500); color: #fff; border-color: var(--brand-500); }
+  .notif-item { display: flex; gap: 12px; padding: 14px 20px; cursor: pointer; }
+  .notif-item:hover { background: var(--gray-50); }
+  .notif-av { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; background: var(--brand-50); display: inline-flex; align-items: center; justify-content: center; font-size: 18px; position: relative; }
+  .notif-av .ndot { position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; border-radius: 9999px; background: var(--brand-500); border: 2px solid #fff; }
+  .notif-text { font-size: 13px; color: var(--gray-700); line-height: 1.45; }
+  .notif-text b { color: var(--gray-900); font-weight: 600; }
+  .notif-time { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+
+  .user-area { position: relative; display: flex; align-items: center; }
+  .user-chip { display: flex; align-items: center; gap: 7px; padding: 4px 8px 4px 4px; border-radius: 9999px; border: none; background: transparent; cursor: pointer; font-size: 13px; font-weight: 500; color: var(--gray-700); font-family: inherit; }
+  .user-chip:hover { background: var(--gray-100); }
+  .user-chip .user-name { padding: 0; }
+  .user-dropdown { position: absolute; top: calc(100% + 10px); right: 0; width: 230px; background: #fff; border: 1px solid var(--gray-200); border-radius: 12px; box-shadow: var(--shadow-xl); z-index: 300; overflow: hidden; display: none; }
+  .user-dropdown.open { display: block; }
+  .user-dd-head { padding: 16px 18px 12px; border-bottom: 1px solid var(--gray-100); }
+  .user-dd-name { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+  .user-dd-email { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+  .user-dd-item { display: flex; align-items: center; gap: 10px; padding: 11px 18px; font-size: 14px; color: var(--gray-700); cursor: pointer; font-family: inherit; background: none; border: none; width: 100%; text-align: left; }
+  .user-dd-item:hover { background: var(--gray-50); color: var(--brand-500); }
+  .user-dd-item svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--gray-400); }
+  .user-dd-item:hover svg { color: var(--brand-400); }
+  .user-dd-sep { border: none; border-top: 1px solid var(--gray-100); margin: 2px 0; }
+
+  /* ===== ORDER MANAGEMENT ===== */
+  .ord-tabs { display: flex; gap: 0; flex-wrap: wrap; border-bottom: 1px solid var(--gray-200); margin-bottom: 16px; }
+  .ord-tab {
+    padding: 10px 16px; font-size: 13px; font-weight: 500; color: var(--gray-600);
+    cursor: pointer; background: none; border: none; border-bottom: 2px solid transparent;
+    font-family: inherit; transition: all .12s; white-space: nowrap;
+  }
+  .ord-tab:hover { color: var(--gray-900); }
+  .ord-tab.active { color: var(--brand-500); border: 1.5px solid var(--gray-300); border-radius: 6px; margin: 4px 4px; padding: 6px 12px; border-bottom: 1.5px solid var(--gray-300); }
+  .ord-filter { display: flex; gap: 10px; align-items: center; margin-bottom: 16px; }
+  .ord-filter-select {
+    height: 36px; border: 1px solid var(--gray-300); border-radius: 6px;
+    padding: 0 32px 0 12px; font-size: 13px; font-family: inherit; color: var(--gray-700);
+    background: #fff url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") right 10px center no-repeat;
+    -webkit-appearance: none;
+  }
+  .ord-filter input { height: 36px; border: 1px solid var(--gray-300); border-radius: 6px; padding: 0 12px; font-size: 13px; font-family: inherit; width: 180px; }
+  .ord-filter .apply-btn { height: 36px; padding: 0 18px; background: var(--brand-500); color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .ord-filter .apply-btn:hover { background: var(--brand-600); }
+  .ord-filter .reset-btn { height: 36px; padding: 0 18px; background: #fff; color: var(--gray-700); border: 1px solid var(--gray-300); border-radius: 6px; font-size: 13px; cursor: pointer; font-family: inherit; }
+  .ord-filter .reset-btn:hover { background: var(--gray-50); }
+
+  .ord-meta { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
+  .ord-count { font-size: 14px; font-weight: 500; color: var(--gray-700); }
+  .ord-sort { display: flex; align-items: center; gap: 12px; }
+  .ord-sort-btn { font-size: 13px; color: var(--brand-500); background: none; border: none; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 5px; }
+  .bulk-ship { height: 36px; padding: 0 16px; background: var(--brand-500); color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; display: flex; align-items: center; gap: 6px; }
+  .bulk-ship:hover { background: var(--brand-600); }
+
+  /* Order table */
+  .ord-table { width: 100%; border-collapse: collapse; background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden; }
+  .ord-table th { padding: 10px 14px; font-size: 12px; font-weight: 500; color: var(--gray-500); text-align: left; background: var(--gray-50); border-bottom: 1px solid var(--gray-200); }
+  .ord-table td { padding: 12px 14px; font-size: 13px; color: var(--gray-700); vertical-align: middle; }
+  /* Buyer separator row */
+  .ord-buyer-row td { background: var(--gray-50); border-top: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-200); padding: 8px 14px; }
+  .buyer-meta { display: flex; align-items: center; gap: 8px; }
+  .buyer-av { width: 24px; height: 24px; border-radius: 9999px; border: 1px solid var(--gray-300); display: inline-flex; align-items: center; justify-content: center; color: var(--gray-400); flex-shrink: 0; }
+  .buyer-name { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+  .buyer-email { color: var(--gray-400); }
+  .order-id { font-size: 12px; color: var(--brand-500); font-family: var(--font-mono); }
+
+  /* Product item within order */
+  .ord-prod-img { width: 48px; height: 48px; border-radius: 4px; border: 1px solid var(--gray-200); flex-shrink: 0; object-fit: cover; background-size: cover; }
+  .cod-badge { display: inline-block; background: var(--orange-500); color: #fff; font-size: 10px; font-weight: 700; padding: 1px 6px; border-radius: 3px; margin-bottom: 3px; }
+  .ord-prod-name { font-size: 13px; font-weight: 500; color: var(--gray-900); line-height: 1.3; }
+  .ord-prod-var { font-size: 11px; color: var(--gray-400); margin-top: 2px; line-height: 1.3; }
+  .ord-payment { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+  .ord-status-cod { font-size: 12px; color: var(--brand-500); font-weight: 500; }
+  .ord-status-ship { font-size: 12px; color: var(--success-600); font-weight: 500; }
+  .ord-countdown { font-size: 12px; color: var(--gray-600); }
+  .view-detail { font-size: 13px; color: var(--brand-500); font-weight: 500; background: none; border: none; cursor: pointer; font-family: inherit; padding: 0; }
+  .view-detail:hover { text-decoration: underline; }
+  .ord-actions { display: flex; flex-direction: column; gap: 6px; }
+  .confirm-btn { height: 32px; padding: 0 16px; background: var(--brand-500); color: #fff; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+  .cancel-btn { height: 32px; padding: 0 16px; background: #fff; color: var(--gray-700); border: 1px solid var(--gray-300); border-radius: 6px; font-size: 12px; cursor: pointer; font-family: inherit; }
+  .empty-state { padding: 60px; text-align: center; color: var(--gray-400); font-size: 14px; }
+
+  /* ===== VIEWS ===== */
+  .view { display: none; }
+  .view.active { display: block; }
+  .main { padding: 24px; }
+
+  /* Breadcrumb + page head */
+  .page-head { display: flex; flex-direction: column; gap: 12px; margin-bottom: 20px; }
+  .page-head-top,
+  .page-head-meta { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .page-head-meta { flex-wrap: wrap; }
+  .page-title { margin: 0; font-size: 22px; font-weight: 700; color: var(--gray-900); }
+  .page-sub { margin: 0; font-size: 14px; line-height: 1.5; color: var(--gray-500); }
+  .page-head-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .bc { font-size: 13px; color: var(--gray-500); display: flex; align-items: center; gap: 6px; }
+  .bc a { color: var(--gray-500); text-decoration: none; }
+  .bc .sep { color: var(--gray-400); }
+  .bc .cur { color: var(--gray-700); font-weight: 500; }
+  .bc.page-crumb { margin: 0; justify-content: flex-end; white-space: nowrap; }
+
+  /* ===== STATS ===== */
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 20px; }
+  .stat { background: #fff; border: 1px solid var(--gray-200); border-radius: 12px; padding: 16px 20px; }
+  .stat .ico { width: 34px; height: 34px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 8px; }
+  .stat .v { font-size: 22px; font-weight: 600; color: var(--gray-900); letter-spacing: -0.01em; }
+  .stat .l { font-size: 13px; color: var(--gray-500); margin-top: 2px; }
+
+  /* Product table */
+  .toolbar { padding: 14px 20px; border-bottom: 1px solid var(--gray-200); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .filter-row { display: flex; gap: 8px; align-items: center; }
+  .filter-row .hs-input, .filter-row .hs-select { height: 38px; font-size: 14px; }
+  .footer-bar { padding: 14px 20px; display: flex; align-items: center; justify-content: space-between; color: var(--gray-500); font-size: 13px; }
+
+  .prod-cell { display: flex; align-items: center; gap: 12px; }
+  .prod-thumb { width: 44px; height: 44px; border-radius: 8px; flex-shrink: 0; border: 1px solid var(--gray-200); }
+  .prod-title { font-size: 14px; font-weight: 500; color: var(--gray-900); }
+  .prod-sku { font-size: 11px; color: var(--gray-500); font-family: var(--font-mono); }
+  .stock-bar { width: 90px; height: 5px; background: var(--gray-100); border-radius: 9999px; position: relative; margin-top: 4px; }
+  .stock-bar::after { content: ''; position: absolute; left: 0; top: 0; height: 100%; border-radius: 9999px; background: var(--success-500); width: 80%; }
+  .stock-bar.low::after { background: var(--warning-500); width: 22%; }
+  .stock-bar.crit::after { background: var(--error-500); width: 4%; }
+  .row-actions { display: flex; gap: 5px; justify-content: flex-end; }
+  .sort-btn { background: none; border: none; padding: 0; font: inherit; color: var(--gray-500); cursor: pointer; font-size: 12px; font-weight: 500; text-transform: uppercase; letter-spacing: 0.04em; display: inline-flex; align-items: center; gap: 3px; }
+
+  /* ===== COUPON LIST ===== */
+  .create-coupon-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 10px; padding: 20px 24px; margin-bottom: 20px; }
+  .create-coupon-card h3 { margin: 0 0 4px; font-size: 15px; font-weight: 600; color: var(--gray-900); }
+  .create-coupon-card p { margin: 0 0 16px; font-size: 13px; color: var(--gray-500); }
+  .coupon-types { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+  .coupon-type { border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px 20px 16px; display: flex; flex-direction: column; gap: 6px; }
+  .coupon-type-head { display: flex; align-items: center; gap: 10px; font-size: 14px; font-weight: 600; color: var(--gray-900); }
+  .coupon-type-head svg { width: 18px; height: 18px; color: var(--brand-500); flex-shrink: 0; }
+  .coupon-type p { font-size: 12px; color: var(--gray-500); margin: 0; line-height: 1.5; flex: 1; }
+  .coupon-type .create-btn { align-self: flex-end; margin-top: 8px; }
+
+  /* Coupon list card */
+  .list-coupon-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 10px; overflow: hidden; }
+  .list-coupon-card h3 { margin: 0; font-size: 15px; font-weight: 600; color: var(--gray-900); padding: 20px 24px 16px; border-bottom: 1px solid var(--gray-200); }
+
+  /* Coupon tabs */
+  .cpn-tabs { display: flex; gap: 0; padding: 0 24px; border-bottom: 1px solid var(--gray-200); }
+  .cpn-tab { padding: 12px 16px; font-size: 14px; font-weight: 500; color: var(--gray-500); cursor: pointer; border-bottom: 2px solid transparent; background: none; border-top: none; border-left: none; border-right: none; font-family: inherit; transition: all .15s; }
+  .cpn-tab:hover { color: var(--gray-800); }
+  .cpn-tab.active { color: var(--brand-500); border-bottom-color: var(--brand-500); }
+
+  /* Search bar */
+  .cpn-search { display: flex; gap: 10px; padding: 16px 24px; border-bottom: 1px solid var(--gray-200); align-items: center; }
+  .cpn-search input { width: 220px; height: 38px; border: 1px solid var(--gray-300); border-radius: 6px; padding: 0 12px; font-size: 14px; font-family: inherit; }
+  .cpn-search input::placeholder { color: var(--gray-400); }
+  .cpn-search .search-btn { height: 38px; padding: 0 20px; background: var(--brand-500); color: #fff; border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+  .cpn-search .search-btn:hover { background: var(--brand-600); }
+
+  /* Coupon table */
+  .cpn-table { width: 100%; border-collapse: collapse; }
+  .cpn-table th { padding: 10px 16px; font-size: 12px; font-weight: 500; color: var(--gray-500); text-align: left; background: var(--gray-50); border-bottom: 1px solid var(--gray-200); }
+  .cpn-table td { padding: 14px 16px; font-size: 13px; color: var(--gray-700); border-bottom: 1px solid var(--gray-200); vertical-align: middle; }
+  .cpn-table tbody tr:last-child td { border-bottom: none; }
+  .cpn-table tbody tr:hover td { background: var(--gray-50); }
+  .cpn-name-cell { display: flex; align-items: center; gap: 12px; }
+  .cpn-icon { width: 40px; height: 40px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0; }
+  .cpn-icon.shop { background: #ff6b35; }
+  .cpn-icon.product { background: var(--brand-500); }
+  .cpn-icon.private { background: var(--success-500); }
+  .cpn-meta .status-lbl { font-size: 11px; font-weight: 600; margin-bottom: 2px; }
+  .cpn-meta .status-lbl.ongoing { color: var(--success-600); }
+  .cpn-meta .status-lbl.upcoming { color: var(--brand-500); }
+  .cpn-meta .status-lbl.expired { color: var(--gray-400); }
+  .cpn-meta .cpn-name { font-size: 13px; font-weight: 600; color: var(--gray-900); }
+  .cpn-meta .cpn-code { font-size: 11px; color: var(--gray-500); font-family: var(--font-mono); }
+  .cpn-type-pill { display: inline-flex; align-items: center; padding: 3px 10px; border-radius: 9999px; background: var(--brand-50); color: var(--brand-600); font-size: 12px; font-weight: 500; }
+  .cpn-date { color: var(--brand-500); font-size: 12px; font-weight: 500; }
+  .cpn-actions { display: inline-flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 6px; border: 1px solid var(--gray-200); background: #fff; cursor: pointer; color: var(--gray-600); font-size: 16px; }
+  .cpn-actions:hover { background: var(--gray-50); }
+
+  /* Coupon list footer */
+  .cpn-footer { padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; font-size: 13px; color: var(--gray-500); border-top: 1px solid var(--gray-200); }
+  .cpn-footer-right { display: flex; align-items: center; gap: 10px; }
+  .lines-select { height: 34px; border: 1px solid var(--gray-300); border-radius: 6px; padding: 0 12px; font-size: 13px; font-family: inherit; color: var(--gray-700); }
+  .cpn-pages { display: flex; gap: 4px; align-items: center; }
+  .cpn-page { width: 30px; height: 30px; border-radius: 6px; border: 1px solid var(--gray-200); background: #fff; font-size: 13px; color: var(--gray-600); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
+  .cpn-page.active { background: var(--brand-500); color: #fff; border-color: var(--brand-500); }
+  .cpn-page.nav { background: transparent; border-color: var(--gray-300); }
+
+  /* ===== CREATE COUPON FORM ===== */
+  .form-section { background: #fff; border: 1px solid var(--gray-200); border-radius: 10px; padding: 24px; margin-bottom: 16px; }
+  .form-section-title { font-size: 15px; font-weight: 600; color: var(--gray-900); margin: 0 0 20px; padding-bottom: 14px; border-bottom: 1px solid var(--gray-100); }
+  .form-row { display: grid; grid-template-columns: 200px 1fr; gap: 20px; align-items: flex-start; margin-bottom: 16px; }
+  .form-row:last-child { margin-bottom: 0; }
+  .form-label { font-size: 13px; font-weight: 500; color: var(--gray-700); padding-top: 10px; }
+  .form-label.req::after { content: ' *'; color: var(--error-500); }
+  .form-control { display: flex; flex-direction: column; gap: 4px; }
+  .form-control .hs-input, .form-control .hs-select { height: 40px; }
+  .form-hint { font-size: 12px; color: var(--gray-500); }
+  .form-hint.error { color: var(--error-500); }
+  .form-hint.info { color: var(--brand-500); }
+  .form-hint b { color: var(--gray-800); }
+  .date-range { display: flex; align-items: center; gap: 8px; }
+  .date-range input[type="datetime-local"] { flex: 1; height: 40px; border: 1px solid var(--gray-300); border-radius: 8px; padding: 0 12px; font-size: 14px; font-family: inherit; }
+  .date-range .sep { color: var(--gray-500); font-size: 18px; flex-shrink: 0; }
+  .checkbox-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; font-size: 13px; color: var(--gray-700); }
+  .checkbox-row input[type="checkbox"] { width: 16px; height: 16px; accent-color: var(--brand-500); }
+
+  /* Coupon type selector */
+  .coupon-type-selector { display: flex; gap: 0; }
+  .ctype-btn {
+    padding: 8px 20px; border: 1.5px solid var(--gray-300); background: #fff;
+    font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit;
+    color: var(--gray-700); display: flex; align-items: center; gap: 8px;
+    transition: all .15s;
+  }
+  .ctype-btn:first-child { border-radius: 8px 0 0 8px; }
+  .ctype-btn:last-child { border-radius: 0 8px 8px 0; }
+  .ctype-btn svg { width: 16px; height: 16px; }
+  .ctype-btn.selected {
+    background: var(--brand-50); border-color: var(--brand-500); color: var(--brand-700);
+    z-index: 1; position: relative;
+  }
+  .ctype-btn.selected::after { content: ''; position: absolute; top: -2px; right: -2px; width: 12px; height: 12px; background: var(--brand-500); border-radius: 9999px; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 24 24' fill='white' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M5 12l5 5L19 7' stroke='white' stroke-width='3' stroke-linecap='round' stroke-linejoin='round' fill='none'/%3E%3C/svg%3E"); background-size: 10px; background-position: center; background-repeat: no-repeat; background-color: var(--brand-500); }
+
+  /* Radio group inline */
+  .radio-group { display: flex; gap: 24px; align-items: center; padding-top: 8px; }
+  .radio-opt { display: flex; align-items: center; gap: 8px; font-size: 14px; color: var(--gray-700); cursor: pointer; }
+  .radio-opt input { accent-color: var(--brand-500); width: 16px; height: 16px; }
+
+  /* Prefixed input */
+  .prefixed-input { display: flex; border: 1px solid var(--gray-300); border-radius: 8px; overflow: hidden; }
+  .input-prefix { padding: 0 12px; background: var(--gray-50); border-right: 1px solid var(--gray-300); display: inline-flex; align-items: center; font-size: 14px; color: var(--gray-600); font-weight: 500; flex-shrink: 0; }
+  .prefixed-input input { flex: 1; border: none; outline: none; padding: 0 12px; font-size: 14px; height: 40px; font-family: inherit; }
+  .input-suffix { padding: 0 12px; background: var(--gray-50); border-left: 1px solid var(--gray-300); display: inline-flex; align-items: center; font-size: 12px; color: var(--gray-400); flex-shrink: 0; }
+
+  /* Inline select + input */
+  .select-input-row { display: flex; gap: 8px; align-items: center; }
+  .select-input-row .hs-select { width: 180px; height: 40px; }
+
+  /* Form actions */
+  .form-actions { display: flex; gap: 12px; justify-content: flex-end; padding: 8px 0; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="side">
+    <div class="side-logo">
+      <img src="assets/logo-light.svg" alt="HiveSpace">
+      <span class="seller-tag">Seller</span>
+    </div>
+
+    <div class="shop-chip">
+      <div class="shop-av">CF</div>
+      <div class="shop-meta">
+        <div class="name">Cà Phê Hiên Nhà</div>
+        <div class="tier">★ Preferred · 4.9 rating</div>
+      </div>
+    </div>
+
+    <div class="nav-section">
+      <div class="nav-menu-label">Menu</div>
+
+      <!-- Dashboard (standalone) -->
+      <div class="nav-item" onclick="switchView('dashboard', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+        Dashboard
+      </div>
+
+      <!-- Order Management (expanded by default) -->
+      <div>
+        <div class="nav-parent open" onclick="toggleNav(this)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="7" y="3" width="10" height="8" rx="1"/></svg>
+          Order Management
+          <svg class="chevron up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="nav-children open">
+          <div class="nav-child active" id="nav-orders" onclick="switchView('orders', this)">All Orders</div>
+          <div class="nav-child" onclick="switchView('orders', this)">Pending Confirmation</div>
+        </div>
+      </div>
+
+      <!-- Products (expanded by default) -->
+      <div>
+        <div class="nav-parent open" onclick="toggleNav(this)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+          Products
+          <svg class="chevron up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="nav-children open">
+          <div class="nav-child active" id="nav-products" onclick="switchView('products', this)">Product List</div>
+          <div class="nav-child" onclick="switchView('products', this)">Add New Product</div>
+        </div>
+      </div>
+
+      <!-- Marketing (collapsible — currently open per screenshot) -->
+      <div>
+        <div class="nav-parent active-section open" onclick="toggleNav(this)">
+          <svg class="nav-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/></svg>
+          Marketing
+          <svg class="chevron up" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <div class="nav-children open">
+          <div class="nav-child" id="nav-coupons" onclick="switchView('coupons', this)">Coupons</div>
+          <div class="nav-child" onclick="switchView('coupons', this)">Flash Sale</div>
+        </div>
+      </div>
+
+      <!-- Notifications -->
+      <div class="nav-item" onclick="switchView('dashboard', this)">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+        Notifications
+        <span class="hs-badge sm hs-badge-error badge-ml" style="margin-left:auto;">3</span>
+      </div>
+
+      <!-- Analytics -->
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+        Analytics
+      </div>
+
+      <!-- Payouts -->
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+        Payouts
+      </div>
+
+      <!-- Demo -->
+      <div class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+        Demo
+      </div>
+    </div>
+
+    <div class="side-bottom">
+      <button onclick="switchView('storefront')" style="width:100%;padding:10px;background:var(--brand-500);color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;margin-bottom:12px;">
+        Open HiveSpace website
+      </button>
+      <div class="side-promo">
+        <div class="t">⚡ Flash sale opens Fri 8pm</div>
+        <div class="b">18 products enrolled in Summer Sips. Prep stock by Thu.</div>
+        <div class="cta">Manage enrolment →</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== MAIN ===== -->
+  <div style="display:flex; flex-direction:column; min-width:0; overflow:hidden;">
+    <header class="topbar">
+      <div class="topbar-left">
+        <div class="hamburger">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+        </div>
+      </div>
+      <div class="topbar-right">
+        <!-- Theme -->
+        <button class="t-icon" title="Toggle theme"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg></button>
+        <!-- Language -->
+        <button class="lang-btn">
+          <span class="flag"></span>
+          EN
+          <svg class="lang-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <!-- Notifications -->
+        <div class="notif-area">
+          <button class="t-icon" title="Notifications" id="notifBtn" onclick="toggleNotif()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            <span class="notif-badge">2</span>
+          </button>
+          <div class="notif-dropdown" id="notifDropdown">
+            <div class="notif-head">
+              <h3>Notification</h3>
+              <a href="#">See all &rsaquo;</a>
+            </div>
+            <div class="notif-tabs">
+              <button class="notif-tab active" onclick="setNotifTab(this)">All</button>
+              <button class="notif-tab" onclick="setNotifTab(this)">Unread</button>
+            </div>
+            <div class="notif-item">
+              <div class="notif-av">📦<span class="ndot"></span></div>
+              <div>
+                <div class="notif-text">New order <b>#ORD-20260422224712-286744</b> placed by <b>Alice Smith</b></div>
+                <div class="notif-time">4/23/2026</div>
+              </div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-av">⭐<span class="ndot"></span></div>
+              <div>
+                <div class="notif-text"><b>Bao Pham</b> left a 5-star review on <b>Vietnamese Drip Coffee Filter</b></div>
+                <div class="notif-time">4/21/2026</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <!-- User -->
+        <div class="user-area">
+          <button class="user-chip" id="userChipBtn" onclick="toggleUserDropdown()">
+            <div class="user-av">T</div>
+            <span class="user-name">tiki</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="color:var(--gray-400)"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="user-dropdown" id="userDropdown">
+            <div class="user-dd-head">
+              <div class="user-dd-name">Tiki Trading</div>
+              <div class="user-dd-email">seller@tikitrading.com</div>
+            </div>
+            <button class="user-dd-item" onclick="closeUserDropdown()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+              Shop Profile
+            </button>
+            <button class="user-dd-item" onclick="closeUserDropdown()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+              My Account
+            </button>
+            <button class="user-dd-item" onclick="closeUserDropdown()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Settings
+            </button>
+            <hr class="user-dd-sep">
+            <button class="user-dd-item" onclick="closeUserDropdown()">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+              Sign out
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ============================
+         VIEW: ORDER MANAGEMENT
+    ============================= -->
+    <div class="view main" id="view-orders">
+      <div class="page-head">
+        <div class="page-head-top">
+          <h1 class="page-title">Order Management</h1>
+          <div class="bc page-crumb"><a href="#">Home</a><span class="sep">›</span><span class="cur">Order Management</span></div>
+        </div>
+        <p class="page-sub">Track buyer orders, fulfillment status, and shipping readiness from one queue.</p>
+      </div>
+
+      <h2 style="font-size:16px;font-weight:600;color:var(--gray-900);margin:0 0 16px;">All Orders</h2>
+
+      <!-- Tabs -->
+      <div class="ord-tabs" id="ord-tabs">
+        <button class="ord-tab active" onclick="switchOrdTab(this,'all')">All</button>
+        <button class="ord-tab" onclick="switchOrdTab(this,'pending')">Pending Confirmation (2)</button>
+        <button class="ord-tab" onclick="switchOrdTab(this,'ship')">Ready to Ship (0)</button>
+        <button class="ord-tab" onclick="switchOrdTab(this,'shipping')">Shipping (0)</button>
+        <button class="ord-tab" onclick="switchOrdTab(this,'delivered')">Delivered</button>
+        <button class="ord-tab" onclick="switchOrdTab(this,'cancel')">Return/Refund/Cancel (0)</button>
+      </div>
+
+      <!-- Filter row -->
+      <div class="ord-filter">
+        <select class="ord-filter-select">
+          <option>Order ID</option>
+          <option>Product Name</option>
+          <option>Buyer Name</option>
+        </select>
+        <input placeholder="Enter Order ID">
+        <button class="apply-btn">Apply</button>
+        <button class="reset-btn">Reset</button>
+      </div>
+
+      <!-- All orders sub-view -->
+      <div id="ord-all">
+        <div class="ord-meta">
+          <span class="ord-count">5 Orders</span>
+          <div class="ord-sort">
+            <button class="ord-sort-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+              Sort by: Deadline (Furthest - Nearest)
+            </button>
+            <button class="bulk-ship">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+              Bulk Ship
+            </button>
+          </div>
+        </div>
+
+        <table class="ord-table">
+          <thead>
+            <tr>
+              <th style="width:40%;">Product</th>
+              <th>Total Buyer Payment</th>
+              <th>Status</th>
+              <th>Countdown <svg style="display:inline;vertical-align:middle;" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></th>
+              <th>Shipping Provider</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Buyer: Alice -->
+            <tr class="ord-buyer-row">
+              <td colspan="6">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div class="buyer-meta">
+                    <span class="buyer-av"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                    <span class="buyer-name">Alice</span>
+                    <svg class="buyer-email" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  </div>
+                  <span class="order-id">Order ID ORD-20260427134119-672707</span>
+                </div>
+              </td>
+            </tr>
+            <!-- Alice item 1 -->
+            <tr>
+              <td>
+                <div style="display:flex;align-items:flex-start;gap:10px;">
+                  <div class="ord-prod-img" style="background:linear-gradient(135deg,#ff9a76,#c4320a);"></div>
+                  <div>
+                    <div class="cod-badge">Cod</div>
+                    <div class="ord-prod-name">Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng</div>
+                    <div class="ord-prod-var">Variation: Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng</div>
+                  </div>
+                  <span style="font-size:13px;color:var(--gray-600);white-space:nowrap;margin-left:auto;">× 1</span>
+                </div>
+              </td>
+              <td><div class="ord-payment">đ236,600</div></td>
+              <td><div class="ord-status-cod">COD</div></td>
+              <td><div class="ord-countdown">20:41:19 27/4/2026</div></td>
+              <td></td>
+              <td><button class="view-detail">View Detail</button></td>
+            </tr>
+            <!-- Alice item 2 -->
+            <tr>
+              <td>
+                <div style="display:flex;align-items:flex-start;gap:10px;">
+                  <div class="ord-prod-img" style="background:linear-gradient(135deg,#94d2bd,#386641);"></div>
+                  <div>
+                    <div class="cod-badge">Cod</div>
+                    <div class="ord-prod-name">[NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng</div>
+                    <div class="ord-prod-var">Variation: [NEW] Cốc giữ nhiệt inox 304 Elmich EL8345 dung tích 480ML - Hàng Chính Hãng</div>
+                  </div>
+                  <span style="font-size:13px;color:var(--gray-600);white-space:nowrap;margin-left:auto;">× 1</span>
+                </div>
+              </td>
+              <td></td><td></td><td></td><td></td><td></td>
+            </tr>
+
+            <!-- Buyer: Bob Smith -->
+            <tr class="ord-buyer-row">
+              <td colspan="6">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div class="buyer-meta">
+                    <span class="buyer-av"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                    <span class="buyer-name">Bob Smith</span>
+                    <svg class="buyer-email" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  </div>
+                  <span class="order-id">Order ID ORD-20260425093335-137331</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:flex-start;gap:10px;">
+                  <div class="ord-prod-img" style="background:linear-gradient(135deg,#b8d4e3,#3d6a8a);"></div>
+                  <div>
+                    <div class="cod-badge">Cod</div>
+                    <div class="ord-prod-name">Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml</div>
+                    <div class="ord-prod-var">Variation:</div>
+                  </div>
+                  <span style="font-size:13px;color:var(--gray-600);white-space:nowrap;margin-left:auto;">× 1</span>
+                </div>
+              </td>
+              <td>
+                <div class="ord-payment">đ177,000</div>
+                <div class="ord-status-cod">COD</div>
+              </td>
+              <td><div class="ord-status-cod">COD</div></td>
+              <td><div class="ord-countdown">16:33:35 25/4/2026</div></td>
+              <td></td>
+              <td><button class="view-detail">View Detail</button></td>
+            </tr>
+
+            <!-- Buyer: Bob -->
+            <tr class="ord-buyer-row">
+              <td colspan="6">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div class="buyer-meta">
+                    <span class="buyer-av"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                    <span class="buyer-name">Bob</span>
+                    <svg class="buyer-email" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  </div>
+                  <span class="order-id">Order ID ORD-20260425093153-418551</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:flex-start;gap:10px;">
+                  <div class="ord-prod-img" style="background:linear-gradient(135deg,#6f4e37,#3b2512);"></div>
+                  <div>
+                    <div class="cod-badge">Cod</div>
+                    <div class="ord-prod-name">Cà Phê Trứng Truyền Thống · Hộp 12 gói</div>
+                    <div class="ord-prod-var">Variation: Original blend</div>
+                  </div>
+                  <span style="font-size:13px;color:var(--gray-600);white-space:nowrap;margin-left:auto;">× 2</span>
+                </div>
+              </td>
+              <td><div class="ord-payment">đ103,800</div></td>
+              <td><div class="ord-status-ship">Shipped</div></td>
+              <td><div class="ord-countdown">16:31:53 25/4/2026</div></td>
+              <td></td>
+              <td><button class="view-detail">View Detail</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Pending Confirmation sub-view -->
+      <div id="ord-pending" style="display:none;">
+        <div class="ord-meta">
+          <span class="ord-count">2 Orders</span>
+          <div class="ord-sort">
+            <button class="ord-sort-btn">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>
+              Sort by: Deadline (Furthest - Nearest)
+            </button>
+          </div>
+        </div>
+        <table class="ord-table">
+          <thead>
+            <tr>
+              <th style="width:40%;">Product</th>
+              <th>Total Buyer Payment</th>
+              <th>Status</th>
+              <th>Countdown <svg style="display:inline;vertical-align:middle;" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg></th>
+              <th>Shipping Provider</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr class="ord-buyer-row">
+              <td colspan="6">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div class="buyer-meta">
+                    <span class="buyer-av"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                    <span class="buyer-name">Alice</span>
+                    <svg class="buyer-email" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  </div>
+                  <span class="order-id">Order ID ORD-20260427134119-672707</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:flex-start;gap:10px;">
+                  <div class="ord-prod-img" style="background:linear-gradient(135deg,#ff9a76,#c4320a);"></div>
+                  <div>
+                    <div class="cod-badge">Cod</div>
+                    <div class="ord-prod-name">Miếng rửa chén bọt biển Scrub Daddy nguyên bản, miếng xốp lau chùi đa năng</div>
+                    <div class="ord-prod-var">Variation: Miếng rửa chén bọt biển Scrub Daddy nguyên bản</div>
+                  </div>
+                  <span style="font-size:13px;color:var(--gray-600);white-space:nowrap;margin-left:auto;">× 1</span>
+                </div>
+              </td>
+              <td><div class="ord-payment">đ236,600</div></td>
+              <td><div class="ord-status-cod">COD</div></td>
+              <td><div class="ord-countdown">20:41:19 27/4/2026</div></td>
+              <td></td>
+              <td>
+                <div class="ord-actions">
+                  <button class="confirm-btn">Confirm</button>
+                  <button class="cancel-btn">Cancel</button>
+                </div>
+              </td>
+            </tr>
+            <tr class="ord-buyer-row">
+              <td colspan="6">
+                <div style="display:flex;align-items:center;justify-content:space-between;">
+                  <div class="buyer-meta">
+                    <span class="buyer-av"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg></span>
+                    <span class="buyer-name">Bob Smith</span>
+                    <svg class="buyer-email" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+                  </div>
+                  <span class="order-id">Order ID ORD-20260425093335-137331</span>
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <div style="display:flex;align-items:flex-start;gap:10px;">
+                  <div class="ord-prod-img" style="background:linear-gradient(135deg,#b8d4e3,#3d6a8a);"></div>
+                  <div>
+                    <div class="cod-badge">Cod</div>
+                    <div class="ord-prod-name">Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml</div>
+                    <div class="ord-prod-var">Variation:</div>
+                  </div>
+                  <span style="font-size:13px;color:var(--gray-600);white-space:nowrap;margin-left:auto;">× 1</span>
+                </div>
+              </td>
+              <td><div class="ord-payment">đ177,000</div><div class="ord-status-cod">COD</div></td>
+              <td><div class="ord-status-cod">COD</div></td>
+              <td><div class="ord-countdown">16:33:35 25/4/2026</div></td>
+              <td></td>
+              <td>
+                <div class="ord-actions">
+                  <button class="confirm-btn">Confirm</button>
+                  <button class="cancel-btn">Cancel</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Delivered (empty) sub-view -->
+      <div id="ord-delivered" style="display:none;">
+        <div class="ord-meta"><span class="ord-count">0 Orders</span><div class="ord-sort"><button class="ord-sort-btn"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="19" x2="12" y2="5"/><polyline points="5 12 12 5 19 12"/></svg>Sort by: Deadline (Furthest - Nearest)</button></div></div>
+        <table class="ord-table">
+          <thead><tr><th style="width:40%;">Product</th><th>Total Buyer Payment</th><th>Status</th><th>Countdown</th><th>Shipping Provider</th><th>Actions</th></tr></thead>
+          <tbody><tr><td colspan="6"><div class="empty-state">No orders found</div></td></tr></tbody>
+        </table>
+      </div>
+
+      <!-- Other empty sub-views -->
+      <div id="ord-ship" style="display:none;"><div class="ord-meta"><span class="ord-count">0 Orders</span></div><table class="ord-table"><thead><tr><th style="width:40%;">Product</th><th>Total Buyer Payment</th><th>Status</th><th>Countdown</th><th>Shipping Provider</th><th>Actions</th></tr></thead><tbody><tr><td colspan="6"><div class="empty-state">No orders found</div></td></tr></tbody></table></div>
+      <div id="ord-shipping" style="display:none;"><div class="ord-meta"><span class="ord-count">0 Orders</span></div><table class="ord-table"><thead><tr><th style="width:40%;">Product</th><th>Total Buyer Payment</th><th>Status</th><th>Countdown</th><th>Shipping Provider</th><th>Actions</th></tr></thead><tbody><tr><td colspan="6"><div class="empty-state">No orders found</div></td></tr></tbody></table></div>
+      <div id="ord-cancel" style="display:none;"><div class="ord-meta"><span class="ord-count">0 Orders</span></div><table class="ord-table"><thead><tr><th style="width:40%;">Product</th><th>Total Buyer Payment</th><th>Status</th><th>Countdown</th><th>Shipping Provider</th><th>Actions</th></tr></thead><tbody><tr><td colspan="6"><div class="empty-state">No orders found</div></td></tr></tbody></table></div>
+    </div>
+
+    <!-- ============================
+         VIEW: PRODUCTS
+    ============================= -->
+    <div class="view active main" id="view-products">
+      <div class="page-head">
+        <div class="page-head-top">
+          <h1 class="page-title">Products</h1>
+          <div class="bc page-crumb"><a href="#">Home</a><span class="sep">›</span><span class="cur">Products</span></div>
+        </div>
+        <div class="page-head-meta">
+          <p class="page-sub">Merchandise performance, stock, and listing quality across your catalog.</p>
+          <div class="page-head-actions">
+            <button class="hs-btn hs-btn-outline"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>Export</button>
+            <button class="hs-btn hs-btn-primary"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>Add product</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat"><div class="ico" style="background:var(--brand-50);color:var(--brand-500);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/></svg></div><div class="v">184</div><div class="l">Listed products</div></div>
+        <div class="stat"><div class="ico" style="background:var(--success-50);color:var(--success-600);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div><div class="v">127</div><div class="l">Active · selling now</div></div>
+        <div class="stat"><div class="ico" style="background:var(--warning-50);color:var(--warning-700);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/></svg></div><div class="v">18</div><div class="l">Low stock</div></div>
+        <div class="stat"><div class="ico" style="background:var(--gray-100);color:var(--gray-600);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="2" width="16" height="20" rx="2"/><line x1="8" y1="10" x2="16" y2="10"/><line x1="8" y1="14" x2="16" y2="14"/></svg></div><div class="v">39</div><div class="l">Draft</div></div>
+      </div>
+
+      <div class="hs-card">
+        <div class="toolbar">
+          <h3 class="hs-card-title" style="margin:0;">Catalogue</h3>
+          <div class="filter-row">
+            <input class="hs-input" placeholder="Search products…" style="width:220px;">
+            <select class="hs-select" style="width:130px;"><option>All statuses</option></select>
+            <select class="hs-select" style="width:150px;"><option>All categories</option></select>
+            <button class="hs-btn sm hs-btn-outline">↻ Refresh</button>
+          </div>
+        </div>
+        <div style="overflow-x:auto;">
+          <table class="hs-table">
+            <thead>
+              <tr>
+                <th style="width:36px;"><span class="hs-checkbox"></span></th>
+                <th><button class="sort-btn">Product ↕</button></th>
+                <th><button class="sort-btn">Price</button></th>
+                <th><button class="sort-btn">Stock</button></th>
+                <th>Status</th>
+                <th><button class="sort-btn">Updated ↓</button></th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="hs-checkbox checked"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span></td>
+                <td><div class="prod-cell"><div class="prod-thumb" style="background:linear-gradient(135deg,#6F4E37,#3b2512);"></div><div><div class="prod-title">Cà Phê Trứng · Gói 12 tách</div><div class="prod-sku">CPT-12P-01</div></div></div></td>
+                <td><div style="font-weight:500;font-size:13px;">₫189,000 – ₫249,000</div><small style="color:var(--gray-500);font-size:11px;">3 variants</small></td>
+                <td><div style="font-weight:500;font-size:13px;">348</div><div class="stock-bar"></div></td>
+                <td><span class="hs-badge sm hs-badge-success">Active</span></td>
+                <td style="font-size:12px;">2 min ago</td>
+                <td><div class="row-actions"><button class="hs-btn sm hs-btn-outline hs-btn-icon"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg></button><button class="hs-btn sm hs-btn-outline hs-btn-icon" style="color:var(--error-600)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-2 14a2 2 0 0 1-2 2H9a2 2 0 0 1-2-2L5 6"/></svg></button></div></td>
+              </tr>
+              <tr>
+                <td><span class="hs-checkbox"></span></td>
+                <td><div class="prod-cell"><div class="prod-thumb" style="background:linear-gradient(135deg,#e9c46a,#b98a1e);"></div><div><div class="prod-title">Trà Sen Tây Hồ · Hộp thiếc 100g</div><div class="prod-sku">TST-100-04</div></div></div></td>
+                <td><div style="font-weight:500;font-size:13px;">₫320,000</div></td>
+                <td><div style="font-weight:500;font-size:13px;color:var(--warning-700);">22</div><div class="stock-bar low"></div></td>
+                <td><span class="hs-badge sm hs-badge-warning">Low stock</span></td>
+                <td style="font-size:12px;">1h ago</td>
+                <td><div class="row-actions"><button class="hs-btn sm hs-btn-outline">Restock</button></div></td>
+              </tr>
+              <tr>
+                <td><span class="hs-checkbox"></span></td>
+                <td><div class="prod-cell"><div class="prod-thumb" style="background:linear-gradient(135deg,#94d2bd,#386641);"></div><div><div class="prod-title">Matcha Nghệ An Premium · 80g</div><div class="prod-sku">MNA-80-01</div></div></div></td>
+                <td><div style="font-weight:500;font-size:13px;">₫420,000</div></td>
+                <td><div style="font-weight:500;font-size:13px;color:var(--error-600);">3</div><div class="stock-bar crit"></div></td>
+                <td><span class="hs-badge sm hs-badge-error">Critical</span></td>
+                <td style="font-size:12px;">3d ago</td>
+                <td><div class="row-actions"><button class="hs-btn sm hs-btn-primary">Restock now</button></div></td>
+              </tr>
+              <tr>
+                <td><span class="hs-checkbox"></span></td>
+                <td><div class="prod-cell"><div class="prod-thumb" style="background:linear-gradient(135deg,#d4a5a5,#6b3f3f);"></div><div><div class="prod-title">Nem Chua Thanh Hoá · Hộp 20 cái</div><div class="prod-sku">NCT-20-02</div></div></div></td>
+                <td><div style="font-weight:500;font-size:13px;">₫165,000</div></td>
+                <td><div style="font-size:12px;color:var(--gray-400);">draft · not tracked</div></td>
+                <td><span class="hs-badge sm hs-badge-light">Draft</span></td>
+                <td style="font-size:12px;">5d ago</td>
+                <td><div class="row-actions"><button class="hs-btn sm hs-btn-outline">Publish</button></div></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="footer-bar">
+          <div>Showing 1–4 of 184 products</div>
+          <div class="hs-pagination">
+            <button class="hs-page-btn">‹</button>
+            <button class="hs-page-btn active">1</button>
+            <button class="hs-page-btn">2</button>
+            <button class="hs-page-btn">3</button>
+            <button class="hs-page-btn">…</button>
+            <button class="hs-page-btn">37</button>
+            <button class="hs-page-btn">›</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+         VIEW: COUPON MANAGEMENT
+    ============================= -->
+    <div class="view main" id="view-coupons">
+      <div class="page-head">
+        <div class="page-head-top">
+          <h1 class="page-title">Coupon Management</h1>
+          <div class="bc page-crumb"><a href="#">Home</a><span class="sep">›</span><span class="cur">Coupon Management</span></div>
+        </div>
+        <p class="page-sub">Create, schedule, and monitor promotional mechanics for shopwide and product-level campaigns.</p>
+      </div>
+
+      <!-- Create Coupon -->
+      <div class="create-coupon-card">
+        <h3>Create Coupon</h3>
+        <p>Create a Shop Coupon or Product Coupon now to attract buyers.</p>
+        <div class="coupon-types">
+          <div class="coupon-type">
+            <div class="coupon-type-head">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/><path d="M18 12a2 2 0 0 0-2 2c0 1.1.9 2 2 2h4v-4h-4z"/></svg>
+              Shop Coupon
+            </div>
+            <p>Coupons applicable for all your products to boost shopwide sales</p>
+            <button class="hs-btn sm hs-btn-outline create-btn" onclick="switchView('create-coupon')">Create</button>
+          </div>
+          <div class="coupon-type">
+            <div class="coupon-type-head">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+              Product Coupon
+            </div>
+            <p>Coupons applicable for selected products to run specific promotions</p>
+            <button class="hs-btn sm hs-btn-outline create-btn" onclick="switchView('create-coupon')">Create</button>
+          </div>
+          <div class="coupon-type">
+            <div class="coupon-type-head">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+              Private Coupon
+            </div>
+            <p>Coupons that are only sharable via code to targeted customers</p>
+            <button class="hs-btn sm hs-btn-outline create-btn" onclick="switchView('create-coupon')">Create</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- List of coupons -->
+      <div class="list-coupon-card">
+        <h3>List of Coupons</h3>
+
+        <div class="cpn-tabs">
+          <button class="cpn-tab active">All</button>
+          <button class="cpn-tab">Ongoing</button>
+          <button class="cpn-tab">Upcoming</button>
+          <button class="cpn-tab">Expired</button>
+        </div>
+
+        <div class="cpn-search">
+          <input placeholder="Coupon Name / Coupon Code">
+          <button class="search-btn">Search</button>
+        </div>
+
+        <table class="cpn-table">
+          <thead>
+            <tr>
+              <th>Coupon Name</th>
+              <th>Coupon Type</th>
+              <th>Applicable Products</th>
+              <th>Discount</th>
+              <th>Usage</th>
+              <th>Usage Quantity</th>
+              <th>Duration</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>
+                <div class="cpn-name-cell">
+                  <div class="cpn-icon shop" style="color:#fff; font-size:16px; font-weight:700;">%</div>
+                  <div class="cpn-meta">
+                    <div class="status-lbl ongoing">Ongoing</div>
+                    <div class="cpn-name">[TK] Entire Shop 10% Off · Ongoing</div>
+                    <div class="cpn-code">Code: TKESONG01</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="cpn-type-pill">Shop Coupon</span></td>
+              <td style="color:var(--gray-700);font-size:13px;">All Products</td>
+              <td>
+                <div style="font-size:13px;font-weight:500;color:var(--gray-900);">10% OFF (Max đ5,000)</div>
+                <div style="font-size:11px;color:var(--gray-500);">Min spend: đ2,000</div>
+              </td>
+              <td style="font-size:13px;text-align:center;">0</td>
+              <td style="font-size:13px;text-align:center;">1000</td>
+              <td class="cpn-date">15/04/2026 16:31 – 15/05/2026 16:31</td>
+              <td><button class="cpn-actions">···</button></td>
+            </tr>
+            <tr>
+              <td>
+                <div class="cpn-name-cell">
+                  <div class="cpn-icon product" style="color:#fff; font-size:16px; font-weight:700;">$</div>
+                  <div class="cpn-meta">
+                    <div class="status-lbl upcoming">Upcoming</div>
+                    <div class="cpn-name">[TK] Entire Shop $20 Off · Upcoming</div>
+                    <div class="cpn-code">Code: TKESLUP01</div>
+                  </div>
+                </div>
+              </td>
+              <td><span class="cpn-type-pill">Shop Coupon</span></td>
+              <td style="color:var(--gray-700);font-size:13px;">All Products</td>
+              <td>
+                <div style="font-size:13px;font-weight:500;color:var(--gray-900);">đ2,000</div>
+                <div style="font-size:11px;color:var(--gray-500);">Min spend: đ10,000</div>
+              </td>
+              <td style="font-size:13px;text-align:center;">0</td>
+              <td style="font-size:13px;text-align:center;">500</td>
+              <td class="cpn-date">05/05/2026 16:31 – 04/06/2026 16:31</td>
+              <td><button class="cpn-actions">···</button></td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="cpn-footer">
+          <div>Showing 1 to 2 of 9 entries</div>
+          <div class="cpn-footer-right">
+            <span>Number lines/pages</span>
+            <select class="lines-select"><option>Select</option><option>10</option><option>25</option><option>50</option></select>
+            <div class="cpn-pages">
+              <button class="cpn-page nav">‹</button>
+              <button class="cpn-page active">1</button>
+              <button class="cpn-page">2</button>
+              <button class="cpn-page">3</button>
+              <button class="cpn-page">4</button>
+              <button class="cpn-page">5</button>
+              <button class="cpn-page nav">›</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ============================
+         VIEW: CREATE COUPON FORM
+    ============================= -->
+    <div class="view main" id="view-create-coupon">
+      <div class="page-head">
+        <div class="page-head-top">
+          <h1 class="page-title">Create new Coupon</h1>
+          <div class="bc page-crumb"><a href="#">Home</a><span class="sep">›</span><a href="#" onclick="switchView('coupons');return false;">Coupon Management</a><span class="sep">›</span><span class="cur">Create new Coupon</span></div>
+        </div>
+        <p class="page-sub">Configure discount rules, applicability, and claim conditions before publishing the campaign.</p>
+      </div>
+
+      <!-- Basic Information -->
+      <div class="form-section">
+        <div class="form-section-title">Basic Information</div>
+
+        <div class="form-row">
+          <div class="form-label">Coupon Type</div>
+          <div class="form-control">
+            <div class="coupon-type-selector">
+              <button class="ctype-btn selected">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 12V8H6a2 2 0 0 1-2-2c0-1.1.9-2 2-2h12v4"/><path d="M4 6v12c0 1.1.9 2 2 2h14v-4"/></svg>
+                Shop Coupon
+              </button>
+              <button class="ctype-btn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+                Product Coupon
+              </button>
+              <button class="ctype-btn">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+                Private Coupon
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label req">Discount Program Name</div>
+          <div class="form-control">
+            <div class="prefixed-input">
+              <input type="text" placeholder="" style="flex:1;">
+              <span class="input-suffix">0/100</span>
+            </div>
+            <div class="form-hint info">Coupon Name will not be displayed to Buyers</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label req">Coupon Code</div>
+          <div class="form-control">
+            <div class="prefixed-input">
+              <span class="input-prefix">SHOP</span>
+              <input type="text" value="">
+              <span class="input-suffix">0/5</span>
+            </div>
+            <div class="form-hint error">Please input only characters (A-Z), numbers (0-9), max 5 characters.</div>
+            <div class="form-hint"><b>Full discount code is SHOP</b></div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label req">Usage Period</div>
+          <div class="form-control">
+            <div class="date-range">
+              <input type="datetime-local" value="2026-04-27T22:39">
+              <span class="sep">—</span>
+              <input type="datetime-local" value="2026-04-27T23:39">
+            </div>
+            <div class="checkbox-row">
+              <input type="checkbox">
+              Allow code saving before Usage Time
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Discount Settings -->
+      <div class="form-section">
+        <div class="form-section-title">Discount Settings</div>
+
+        <div class="form-row">
+          <div class="form-label">Coupon Reward Type</div>
+          <div class="form-control">
+            <div class="radio-group">
+              <label class="radio-opt"><input type="radio" name="reward" checked> Discount</label>
+              <label class="radio-opt"><input type="radio" name="reward"> Coin Cashback</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label req">Currency</div>
+          <div class="form-control">
+            <select class="hs-select" style="width:200px;"><option>VND</option></select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label req">Discount Type</div>
+          <div class="form-control">
+            <div class="select-input-row">
+              <select class="hs-select"><option>Fixed Amount</option><option>Percentage</option></select>
+              <div class="prefixed-input" style="flex:1;">
+                <span class="input-prefix">đ</span>
+                <input type="number" placeholder="">
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label req">Minimum Order Value</div>
+          <div class="form-control">
+            <div class="prefixed-input">
+              <span class="input-prefix">đ</span>
+              <input type="number" placeholder="">
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label req">Total Maximum Usages</div>
+          <div class="form-control">
+            <input class="hs-input" type="number" placeholder="">
+            <div class="form-hint">Total number of discount codes that can be used</div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label req">Maximum usages / Buyer</div>
+          <div class="form-control">
+            <input class="hs-input" type="number" value="1" style="width:200px;">
+          </div>
+        </div>
+      </div>
+
+      <!-- Discount Code Display and Application -->
+      <div class="form-section">
+        <div class="form-section-title">Discount Code Display and Application</div>
+
+        <div class="form-row">
+          <div class="form-label">Display Settings</div>
+          <div class="form-control">
+            <div class="radio-group" style="flex-direction:column;gap:10px;align-items:flex-start;">
+              <label class="radio-opt"><input type="radio" name="display" checked> Display in many places</label>
+              <label class="radio-opt"><input type="radio" name="display"> Share via Coupon code</label>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-label">Applicable Products</div>
+          <div class="form-control" style="padding-top:10px;">
+            <span style="font-size:14px;color:var(--gray-700);">All products</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <button class="hs-btn hs-btn-outline" onclick="switchView('coupons')">Cancel</button>
+        <button class="hs-btn hs-btn-primary">Create Coupon</button>
+      </div>
+    </div>
+
+    <!-- Dashboard placeholder -->
+    <div class="view main" id="view-dashboard">
+      <div class="page-head">
+        <div class="page-head-top">
+          <h1 class="page-title">Dashboard</h1>
+          <div class="bc page-crumb"><a href="#">Home</a><span class="sep">›</span><span class="cur">Dashboard</span></div>
+        </div>
+        <p class="page-sub">Top-line seller health with quick access to products, orders, and campaigns.</p>
+      </div>
+      <div style="height:300px;display:flex;align-items:center;justify-content:center;background:#fff;border:1px solid var(--gray-200);border-radius:12px;color:var(--gray-400);font-size:14px;">Dashboard overview — click Products or Coupons in the sidebar</div>
+    </div>
+
+  </div><!-- end main col -->
+</div><!-- end .app -->
+
+<script>
+  function toggleNotif() {
+    const dd = document.getElementById('notifDropdown');
+    const isOpen = dd.classList.contains('open');
+    closeUserDropdown();
+    dd.classList.toggle('open', !isOpen);
+  }
+  function setNotifTab(btn) {
+    btn.closest('.notif-tabs').querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  function toggleUserDropdown() {
+    const dd = document.getElementById('userDropdown');
+    const isOpen = dd.classList.contains('open');
+    document.getElementById('notifDropdown').classList.remove('open');
+    dd.classList.toggle('open', !isOpen);
+  }
+  function closeUserDropdown() {
+    document.getElementById('userDropdown').classList.remove('open');
+  }
+  document.addEventListener('click', function(e) {
+    const userArea = document.querySelector('.user-area');
+    if (userArea && !userArea.contains(e.target)) closeUserDropdown();
+    const notifArea = document.querySelector('.notif-area');
+    if (notifArea && !notifArea.contains(e.target)) {
+      document.getElementById('notifDropdown').classList.remove('open');
+    }
+  });
+
+  function switchView(name, navEl) {
+    // hide all views
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    const viewEl = document.getElementById('view-' + name);
+    if (viewEl) viewEl.classList.add('active');
+
+    // clear all nav active states
+    document.querySelectorAll('.nav-child').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+
+    // set clicked nav active
+    if (navEl) navEl.classList.add('active');
+
+    // auto-highlight nav if triggered from button
+    if (name === 'coupons' && !navEl) document.getElementById('nav-coupons')?.classList.add('active');
+    if (name === 'create-coupon') document.getElementById('nav-coupons')?.classList.add('active');
+    if (name === 'orders' && !navEl) document.getElementById('nav-orders')?.classList.add('active');
+  }
+
+  function switchOrdTab(tabEl, subview) {
+    document.querySelectorAll('.ord-tab').forEach(t => t.classList.remove('active'));
+    tabEl.classList.add('active');
+    ['all','pending','ship','shipping','delivered','cancel'].forEach(id => {
+      const el = document.getElementById('ord-' + id);
+      if (el) el.style.display = id === subview ? 'block' : 'none';
+    });
+  }
+
+  function toggleNav(parentEl) {
+    const children = parentEl.nextElementSibling;
+    const chevron = parentEl.querySelector('.chevron');
+    const isOpen = children.classList.contains('open');
+    children.classList.toggle('open');
+    chevron.classList.toggle('up', !isOpen);
+    parentEl.classList.toggle('open', !isOpen);
+  }
+
+  // Coupon tab switching
+  document.querySelectorAll('.cpn-tab').forEach(tab => {
+    tab.addEventListener('click', function() {
+      document.querySelectorAll('.cpn-tab').forEach(t => t.classList.remove('active'));
+      this.classList.add('active');
+    });
+  });
+
+  // Coupon type selector
+  document.querySelectorAll('.ctype-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+      document.querySelectorAll('.ctype-btn').forEach(b => b.classList.remove('selected'));
+      this.classList.add('selected');
+    });
+  });
+
+  // Default: show orders
+  switchView('orders', document.getElementById('nav-orders'));
+</script>
+</body>
+</html>

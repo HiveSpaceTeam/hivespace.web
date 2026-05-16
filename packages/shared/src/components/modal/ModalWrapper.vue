@@ -4,7 +4,7 @@
     content-class="modal-content bg-white dark:bg-gray-800 no-scrollbar relative rounded-xl"
     overlay-class="fixed inset-0 h-full w-full" overlay-transition="vfm-fade" content-transition="vfm-fade"
     :content-style="{ maxWidth: maxWidth, width: maxWidth }" teleport-to="body" :esc-to-close="true"
-    :click-to-close="true" @closed="$emit('close')">
+    :click-to-close="true" :model-value="true" @update:model-value="handleModelValueUpdate">
     <div class="flex space-between items-center p-6">
       <div class="pr-14">
         <h4 class="mb-2 text-2xl font-semibold text-gray-800 dark:text-white/90">
@@ -30,6 +30,7 @@
 <script setup lang="ts">
 import { VueFinalModal } from 'vue-final-modal'
 import CloseIcon from '../../icons/CloseIcon.vue'
+
 defineProps({
   title: {
     type: String,
@@ -45,7 +46,15 @@ defineProps({
   },
 })
 
-defineEmits(['close'])
+const emit = defineEmits<{
+  close: []
+}>()
+
+const handleModelValueUpdate = (isOpen: boolean) => {
+  if (!isOpen) {
+    emit('close')
+  }
+}
 </script>
 
 <style>

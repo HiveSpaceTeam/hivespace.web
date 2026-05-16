@@ -1,6 +1,6 @@
 <template>
   <!-- This component dynamically renders the correct modal based on global state -->
-  <ModalWrapper v-if="isOpen && modalComponent" v-model="isOpen" :title="modalProps.title || 'Modal'"
+  <ModalWrapper v-if="isOpen && modalComponent" :title="modalProps.title || 'Modal'"
     :description="modalProps.description || ''" :max-width="modalProps.maxWidth" @close="closeModal">
     <!-- Use Vue's dynamic <component> to render the correct modal -->
     <component :is="modalComponent" v-bind="modalProps" @close="closeModalWithResult" />

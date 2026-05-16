@@ -1,3 +1,5 @@
+import type { AppliedPlatformCoupon, AppliedStoreCoupon, InvalidAppliedCoupon } from './cart.types'
+
 export interface CheckoutItem {
   cartItemId: string
   productId: number
@@ -22,6 +24,7 @@ export interface DeliveryPackage {
   originalSubtotal: number
   subtotal: number
   packageTotal: number
+  appliedStoreCoupon?: AppliedStoreCoupon | null
   items: CheckoutItem[]
 }
 
@@ -33,17 +36,11 @@ export interface CheckoutPreview {
   totalShippingFee: number
   grandTotal: number
   totalItems: number
+  platformCoupons: AppliedPlatformCoupon[]
+  invalidatedCoupons: InvalidAppliedCoupon[]
 }
 
-export interface StoreCouponEntry {
-  storeId: string
-  couponCode: string
-}
-
-export interface CheckoutPreviewRequest {
-  storeCoupons?: StoreCouponEntry[]
-  platformCouponCodes?: string[]
-}
+export type CheckoutPreviewRequest = Record<string, never>
 
 export interface DeliveryAddressDto {
   recipientName: string
@@ -61,20 +58,18 @@ export const PaymentMethod = {
   MOMO: 3,
   BankTransfer: 4,
   Balance: 5,
-  PayPal: 6
+  PayPal: 6,
 } as const
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
 
-
 export interface CheckoutRequest {
   deliveryAddress: DeliveryAddressDto
-  couponCodes?: string[]
   paymentMethod?: PaymentMethod
 }
 
 export interface CheckoutResult {
-  orderId: string
+  orderIds: string[]
   status: string
   grandTotal: number
   paymentUrl?: string | null

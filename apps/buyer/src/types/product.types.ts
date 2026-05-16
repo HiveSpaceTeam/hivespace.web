@@ -1,4 +1,5 @@
-// Product-related types
+import type { PaginationMetadata } from '@hivespace/shared'
+
 export interface ProductVariantOption {
   value: string
 }
@@ -12,6 +13,7 @@ export interface ProductVariant {
 export interface ProductSkuImage {
   skuId: string
   fileId: string
+  imageUrl: string | null
 }
 
 export interface ProductImage {
@@ -34,50 +36,6 @@ export interface ProductSku {
   images?: ProductSkuImage[]
 }
 
-export interface Product {
-  id?: string
-  name: string
-  category: string
-  description?: string
-  variants: ProductVariant[]
-  skus: ProductSku[]
-  images?: ProductImage[]
-  // Add more fields as needed
-}
-
-// Search/paging contracts
-export interface ProductSearchRequest {
-  keyword?: string
-  sort?: 'ASC' | 'DESC'
-  pageSize: number
-  pageIndex: number
-}
-
-export interface Pagination {
-  currentPage: number
-  pageSize: number
-  totalItems: number
-  totalPages: number
-  hasNextPage: boolean
-  hasPreviousPage: boolean
-}
-
-export interface PagedResponse<T> {
-  items: T[]
-  pagination: Pagination
-}
-
-export interface Product {
-  id?: string
-  name: string
-  category: string
-  description?: string
-  variants: ProductVariant[]
-  skus: ProductSku[]
-  images?: ProductImage[]
-  // Add more fields as needed
-}
-
 export interface ProductAttribute {
   attributeId: number
   attributeName: string
@@ -88,26 +46,11 @@ export interface ProductAttribute {
   nameValue: string[]
 }
 
-export interface ProductDetail {
-  id?: number
-  name: string
-  category: string
-  description?: string
-  variants: ProductVariant[]
-  skus: ProductSku[]
-  images?: ProductImage[]
-  attributes: ProductAttribute[]
-  thumbnailUrl: string | null
-  currentSeller: CurrentSeller | null
-}
-
 export interface CurrentSeller {
   id: string
   storeName: string
   logoUrl: string | null
 }
-
-
 
 export interface ProductSummary {
   id: string
@@ -125,7 +68,25 @@ export interface ProductSummary {
   imageURL?: string
 }
 
-export interface PagingRequest {
+export interface GetProductListQuery {
   pageSize: number
   page: number
+}
+
+export interface GetProductListResponse {
+  items: ProductSummary[]
+  pagination: PaginationMetadata
+}
+
+export interface GetProductDetailResponse {
+  id?: number
+  name: string
+  category: string
+  description?: string
+  variants: ProductVariant[]
+  skus: ProductSku[]
+  images?: ProductImage[]
+  attributes: ProductAttribute[]
+  thumbnailUrl: string | null
+  currentSeller: CurrentSeller | null
 }

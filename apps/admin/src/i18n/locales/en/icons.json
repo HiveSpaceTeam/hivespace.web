@@ -1,0 +1,7 @@
+{
+  "title": "Icons Gallery",
+  "description": "All available icons in this project. Click on any icon to copy its name.",
+  "totalLabel": "Total Icons",
+  "copiedMessage": "Icon name copied to clipboard!",
+  "copyTitle": "Click to copy: {name}"
+}

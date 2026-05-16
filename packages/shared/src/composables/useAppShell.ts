@@ -2,6 +2,7 @@ import { provide, inject, type Ref } from 'vue'
 import type { SidebarMenuGroup } from '../types/sidebar.types'
 import type { MenuItem } from '../types/component.common'
 import type { InAppNotification } from '../features/notifications/notifications.types'
+import type { CultureText, ThemeText } from '../features/user-settings'
 
 const AppShellSymbol = Symbol('AppShell')
 
@@ -20,8 +21,8 @@ export interface AppShellContext {
   markAsRead: (id: string) => void
   fetchNotifications: (unreadOnly: boolean) => void
   loadMore: () => void
-  themeChange: (theme: string) => Promise<void>
-  cultureChange: (culture: string) => Promise<void>
+  themeChange: (theme: ThemeText) => Promise<void>
+  cultureChange: (culture: CultureText) => Promise<void>
 }
 
 export function provideAppShell(context: AppShellContext): void {

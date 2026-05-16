@@ -1,0 +1,2696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HiveSpace · Storefront</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<style>
+* { box-sizing: border-box; }
+body { margin: 0; background: #f5f5f5; font-family: 'Montserrat','Inter',sans-serif; color: var(--gray-800); font-size: 14px; }
+.container { max-width: 1200px; margin: 0 auto; padding: 0 16px; }
+
+/* ===== HEADER ===== */
+header.sf-header { background: #fff; border-bottom: 1px solid var(--gray-200); position: sticky; top: 0; z-index: 100; }
+.util-bar { border-bottom: 1px solid var(--gray-100); padding: 6px 0; }
+.util-bar .inner { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.util-btn { width: 36px; height: 36px; border-radius: 9999px; background: transparent; border: none; color: var(--gray-600); display: inline-flex; align-items: center; justify-content: center; cursor: pointer; position: relative; }
+.util-btn:hover { background: var(--gray-100); }
+.util-btn svg { width: 20px; height: 20px; }
+.lang-btn { display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 9999px; border: none; background: transparent; cursor: pointer; font-size: 13px; color: var(--gray-700); font-weight: 500; font-family: inherit; }
+.lang-btn:hover { background: var(--gray-100); }
+.flag { width: 22px; height: 15px; border-radius: 2px; overflow: hidden; flex-shrink: 0; background: linear-gradient(180deg, #012169 33%, #fff 33% 66%, #C8102E 66%); }
+
+/* User dropdown */
+.user-area { position: relative; }
+.user-chip { display: flex; align-items: center; gap: 7px; padding: 4px 10px; border-radius: 9999px; border: none; background: transparent; cursor: pointer; font-size: 13px; color: var(--gray-700); font-weight: 500; font-family: inherit; }
+.user-chip:hover { background: var(--gray-100); }
+.user-av { width: 28px; height: 28px; border-radius: 9999px; background: var(--brand-100); color: var(--brand-700); font-size: 12px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; }
+.user-dropdown { position: absolute; top: calc(100% + 10px); right: 0; width: 230px; background: #fff; border: 1px solid var(--gray-200); border-radius: 12px; box-shadow: var(--shadow-xl); z-index: 300; overflow: hidden; display: none; }
+.user-dropdown.open { display: block; }
+.user-dd-head { padding: 16px 18px 12px; border-bottom: 1px solid var(--gray-100); }
+.user-dd-name { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+.user-dd-email { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+.user-dd-item { display: flex; align-items: center; gap: 10px; padding: 11px 18px; font-size: 14px; color: var(--gray-700); cursor: pointer; font-family: inherit; background: none; border: none; width: 100%; text-align: left; }
+.user-dd-item:hover { background: var(--gray-50); color: var(--brand-500); }
+.user-dd-item svg { width: 17px; height: 17px; flex-shrink: 0; color: var(--gray-400); }
+.user-dd-item:hover svg { color: var(--brand-400); }
+.user-dd-sep { border: none; border-top: 1px solid var(--gray-100); margin: 2px 0; }
+
+/* Search row */
+.search-row { padding: 12px 0; }
+.search-row .inner { display: flex; align-items: center; gap: 20px; }
+.sf-logo { display: flex; align-items: center; gap: 8px; flex-shrink: 0; text-decoration: none; cursor: pointer; }
+.sf-logo img { height: 32px; }
+.search-wrap { flex: 1; display: flex; height: 44px; border: 1px solid var(--gray-300); border-radius: 0; overflow: hidden; }
+.search-wrap input { flex: 1; border: none; outline: none; padding: 0 16px; font-size: 14px; font-family: inherit; color: var(--gray-800); background: #fff; }
+.search-wrap button { width: 52px; background: var(--brand-500); border: none; color: #fff; cursor: pointer; display: inline-flex; align-items: center; justify-content: center; }
+.search-wrap button:hover { background: var(--brand-600); }
+.cart-btn { position: relative; padding: 8px; color: var(--gray-700); cursor: pointer; }
+.cart-btn svg { width: 28px; height: 28px; }
+.cart-ct { position: absolute; top: 2px; right: 2px; background: var(--brand-500); color: #fff; font-size: 11px; font-weight: 700; border-radius: 9999px; min-width: 18px; height: 18px; padding: 0 4px; display: inline-flex; align-items: center; justify-content: center; border: 2px solid #fff; }
+
+/* ===== VIEWS ===== */
+.sf-view { display: none; }
+.sf-view.active { display: block; }
+
+/* ===== HOME ===== */
+.hero-section { background: #fff; padding: 16px 0; }
+.hero-grid { display: flex; gap: 12px; height: 380px; }
+.hero-main { flex: 3; border-radius: 4px; overflow: hidden; position: relative;
+  background: linear-gradient(135deg,#1a1a2e,#16213e),
+    url('https://images.unsplash.com/photo-1519681393784-d120267933ba?w=900&q=80') center/cover no-repeat; }
+.hero-main-inner { width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0) 50%, rgba(0,0,0,0.3) 100%); }
+.hero-dots { position: absolute; bottom: 14px; left: 0; right: 0; display: flex; justify-content: center; gap: 6px; }
+.hero-dot { width: 8px; height: 8px; border-radius: 9999px; background: rgba(255,255,255,0.5); }
+.hero-dot.active { background: #fff; }
+.hero-aside { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+.hero-aside-img { flex: 1; border-radius: 4px; background: var(--gray-200); background-size: cover; background-position: center; }
+.hero-aside-img.a { background-image: url('https://images.unsplash.com/photo-1448375240586-882707db888b?w=400&q=80'); }
+.hero-aside-img.b { background-image: url('https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=400&q=80'); }
+
+.cat-section { background: #fff; margin-top: 12px; padding: 20px 0; }
+.cat-section h2 { font-size: 14px; font-weight: 700; color: var(--gray-800); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 16px; }
+.cat-grid { display: grid; grid-template-columns: repeat(9, 1fr); }
+.cat-item { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 16px 8px; border-right: 1px solid var(--gray-100); border-bottom: 1px solid var(--gray-100); text-decoration: none; }
+.cat-item:nth-child(9n) { border-right: none; }
+.cat-circle { width: 64px; height: 64px; border-radius: 9999px; overflow: hidden; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 28px; }
+.cat-name { font-size: 11px; color: var(--brand-500); text-align: center; line-height: 1.3; font-weight: 500; }
+
+.flash-section { background: #fff; margin-top: 12px; }
+.flash-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 0 12px; }
+.flash-brand { display: flex; align-items: center; gap: 8px; }
+.flash-label { font-size: 20px; font-weight: 800; color: var(--brand-500); letter-spacing: 0.02em; text-transform: uppercase; }
+.flash-timer { display: flex; align-items: center; gap: 4px; margin-left: 12px; }
+.flash-timer .t { font-size: 28px; font-weight: 700; color: var(--brand-500); font-family: var(--font-mono); }
+.flash-timer .s { font-size: 24px; font-weight: 700; color: var(--brand-500); }
+.flash-more { color: var(--gray-700); font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 4px; text-decoration: none; }
+.flash-items { display: flex; gap: 16px; padding-bottom: 20px; overflow-x: auto; }
+.flash-card { flex-shrink: 0; width: 160px; cursor: pointer; }
+.flash-img { width: 160px; height: 160px; background: var(--gray-100); position: relative; overflow: hidden; }
+.flash-off { position: absolute; top: 4px; right: 4px; background: var(--orange-500); color: #fff; font-size: 10px; font-weight: 700; padding: 3px 5px; border-radius: 3px; }
+.flash-price { color: var(--brand-500); font-weight: 500; font-size: 16px; margin: 8px 0 4px; }
+.flash-bar-wrap { position: relative; height: 20px; background: var(--gray-100); border-radius: 9999px; overflow: hidden; }
+.flash-bar-fill { position: absolute; left: 0; top: 0; height: 100%; border-radius: 9999px; background: linear-gradient(90deg, #ffb000, var(--orange-500)); }
+.flash-bar-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.3); text-transform: uppercase; }
+
+.suggest-tab-wrap { position: sticky; top: 68px; z-index: 50; background: #fff; box-shadow: var(--shadow-sm); height: 52px; display: flex; align-items: center; justify-content: center; margin-top: 12px; border-bottom: 2px solid var(--brand-500); }
+.suggest-tab { color: var(--brand-500); font-size: 16px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; position: relative; height: 100%; display: flex; align-items: center; padding: 0 32px; }
+.suggest-tab::after { content: ''; position: absolute; bottom: -2px; left: 0; right: 0; height: 3px; background: var(--brand-500); border-radius: 3px 3px 0 0; }
+
+.prod-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; background: var(--gray-100); padding: 4px; }
+.prod-card { background: #fff; cursor: pointer; transition: box-shadow .15s; }
+.prod-card:hover { box-shadow: 0 0 0 2px var(--brand-300); }
+.prod-media { aspect-ratio: 1; overflow: hidden; background: var(--gray-100); }
+.prod-media-inner { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 600; color: rgba(255,255,255,0.9); text-align: center; padding: 8px; line-height: 1.3; }
+.tile-1 { background: linear-gradient(135deg,#6f4e37,#3b2512); }
+.tile-2 { background: linear-gradient(135deg,#e9c46a,#b98a1e); }
+.tile-3 { background: linear-gradient(135deg,#ff9a76,#c4320a); }
+.tile-4 { background: linear-gradient(135deg,#94d2bd,#386641); }
+.tile-5 { background: linear-gradient(135deg,#d4a5a5,#6b3f3f); }
+.tile-6 { background: linear-gradient(135deg,#a7c957,#386641); }
+.tile-7 { background: linear-gradient(135deg,#ffc8dd,#c9184a); }
+.tile-8 { background: linear-gradient(135deg,#fec89a,#e07a5f); }
+.tile-9 { background: linear-gradient(135deg,#b8d4e3,#3d6a8a); }
+.tile-10 { background: linear-gradient(135deg,#f4e4bc,#b8860b); }
+.tile-11 { background: linear-gradient(135deg,#dda0dd,#8b4789); }
+.tile-12 { background: linear-gradient(135deg,#98d8c8,#2f6b5f); }
+.tile-13 { background: linear-gradient(135deg,#b5d5c5,#2d6a4f); }
+.tile-14 { background: linear-gradient(135deg,#ffe0b2,#e65100); }
+.prod-info { padding: 8px; }
+.prod-name { font-size: 12px; color: var(--gray-800); line-height: 1.35; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; min-height: 32px; margin: 0 0 6px; }
+.prod-bottom { display: flex; align-items: baseline; justify-content: space-between; }
+.prod-price { color: var(--brand-500); font-weight: 500; display: flex; align-items: baseline; gap: 1px; }
+.prod-price .sym { font-size: 10px; }
+.prod-price .num { font-size: 15px; }
+.prod-sold { font-size: 10px; color: var(--gray-500); }
+
+.see-more-wrap { background: var(--gray-100); padding: 24px 0; display: flex; justify-content: center; }
+.see-more-btn { padding: 10px 128px; border: 1px solid var(--gray-400); background: #fff; color: var(--gray-700); font-size: 13px; font-weight: 500; cursor: pointer; text-transform: uppercase; letter-spacing: 0.04em; font-family: inherit; }
+
+footer.sf-footer { background: #fff; border-top: 1px solid var(--gray-200); padding: 40px 0 24px; }
+.ft-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; }
+.ft-grid h4 { font-size: 12px; color: var(--gray-800); font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 16px; }
+.ft-grid ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.ft-grid a { font-size: 13px; color: var(--gray-500); text-decoration: none; }
+.ft-grid a:hover { color: var(--brand-500); }
+.pay-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 20px; }
+.pay-chip { height: 28px; padding: 0 10px; border: 1px solid var(--gray-300); border-radius: 4px; display: inline-flex; align-items: center; font-size: 11px; font-weight: 600; color: var(--gray-700); }
+.social-list { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
+.social-link { display: flex; align-items: center; gap: 10px; font-size: 13px; color: var(--gray-600); text-decoration: none; }
+.social-link:hover { color: var(--brand-500); }
+.social-icon { width: 28px; height: 28px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; font-size: 14px; }
+.qr-box { width: 64px; height: 64px; border: 1px solid var(--gray-200); border-radius: 4px; background: repeating-conic-gradient(var(--gray-400) 0% 25%, #fff 0% 50%) 0 0 / 8px 8px; }
+.app-btn { height: 28px; padding: 0 12px; border: 1px solid var(--gray-300); border-radius: 4px; display: inline-flex; align-items: center; font-size: 11px; color: var(--gray-700); background: #fff; cursor: pointer; font-family: inherit; }
+.ft-bottom { margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: var(--gray-500); }
+.ft-bottom .regions a { color: var(--gray-500); text-decoration: none; padding: 0 8px; border-right: 1px solid var(--gray-300); }
+.ft-bottom .regions a:last-child { border-right: none; }
+
+/* ===== CART PAGE ===== */
+.cart-layout { display: grid; grid-template-columns: 1fr 280px; gap: 16px; align-items: start; max-width: 1200px; margin: 20px auto; padding: 0 16px; }
+.cart-main { display: flex; flex-direction: column; gap: 0; }
+
+/* Cart header row */
+.cart-header-row { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px 8px 0 0; display: grid; grid-template-columns: 40px 1fr 140px 160px 160px 40px; align-items: center; padding: 12px 16px; gap: 8px; font-size: 13px; color: var(--gray-500); font-weight: 500; border-bottom: none; }
+.cart-header-row .ch-product { }
+
+/* Seller group */
+.cart-seller-group { background: #fff; border: 1px solid var(--gray-200); margin-bottom: 12px; border-radius: 8px; }
+.cart-seller-head { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--gray-100); }
+.cart-seller-check { width: 18px; height: 18px; accent-color: var(--brand-500); cursor: pointer; flex-shrink: 0; }
+.cart-seller-icon { width: 20px; height: 20px; color: var(--brand-500); flex-shrink: 0; }
+.cart-seller-name { font-size: 14px; font-weight: 600; color: var(--gray-800); flex: 1; }
+.cart-seller-chat { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--brand-500); border: 1px solid var(--brand-300); border-radius: 4px; padding: 4px 10px; cursor: pointer; background: #fff; font-family: inherit; }
+.cart-seller-chat:hover { background: var(--brand-50); }
+
+/* Cart item row */
+.cart-item-row { display: grid; grid-template-columns: 40px 1fr 140px 160px 160px 40px; align-items: center; padding: 14px 16px; gap: 8px; border-bottom: 1px solid var(--gray-100); }
+.cart-item-row:last-of-type { border-bottom: none; }
+.cart-item-check { width: 18px; height: 18px; accent-color: var(--brand-500); cursor: pointer; }
+.cart-item-thumb { width: 80px; height: 80px; border-radius: 4px; object-fit: cover; background: var(--gray-100); flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 10px; color: var(--gray-400); overflow: hidden; }
+.cart-item-info { display: flex; align-items: flex-start; gap: 12px; }
+.cart-item-name { font-size: 13px; color: var(--gray-800); line-height: 1.45; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 0 0 6px; }
+.cart-item-variant { font-size: 11px; color: var(--gray-400); margin-bottom: 4px; }
+.cart-item-price-col { font-size: 14px; color: var(--gray-700); font-weight: 400; }
+.cart-item-subtotal { font-size: 15px; color: var(--brand-500); font-weight: 600; }
+.cart-item-delete { color: var(--gray-400); cursor: pointer; background: none; border: none; padding: 4px; display: flex; align-items: center; justify-content: center; }
+.cart-item-delete:hover { color: var(--error-500); }
+.cart-item-delete svg { width: 18px; height: 18px; }
+
+/* Qty stepper */
+.qty-stepper { display: flex; align-items: center; border: 1px solid var(--gray-300); border-radius: 4px; overflow: hidden; width: fit-content; }
+.qty-btn { width: 30px; height: 30px; background: #fff; border: none; cursor: pointer; font-size: 16px; display: inline-flex; align-items: center; justify-content: center; color: var(--gray-600); font-family: inherit; }
+.qty-btn:hover { background: var(--gray-50); }
+.qty-input { width: 36px; height: 30px; border: none; border-left: 1px solid var(--gray-200); border-right: 1px solid var(--gray-200); text-align: center; font-size: 13px; font-weight: 500; color: var(--gray-800); font-family: inherit; }
+.qty-input:focus { outline: none; }
+
+/* Shop coupon row */
+.cart-coupon-row { display: flex; align-items: center; gap: 8px; padding: 10px 16px; border-top: 1px solid var(--gray-100); }
+.cart-coupon-row svg { width: 14px; height: 14px; color: var(--brand-500); }
+.cart-coupon-row span { font-size: 13px; color: var(--brand-500); cursor: pointer; }
+.cart-coupon-row span:hover { text-decoration: underline; }
+
+/* Select all bar */
+.cart-select-all-bar { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 12px 16px; display: flex; align-items: center; gap: 10px; margin-top: 12px; }
+.cart-select-all-bar label { font-size: 13px; color: var(--gray-700); cursor: pointer; display: flex; align-items: center; gap: 8px; }
+.cart-select-all-bar .del-all { margin-left: auto; font-size: 13px; color: var(--gray-500); cursor: pointer; background: none; border: none; font-family: inherit; }
+.cart-select-all-bar .del-all:hover { color: var(--error-500); }
+
+/* Order summary sidebar */
+.cart-summary { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; position: sticky; top: 80px; }
+.cart-summary-title { font-size: 14px; font-weight: 600; color: var(--brand-500); margin: 0 0 12px; display: flex; align-items: center; gap: 6px; }
+.cart-summary-title svg { width: 16px; height: 16px; }
+.coupon-input-row { display: flex; gap: 8px; margin-bottom: 16px; min-width: 0; }
+.coupon-input-row input { flex: 1; min-width: 0; height: 36px; border: 1px solid var(--gray-300); border-radius: 6px; padding: 0 10px; font-size: 13px; font-family: inherit; color: var(--gray-700); }
+.coupon-input-row input:focus { outline: none; border-color: var(--brand-400); }
+.coupon-apply-btn { flex-shrink: 0; height: 36px; padding: 0 12px; background: var(--brand-500); color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.coupon-apply-btn:hover { background: var(--brand-600); }
+.summary-row { display: flex; justify-content: space-between; align-items: center; padding: 6px 0; font-size: 14px; color: var(--gray-700); }
+.summary-row.discount { color: var(--error-500); }
+.summary-row.total { border-top: 1px solid var(--gray-200); margin-top: 8px; padding-top: 12px; font-weight: 600; color: var(--gray-900); font-size: 14px; }
+.summary-row.total .total-amount { font-size: 22px; font-weight: 700; color: var(--brand-500); }
+.summary-vat { font-size: 11px; color: var(--gray-400); text-align: right; margin-top: 2px; }
+.checkout-btn { width: 100%; height: 44px; background: var(--brand-500); color: #fff; border: none; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 14px; letter-spacing: 0.02em; }
+.checkout-btn:hover { background: var(--brand-600); }
+
+/* Recommended products in cart */
+.cart-recommend { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px; margin-top: 16px; }
+.cart-recommend h3 { font-size: 14px; font-weight: 700; color: var(--gray-800); margin: 0 0 14px; }
+.rec-grid { display: grid; grid-template-columns: repeat(8, 1fr); gap: 8px; }
+.rec-card { cursor: pointer; }
+.rec-card:hover .rec-thumb { outline: 2px solid var(--brand-300); }
+.rec-thumb { aspect-ratio: 1; border-radius: 4px; overflow: hidden; background: var(--gray-100); margin-bottom: 6px; }
+.rec-thumb-inner { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 600; color: rgba(255,255,255,0.85); text-align: center; padding: 4px; line-height: 1.3; }
+.rec-name { font-size: 11px; color: var(--gray-700); line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-bottom: 4px; min-height: 28px; }
+.rec-price { font-size: 12px; font-weight: 600; color: var(--brand-500); }
+
+/* Page header */
+.cart-breadcrumb { background: #fff; border-bottom: 1px solid var(--gray-100); }
+.cart-breadcrumb .container { display: flex; align-items: center; gap: 8px; min-height: 48px; font-size: 13px; color: var(--gray-500); }
+.cart-breadcrumb a { color: var(--gray-500); text-decoration: none; }
+.cart-breadcrumb a:hover { color: var(--brand-500); }
+.cart-breadcrumb svg { width: 14px; height: 14px; color: var(--gray-400); flex-shrink: 0; }
+
+/* ===== CHECKOUT PAGE ===== */
+.checkout-layout { display: grid; grid-template-columns: 1fr 320px; gap: 16px; align-items: start; max-width: 1200px; margin: 20px auto; padding: 0 16px; }
+.checkout-main { display: flex; flex-direction: column; gap: 16px; }
+.checkout-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; overflow: hidden; }
+.checkout-card-head { padding: 16px 20px; border-bottom: 1px solid var(--gray-100); font-size: 15px; font-weight: 700; color: var(--gray-900); }
+
+/* Shipping packages */
+.ck-pkg { border-bottom: 1px solid var(--gray-100); padding: 14px 20px; }
+.ck-pkg:last-child { border-bottom: none; }
+.ck-pkg-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.ck-pkg-label { font-size: 13px; font-weight: 700; color: var(--gray-700); }
+.ck-pkg-badge { font-size: 11px; font-weight: 700; padding: 2px 8px; border-radius: 4px; background: #d1fae5; color: #065f46; }
+.ck-pkg-shipping { font-size: 12px; }
+.ck-pkg-shipping .orig { text-decoration: line-through; color: var(--gray-400); margin-right: 4px; }
+.ck-pkg-shipping .disc { color: var(--brand-500); font-weight: 600; }
+.ck-item-row { display: grid; grid-template-columns: 1fr 120px 80px 100px; gap: 8px; align-items: center; padding: 8px 0; font-size: 13px; }
+.ck-item-row:first-child { color: var(--gray-400); font-size: 12px; font-weight: 500; padding-top: 0; border-bottom: 1px solid var(--gray-100); padding-bottom: 6px; }
+.ck-item-info { display: flex; align-items: center; gap: 10px; }
+.ck-item-thumb { width: 44px; height: 44px; border-radius: 4px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; font-size: 7px; font-weight: 700; color: rgba(255,255,255,0.9); text-align: center; padding: 4px; line-height: 1.2; }
+.ck-item-name { font-size: 12px; color: var(--gray-700); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.ck-item-price { text-align: center; color: var(--gray-700); }
+.ck-item-qty { text-align: center; color: var(--gray-600); }
+.ck-item-total { text-align: right; color: var(--brand-500); font-weight: 600; }
+.ck-coupon-row { display: flex; align-items: center; gap: 6px; margin-top: 10px; font-size: 13px; color: var(--brand-500); cursor: pointer; }
+.ck-coupon-row svg { width: 14px; height: 14px; }
+.ck-coupon-row:hover span { text-decoration: underline; }
+
+/* Payment methods */
+.pay-method-list { display: flex; flex-direction: column; gap: 0; }
+.pay-method-item { display: flex; align-items: center; gap: 14px; padding: 16px 20px; border-bottom: 1px solid var(--gray-100); cursor: pointer; transition: background .12s; }
+.pay-method-item:last-child { border-bottom: none; }
+.pay-method-item:hover { background: var(--gray-50); }
+.pay-method-item input[type="radio"] { width: 18px; height: 18px; accent-color: var(--brand-500); flex-shrink: 0; cursor: pointer; }
+.pay-method-icon { width: 36px; height: 36px; border-radius: 8px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-size: 20px; }
+.pay-method-text { flex: 1; }
+.pay-method-name { font-size: 14px; font-weight: 600; color: var(--gray-800); }
+.pay-method-desc { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+/* Stripe card form */
+.stripe-form { margin: 0 20px 20px; padding: 16px; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: 8px; display: none; }
+.stripe-form.visible { display: block; }
+.stripe-form-title { font-size: 13px; font-weight: 600; color: var(--gray-700); margin: 0 0 12px; display: flex; align-items: center; gap: 8px; }
+.stripe-form-title svg { width: 16px; height: 16px; color: var(--brand-500); }
+.stripe-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px; }
+.stripe-field { display: flex; flex-direction: column; gap: 4px; }
+.stripe-field.full { grid-column: 1 / -1; }
+.stripe-field label { font-size: 11px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.04em; }
+.stripe-input { height: 38px; border: 1px solid var(--gray-300); border-radius: 6px; padding: 0 12px; font-size: 13px; font-family: inherit; color: var(--gray-800); background: #fff; width: 100%; }
+.stripe-input:focus { outline: none; border-color: var(--brand-400); box-shadow: 0 0 0 3px rgba(70,95,255,0.08); }
+.stripe-input::placeholder { color: var(--gray-400); }
+.stripe-secure { display: flex; align-items: center; gap: 6px; font-size: 11px; color: var(--gray-400); margin-top: 10px; }
+.stripe-secure svg { width: 13px; height: 13px; color: #22c55e; }
+.stripe-brands { display: flex; gap: 6px; }
+.stripe-brand-chip { height: 22px; padding: 0 8px; border: 1px solid var(--gray-200); border-radius: 3px; font-size: 10px; font-weight: 700; color: var(--gray-600); display: inline-flex; align-items: center; background: #fff; }
+
+/* Checkout sidebar */
+.ck-sidebar { display: flex; flex-direction: column; gap: 12px; }
+.ck-deliver-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px 18px; }
+.ck-deliver-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.ck-deliver-label { font-size: 13px; font-weight: 700; color: var(--gray-700); display: flex; align-items: center; gap: 6px; }
+.ck-deliver-label svg { width: 15px; height: 15px; color: var(--brand-500); }
+.ck-deliver-change { font-size: 13px; color: var(--brand-500); font-weight: 500; cursor: pointer; }
+.ck-deliver-change:hover { text-decoration: underline; }
+.ck-deliver-name { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+.ck-deliver-phone { font-size: 13px; color: var(--gray-600); }
+.ck-deliver-addr { font-size: 13px; color: var(--gray-600); margin-top: 4px; line-height: 1.5; }
+.ck-deliver-default { display: inline-block; border: 1px solid var(--brand-400); color: var(--brand-500); font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 4px; margin-top: 8px; }
+
+.ck-promo-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 14px 18px; }
+.ck-promo-head { font-size: 13px; font-weight: 700; color: var(--gray-700); display: flex; align-items: center; gap: 6px; margin-bottom: 10px; }
+.ck-promo-head svg { width: 14px; height: 14px; color: var(--brand-500); }
+.ck-promo-input { display: flex; gap: 8px; }
+.ck-promo-input input { flex: 1; height: 34px; border: 1px solid var(--gray-300); border-radius: 6px; padding: 0 10px; font-size: 13px; font-family: inherit; color: var(--gray-700); }
+.ck-promo-input input:focus { outline: none; border-color: var(--brand-400); }
+.ck-promo-input button { height: 34px; padding: 0 14px; background: var(--brand-500); color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; white-space: nowrap; }
+.ck-promo-input button:hover { background: var(--brand-600); }
+
+.ck-order-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px 18px; }
+.ck-order-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; font-size: 13px; }
+.ck-order-head span:first-child { font-weight: 700; color: var(--gray-700); }
+.ck-order-view { color: var(--brand-500); font-weight: 500; cursor: pointer; display: flex; align-items: center; gap: 3px; }
+.ck-order-view:hover { text-decoration: underline; }
+.ck-order-row { display: flex; justify-content: space-between; align-items: center; padding: 5px 0; font-size: 13px; color: var(--gray-700); }
+.ck-order-row.ck-discount { color: var(--error-500); }
+.ck-order-row.ck-total { border-top: 1px solid var(--gray-200); margin-top: 8px; padding-top: 12px; font-size: 14px; font-weight: 600; color: var(--gray-900); }
+.ck-order-row.ck-total .ck-total-amt { font-size: 22px; font-weight: 700; color: var(--brand-500); }
+.ck-order-save { font-size: 11px; color: var(--success-600,#16a34a); text-align: right; margin-top: 2px; }
+.ck-order-vat { font-size: 11px; color: var(--gray-400); line-height: 1.5; margin-top: 6px; }
+.place-order-btn { width: 100%; height: 46px; background: var(--brand-500); color: #fff; border: none; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; font-family: inherit; margin-top: 14px; letter-spacing: 0.02em; transition: background .15s; }
+.place-order-btn:hover { background: var(--brand-600); }
+
+/* Order success overlay */
+.ck-success-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 2000; display: flex; align-items: center; justify-content: center; display: none; }
+.ck-success-overlay.show { display: flex; }
+.ck-success-box { background: #fff; border-radius: 12px; width: 420px; max-width: 94vw; padding: 40px 32px 32px; text-align: center; box-shadow: 0 24px 60px rgba(0,0,0,0.2); }
+.ck-success-icon { width: 72px; height: 72px; border-radius: 9999px; background: #d1fae5; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; }
+.ck-success-icon svg { width: 36px; height: 36px; color: #16a34a; }
+.ck-success-title { font-size: 20px; font-weight: 700; color: var(--gray-900); margin: 0 0 8px; }
+.ck-success-desc { font-size: 14px; color: var(--gray-500); margin: 0 0 28px; line-height: 1.6; }
+.ck-success-actions { display: flex; gap: 12px; justify-content: center; }
+.ck-success-actions button { height: 40px; padding: 0 22px; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.ck-success-home { background: #fff; border: 1px solid var(--gray-300); color: var(--gray-700); }
+.ck-success-orders { background: var(--brand-500); border: none; color: #fff; }
+.ck-success-orders:hover { background: var(--brand-600); }
+
+/* ===== NOTIFICATION DROPDOWN ===== */
+.notif-area { position: relative; }
+.notif-dropdown {
+  position: absolute; top: calc(100% + 10px); right: 0; width: 380px;
+  background: #fff; border: 1px solid var(--gray-200); border-radius: 12px;
+  box-shadow: var(--shadow-xl); z-index: 300; overflow: hidden; display: none;
+}
+.notif-dropdown.open { display: block; }
+.notif-head { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--gray-200); }
+.notif-head h3 { margin: 0; font-size: 16px; font-weight: 600; color: var(--gray-900); }
+.notif-head a { font-size: 13px; color: var(--brand-500); text-decoration: none; font-weight: 500; }
+.notif-tabs { display: flex; gap: 4px; padding: 10px 16px; border-bottom: 1px solid var(--gray-100); }
+.notif-tab { padding: 6px 14px; border-radius: 9999px; border: 1px solid var(--gray-200); font-size: 13px; font-weight: 500; color: var(--gray-600); cursor: pointer; background: #fff; font-family: inherit; }
+.notif-tab.active { background: var(--brand-500); color: #fff; border-color: var(--brand-500); }
+.notif-item { display: flex; gap: 12px; padding: 14px 20px; cursor: pointer; }
+.notif-item:hover { background: var(--gray-50); }
+.notif-av { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; background: var(--brand-50); display: inline-flex; align-items: center; justify-content: center; font-size: 18px; position: relative; }
+.notif-av .ndot { position: absolute; bottom: -2px; right: -2px; width: 14px; height: 14px; border-radius: 9999px; background: var(--brand-500); border: 2px solid #fff; }
+.notif-text { font-size: 13px; color: var(--gray-700); line-height: 1.45; }
+.notif-text b { color: var(--gray-900); font-weight: 600; }
+.notif-time { font-size: 11px; color: var(--gray-400); margin-top: 4px; }
+.notif-dot { position: absolute; top: 6px; right: 6px; width: 8px; height: 8px; border-radius: 9999px; background: var(--brand-500); border: 2px solid #fff; }
+
+/* ===== ACCOUNT PAGES ===== */
+.acct-layout { max-width: 1000px; margin: 32px auto; padding: 0 16px; display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; }
+.acct-side { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 20px 0; }
+.acct-user { display: flex; align-items: center; gap: 12px; padding: 0 20px 16px; border-bottom: 1px solid var(--gray-100); }
+.acct-av { width: 40px; height: 40px; border-radius: 9999px; border: 1px solid var(--gray-300); display: inline-flex; align-items: center; justify-content: center; color: var(--gray-400); flex-shrink: 0; }
+.acct-user-info .name { font-size: 14px; font-weight: 600; color: var(--gray-900); line-height: 1.2; }
+.acct-user-info .edit { font-size: 12px; color: var(--brand-500); text-decoration: none; display: flex; align-items: center; gap: 3px; margin-top: 2px; cursor: pointer; }
+.acct-nav { padding: 12px 0; }
+.acct-nav-item { display: flex; align-items: center; gap: 10px; padding: 10px 20px; font-size: 14px; color: var(--gray-700); cursor: pointer; }
+.acct-nav-item:hover { background: var(--gray-50); }
+.acct-nav-item svg { width: 16px; height: 16px; flex-shrink: 0; color: var(--gray-400); }
+.acct-nav-item .chevron { margin-left: auto; width: 14px; height: 14px; }
+.acct-sub-item { padding: 8px 20px 8px 46px; font-size: 13px; color: var(--gray-600); cursor: pointer; display: block; }
+.acct-sub-item:hover { color: var(--brand-500); }
+.acct-sub-item.active { color: var(--brand-500); font-weight: 500; }
+
+.acct-content { background: #fff; border: 1px solid var(--gray-200); border-radius: 8px; padding: 28px 36px; }
+.acct-title { font-size: 20px; font-weight: 600; color: var(--gray-900); margin: 0 0 4px; }
+.acct-subtitle { font-size: 13px; color: var(--gray-500); margin: 0 0 28px; }
+
+/* Profile form */
+.prof-grid { display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: start; }
+.prof-row { display: grid; grid-template-columns: 120px 1fr; gap: 20px; align-items: center; padding: 12px 0; border-bottom: 1px solid var(--gray-100); }
+.prof-row:last-of-type { border-bottom: none; }
+.prof-label { font-size: 13px; color: var(--gray-600); text-align: right; }
+.prof-input { height: 38px; border: 1px solid var(--gray-300); border-radius: 6px; padding: 0 12px; font-size: 13px; width: 100%; font-family: inherit; color: var(--gray-800); }
+.prof-input:focus { outline: none; border-color: var(--brand-400); box-shadow: 0 0 0 3px rgba(70,95,255,0.08); }
+.prof-value { font-size: 13px; color: var(--gray-800); display: flex; align-items: center; gap: 8px; }
+.prof-change { font-size: 12px; color: var(--brand-500); cursor: pointer; font-weight: 500; }
+.prof-radio-group { display: flex; gap: 20px; }
+.prof-radio { display: flex; align-items: center; gap: 6px; font-size: 13px; color: var(--gray-700); cursor: pointer; }
+.prof-radio input { accent-color: var(--brand-500); width: 14px; height: 14px; }
+.prof-dob { display: flex; gap: 8px; }
+.prof-dob select { height: 36px; border: 1px solid var(--gray-300); border-radius: 6px; padding: 0 28px 0 10px; font-size: 13px; font-family: inherit; color: var(--gray-700); -webkit-appearance: none; background: #fff url("data:image/svg+xml,%3Csvg width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' xmlns='http://www.w3.org/2000/svg'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E") right 8px center no-repeat; min-width: 64px; }
+.prof-save { margin-top: 24px; }
+.prof-av-box { display: flex; flex-direction: column; align-items: center; gap: 10px; width: 120px; }
+.prof-av-circle { width: 96px; height: 96px; border-radius: 9999px; border: 2px dashed var(--gray-300); display: flex; flex-direction: column; align-items: center; justify-content: center; color: var(--gray-400); gap: 4px; cursor: pointer; }
+.prof-av-circle svg { width: 22px; height: 22px; }
+.prof-av-circle span { font-size: 11px; }
+.choose-photo-btn { padding: 6px 14px; border: 1px solid var(--gray-300); border-radius: 4px; font-size: 12px; background: #fff; cursor: pointer; font-family: inherit; }
+.prof-av-hint { font-size: 11px; color: var(--gray-400); text-align: center; line-height: 1.4; }
+
+/* hs-btn */
+.hs-btn { height: 40px; padding: 0 20px; border-radius: 6px; font-size: 14px; font-weight: 500; cursor: pointer; font-family: inherit; border: none; }
+.hs-btn-primary { background: var(--brand-500); color: #fff; }
+.hs-btn-primary:hover { background: var(--brand-600); }
+
+/* ===== MY ORDERS PAGE ===== */
+.orders-layout { max-width: 1000px; margin: 32px auto; padding: 0 16px; display: grid; grid-template-columns: 220px 1fr; gap: 24px; align-items: start; }
+
+/* Orders tab bar */
+.orders-tabs { display: flex; border-bottom: 1px solid var(--gray-200); background: #fff; border-radius: 8px 8px 0 0; overflow: hidden; }
+.orders-tab { flex: 1; padding: 14px 6px; text-align: center; font-size: 13px; color: var(--gray-600); font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; white-space: nowrap; transition: color .15s; background: none; border-left: none; border-right: none; border-top: none; font-family: inherit; }
+.orders-tab:hover { color: var(--brand-500); }
+.orders-tab.active { color: var(--brand-500); border-bottom: 2px solid var(--brand-500); font-weight: 600; }
+
+/* Orders search */
+.orders-search-row { padding: 14px 16px; background: #fff; border-left: 1px solid var(--gray-200); border-right: 1px solid var(--gray-200); border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; gap: 8px; }
+.orders-search-row svg { width: 16px; height: 16px; color: var(--gray-400); flex-shrink: 0; }
+.orders-search-row input { flex: 1; border: none; outline: none; font-size: 13px; font-family: inherit; color: var(--gray-700); background: transparent; }
+.orders-search-row input::placeholder { color: var(--gray-400); }
+
+/* Order group card */
+.order-group { background: #fff; border: 1px solid var(--gray-200); border-top: none; margin-bottom: 12px; }
+.order-group:last-child { border-radius: 0 0 8px 8px; }
+.order-group-head { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--gray-100); }
+.order-group-icon { color: var(--gray-400); display: flex; align-items: center; }
+.order-group-icon svg { width: 16px; height: 16px; }
+.order-group-count { font-size: 13px; color: var(--gray-600); font-weight: 500; }
+.order-group-status { margin-left: auto; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; }
+.order-group-status.cod { color: #059669; }
+.order-group-status.confirmed { color: var(--brand-500); }
+.order-group-status.shipping { color: #f59e0b; }
+.order-group-status.completed { color: #059669; }
+.order-group-status.rejected { color: var(--error-500, #ef4444); }
+
+/* Order item row */
+.order-item { display: flex; align-items: flex-start; gap: 12px; padding: 12px 16px; border-bottom: 1px solid var(--gray-50); }
+.order-item:last-of-type { border-bottom: none; }
+.order-item-thumb { width: 60px; height: 60px; border-radius: 4px; flex-shrink: 0; overflow: hidden; background: var(--gray-100); display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 700; color: rgba(255,255,255,0.9); text-align: center; padding: 4px; line-height: 1.3; }
+.order-item-info { flex: 1; min-width: 0; }
+.order-item-name { font-size: 13px; color: var(--gray-800); line-height: 1.4; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin: 0 0 4px; cursor: pointer; }
+.order-item-name:hover { color: var(--brand-500); }
+.order-item-variant { font-size: 12px; color: var(--gray-400); }
+.order-item-qty { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+.order-item-price { flex-shrink: 0; font-size: 14px; color: var(--gray-700); font-weight: 500; text-align: right; padding-top: 2px; }
+
+/* Order footer */
+.order-footer { display: flex; align-items: center; justify-content: flex-end; gap: 10px; padding: 12px 16px; border-top: 1px solid var(--gray-100); }
+.order-total { font-size: 13px; color: var(--gray-600); margin-right: auto; }
+.order-total strong { font-size: 15px; color: var(--brand-500); font-weight: 700; }
+.order-btn { height: 34px; padding: 0 16px; border-radius: 6px; font-size: 13px; font-weight: 500; cursor: pointer; font-family: inherit; transition: background .15s; }
+.order-btn-outline { background: #fff; border: 1px solid var(--gray-300); color: var(--gray-700); }
+.order-btn-outline:hover { border-color: var(--brand-400); color: var(--brand-500); }
+.order-btn-primary { background: var(--brand-500); border: none; color: #fff; }
+.order-btn-primary:hover { background: var(--brand-600); }
+
+/* Empty state */
+.orders-empty { background: #fff; border: 1px solid var(--gray-200); border-top: none; border-radius: 0 0 8px 8px; padding: 64px 24px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.orders-empty svg { width: 56px; height: 56px; color: var(--gray-300); }
+.orders-empty p { font-size: 14px; color: var(--gray-400); margin: 0; }
+
+/* Address page */
+.addr-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.addr-add-btn { display: flex; align-items: center; gap: 6px; padding: 8px 16px; border: 1px solid var(--gray-300); border-radius: 6px; background: #fff; font-size: 13px; font-weight: 500; color: var(--gray-700); cursor: pointer; font-family: inherit; }
+.addr-add-btn:hover { border-color: var(--brand-500); color: var(--brand-500); }
+.addr-section-label { font-size: 13px; color: var(--brand-500); font-weight: 500; margin-bottom: 12px; }
+.addr-card { border: 1px solid var(--gray-200); border-radius: 8px; padding: 16px 20px; position: relative; }
+.addr-name-phone { font-size: 14px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 8px; margin-bottom: 4px; }
+.addr-divider { color: var(--gray-400); font-weight: 300; }
+.addr-phone { font-weight: 400; color: var(--gray-700); }
+.addr-line { font-size: 13px; color: var(--gray-700); line-height: 1.5; }
+.addr-default-badge { display: inline-block; background: var(--error-500); color: #fff; font-size: 11px; font-weight: 600; padding: 3px 10px; border-radius: 9999px; margin-top: 8px; }
+.addr-update { position: absolute; top: 16px; right: 20px; font-size: 13px; color: var(--brand-500); font-weight: 500; cursor: pointer; background: none; border: none; font-family: inherit; }
+.addr-update:hover { text-decoration: underline; }
+
+/* Modal */
+.modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.45); z-index: 1000; display: flex; align-items: center; justify-content: center; }
+.modal-overlay.hidden { display: none; }
+.modal-box { background: #fff; border-radius: 10px; width: 540px; max-width: 95vw; box-shadow: 0 20px 48px rgba(0,0,0,0.18); }
+.modal-head { display: flex; align-items: center; justify-content: space-between; padding: 20px 24px 16px; border-bottom: 1px solid var(--gray-100); }
+.modal-head h3 { margin: 0; font-size: 16px; font-weight: 600; color: var(--gray-900); }
+.modal-close { width: 28px; height: 28px; border-radius: 9999px; border: none; background: transparent; cursor: pointer; color: var(--gray-500); font-size: 18px; display: inline-flex; align-items: center; justify-content: center; line-height: 1; }
+.modal-close:hover { background: var(--gray-100); }
+.modal-body { padding: 20px 24px; }
+.modal-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.modal-field { display: flex; flex-direction: column; gap: 5px; }
+.modal-field label { font-size: 13px; font-weight: 500; color: var(--gray-700); }
+.modal-field label .req { color: var(--error-500); }
+.modal-field input, .modal-field textarea { border: 1px solid var(--gray-300); border-radius: 6px; padding: 9px 12px; font-size: 13px; font-family: inherit; color: var(--gray-800); width: 100%; }
+.modal-field input:focus, .modal-field textarea:focus { outline: none; border-color: var(--brand-400); box-shadow: 0 0 0 3px rgba(70,95,255,0.08); }
+.modal-field textarea { height: 80px; resize: vertical; }
+.modal-checkbox { display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--gray-700); margin-top: 4px; cursor: pointer; }
+.modal-checkbox input { accent-color: var(--brand-500); width: 15px; height: 15px; }
+.modal-footer { display: flex; justify-content: flex-end; gap: 12px; padding: 16px 24px; border-top: 1px solid var(--gray-100); }
+.modal-go-back { height: 38px; padding: 0 20px; background: #fff; border: 1px solid var(--gray-300); border-radius: 6px; font-size: 13px; cursor: pointer; font-family: inherit; color: var(--gray-700); }
+.modal-confirm { height: 38px; padding: 0 20px; background: var(--brand-500); color: #fff; border: none; border-radius: 6px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: inherit; }
+.modal-confirm:hover { background: var(--brand-600); }
+
+/* ===== PRODUCT DETAIL PAGE ===== */
+.pdp-wrap { background: var(--gray-50); min-height: calc(100vh - 120px); padding-bottom: 40px; }
+.pdp-main { background: #fff; border-radius: 4px; padding: 16px; display: grid; grid-template-columns: 440px 1fr; gap: 24px; margin-top: 12px; }
+.pdp-gallery { display: flex; flex-direction: column; gap: 10px; }
+.pdp-hero { width: 100%; aspect-ratio: 1; border-radius: 2px; overflow: hidden; position: relative; background: var(--gray-100); }
+.pdp-hero-inner { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; color: rgba(255,255,255,0.95); text-align: center; padding: 24px; line-height: 1.3; letter-spacing: 0.01em; text-shadow: 0 2px 6px rgba(0,0,0,0.25); }
+.pdp-hero-flash { position: absolute; top: 0; left: 0; background: linear-gradient(90deg, var(--orange-500), #ffb000); color: #fff; font-size: 11px; font-weight: 700; padding: 6px 12px; letter-spacing: 0.05em; text-transform: uppercase; }
+.pdp-hero-discount { position: absolute; top: 12px; right: 12px; background: var(--orange-500); color: #fff; font-size: 12px; font-weight: 700; padding: 4px 8px; border-radius: 3px; }
+.pdp-thumbs { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+.pdp-thumb { aspect-ratio: 1; border-radius: 2px; overflow: hidden; cursor: pointer; border: 2px solid transparent; }
+.pdp-thumb.active { border-color: var(--brand-500); }
+.pdp-thumb-inner { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 9px; font-weight: 700; color: rgba(255,255,255,0.9); text-align: center; padding: 4px; line-height: 1.25; }
+.pdp-share-row { display: flex; align-items: center; justify-content: space-between; padding-top: 6px; border-top: 1px solid var(--gray-100); margin-top: 4px; }
+.pdp-share-left { display: flex; align-items: center; gap: 12px; font-size: 13px; color: var(--gray-600); }
+.pdp-share-left .share-label { color: var(--gray-500); }
+.pdp-share-icon { width: 26px; height: 26px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; font-size: 13px; cursor: pointer; }
+.pdp-share-icon.fb { background: #1877f2; color: #fff; }
+.pdp-share-icon.ig { background: radial-gradient(circle at 30% 110%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%); color: #fff; }
+.pdp-share-icon.tw { background: #000; color: #fff; font-weight: 700; }
+.pdp-fav { display: flex; align-items: center; gap: 6px; color: var(--error-500); font-size: 13px; cursor: pointer; }
+.pdp-fav svg { width: 18px; height: 18px; }
+.pdp-fav-count { color: var(--gray-500); font-size: 12px; padding-left: 6px; border-left: 1px solid var(--gray-200); margin-left: 6px; }
+
+.pdp-info { display: flex; flex-direction: column; }
+.pdp-badge-row { display: flex; gap: 6px; margin-bottom: 8px; }
+.pdp-badge { font-size: 11px; font-weight: 700; padding: 3px 7px; border-radius: 3px; letter-spacing: 0.04em; text-transform: uppercase; }
+.pdp-badge.preferred { background: var(--brand-500); color: #fff; }
+.pdp-badge.mall { background: var(--orange-500); color: #fff; }
+.pdp-title { font-size: 20px; font-weight: 600; color: var(--gray-900); line-height: 1.4; margin: 0 0 12px; letter-spacing: -0.005em; }
+.pdp-meta-row { display: flex; align-items: center; gap: 12px; padding: 6px 0 14px; border-bottom: 1px solid var(--gray-100); font-size: 13px; color: var(--gray-600); }
+.pdp-rating-num { color: var(--brand-500); font-weight: 600; border-bottom: 1px solid var(--brand-500); padding-bottom: 1px; }
+.pdp-stars { display: inline-flex; gap: 1px; color: #ffb000; font-size: 14px; }
+.pdp-meta-sep { width: 1px; height: 12px; background: var(--gray-200); }
+.pdp-meta-link { color: var(--gray-700); border-bottom: 1px solid var(--gray-300); padding-bottom: 1px; cursor: pointer; }
+.pdp-meta-link:hover { color: var(--brand-500); border-color: var(--brand-500); }
+.pdp-report { margin-left: auto; color: var(--gray-400); font-size: 12px; cursor: pointer; }
+
+.pdp-price-block { background: var(--gray-50); padding: 18px 20px; margin-top: 16px; border-radius: 4px; display: flex; align-items: center; gap: 14px; flex-wrap: wrap; }
+.pdp-price-orig { color: var(--gray-400); font-size: 14px; text-decoration: line-through; }
+.pdp-price-now { color: var(--brand-500); font-size: 32px; font-weight: 700; letter-spacing: -0.01em; }
+.pdp-price-now .sym { font-size: 20px; vertical-align: top; margin-top: 4px; display: inline-block; line-height: 1; }
+.pdp-price-off { background: var(--brand-500); color: #fff; font-size: 11px; font-weight: 700; padding: 3px 6px; border-radius: 2px; letter-spacing: 0.04em; }
+
+.pdp-row { display: grid; grid-template-columns: 110px 1fr; gap: 16px; align-items: flex-start; padding: 14px 0; }
+.pdp-row + .pdp-row { border-top: 1px solid transparent; }
+.pdp-row-label { font-size: 13px; color: var(--gray-500); padding-top: 6px; }
+.pdp-row-body { display: flex; flex-direction: column; gap: 10px; }
+
+.pdp-voucher-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.pdp-voucher { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 10px; background: var(--brand-50); color: var(--brand-600); border: 1px dashed var(--brand-300); border-radius: 3px; font-size: 12px; font-weight: 600; cursor: pointer; }
+.pdp-voucher:hover { background: var(--brand-100); }
+
+.pdp-ship-block { display: flex; flex-direction: column; gap: 6px; font-size: 13px; color: var(--gray-700); }
+.pdp-ship-row { display: flex; align-items: center; gap: 8px; }
+.pdp-ship-row svg { width: 16px; height: 16px; color: var(--success-500); flex-shrink: 0; }
+.pdp-ship-row .lbl { color: var(--gray-500); width: 100px; }
+.pdp-ship-row .val { color: var(--gray-800); }
+.pdp-ship-row .val b { color: var(--gray-900); font-weight: 600; }
+.pdp-ship-row .free-tag { color: var(--success-600); font-weight: 600; }
+
+.pdp-variant-list { display: flex; flex-wrap: wrap; gap: 8px; }
+.pdp-variant { padding: 8px 14px; min-width: 80px; border: 1px solid var(--gray-300); background: #fff; font-size: 13px; color: var(--gray-700); cursor: pointer; border-radius: 2px; font-family: inherit; position: relative; transition: all .12s; display: inline-flex; align-items: center; gap: 8px; }
+.pdp-variant:hover { border-color: var(--brand-500); color: var(--brand-500); }
+.pdp-variant.active { border-color: var(--brand-500); color: var(--brand-500); background: var(--brand-50); }
+.pdp-variant.active::after { content: ''; position: absolute; bottom: 0; right: 0; width: 0; height: 0; border-style: solid; border-width: 0 0 12px 12px; border-color: transparent transparent var(--brand-500) transparent; }
+.pdp-variant.active::before { content: '✓'; position: absolute; bottom: -3px; right: 0px; color: #fff; font-size: 8px; line-height: 1; z-index: 1; font-weight: 700; }
+.pdp-variant.disabled { color: var(--gray-300); border-color: var(--gray-200); cursor: not-allowed; background: var(--gray-50); }
+.pdp-variant.disabled:hover { color: var(--gray-300); border-color: var(--gray-200); }
+.pdp-variant-swatch { width: 18px; height: 18px; border-radius: 2px; flex-shrink: 0; }
+
+.pdp-qty-row { display: flex; align-items: center; gap: 14px; }
+.pdp-qty-stock { font-size: 13px; color: var(--gray-500); }
+
+.pdp-cta-row { display: flex; align-items: center; gap: 12px; padding: 24px 0 8px; }
+.pdp-cta { height: 48px; padding: 0 20px; border-radius: 2px; font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 8px; transition: all .15s; letter-spacing: 0.02em; }
+.pdp-cta svg { width: 18px; height: 18px; }
+.pdp-cta-add { background: var(--brand-50); border: 1px solid var(--brand-500); color: var(--brand-500); }
+.pdp-cta-add:hover { background: var(--brand-100); }
+.pdp-cta-buy { background: var(--brand-500); border: 1px solid var(--brand-500); color: #fff; flex: 1; justify-content: center; }
+.pdp-cta-buy:hover { background: var(--brand-600); border-color: var(--brand-600); }
+
+.pdp-trust-row { display: flex; align-items: center; gap: 18px; padding: 14px 0; border-top: 1px solid var(--gray-100); margin-top: 4px; font-size: 12px; color: var(--gray-500); }
+.pdp-trust-item { display: flex; align-items: center; gap: 6px; }
+.pdp-trust-item svg { width: 14px; height: 14px; color: var(--brand-500); }
+
+/* Seller card */
+.pdp-seller { background: #fff; border-radius: 4px; margin-top: 12px; padding: 20px 16px; display: grid; grid-template-columns: 280px 1fr 320px; gap: 24px; align-items: center; }
+.pdp-seller-left { display: flex; align-items: center; gap: 14px; }
+.pdp-seller-av { width: 64px; height: 64px; border-radius: 9999px; flex-shrink: 0; background: linear-gradient(135deg, var(--brand-400), var(--brand-700)); display: inline-flex; align-items: center; justify-content: center; color: #fff; font-weight: 700; font-size: 22px; position: relative; }
+.pdp-seller-online { position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; border-radius: 9999px; background: var(--success-500); border: 2px solid #fff; }
+.pdp-seller-info { display: flex; flex-direction: column; gap: 4px; }
+.pdp-seller-name { font-size: 15px; font-weight: 600; color: var(--gray-900); }
+.pdp-seller-active { font-size: 12px; color: var(--gray-500); }
+.pdp-seller-actions { display: flex; gap: 8px; margin-top: 6px; }
+.pdp-seller-btn { height: 30px; padding: 0 12px; font-size: 12px; font-weight: 500; border-radius: 2px; cursor: pointer; font-family: inherit; display: inline-flex; align-items: center; gap: 4px; }
+.pdp-seller-btn.primary { background: var(--brand-500); color: #fff; border: 1px solid var(--brand-500); }
+.pdp-seller-btn.primary:hover { background: var(--brand-600); }
+.pdp-seller-btn.outline { background: #fff; color: var(--gray-700); border: 1px solid var(--gray-300); }
+.pdp-seller-btn.outline:hover { border-color: var(--brand-500); color: var(--brand-500); }
+.pdp-seller-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px; }
+.pdp-stat-label { font-size: 12px; color: var(--gray-500); margin-bottom: 2px; }
+.pdp-stat-value { font-size: 14px; color: var(--brand-500); font-weight: 600; }
+
+/* Specs / Description */
+.pdp-section { background: #fff; border-radius: 4px; margin-top: 12px; }
+.pdp-section-head { padding: 12px 16px; background: var(--brand-50); font-size: 14px; font-weight: 600; color: var(--gray-800); text-transform: uppercase; letter-spacing: 0.04em; }
+.pdp-section-body { padding: 18px 20px; }
+.pdp-spec-row { display: grid; grid-template-columns: 160px 1fr; gap: 16px; padding: 7px 0; font-size: 13px; }
+.pdp-spec-row .k { color: var(--gray-500); }
+.pdp-spec-row .v { color: var(--gray-800); }
+.pdp-spec-row .v.link { color: var(--brand-500); cursor: pointer; }
+
+.pdp-desc { font-size: 14px; line-height: 1.7; color: var(--gray-700); }
+.pdp-desc p { margin: 0 0 14px; }
+.pdp-desc h4 { font-size: 14px; font-weight: 700; color: var(--gray-900); margin: 18px 0 8px; }
+.pdp-desc ul { margin: 0 0 14px; padding-left: 20px; }
+.pdp-desc li { margin-bottom: 6px; }
+
+/* Reviews */
+.pdp-rev-summary { display: grid; grid-template-columns: 280px 1fr; gap: 24px; align-items: center; padding: 20px; background: var(--brand-50); border: 1px solid var(--brand-100); border-radius: 4px; }
+.pdp-rev-score { text-align: center; }
+.pdp-rev-score .num { font-size: 32px; font-weight: 700; color: var(--brand-500); display: flex; align-items: baseline; justify-content: center; gap: 2px; }
+.pdp-rev-score .num .max { font-size: 18px; color: var(--gray-500); font-weight: 500; }
+.pdp-rev-score .stars { color: #ffb000; font-size: 18px; margin: 4px 0; letter-spacing: 2px; }
+.pdp-rev-score .count { font-size: 12px; color: var(--gray-500); }
+.pdp-rev-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+.pdp-rev-chip { padding: 7px 14px; border: 1px solid var(--gray-300); background: #fff; font-size: 12px; color: var(--gray-700); border-radius: 2px; cursor: pointer; font-family: inherit; }
+.pdp-rev-chip:hover { border-color: var(--brand-500); color: var(--brand-500); }
+.pdp-rev-chip.active { border-color: var(--brand-500); color: var(--brand-500); background: var(--brand-50); }
+
+.pdp-rev-list { margin-top: 14px; }
+.pdp-rev-item { display: grid; grid-template-columns: 36px 1fr; gap: 12px; padding: 16px 0; border-bottom: 1px solid var(--gray-100); }
+.pdp-rev-item:last-child { border-bottom: none; }
+.pdp-rev-av { width: 36px; height: 36px; border-radius: 9999px; background: var(--gray-200); display: flex; align-items: center; justify-content: center; font-size: 13px; font-weight: 600; color: var(--gray-600); flex-shrink: 0; }
+.pdp-rev-name { font-size: 13px; font-weight: 500; color: var(--gray-800); }
+.pdp-rev-stars { color: #ffb000; font-size: 11px; margin: 2px 0 4px; letter-spacing: 1px; }
+.pdp-rev-meta { font-size: 11px; color: var(--gray-400); margin-bottom: 8px; }
+.pdp-rev-text { font-size: 13px; line-height: 1.6; color: var(--gray-700); margin: 0 0 10px; }
+.pdp-rev-imgs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 8px; }
+.pdp-rev-img { width: 64px; height: 64px; border-radius: 2px; overflow: hidden; }
+.pdp-rev-img-inner { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; font-size: 8px; font-weight: 600; color: rgba(255,255,255,0.9); text-align: center; padding: 3px; line-height: 1.2; }
+.pdp-rev-helpful { display: flex; align-items: center; gap: 18px; font-size: 12px; color: var(--gray-500); }
+.pdp-rev-helpful span { display: flex; align-items: center; gap: 4px; cursor: pointer; }
+.pdp-rev-helpful span:hover { color: var(--brand-500); }
+.pdp-rev-helpful svg { width: 14px; height: 14px; }
+
+.pdp-rev-pager { display: flex; justify-content: center; gap: 4px; padding: 18px 0 4px; }
+.pdp-page-btn { width: 32px; height: 32px; border: 1px solid var(--gray-300); background: #fff; color: var(--gray-700); font-size: 12px; cursor: pointer; font-family: inherit; border-radius: 2px; }
+.pdp-page-btn:hover { border-color: var(--brand-500); color: var(--brand-500); }
+.pdp-page-btn.active { background: var(--brand-500); color: #fff; border-color: var(--brand-500); }
+
+/* From this shop / You may also like */
+.pdp-shelf-head { padding: 14px 16px; font-size: 14px; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; background: #fff; border-bottom: 1px solid var(--gray-100); border-radius: 4px 4px 0 0; margin-top: 12px; }
+.pdp-shelf-grid { display: grid; grid-template-columns: repeat(6, 1fr); gap: 4px; background: var(--gray-100); padding: 4px; }
+</style>
+</head>
+<body>
+
+<!-- ===== SHARED HEADER ===== -->
+<header class="sf-header">
+  <div class="util-bar">
+    <div class="container inner">
+      <!-- dark mode -->
+      <button class="util-btn" title="Toggle theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
+      <!-- language -->
+      <button class="lang-btn">
+        <div class="flag"></div>
+        EN
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+      </button>
+      <!-- notifications -->
+      <div class="notif-area">
+        <button class="util-btn" title="Notifications" id="notifBtn" onclick="toggleNotif()">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+          <span class="notif-dot"></span>
+        </button>
+        <div class="notif-dropdown" id="notifDropdown">
+          <div class="notif-head">
+            <h3>Notification</h3>
+            <a href="#">See all &rsaquo;</a>
+          </div>
+          <div class="notif-tabs">
+            <button class="notif-tab active" onclick="setNotifTab(this)">All</button>
+            <button class="notif-tab" onclick="setNotifTab(this)">Unread</button>
+          </div>
+          <div class="notif-item">
+            <div class="notif-av">🛒<span class="ndot"></span></div>
+            <div>
+              <div class="notif-text"><b>Tiki Trading</b> has confirmed your order #ORD-20260422224712-286744</div>
+              <div class="notif-time">4/23/2026</div>
+            </div>
+          </div>
+          <div class="notif-item">
+            <div class="notif-av">🛒<span class="ndot"></span></div>
+            <div>
+              <div class="notif-text"><b>Tiki Trading</b> has confirmed your order #ORD-20260421133044-145781</div>
+              <div class="notif-time">4/21/2026</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- user avatar (decorative, dropdown below handles click) -->
+
+      <!-- user chip with dropdown -->
+      <div class="user-area">
+        <button class="user-chip" id="userChipBtn" onclick="toggleUserDropdown()">
+          <div class="user-av">A</div>
+          alice
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div class="user-dropdown" id="userDropdown">
+          <div class="user-dd-head">
+            <div class="user-dd-name">Alice Smith</div>
+            <div class="user-dd-email">aliceSmith@gmail.com</div>
+          </div>
+          <button class="user-dd-item" onclick="sfView('profile'); closeDropdown();">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            My Account
+          </button>
+          <button class="user-dd-item" onclick="sfView('orders'); closeDropdown();">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="7" y="3" width="10" height="8" rx="1"/></svg>
+            My Orders
+          </button>
+          <hr class="user-dd-sep">
+          <button class="user-dd-item" onclick="sfView('home'); closeDropdown();">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign out
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="search-row">
+    <div class="container inner">
+      <a class="sf-logo" onclick="sfView('home')" href="#">
+        <img src="assets/logo-light.svg" alt="HiveSpace">
+      </a>
+      <div class="search-wrap">
+        <input placeholder="Search products...">
+        <button>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        </button>
+      </div>
+      <div class="cart-btn" onclick="sfView('cart')" style="cursor:pointer;" title="Cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+        <span class="cart-ct">3</span>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ===== VIEW: HOME ===== -->
+<div id="sf-view-home" class="sf-view active" data-screen-label="Home">
+
+  <div class="hero-section">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-main">
+          <div class="hero-main-inner"></div>
+          <div class="hero-dots">
+            <div class="hero-dot active"></div><div class="hero-dot"></div><div class="hero-dot"></div><div class="hero-dot"></div>
+          </div>
+        </div>
+        <div class="hero-aside">
+          <div class="hero-aside-img a"></div>
+          <div class="hero-aside-img b"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="cat-section">
+    <div class="container">
+      <h2>Categories</h2>
+      <div class="cat-grid">
+        <a class="cat-item" href="#"><div class="cat-circle" style="background:linear-gradient(135deg,#dde9ff,#fff);">📚</div><span class="cat-name">Books</span></a>
+        <a class="cat-item" href="#"><div class="cat-circle" style="background:linear-gradient(135deg,#fef0c7,#fff);">🏠</div><span class="cat-name">Home & Living</span></a>
+        <a class="cat-item" href="#"><div class="cat-circle" style="background:linear-gradient(135deg,#f0f9ff,#fff);">📱</div><span class="cat-name">Phones & Tablets</span></a>
+        <a class="cat-item" href="#"><div class="cat-circle" style="background:linear-gradient(135deg,#fef3f2,#fff);">🧸</div><span class="cat-name">Toys & Baby</span></a>
+        <a class="cat-item" href="#"><div class="cat-circle" style="background:linear-gradient(135deg,#f9fafb,#fff);">🎧</div><span class="cat-name">Electronics</span></a>
+        <a class="cat-item" href="#"><div class="cat-circle" style="background:linear-gradient(135deg,#fef3f2,#fff);">🍳</div><span class="cat-name">Appliances</span></a>
+        <a class="cat-item" href="#"><div class="cat-circle" style="background:linear-gradient(135deg,#fddcab,#fff);">💄</div><span class="cat-name">Beauty</span></a>
+        <a class="cat-item" href="#"><div class="cat-circle" style="background:linear-gradient(135deg,#d1fadf,#fff);">🏍️</div><span class="cat-name">Auto</span></a>
+        <a class="cat-item" href="#"><div class="cat-circle" style="background:linear-gradient(135deg,#ffc8dd,#fff);">👗</div><span class="cat-name">Fashion</span></a>
+      </div>
+    </div>
+  </div>
+
+  <div class="flash-section">
+    <div class="container">
+      <div class="flash-head">
+        <div class="flash-brand">
+          <svg width="22" height="22" viewBox="0 0 24 24" fill="var(--brand-500)"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+          <span class="flash-label">Flash Sale</span>
+          <div class="flash-timer">
+            <span class="t" id="fh">02</span><span class="s">:</span>
+            <span class="t" id="fm">47</span><span class="s">:</span>
+            <span class="t" id="fs">33</span>
+          </div>
+        </div>
+        <a class="flash-more" href="#">View All <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></a>
+      </div>
+      <div class="flash-items">
+        <div class="flash-card"><div class="flash-img" style="background:linear-gradient(135deg,#6f4e37,#3b2512);"></div><div class="flash-price">₫99.000</div><div class="flash-bar-wrap"><div class="flash-bar-fill" style="width:80%;"></div><div class="flash-bar-label">120 SOLD</div></div></div>
+        <div class="flash-card"><div class="flash-img" style="background:linear-gradient(135deg,#e9c46a,#b98a1e);"><div class="flash-off">30% OFF</div></div><div class="flash-price">₫150.000</div><div class="flash-bar-wrap"><div class="flash-bar-fill" style="width:60%;"></div><div class="flash-bar-label">85 SOLD</div></div></div>
+        <div class="flash-card"><div class="flash-img" style="background:linear-gradient(135deg,#94d2bd,#386641);"><div class="flash-off">45% OFF</div></div><div class="flash-price">₫45.000</div><div class="flash-bar-wrap"><div class="flash-bar-fill" style="width:95%;"></div><div class="flash-bar-label">360 SOLD</div></div></div>
+        <div class="flash-card"><div class="flash-img" style="background:linear-gradient(135deg,#b8d4e3,#3d6a8a);"><div class="flash-off">15% OFF</div></div><div class="flash-price">₫890.000</div><div class="flash-bar-wrap"><div class="flash-bar-fill" style="width:100%;"></div><div class="flash-bar-label">SOLD OUT</div></div></div>
+        <div class="flash-card"><div class="flash-img" style="background:linear-gradient(135deg,#d4a5a5,#6b3f3f);"><div class="flash-off">60% OFF</div></div><div class="flash-price">₫25.000</div><div class="flash-bar-wrap"><div class="flash-bar-fill" style="width:99%;"></div><div class="flash-bar-label">500 SOLD</div></div></div>
+        <div class="flash-card"><div class="flash-img" style="background:linear-gradient(135deg,#a7c957,#386641);"><div class="flash-off">29% OFF</div></div><div class="flash-price">₫340.000</div><div class="flash-bar-wrap"><div class="flash-bar-fill" style="width:30%;"></div><div class="flash-bar-label">45 SOLD</div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="suggest-tab-wrap"><div class="suggest-tab">Today's Suggestions</div></div>
+  <div class="container" style="margin-top:4px;">
+    <div class="prod-grid">
+      <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-1">Egg Coffee · 12-pack</div></div><div class="prod-info"><p class="prod-name">Traditional Egg Coffee · Box 12 sachets ready to brew</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">189.000</span></span><span class="prod-sold">1.2k sold</span></div></div></div>
+      <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-2">Lotus Tea Tin</div></div><div class="prod-info"><p class="prod-name">Tây Hồ Lotus Tea · Premium tin 100g gift set</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">320.000</span></span><span class="prod-sold">418 sold</span></div></div></div>
+      <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-3">Bánh Mì Pate</div></div><div class="prod-info"><p class="prod-name">Spicy Bánh Mì Pate · Combo 6 vacuum-packed loaves</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">75.000</span></span><span class="prod-sold">3.2k sold</span></div></div></div>
+      <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-4">Nghệ An Matcha</div></div><div class="prod-info"><p class="prod-name">Premium Nghệ An Matcha · 80g pure unsweetened powder</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">420.000</span></span><span class="prod-sold">218 sold</span></div></div></div>
+      <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-5">Nem Chua</div></div><div class="prod-info"><p class="prod-name">Thanh Hoá Fermented Pork · Box of 20 pieces specialty</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">165.000</span></span><span class="prod-sold">1k sold</span></div></div></div>
+      <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-6">Đà Lạt Organic Veg</div></div><div class="prod-info"><p class="prod-name">Đà Lạt Organic Veggies · Weekly combo 8 varieties</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">249.000</span></span><span class="prod-sold">84 sold</span></div></div></div>
+      <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-7">Tết Candied Mix</div></div><div class="prod-info"><p class="prod-name">Tết Candied Mix · Premium gift box 6 flavours Hồng Lam</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">385.000</span></span><span class="prod-sold">512 sold</span></div></div></div>
+    </div>
+  </div>
+  <div class="see-more-wrap"><button class="see-more-btn">SEE MORE</button></div>
+
+  <footer class="sf-footer">
+    <div class="container">
+      <div class="ft-grid">
+        <div>
+          <h4>Customer Service</h4>
+          <ul>
+            <li><a href="#">Help Center</a></li><li><a href="#">Payment Methods</a></li><li><a href="#">Order Tracking</a></li><li><a href="#">Free Returns</a></li><li><a href="#">Contact Us</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>About HiveSpace</h4>
+          <ul>
+            <li><a href="#">About Us</a></li><li><a href="#">Careers</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#">Seller Centre</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Payment</h4>
+          <div class="pay-chips" style="margin-bottom:20px;">
+            <span class="pay-chip">Visa</span><span class="pay-chip">MC</span><span class="pay-chip">JCB</span><span class="pay-chip">COD</span>
+          </div>
+          <h4>Logistics</h4>
+          <div style="display:flex;gap:6px;">
+            <span class="pay-chip" style="font-weight:400;">Express</span><span class="pay-chip" style="font-weight:400;">Standard</span>
+          </div>
+        </div>
+        <div>
+          <h4>Follow Us</h4>
+          <div class="social-list">
+            <a class="social-link" href="#"><span class="social-icon" style="background:#1877f2;color:#fff;">f</span>Facebook</a>
+            <a class="social-link" href="#"><span class="social-icon" style="background:radial-gradient(circle at 30% 110%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);color:#fff;font-size:12px;">📷</span>Instagram</a>
+          </div>
+          <h4>Download App</h4>
+          <div style="display:flex;gap:10px;align-items:center;">
+            <div class="qr-box"></div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+              <button class="app-btn">App Store</button>
+              <button class="app-btn">Google Play</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="ft-bottom">
+        <div>© 2026 HiveSpace JSC · 168 Nguyễn Công Trứ, Q.1, HCMC</div>
+        <div class="regions"><a href="#">Singapore</a><a href="#">Indonesia</a><a href="#">Thailand</a><a href="#">Vietnam</a></div>
+      </div>
+    </div>
+  </footer>
+</div><!-- end home -->
+
+<!-- ===== VIEW: MY PROFILE ===== -->
+<div id="sf-view-profile" class="sf-view" data-screen-label="My Profile">
+  <div style="background:var(--gray-50);min-height:calc(100vh - 120px);padding-bottom:40px;">
+    <div class="acct-layout">
+      <!-- sidebar -->
+      <div class="acct-side">
+        <div class="acct-user">
+          <div class="acct-av">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="acct-user-info">
+            <div class="name">Alice Smith</div>
+            <span class="edit">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+              Edit Profile
+            </span>
+          </div>
+        </div>
+        <div class="acct-nav">
+          <div class="acct-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            Notifications
+          </div>
+          <div class="acct-nav-item" style="font-weight:600;color:var(--gray-900);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            My Account
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+          </div>
+          <div>
+            <div class="acct-sub-item active" onclick="sfView('profile')">Profile</div>
+            <div class="acct-sub-item" onclick="sfView('address')">Address</div>
+            <div class="acct-sub-item">Change Password</div>
+          </div>
+          <div class="acct-nav-item" style="cursor:pointer;" onclick="sfView('orders')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="7" y="3" width="10" height="8" rx="1"/></svg>
+            My Orders
+          </div>
+        </div>
+      </div>
+      <!-- content -->
+      <div class="acct-content">
+        <h2 class="acct-title">My Profile</h2>
+        <p class="acct-subtitle">Manage your profile information to secure your account.</p>
+        <div class="prof-grid">
+          <div>
+            <div class="prof-row"><div class="prof-label">Username</div><input class="prof-input" type="text" value="Alice Smith"></div>
+            <div class="prof-row"><div class="prof-label">Name</div><input class="prof-input" type="text" value="Alice Smith"></div>
+            <div class="prof-row">
+              <div class="prof-label">Email</div>
+              <div class="prof-value"><span>al*******@gmail.com</span><span class="prof-change">Change</span></div>
+            </div>
+            <div class="prof-row">
+              <div class="prof-label">Phone Number</div>
+              <div class="prof-value"><span>**********67</span><span class="prof-change">Change</span></div>
+            </div>
+            <div class="prof-row">
+              <div class="prof-label">Gender</div>
+              <div class="prof-radio-group">
+                <label class="prof-radio"><input type="radio" name="gender" checked> Male</label>
+                <label class="prof-radio"><input type="radio" name="gender"> Female</label>
+                <label class="prof-radio"><input type="radio" name="gender"> Other</label>
+              </div>
+            </div>
+            <div class="prof-row">
+              <div class="prof-label">Date of Birth</div>
+              <div class="prof-dob">
+                <select><option>15</option></select>
+                <select><option>1</option></select>
+                <select><option>1990</option></select>
+              </div>
+            </div>
+            <div class="prof-save"><button class="hs-btn hs-btn-primary">Save</button></div>
+          </div>
+          <div class="prof-av-box">
+            <div class="prof-av-circle">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              <span>Add Photo</span>
+            </div>
+            <button class="choose-photo-btn">Choose Photo</button>
+            <div class="prof-av-hint">Maximum file size 1 MB · Format: JPEG, PNG</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VIEW: MY ADDRESSES ===== -->
+<div id="sf-view-address" class="sf-view" data-screen-label="My Addresses">
+  <div style="background:var(--gray-50);min-height:calc(100vh - 120px);padding-bottom:40px;">
+    <div class="acct-layout">
+      <!-- sidebar -->
+      <div class="acct-side">
+        <div class="acct-user">
+          <div class="acct-av">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="acct-user-info">
+            <div class="name">Alice Smith</div>
+            <span class="edit">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+              Edit Profile
+            </span>
+          </div>
+        </div>
+        <div class="acct-nav">
+          <div class="acct-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            Notifications
+          </div>
+          <div class="acct-nav-item" style="font-weight:600;color:var(--gray-900);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            My Account
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+          </div>
+          <div>
+            <div class="acct-sub-item" onclick="sfView('profile')">Profile</div>
+            <div class="acct-sub-item active" onclick="sfView('address')">Address</div>
+            <div class="acct-sub-item">Change Password</div>
+          </div>
+          <div class="acct-nav-item" style="cursor:pointer;" onclick="sfView('orders')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="7" y="3" width="10" height="8" rx="1"/></svg>
+            My Orders
+          </div>
+        </div>
+      </div>
+      <!-- content -->
+      <div class="acct-content">
+        <div class="addr-header">
+          <h2 class="acct-title" style="margin:0;">My Addresses</h2>
+          <button class="addr-add-btn" onclick="openModal('add')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+            Add Address
+          </button>
+        </div>
+        <div class="addr-section-label">My Addresses</div>
+        <div class="addr-card">
+          <button class="addr-update" onclick="openModal('update')">Update</button>
+          <div class="addr-name-phone">
+            Alice Smith
+            <span class="addr-divider">|</span>
+            <span class="addr-phone">+84901234567</span>
+          </div>
+          <div class="addr-line">123 Main Street</div>
+          <div class="addr-line">California, Downtown</div>
+          <span class="addr-default-badge">Default</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VIEW: CART ===== -->
+<div id="sf-view-cart" class="sf-view" data-screen-label="Cart">
+  <div style="background:var(--gray-50); min-height:calc(100vh - 120px); padding-bottom:48px;">
+
+    <!-- Breadcrumb -->
+    <div class="cart-breadcrumb">
+      <div class="container">
+          <a href="#" onclick="sfView('home');return false;">Home</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <span>Cart</span>
+      </div>
+    </div>
+
+    <div class="cart-layout">
+      <!-- LEFT: item list -->
+      <div class="cart-main">
+
+        <!-- Column headers -->
+        <div class="cart-header-row">
+          <span></span>
+          <span class="ch-product">Product</span>
+          <span style="text-align:center;">Unit Price</span>
+          <span style="text-align:center;">Quantity</span>
+          <span style="text-align:right;">Subtotal</span>
+          <span>
+            <button style="background:none;border:none;cursor:pointer;color:var(--gray-400);" title="Delete all">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </span>
+        </div>
+
+        <!-- Seller 1: Phương Đông Books -->
+        <div class="cart-seller-group">
+          <div class="cart-seller-head">
+            <input class="cart-seller-check" type="checkbox" checked onchange="toggleSeller(this)">
+            <svg class="cart-seller-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="cart-seller-name">Phuong Dong Books</span>
+            <button class="cart-seller-chat">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Chat
+            </button>
+          </div>
+
+          <!-- Item 1 -->
+          <div class="cart-item-row">
+            <input class="cart-item-check" type="checkbox" checked onchange="updateSummary()">
+            <div class="cart-item-info">
+              <div class="cart-item-thumb" style="background:linear-gradient(135deg,#f4e4bc,#b8860b);">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:6px;gap:2px;">
+                  <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.9);text-align:center;line-height:1.2;">OSHO · YÊU</div>
+                  <div style="font-size:7px;color:rgba(255,255,255,0.7);text-align:center;line-height:1.2;">Being in Love</div>
+                </div>
+              </div>
+              <div style="flex:1;">
+                <p class="cart-item-name">Combo 3 Books: OSHO · Love · Being In Love + OSHO Men · The Book Of Men + OSHO Women · The Book Of…</p>
+                <div class="cart-item-variant">Publisher: NXB Hoi Nha Van</div>
+              </div>
+            </div>
+            <div class="cart-item-price-col" style="text-align:center;">302.700 ₫</div>
+            <div style="display:flex;justify-content:center;">
+              <div class="qty-stepper">
+                <button class="qty-btn" onclick="changeQty(this,-1)">−</button>
+                <input class="qty-input" type="text" value="3" onchange="updateSummary()">
+                <button class="qty-btn" onclick="changeQty(this,1)">+</button>
+              </div>
+            </div>
+            <div class="cart-item-subtotal" style="text-align:right;">908.100 ₫</div>
+            <button class="cart-item-delete" onclick="removeItem(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </div>
+
+          <!-- Shop coupon -->
+          <div class="cart-coupon-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            <span>Add shop coupon</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+
+        <!-- Seller 2: Tiki Trading -->
+        <div class="cart-seller-group">
+          <div class="cart-seller-head">
+            <input class="cart-seller-check" type="checkbox" checked onchange="toggleSeller(this)">
+            <svg class="cart-seller-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="cart-seller-name">Tiki Trading</span>
+            <button class="cart-seller-chat">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Chat
+            </button>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="cart-item-row">
+            <input class="cart-item-check" type="checkbox" checked onchange="updateSummary()">
+            <div class="cart-item-info">
+              <div class="cart-item-thumb" style="background:linear-gradient(135deg,#374151,#111827);">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:6px;">
+                  <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.9);text-align:center;line-height:1.2;">ELMICH</div>
+                  <div style="font-size:7px;color:rgba(255,255,255,0.6);text-align:center;">500ml</div>
+                </div>
+              </div>
+              <div style="flex:1;">
+                <p class="cart-item-name">Elmich EL.8295 Stainless Steel 304 Insulated Bottle 500ml</p>
+                <div class="cart-item-variant">Color: Black</div>
+              </div>
+            </div>
+            <div class="cart-item-price-col" style="text-align:center;">147.000 ₫</div>
+            <div style="display:flex;justify-content:center;">
+              <div class="qty-stepper">
+                <button class="qty-btn" onclick="changeQty(this,-1)">−</button>
+                <input class="qty-input" type="text" value="1" onchange="updateSummary()">
+                <button class="qty-btn" onclick="changeQty(this,1)">+</button>
+              </div>
+            </div>
+            <div class="cart-item-subtotal" style="text-align:right;">147.000 ₫</div>
+            <button class="cart-item-delete" onclick="removeItem(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </div>
+
+          <!-- Shop coupon -->
+          <div class="cart-coupon-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            <span>Add shop coupon</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+
+        <!-- Seller 3: GIVER BOOKS & MEDIA -->
+        <div class="cart-seller-group">
+          <div class="cart-seller-head">
+            <input class="cart-seller-check" type="checkbox" checked onchange="toggleSeller(this)">
+            <svg class="cart-seller-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            <span class="cart-seller-name">GIVER BOOKS &amp; MEDIA</span>
+            <button class="cart-seller-chat">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              Chat
+            </button>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="cart-item-row">
+            <input class="cart-item-check" type="checkbox" checked onchange="updateSummary()">
+            <div class="cart-item-info">
+              <div class="cart-item-thumb" style="background:linear-gradient(135deg,#a7c957,#386641);">
+                <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;padding:6px;">
+                  <div style="font-size:8px;font-weight:700;color:rgba(255,255,255,0.9);text-align:center;line-height:1.3;">LIVING FREE</div>
+                </div>
+              </div>
+              <div style="flex:1;">
+                <p class="cart-item-name">Living Free in the Forest – Managing Money Matters, Finding Financial Peace of Mind</p>
+                <div class="cart-item-variant">Publisher: NXB Tre</div>
+              </div>
+            </div>
+            <div class="cart-item-price-col" style="text-align:center;">143.200 ₫</div>
+            <div style="display:flex;justify-content:center;">
+              <div class="qty-stepper">
+                <button class="qty-btn" onclick="changeQty(this,-1)">−</button>
+                <input class="qty-input" type="text" value="1" onchange="updateSummary()">
+                <button class="qty-btn" onclick="changeQty(this,1)">+</button>
+              </div>
+            </div>
+            <div class="cart-item-subtotal" style="text-align:right;">143.200 ₫</div>
+            <button class="cart-item-delete" onclick="removeItem(this)">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+            </button>
+          </div>
+
+          <!-- Shop coupon -->
+          <div class="cart-coupon-row">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            <span>Add shop coupon</span>
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+          </div>
+        </div>
+
+        <!-- Select all bar -->
+        <div class="cart-select-all-bar">
+          <label>
+            <input class="cart-item-check" type="checkbox" checked onchange="toggleAll(this)">
+            Select All (<span id="selectedCount">3</span> items)
+          </label>
+          <button class="del-all">Delete</button>
+        </div>
+
+        <!-- Recommended products -->
+        <div class="cart-recommend">
+          <h3>Products You May Like</h3>
+          <div class="rec-grid">
+            <div class="rec-card">
+              <div class="rec-thumb"><div class="rec-thumb-inner tile-6">Who Gives You a Raise?</div></div>
+              <p class="rec-name">Who Gives You a Raise? 3 Secrets…</p>
+              <div class="rec-price">149.000 ₫</div>
+            </div>
+            <div class="rec-card">
+              <div class="rec-thumb"><div class="rec-thumb-inner tile-4">Living Free in the Forest</div></div>
+              <p class="rec-name">Living Free in the Forest…</p>
+              <div class="rec-price">143.200 ₫</div>
+            </div>
+            <div class="rec-card">
+              <div class="rec-thumb"><div class="rec-thumb-inner tile-2">Combo 2 Books</div></div>
+              <p class="rec-name">Combo 2 Books: Men of Sa…</p>
+              <div class="rec-price">250.500 ₫</div>
+            </div>
+            <div class="rec-card">
+              <div class="rec-thumb"><div class="rec-thumb-inner tile-11">OSHO Love Being In Love</div></div>
+              <p class="rec-name">Combo 3 Books: OSHO · Love · Bein…</p>
+              <div class="rec-price">302.700 ₫</div>
+            </div>
+            <div class="rec-card">
+              <div class="rec-thumb"><div class="rec-thumb-inner tile-8">Combo 2 Coding Books</div></div>
+              <p class="rec-name">Combo 2 Coding Coloring Books: To…</p>
+              <div class="rec-price">156.000 ₫</div>
+            </div>
+            <div class="rec-card">
+              <div class="rec-thumb"><div class="rec-thumb-inner tile-9">Flowers on the Road Home</div></div>
+              <p class="rec-name">Book · Flowers on the Road Home…</p>
+              <div class="rec-price">105.840 ₫</div>
+            </div>
+            <div class="rec-card">
+              <div class="rec-thumb"><div class="rec-thumb-inner tile-13">Detective Conan</div></div>
+              <p class="rec-name">Detective Conan · Vol…</p>
+              <div class="rec-price">25.000 ₫</div>
+            </div>
+            <div class="rec-card">
+              <div class="rec-thumb"><div class="rec-thumb-inner tile-7">Brain Dev Coloring Book</div></div>
+              <p class="rec-name">Brain Development Coloring Book…</p>
+              <div class="rec-price">12.320 ₫</div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- end cart-main -->
+
+      <!-- RIGHT: order summary -->
+      <div>
+        <div class="cart-summary">
+          <div class="cart-summary-title">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            HiveSpace Coupon
+          </div>
+          <div class="coupon-input-row">
+            <input type="text" placeholder="Enter coupon code">
+            <button class="coupon-apply-btn">Apply</button>
+          </div>
+          <div class="summary-row">
+            <span>Subtotal</span>
+            <span id="subtotalDisplay">1.198.300 ₫</span>
+          </div>
+          <div class="summary-row discount">
+            <span>Discount</span>
+            <span>-59.915 ₫</span>
+          </div>
+          <div class="summary-row">
+            <span>Shipping fee</span>
+            <span>30.000 ₫</span>
+          </div>
+          <div class="summary-row total">
+            <span>Total</span>
+            <span class="total-amount" id="totalDisplay">1.168.385 ₫</span>
+          </div>
+          <div class="summary-vat">(VAT included)</div>
+          <button class="checkout-btn" onclick="sfView('checkout')">Checkout (3)</button>
+        </div>
+      </div>
+
+    </div><!-- end cart-layout -->
+
+    <footer class="sf-footer" style="margin-top:32px;">
+      <div class="container">
+        <div class="ft-grid">
+          <div>
+            <h4>Customer Service</h4>
+            <ul>
+              <li><a href="#">Help Center</a></li>
+              <li><a href="#">HiveSpace Blog</a></li>
+              <li><a href="#">Payment Methods</a></li>
+              <li><a href="#">HiveSpace Coins</a></li>
+              <li><a href="#">Order Tracking</a></li>
+              <li><a href="#">Free Shipping</a></li>
+              <li><a href="#">Free Returns</a></li>
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>About HiveSpace</h4>
+            <ul>
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">HiveSpace Policies</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Seller Centre</a></li>
+              <li><a href="#">Flash Sale</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Payment</h4>
+            <div class="pay-chips" style="margin-bottom:20px;">
+              <span class="pay-chip">Visa</span><span class="pay-chip">MC</span><span class="pay-chip">JCB</span><span class="pay-chip">COD</span>
+            </div>
+            <h4>Logistics</h4>
+            <div style="display:flex;gap:6px;">
+              <span class="pay-chip" style="font-weight:400;">Express</span>
+              <span class="pay-chip" style="font-weight:400;">Standard</span>
+            </div>
+          </div>
+          <div>
+            <h4>Follow Us</h4>
+            <div class="social-list">
+              <a class="social-link" href="#"><span class="social-icon" style="background:#1877f2;color:#fff;">f</span>Facebook</a>
+              <a class="social-link" href="#"><span class="social-icon" style="background:radial-gradient(circle at 30% 110%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);color:#fff;font-size:12px;">📷</span>Instagram</a>
+              <a class="social-link" href="#"><span class="social-icon" style="background:#0077b5;color:#fff;font-size:11px;font-weight:700;">in</span>LinkedIn</a>
+            </div>
+            <h4>Download App</h4>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <div class="qr-box"></div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <button class="app-btn">App Store</button>
+                <button class="app-btn">Google Play</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ft-bottom">
+          <div>© 2026 HiveSpace. All rights reserved.</div>
+          <div class="regions">
+            <a href="#">Country &amp; Region:</a>
+            <a href="#">Singapore</a><a href="#">Indonesia</a><a href="#">Thailand</a><a href="#">Vietnam</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</div><!-- end cart view -->
+
+<!-- ===== VIEW: PRODUCT DETAIL ===== -->
+<div id="sf-view-product" class="sf-view" data-screen-label="Product Detail">
+  <div class="pdp-wrap">
+
+    <!-- Breadcrumb -->
+    <div class="cart-breadcrumb">
+      <div class="container">
+          <a href="#" onclick="sfView('home');return false;">Home</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <a href="#" onclick="sfView('home');return false;">Food &amp; Beverage</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <a href="#" onclick="sfView('home');return false;">Coffee &amp; Tea</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <span>Traditional Egg Coffee · Box 12 sachets ready to brew</span>
+      </div>
+    </div>
+
+    <div class="container">
+
+      <!-- Main: gallery + buy box -->
+      <div class="pdp-main">
+        <!-- Gallery -->
+        <div class="pdp-gallery">
+          <div class="pdp-hero">
+            <div class="pdp-hero-flash">⚡ Flash Sale · Ends in 02:47:33</div>
+            <div class="pdp-hero-discount">-32%</div>
+            <div id="pdpHero" class="pdp-hero-inner tile-1">Egg Coffee · 12-pack</div>
+          </div>
+          <div class="pdp-thumbs" id="pdpThumbs">
+            <div class="pdp-thumb active"><div class="pdp-thumb-inner tile-1">Egg Coffee 12-pack</div></div>
+            <div class="pdp-thumb"><div class="pdp-thumb-inner tile-2">Brew Closeup</div></div>
+            <div class="pdp-thumb"><div class="pdp-thumb-inner tile-10">Sachet</div></div>
+            <div class="pdp-thumb"><div class="pdp-thumb-inner tile-3">Cup &amp; Foam</div></div>
+            <div class="pdp-thumb"><div class="pdp-thumb-inner tile-14">Gift Box</div></div>
+          </div>
+          <div class="pdp-share-row">
+            <div class="pdp-share-left">
+              <span class="share-label">Share:</span>
+              <span class="pdp-share-icon fb">f</span>
+              <span class="pdp-share-icon ig">📷</span>
+              <span class="pdp-share-icon tw">𝕏</span>
+            </div>
+            <div class="pdp-fav">
+              <svg viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="1.5"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+              Favorite
+              <span class="pdp-fav-count">2.4k</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Buy box -->
+        <div class="pdp-info">
+          <div class="pdp-badge-row">
+            <span class="pdp-badge preferred">Preferred</span>
+            <span class="pdp-badge mall">HiveSpace Mall</span>
+          </div>
+          <h1 id="pdpTitle" class="pdp-title">Traditional Egg Coffee · Box 12 sachets ready to brew · Authentic Hanoi recipe</h1>
+
+          <div class="pdp-meta-row">
+            <span class="pdp-rating-num">4.9</span>
+            <span class="pdp-stars">★★★★★</span>
+            <div class="pdp-meta-sep"></div>
+            <span class="pdp-meta-link">3.2k Ratings</span>
+            <div class="pdp-meta-sep"></div>
+            <span><b style="color:var(--gray-800);">12.4k</b> Sold</span>
+            <span class="pdp-report">⚐ Report</span>
+          </div>
+
+          <div class="pdp-price-block">
+            <span class="pdp-price-orig">₫279.000</span>
+            <span class="pdp-price-now"><span class="sym">₫</span>189.000</span>
+            <span class="pdp-price-off">32% OFF</span>
+          </div>
+
+          <div class="pdp-row">
+            <div class="pdp-row-label">Vouchers</div>
+            <div class="pdp-row-body">
+              <div class="pdp-voucher-list">
+                <span class="pdp-voucher">₫15K Off</span>
+                <span class="pdp-voucher">Free Ship Min ₫99K</span>
+                <span class="pdp-voucher">5% Cashback</span>
+                <span class="pdp-voucher">New User -10%</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pdp-row">
+            <div class="pdp-row-label">Shipping</div>
+            <div class="pdp-row-body pdp-ship-block">
+              <div class="pdp-ship-row">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+                <span class="lbl">Ship to</span>
+                <span class="val"><b>123 Main Street, California, Downtown</b> · <span class="pdp-meta-link">Change</span></span>
+              </div>
+              <div class="pdp-ship-row" style="padding-left:24px;">
+                <span class="lbl">Standard</span>
+                <span class="val"><span class="free-tag">FREE</span> · Estimated arrival 18 – 21 May</span>
+              </div>
+              <div class="pdp-ship-row" style="padding-left:24px;">
+                <span class="lbl">Express</span>
+                <span class="val">₫25.000 · Arrives tomorrow before 6PM</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pdp-row">
+            <div class="pdp-row-label">Variation</div>
+            <div class="pdp-row-body">
+              <div class="pdp-variant-list" id="pdpVariantSize">
+                <button class="pdp-variant active" onclick="pdpPickVariant(this)">Box of 12 sachets</button>
+                <button class="pdp-variant" onclick="pdpPickVariant(this)">Box of 24 sachets</button>
+                <button class="pdp-variant disabled">Bulk pack 60</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pdp-row">
+            <div class="pdp-row-label">Roast</div>
+            <div class="pdp-row-body">
+              <div class="pdp-variant-list" id="pdpVariantRoast">
+                <button class="pdp-variant active" onclick="pdpPickVariant(this)"><span class="pdp-variant-swatch" style="background:#3b2512;"></span>Dark</button>
+                <button class="pdp-variant" onclick="pdpPickVariant(this)"><span class="pdp-variant-swatch" style="background:#6f4e37;"></span>Medium</button>
+                <button class="pdp-variant" onclick="pdpPickVariant(this)"><span class="pdp-variant-swatch" style="background:#a07b58;"></span>Light</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="pdp-row">
+            <div class="pdp-row-label">Quantity</div>
+            <div class="pdp-row-body">
+              <div class="pdp-qty-row">
+                <div class="qty-stepper">
+                  <button class="qty-btn" onclick="pdpQty(-1)">−</button>
+                  <input class="qty-input" id="pdpQtyInput" type="text" value="1">
+                  <button class="qty-btn" onclick="pdpQty(1)">+</button>
+                </div>
+                <span class="pdp-qty-stock">847 pieces available</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="pdp-cta-row">
+            <button class="pdp-cta pdp-cta-add" onclick="sfView('cart')">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
+              Add to Cart
+            </button>
+            <button class="pdp-cta pdp-cta-buy" onclick="sfView('checkout')">Buy Now</button>
+          </div>
+
+          <div class="pdp-trust-row">
+            <div class="pdp-trust-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              7-Day Return
+            </div>
+            <div class="pdp-trust-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              On-Time Delivery
+            </div>
+            <div class="pdp-trust-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 6 9 17 4 12"/></svg>
+              Authentic Guarantee
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Seller card -->
+      <div class="pdp-seller">
+        <div class="pdp-seller-left">
+          <div class="pdp-seller-av">
+            HC
+            <span class="pdp-seller-online"></span>
+          </div>
+          <div class="pdp-seller-info">
+            <div class="pdp-seller-name">Hanoi Coffee Roasters</div>
+            <div class="pdp-seller-active">Active 5 minutes ago</div>
+            <div class="pdp-seller-actions">
+              <button class="pdp-seller-btn primary">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                Chat Now
+              </button>
+              <button class="pdp-seller-btn outline">View Shop</button>
+            </div>
+          </div>
+        </div>
+        <div></div>
+        <div class="pdp-seller-stats">
+          <div>
+            <div class="pdp-stat-label">Ratings</div>
+            <div class="pdp-stat-value">12.4k</div>
+          </div>
+          <div>
+            <div class="pdp-stat-label">Response Rate</div>
+            <div class="pdp-stat-value">98%</div>
+          </div>
+          <div>
+            <div class="pdp-stat-label">Joined</div>
+            <div class="pdp-stat-value">4 Years Ago</div>
+          </div>
+          <div>
+            <div class="pdp-stat-label">Products</div>
+            <div class="pdp-stat-value">186</div>
+          </div>
+          <div>
+            <div class="pdp-stat-label">Response Time</div>
+            <div class="pdp-stat-value">In Hours</div>
+          </div>
+          <div>
+            <div class="pdp-stat-label">Followers</div>
+            <div class="pdp-stat-value">48.7k</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Specifications -->
+      <div class="pdp-section">
+        <div class="pdp-section-head">Product Specifications</div>
+        <div class="pdp-section-body">
+          <div class="pdp-spec-row"><span class="k">Brand</span><span class="v link">Hanoi Coffee Roasters</span></div>
+          <div class="pdp-spec-row"><span class="k">Origin</span><span class="v">Vietnam · Hanoi</span></div>
+          <div class="pdp-spec-row"><span class="k">Weight</span><span class="v">240 g (12 × 20 g sachets)</span></div>
+          <div class="pdp-spec-row"><span class="k">Ingredients</span><span class="v">Robusta &amp; Arabica blend, condensed milk powder, free-range egg yolk powder, cane sugar</span></div>
+          <div class="pdp-spec-row"><span class="k">Brewing</span><span class="v">Pour 80 ml hot water (85°C), stir 30 s, top with foam</span></div>
+          <div class="pdp-spec-row"><span class="k">Shelf life</span><span class="v">12 months from manufacture</span></div>
+          <div class="pdp-spec-row"><span class="k">Storage</span><span class="v">Cool, dry place. Reseal pouch after opening.</span></div>
+          <div class="pdp-spec-row"><span class="k">Stock</span><span class="v">847 pieces</span></div>
+          <div class="pdp-spec-row"><span class="k">Ships from</span><span class="v">Hanoi, Vietnam</span></div>
+        </div>
+      </div>
+
+      <!-- Description -->
+      <div class="pdp-section">
+        <div class="pdp-section-head">Product Description</div>
+        <div class="pdp-section-body pdp-desc">
+          <p>The original Hanoi egg coffee, reimagined for modern kitchens. Each sachet pairs slow-roasted Robusta &amp; Arabica with a velvety egg-cream cap that whisks up to a soft cloud — no special equipment, no fuss.</p>
+          <h4>Why customers love it</h4>
+          <ul>
+            <li>Café-grade flavour from a 30-second pour</li>
+            <li>Real egg yolk powder, not artificial creamer</li>
+            <li>Single-serve sachets stay fresh in your bag, desk drawer or campsite</li>
+            <li>Gift box format ships in protective recycled-pulp packaging</li>
+          </ul>
+          <h4>What's in the box</h4>
+          <ul>
+            <li>12 × 20 g single-serve sachets</li>
+            <li>1 brewing card with timing guide</li>
+            <li>1 bamboo stir stick</li>
+          </ul>
+          <p style="color:var(--gray-500); font-size:12px;">Prices, vouchers and availability shown on this page reflect the seller's current settings and may change without notice.</p>
+        </div>
+      </div>
+
+      <!-- Reviews -->
+      <div class="pdp-section">
+        <div class="pdp-section-head">Product Ratings</div>
+        <div class="pdp-section-body">
+          <div class="pdp-rev-summary">
+            <div class="pdp-rev-score">
+              <div class="num">4.9<span class="max">/ 5</span></div>
+              <div class="stars">★★★★★</div>
+              <div class="count">3,214 ratings</div>
+            </div>
+            <div class="pdp-rev-filters">
+              <button class="pdp-rev-chip active">All</button>
+              <button class="pdp-rev-chip">5 ★ (2,847)</button>
+              <button class="pdp-rev-chip">4 ★ (291)</button>
+              <button class="pdp-rev-chip">3 ★ (54)</button>
+              <button class="pdp-rev-chip">2 ★ (12)</button>
+              <button class="pdp-rev-chip">1 ★ (10)</button>
+              <button class="pdp-rev-chip">With Photos (412)</button>
+              <button class="pdp-rev-chip">With Comments (1,890)</button>
+            </div>
+          </div>
+
+          <div class="pdp-rev-list">
+            <div class="pdp-rev-item">
+              <div class="pdp-rev-av">MN</div>
+              <div>
+                <div class="pdp-rev-name">m*****n</div>
+                <div class="pdp-rev-stars">★★★★★</div>
+                <div class="pdp-rev-meta">2026-05-02 14:23 · Variation: Box of 12, Dark</div>
+                <p class="pdp-rev-text">Tastes exactly like the old quarter cafés. The foam holds up for a full 5 minutes and the box arrived sealed with a thank-you note. Already ordering my second box.</p>
+                <div class="pdp-rev-imgs">
+                  <div class="pdp-rev-img"><div class="pdp-rev-img-inner tile-1">brew</div></div>
+                  <div class="pdp-rev-img"><div class="pdp-rev-img-inner tile-3">cup</div></div>
+                  <div class="pdp-rev-img"><div class="pdp-rev-img-inner tile-14">box</div></div>
+                </div>
+                <div class="pdp-rev-helpful">
+                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg> Helpful (124)</span>
+                  <span>Reply</span>
+                </div>
+              </div>
+            </div>
+            <div class="pdp-rev-item">
+              <div class="pdp-rev-av">AT</div>
+              <div>
+                <div class="pdp-rev-name">a*****t</div>
+                <div class="pdp-rev-stars">★★★★★</div>
+                <div class="pdp-rev-meta">2026-04-28 09:11 · Variation: Box of 24, Medium</div>
+                <p class="pdp-rev-text">Bought as a gift for my parents. They've been brewing it every weekend. Roast is balanced — not bitter, and the egg cream is genuinely creamy without being sweet.</p>
+                <div class="pdp-rev-helpful">
+                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg> Helpful (62)</span>
+                  <span>Reply</span>
+                </div>
+              </div>
+            </div>
+            <div class="pdp-rev-item">
+              <div class="pdp-rev-av">JL</div>
+              <div>
+                <div class="pdp-rev-name">j*****l</div>
+                <div class="pdp-rev-stars">★★★★☆</div>
+                <div class="pdp-rev-meta">2026-04-21 17:45 · Variation: Box of 12, Light</div>
+                <p class="pdp-rev-text">Solid product. Light roast is closer to a regular sweet condensed-milk coffee — still tasty, but if you want the classic egg-cream flavour go for the dark.</p>
+                <div class="pdp-rev-helpful">
+                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg> Helpful (28)</span>
+                  <span>Reply</span>
+                </div>
+              </div>
+            </div>
+            <div class="pdp-rev-item">
+              <div class="pdp-rev-av">RP</div>
+              <div>
+                <div class="pdp-rev-name">r*****p</div>
+                <div class="pdp-rev-stars">★★★★★</div>
+                <div class="pdp-rev-meta">2026-04-15 11:08 · Variation: Box of 24, Dark</div>
+                <p class="pdp-rev-text">Shipping was faster than the estimate — arrived in 2 days. Box was well-padded, no broken sachets. Will reorder.</p>
+                <div class="pdp-rev-imgs">
+                  <div class="pdp-rev-img"><div class="pdp-rev-img-inner tile-10">sachet</div></div>
+                  <div class="pdp-rev-img"><div class="pdp-rev-img-inner tile-2">closeup</div></div>
+                </div>
+                <div class="pdp-rev-helpful">
+                  <span><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 9V5a3 3 0 0 0-3-3l-4 9v11h11.28a2 2 0 0 0 2-1.7l1.38-9a2 2 0 0 0-2-2.3zM7 22H4a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2h3"/></svg> Helpful (19)</span>
+                  <span>Reply</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="pdp-rev-pager">
+            <button class="pdp-page-btn">‹</button>
+            <button class="pdp-page-btn active">1</button>
+            <button class="pdp-page-btn">2</button>
+            <button class="pdp-page-btn">3</button>
+            <button class="pdp-page-btn">4</button>
+            <button class="pdp-page-btn">…</button>
+            <button class="pdp-page-btn">214</button>
+            <button class="pdp-page-btn">›</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- From this shop -->
+      <div class="pdp-shelf-head">From This Shop</div>
+      <div class="pdp-shelf-grid">
+        <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-2">Lotus Tea Tin</div></div><div class="prod-info"><p class="prod-name">Tây Hồ Lotus Tea · Premium tin 100g</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">320.000</span></span><span class="prod-sold">418 sold</span></div></div></div>
+        <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-4">Nghệ An Matcha</div></div><div class="prod-info"><p class="prod-name">Premium Nghệ An Matcha · 80g</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">420.000</span></span><span class="prod-sold">218 sold</span></div></div></div>
+        <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-10">Drip Coffee Pack</div></div><div class="prod-info"><p class="prod-name">Single-origin drip coffee · 10 sachets</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">145.000</span></span><span class="prod-sold">2.1k sold</span></div></div></div>
+        <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-1">Phin Filter Set</div></div><div class="prod-info"><p class="prod-name">Stainless steel phin filter · gift box</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">98.000</span></span><span class="prod-sold">3.4k sold</span></div></div></div>
+        <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-14">Coffee Sampler</div></div><div class="prod-info"><p class="prod-name">Roast sampler · 4 origins · 200g</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">265.000</span></span><span class="prod-sold">612 sold</span></div></div></div>
+        <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-3">Coconut Coffee</div></div><div class="prod-info"><p class="prod-name">Coconut coffee · iced sachets · box 10</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">125.000</span></span><span class="prod-sold">982 sold</span></div></div></div>
+      </div>
+
+      <!-- You may also like -->
+      <div class="pdp-shelf-head">You May Also Like</div>
+      <div class="pdp-shelf-grid">
+        <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-5">Nem Chua</div></div><div class="prod-info"><p class="prod-name">Thanh Hoá Fermented Pork · 20 pcs</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">165.000</span></span><span class="prod-sold">1k sold</span></div></div></div>
+        <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-6">Đà Lạt Veg</div></div><div class="prod-info"><p class="prod-name">Đà Lạt Organic Veggies · combo 8</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">249.000</span></span><span class="prod-sold">84 sold</span></div></div></div>
+        <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-7">Tết Candied Mix</div></div><div class="prod-info"><p class="prod-name">Tết Candied Mix · gift box 6 flavours</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">385.000</span></span><span class="prod-sold">512 sold</span></div></div></div>
+        <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-8">Bánh Pía</div></div><div class="prod-info"><p class="prod-name">Sóc Trăng durian bánh pía · box 10</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">89.000</span></span><span class="prod-sold">2.8k sold</span></div></div></div>
+        <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-9">Coconut Candy</div></div><div class="prod-info"><p class="prod-name">Bến Tre coconut candy · variety pack</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">75.000</span></span><span class="prod-sold">4.1k sold</span></div></div></div>
+        <div class="prod-card"><div class="prod-media"><div class="prod-media-inner tile-12">Pomelo Tea</div></div><div class="prod-info"><p class="prod-name">Honey pomelo tea · jar 1kg</p><div class="prod-bottom"><span class="prod-price"><span class="sym">₫</span><span class="num">189.000</span></span><span class="prod-sold">736 sold</span></div></div></div>
+      </div>
+
+    </div><!-- /.container -->
+  </div>
+</div><!-- end product detail view -->
+
+<!-- ===== VIEW: CHECKOUT ===== -->
+<div id="sf-view-checkout" class="sf-view" data-screen-label="Checkout">
+  <div style="background:var(--gray-50); min-height:calc(100vh - 120px); padding-bottom:48px;">
+
+    <!-- Breadcrumb -->
+    <div class="cart-breadcrumb">
+      <div class="container">
+          <a href="#" onclick="sfView('home');return false;">Home</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <a href="#" onclick="sfView('cart');return false;">Cart</a>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+          <span>Checkout</span>
+      </div>
+    </div>
+
+    <div class="checkout-layout">
+
+      <!-- LEFT COLUMN -->
+      <div class="checkout-main">
+
+        <!-- Shipping method -->
+        <div class="checkout-card">
+          <div class="checkout-card-head">Choose shipping method</div>
+
+          <!-- Package 1 -->
+          <div class="ck-pkg">
+            <div class="ck-pkg-head">
+              <span class="ck-pkg-label">Package 1</span>
+              <span class="ck-pkg-badge">ECONOMY</span>
+              <span class="ck-pkg-shipping">
+                <span class="orig">10.000 ₫</span>
+                <span class="disc">10.000 ₫</span>
+              </span>
+            </div>
+            <div class="ck-item-row">
+              <span>Product</span><span style="text-align:center;">Unit price</span><span style="text-align:center;">Quantity</span><span style="text-align:right;">Total</span>
+            </div>
+            <div class="ck-item-row">
+              <div class="ck-item-info">
+                <div class="ck-item-thumb" style="background:linear-gradient(135deg,#f4e4bc,#b8860b);">OSHO · YÊU</div>
+                <span class="ck-item-name">Combo 3 Books: OSHO · Love · Being In Love + OSHO Men · The Book Of…</span>
+              </div>
+              <div class="ck-item-price">302.700 ₫</div>
+              <div class="ck-item-qty">3</div>
+              <div class="ck-item-total">908.100 ₫</div>
+            </div>
+            <div class="ck-coupon-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              <span>Store coupon</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+
+          <!-- Package 2 -->
+          <div class="ck-pkg">
+            <div class="ck-pkg-head">
+              <span class="ck-pkg-label">Package 2</span>
+              <span class="ck-pkg-badge">ECONOMY</span>
+              <span class="ck-pkg-shipping">
+                <span class="orig">10.000 ₫</span>
+                <span class="disc">10.000 ₫</span>
+              </span>
+            </div>
+            <div class="ck-item-row">
+              <span>Product</span><span style="text-align:center;">Unit price</span><span style="text-align:center;">Quantity</span><span style="text-align:right;">Total</span>
+            </div>
+            <div class="ck-item-row">
+              <div class="ck-item-info">
+                <div class="ck-item-thumb" style="background:linear-gradient(135deg,#374151,#111827);">ELMICH 500ml</div>
+                <span class="ck-item-name">Elmich EL.8295 Stainless Steel 304 Insulated Bottle 500ml</span>
+              </div>
+              <div class="ck-item-price">147.000 ₫</div>
+              <div class="ck-item-qty">1</div>
+              <div class="ck-item-total">147.000 ₫</div>
+            </div>
+            <div class="ck-coupon-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              <span>Store coupon</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+
+          <!-- Package 3 -->
+          <div class="ck-pkg">
+            <div class="ck-pkg-head">
+              <span class="ck-pkg-label">Package 3</span>
+              <span class="ck-pkg-badge">ECONOMY</span>
+              <span class="ck-pkg-shipping">
+                <span class="orig">10.000 ₫</span>
+                <span class="disc">10.000 ₫</span>
+              </span>
+            </div>
+            <div class="ck-item-row">
+              <span>Product</span><span style="text-align:center;">Unit price</span><span style="text-align:center;">Quantity</span><span style="text-align:right;">Total</span>
+            </div>
+            <div class="ck-item-row">
+              <div class="ck-item-info">
+                <div class="ck-item-thumb" style="background:linear-gradient(135deg,#a7c957,#386641);">LIVING FREE</div>
+                <span class="ck-item-name">Living Free in the Forest – Managing Money Matters, Finding Financial…</span>
+              </div>
+              <div class="ck-item-price">143.200 ₫</div>
+              <div class="ck-item-qty">1</div>
+              <div class="ck-item-total">143.200 ₫</div>
+            </div>
+            <div class="ck-coupon-row">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              <span>Store coupon</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"/></svg>
+            </div>
+          </div>
+        </div>
+
+        <!-- Payment method -->
+        <div class="checkout-card">
+          <div class="checkout-card-head">Choose payment method</div>
+          <div class="pay-method-list">
+
+            <!-- Cash on Delivery -->
+            <label class="pay-method-item" onclick="selectPayment('cod')">
+              <input type="radio" name="payment" id="pay-cod" value="cod" checked>
+              <div class="pay-method-icon" style="background:#fef3c7;">📦</div>
+              <div class="pay-method-text">
+                <div class="pay-method-name">Cash on Delivery</div>
+              </div>
+            </label>
+
+            <!-- VNPay -->
+            <label class="pay-method-item" onclick="selectPayment('vnpay')">
+              <input type="radio" name="payment" id="pay-vnpay" value="vnpay">
+              <div class="pay-method-icon" style="background:#eff6ff; overflow:hidden;">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
+                  <circle cx="12" cy="12" r="10" fill="#1a56db"/>
+                  <text x="12" y="16" text-anchor="middle" font-size="8" font-weight="800" fill="#fff" font-family="Montserrat,sans-serif">VN</text>
+                </svg>
+              </div>
+              <div class="pay-method-text">
+                <div class="pay-method-name">VNPay</div>
+                <div class="pay-method-desc">Scan QR to pay</div>
+              </div>
+            </label>
+
+            <!-- Stripe -->
+            <label class="pay-method-item" onclick="selectPayment('stripe')">
+              <input type="radio" name="payment" id="pay-stripe" value="stripe">
+              <div class="pay-method-icon" style="background:#f0f4ff; border-radius:8px; overflow:hidden;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                  <rect width="24" height="24" rx="4" fill="#635bff"/>
+                  <path d="M11.2 9.3c0-.7.6-1 1.5-1 1.3 0 2.9.4 4 1V6.2C15.5 5.4 14 5 12.3 5 9.5 5 7.6 6.4 7.6 9.4c0 4.6 6.3 3.8 6.3 5.8 0 .8-.7 1.1-1.7 1.1-1.4 0-3.2-.6-4.4-1.4v3.1c1.3.6 2.7.9 4.4.9 2.9 0 4.9-1.4 4.9-4.4-.1-4.9-6.4-4-6.4-5.2z" fill="#fff"/>
+                </svg>
+              </div>
+              <div class="pay-method-text">
+                <div class="pay-method-name">Stripe</div>
+                <div class="pay-method-desc">Credit / Debit card — Visa, Mastercard, JCB</div>
+              </div>
+            </label>
+
+          </div>
+
+          <!-- Stripe card form (shown when Stripe is selected) -->
+          <div class="stripe-form" id="stripeForm">
+            <div class="stripe-form-title">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+              Card details
+              <div style="margin-left:auto; display:flex; gap:4px;">
+                <span class="stripe-brand-chip">VISA</span>
+                <span class="stripe-brand-chip">MC</span>
+                <span class="stripe-brand-chip">JCB</span>
+              </div>
+            </div>
+            <div class="stripe-field full" style="margin-bottom:10px;">
+              <label>Card number</label>
+              <input class="stripe-input" type="text" placeholder="1234 5678 9012 3456" maxlength="19" oninput="fmtCard(this)">
+            </div>
+            <div class="stripe-row">
+              <div class="stripe-field">
+                <label>Expiry date</label>
+                <input class="stripe-input" type="text" placeholder="MM / YY" maxlength="7" oninput="fmtExpiry(this)">
+              </div>
+              <div class="stripe-field">
+                <label>CVC</label>
+                <input class="stripe-input" type="text" placeholder="123" maxlength="4">
+              </div>
+            </div>
+            <div class="stripe-field full">
+              <label>Cardholder name</label>
+              <input class="stripe-input" type="text" placeholder="Name as on card">
+            </div>
+            <div class="stripe-secure">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+              Secured by Stripe · 256-bit SSL encryption
+            </div>
+          </div>
+
+        </div>
+      </div><!-- end checkout-main -->
+
+      <!-- RIGHT COLUMN: sidebar -->
+      <div class="ck-sidebar">
+
+        <!-- Deliver to -->
+        <div class="ck-deliver-card">
+          <div class="ck-deliver-head">
+            <div class="ck-deliver-label">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Deliver to
+            </div>
+            <span class="ck-deliver-change" onclick="openModal('update')">Change</span>
+          </div>
+          <div class="ck-deliver-name">Bob Smith &nbsp;<span class="ck-deliver-phone">+84987654321</span></div>
+          <div class="ck-deliver-addr">456 Oak Avenue, Suburb, Texas</div>
+          <span class="ck-deliver-default">Default</span>
+        </div>
+
+        <!-- Promotions -->
+        <div class="ck-promo-card">
+          <div class="ck-promo-head">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="20 12 20 22 4 22 4 12"/><rect x="2" y="7" width="20" height="5"/><path d="M12 22V7"/><path d="M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7z"/><path d="M12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>
+            Promotions
+          </div>
+          <div class="ck-promo-input">
+            <input type="text" placeholder="Select or enter code">
+            <button>Apply</button>
+          </div>
+        </div>
+
+        <!-- Order summary -->
+        <div class="ck-order-card">
+          <div class="ck-order-head">
+            <span>Order</span>
+            <span class="ck-order-view">
+              View 5 items info
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+            </span>
+          </div>
+          <div class="ck-order-row">
+            <span>Subtotal</span>
+            <span>1.198.300 ₫</span>
+          </div>
+          <div class="ck-order-row">
+            <span>Shipping fee</span>
+            <span>30.000 ₫</span>
+          </div>
+          <div class="ck-order-row ck-discount">
+            <span>Shipping discount</span>
+            <span>-0 ₫</span>
+          </div>
+          <div class="ck-order-row ck-total">
+            <span>Total</span>
+            <span class="ck-total-amt">1.228.300 ₫</span>
+          </div>
+          <div class="ck-order-save">Saved 0 ₫</div>
+          <div class="ck-order-vat">Price includes VAT, packaging fee, service fee and other applicable charges</div>
+          <button class="place-order-btn" onclick="placeOrder()">Place Order</button>
+        </div>
+
+      </div><!-- end ck-sidebar -->
+    </div><!-- end checkout-layout -->
+
+    <!-- Footer (same as cart / home) -->
+    <footer class="sf-footer" style="margin-top:32px;">
+      <div class="container">
+        <div class="ft-grid">
+          <div>
+            <h4>Customer Service</h4>
+            <ul>
+              <li><a href="#">Help Center</a></li>
+              <li><a href="#">HiveSpace Blog</a></li>
+              <li><a href="#">Payment Methods</a></li>
+              <li><a href="#">HiveSpace Coins</a></li>
+              <li><a href="#">Order Tracking</a></li>
+              <li><a href="#">Free Shipping</a></li>
+              <li><a href="#">Free Returns</a></li>
+              <li><a href="#">Contact Us</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>About HiveSpace</h4>
+            <ul>
+              <li><a href="#">About Us</a></li>
+              <li><a href="#">Careers</a></li>
+              <li><a href="#">HiveSpace Policies</a></li>
+              <li><a href="#">Privacy Policy</a></li>
+              <li><a href="#">Seller Centre</a></li>
+              <li><a href="#">Flash Sale</a></li>
+            </ul>
+          </div>
+          <div>
+            <h4>Payment</h4>
+            <div class="pay-chips" style="margin-bottom:20px;">
+              <span class="pay-chip">Visa</span><span class="pay-chip">MC</span><span class="pay-chip">JCB</span><span class="pay-chip">COD</span>
+            </div>
+            <h4>Logistics</h4>
+            <div style="display:flex;gap:6px;">
+              <span class="pay-chip" style="font-weight:400;">Express</span>
+              <span class="pay-chip" style="font-weight:400;">Standard</span>
+            </div>
+          </div>
+          <div>
+            <h4>Follow Us</h4>
+            <div class="social-list">
+              <a class="social-link" href="#"><span class="social-icon" style="background:#1877f2;color:#fff;">f</span>Facebook</a>
+              <a class="social-link" href="#"><span class="social-icon" style="background:radial-gradient(circle at 30% 110%,#fdf497 0%,#fd5949 45%,#d6249f 60%,#285aeb 90%);color:#fff;font-size:12px;">📷</span>Instagram</a>
+              <a class="social-link" href="#"><span class="social-icon" style="background:#0077b5;color:#fff;font-size:11px;font-weight:700;">in</span>LinkedIn</a>
+            </div>
+            <h4>Download App</h4>
+            <div style="display:flex;gap:10px;align-items:center;">
+              <div class="qr-box"></div>
+              <div style="display:flex;flex-direction:column;gap:6px;">
+                <button class="app-btn">App Store</button>
+                <button class="app-btn">Google Play</button>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="ft-bottom">
+          <div>© 2026 HiveSpace. All rights reserved.</div>
+          <div class="regions">
+            <a href="#">Country &amp; Region:</a>
+            <a href="#">Singapore</a><a href="#">Indonesia</a><a href="#">Thailand</a><a href="#">Vietnam</a>
+          </div>
+        </div>
+      </div>
+    </footer>
+
+  </div>
+</div><!-- end checkout view -->
+
+<!-- Order success modal -->
+<div class="ck-success-overlay" id="ckSuccessOverlay">
+  <div class="ck-success-box">
+    <div class="ck-success-icon">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+    </div>
+    <div class="ck-success-title">Order Placed!</div>
+    <div class="ck-success-desc">Your order has been placed successfully.<br>We'll send you a confirmation shortly.</div>
+    <div class="ck-success-actions">
+      <button class="ck-success-home" onclick="closeSuccess(); sfView('home');">Back to Home</button>
+      <button class="ck-success-orders" onclick="closeSuccess(); sfView('orders');">My Orders</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===== VIEW: MY ORDERS ===== -->
+<div id="sf-view-orders" class="sf-view" data-screen-label="My Orders">
+  <div style="background:var(--gray-50);min-height:calc(100vh - 120px);padding-bottom:40px;">
+    <div class="orders-layout">
+
+      <!-- Sidebar (same pattern as profile/address) -->
+      <div class="acct-side">
+        <div class="acct-user">
+          <div class="acct-av">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="acct-user-info">
+            <div class="name">Bob Smith</div>
+            <span class="edit">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4z"/></svg>
+              Edit Profile
+            </span>
+          </div>
+        </div>
+        <div class="acct-nav">
+          <div class="acct-nav-item">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+            Notifications
+          </div>
+          <div class="acct-nav-item" style="cursor:pointer;" onclick="sfView('profile')">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            My Account
+            <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="18 15 12 9 6 15"/></svg>
+          </div>
+          <div class="acct-nav-item" style="font-weight:600;color:var(--brand-500);">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 11H5a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7a2 2 0 0 0-2-2h-4"/><rect x="7" y="3" width="10" height="8" rx="1"/></svg>
+            My Orders
+          </div>
+        </div>
+      </div>
+
+      <!-- Orders content -->
+      <div>
+        <!-- Tab bar -->
+        <div class="orders-tabs">
+          <button class="orders-tab active" onclick="setOrderTab(this,'all')">All</button>
+          <button class="orders-tab" onclick="setOrderTab(this,'waiting')">Waiting Payment</button>
+          <button class="orders-tab" onclick="setOrderTab(this,'processing')">Processing</button>
+          <button class="orders-tab" onclick="setOrderTab(this,'shipping')">Shipping</button>
+          <button class="orders-tab" onclick="setOrderTab(this,'completed')">Completed</button>
+          <button class="orders-tab" onclick="setOrderTab(this,'cancelled')">Cancelled</button>
+          <button class="orders-tab" onclick="setOrderTab(this,'return')">Return/Refund</button>
+        </div>
+
+        <!-- Search -->
+        <div class="orders-search-row">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" placeholder="Search by Shop name, Order ID, or Product name">
+        </div>
+
+        <!-- ===== TAB: ALL ===== -->
+        <div id="orders-panel-all">
+          <!-- Order group 1: COD / Processing -->
+          <div class="order-group">
+            <div class="order-group-head">
+              <span class="order-group-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="1.5"/><circle cx="18.5" cy="18.5" r="1.5"/></svg></span>
+              <span class="order-group-count">2 item(s)</span>
+              <span class="order-group-status cod">COD</span>
+            </div>
+            <div class="order-item">
+              <div class="order-item-thumb" style="background:linear-gradient(135deg,#4ade80,#166534);">Sống Đời Rừng</div>
+              <div class="order-item-info">
+                <p class="order-item-name">Sống Đời Rừng Rình Thong Dong · Quán Xuyến Chuyện Tiền Nong, Hướng Về An Tâm Tài Chính</p>
+                <div class="order-item-variant">Sống Đời Rừng Rình Thong Dong · Quán Xuyến Chuyện Tiền Nong, Hướng Về An Tâm Tài Chính</div>
+                <div class="order-item-qty">x1</div>
+              </div>
+              <div class="order-item-price">143.200₫</div>
+            </div>
+            <div class="order-item">
+              <div class="order-item-thumb" style="background:linear-gradient(135deg,#818cf8,#3730a3);">Sách Thương Tiền</div>
+              <div class="order-item-info">
+                <p class="order-item-name">Sách Thương Tiền Tửu</p>
+                <div class="order-item-variant">Sách Thương Tiền Tửu</div>
+                <div class="order-item-qty">x1</div>
+              </div>
+              <div class="order-item-price">118.800₫</div>
+            </div>
+            <div class="order-footer">
+              <div class="order-total">Total: <strong>282.000₫</strong></div>
+              <button class="order-btn order-btn-outline">Contact Seller</button>
+              <button class="order-btn order-btn-outline">More</button>
+            </div>
+          </div>
+
+          <!-- Order group 2: CONFIRMED -->
+          <div class="order-group">
+            <div class="order-group-head">
+              <span class="order-group-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="1.5"/><circle cx="18.5" cy="18.5" r="1.5"/></svg></span>
+              <span class="order-group-count">1 item(s)</span>
+              <span class="order-group-status confirmed">CONFIRMED</span>
+            </div>
+            <div class="order-item">
+              <div class="order-item-thumb" style="background:linear-gradient(135deg,#374151,#111827);">ELMICH 500ml</div>
+              <div class="order-item-info">
+                <p class="order-item-name">Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml</p>
+                <div class="order-item-variant">Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml</div>
+                <div class="order-item-qty">x1</div>
+              </div>
+              <div class="order-item-price">147.000₫</div>
+            </div>
+            <div class="order-footer">
+              <div class="order-total">Total: <strong>177.000₫</strong></div>
+              <button class="order-btn order-btn-outline">Contact Seller</button>
+              <button class="order-btn order-btn-outline">More</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== TAB: WAITING PAYMENT ===== -->
+        <div id="orders-panel-waiting" style="display:none;">
+          <div class="orders-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <p>No orders found</p>
+          </div>
+        </div>
+
+        <!-- ===== TAB: PROCESSING ===== -->
+        <div id="orders-panel-processing" style="display:none;">
+          <div class="order-group">
+            <div class="order-group-head">
+              <span class="order-group-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="1.5"/><circle cx="18.5" cy="18.5" r="1.5"/></svg></span>
+              <span class="order-group-count">2 item(s)</span>
+              <span class="order-group-status cod">COD</span>
+            </div>
+            <div class="order-item">
+              <div class="order-item-thumb" style="background:linear-gradient(135deg,#4ade80,#166534);">Sống Đời Rừng</div>
+              <div class="order-item-info">
+                <p class="order-item-name">Sống Đời Rừng Rình Thong Dong · Quán Xuyến Chuyện Tiền Nong, Hướng Về An Tâm Tài Chính</p>
+                <div class="order-item-variant">Sống Đời Rừng Rình Thong Dong · Quán Xuyến Chuyện Tiền Nong, Hướng Về An Tâm Tài Chính</div>
+                <div class="order-item-qty">x1</div>
+              </div>
+              <div class="order-item-price">143.200₫</div>
+            </div>
+            <div class="order-item">
+              <div class="order-item-thumb" style="background:linear-gradient(135deg,#818cf8,#3730a3);">Sách Thương Tiền</div>
+              <div class="order-item-info">
+                <p class="order-item-name">Sách Thương Tiền Tửu</p>
+                <div class="order-item-variant">Sách Thương Tiền Tửu</div>
+                <div class="order-item-qty">x1</div>
+              </div>
+              <div class="order-item-price">118.800₫</div>
+            </div>
+            <div class="order-footer">
+              <div class="order-total">Total: <strong>282.000₫</strong></div>
+              <button class="order-btn order-btn-outline">Contact Seller</button>
+              <button class="order-btn order-btn-outline">More</button>
+            </div>
+          </div>
+          <div class="order-group">
+            <div class="order-group-head">
+              <span class="order-group-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="1.5"/><circle cx="18.5" cy="18.5" r="1.5"/></svg></span>
+              <span class="order-group-count">1 item(s)</span>
+              <span class="order-group-status confirmed">CONFIRMED</span>
+            </div>
+            <div class="order-item">
+              <div class="order-item-thumb" style="background:linear-gradient(135deg,#374151,#111827);">ELMICH 500ml</div>
+              <div class="order-item-info">
+                <p class="order-item-name">Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml</p>
+                <div class="order-item-variant">Bình giữ nhiệt inox 304 Elmich EL8295 dung tích 500ml</div>
+                <div class="order-item-qty">x1</div>
+              </div>
+              <div class="order-item-price">147.000₫</div>
+            </div>
+            <div class="order-footer">
+              <div class="order-total">Total: <strong>177.000₫</strong></div>
+              <button class="order-btn order-btn-outline">Contact Seller</button>
+              <button class="order-btn order-btn-outline">More</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== TAB: SHIPPING ===== -->
+        <div id="orders-panel-shipping" style="display:none;">
+          <div class="order-group">
+            <div class="order-group-head">
+              <span class="order-group-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="1.5"/><circle cx="18.5" cy="18.5" r="1.5"/></svg></span>
+              <span class="order-group-count">2 item(s)</span>
+              <span class="order-group-status shipping">SHIPPING</span>
+            </div>
+            <div class="order-item">
+              <div class="order-item-thumb" style="background:linear-gradient(135deg,#fb923c,#ea580c);">Damp Duster</div>
+              <div class="order-item-info">
+                <p class="order-item-name">Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster · miếng xốp lau chùi đa năng</p>
+                <div class="order-item-variant">Miếng bọt biển lau bụi mọi ngóc ngách Damp Duster · miếng xốp lau chùi đa năng</div>
+                <div class="order-item-qty">x1</div>
+              </div>
+              <div class="order-item-price">63.200₫</div>
+            </div>
+            <div class="order-item">
+              <div class="order-item-thumb" style="background:linear-gradient(135deg,#86efac,#15803d);">Hạc Trì Storm</div>
+              <div class="order-item-info">
+                <p class="order-item-name">gói Diệt chuột dạng viên Hạc Trì Storm 0.005% gói 20 viên</p>
+                <div class="order-item-variant">gói Diệt chuột dạng viên Hạc Trì Storm 0.005% gói 20 viên</div>
+                <div class="order-item-qty">x1</div>
+              </div>
+              <div class="order-item-price">25.600₫</div>
+            </div>
+            <div class="order-footer">
+              <div class="order-total">Total: <strong>103.800₫</strong></div>
+              <button class="order-btn order-btn-outline">Contact Seller</button>
+              <button class="order-btn order-btn-outline">More</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== TAB: COMPLETED ===== -->
+        <div id="orders-panel-completed" style="display:none;">
+          <div class="order-group">
+            <div class="order-group-head">
+              <span class="order-group-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="1.5"/><circle cx="18.5" cy="18.5" r="1.5"/></svg></span>
+              <span class="order-group-count">2 item(s)</span>
+              <span class="order-group-status completed">COMPLETED</span>
+            </div>
+            <div class="order-item">
+              <div class="order-item-thumb" style="background:linear-gradient(135deg,#f4e4bc,#b8860b);">Combo Sách</div>
+              <div class="order-item-info">
+                <p class="order-item-name">Combo 2 Cuốn Sách Đàn Ông Sao Hỏa Đàn Bà Sao Kim · Lấy Tinh Thần Ma Đời Đầu Bạc [Đọc Để Có Cuộc Sống Hạnh Phúc]</p>
+                <div class="order-item-variant">Combo 2 Cuốn Sách: Đàn Ông Sao Hỏa Đàn Bà Sao Kim · Lấy Tinh Thần Ma Đời Đầu Bạc</div>
+                <div class="order-item-qty">x1</div>
+              </div>
+              <div class="order-item-price">250.500₫</div>
+            </div>
+            <div class="order-item">
+              <div class="order-item-thumb" style="background:linear-gradient(135deg,#fda4af,#9f1239);">Monster Deluxe</div>
+              <div class="order-item-info">
+                <p class="order-item-name">Monster · Deluxe Edition · [Chọn Tập Lẻ]</p>
+                <div class="order-item-variant">Monster · Deluxe Edition · [Chọn Tập Lẻ]</div>
+                <div class="order-item-qty">x1</div>
+              </div>
+              <div class="order-item-price">118.750₫</div>
+            </div>
+            <div class="order-footer">
+              <div class="order-total">Total: <strong>394.250₫</strong></div>
+              <button class="order-btn order-btn-primary">Review</button>
+              <button class="order-btn order-btn-outline">Request Return/Refund</button>
+              <button class="order-btn order-btn-outline">More</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== TAB: CANCELLED ===== -->
+        <div id="orders-panel-cancelled" style="display:none;">
+          <div class="order-group">
+            <div class="order-group-head">
+              <span class="order-group-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13" rx="1"/><path d="M16 8h4l3 5v3h-7V8z"/><circle cx="5.5" cy="18.5" r="1.5"/><circle cx="18.5" cy="18.5" r="1.5"/></svg></span>
+              <span class="order-group-count">2 item(s)</span>
+              <span class="order-group-status rejected">REJECTED</span>
+            </div>
+            <div class="order-item">
+              <div class="order-item-thumb" style="background:linear-gradient(135deg,#e2e8f0,#64748b);">Elmich FL8299</div>
+              <div class="order-item-info">
+                <p class="order-item-name">Bình giữ nhiệt gia đình inox 304 Elmich FL8299 dung tích 900ml · Hàng chính hãng</p>
+                <div class="order-item-variant">Bình giữ nhiệt gia đình inox 304 Elmich FL8299 dung tích 900ml · Hàng chính hãng</div>
+                <div class="order-item-qty">x1</div>
+              </div>
+              <div class="order-item-price">358.000₫</div>
+            </div>
+            <div class="order-item">
+              <div class="order-item-thumb" style="background:linear-gradient(135deg,#cbd5e1,#334155);">Chảo Elmich</div>
+              <div class="order-item-info">
+                <p class="order-item-name">Chảo chống dính Elmich <span style="color:var(--brand-500);text-decoration:underline;cursor:pointer;">EL5972</span></p>
+                <div class="order-item-variant">Chảo chống dính Elmich EL5972</div>
+                <div class="order-item-qty">x1</div>
+              </div>
+              <div class="order-item-price">212.000₫</div>
+            </div>
+            <div class="order-footer">
+              <div class="order-total">Total: <strong>585.000₫</strong></div>
+              <button class="order-btn order-btn-primary">Buy Again</button>
+              <button class="order-btn order-btn-outline">Contact Seller</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== TAB: RETURN/REFUND ===== -->
+        <div id="orders-panel-return" style="display:none;">
+          <div class="orders-empty">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            <p>No orders found</p>
+          </div>
+        </div>
+
+      </div><!-- end orders content -->
+    </div>
+  </div>
+</div><!-- end orders view -->
+
+<!-- ===== ADDRESS MODAL ===== -->
+<div class="modal-overlay hidden" id="addrModal">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h3 id="modalTitle">Update Address</h3>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="modal-grid">
+        <div class="modal-field">
+          <label>Full Name <span class="req">*</span></label>
+          <input type="text" value="Alice Smith">
+        </div>
+        <div class="modal-field">
+          <label>Phone Number <span class="req">*</span></label>
+          <input type="text" value="+84901234567">
+        </div>
+        <div class="modal-field">
+          <label>Province/City <span class="req">*</span></label>
+          <input type="text" value="California">
+        </div>
+        <div class="modal-field">
+          <label>Ward <span class="req">*</span></label>
+          <input type="text" value="Downtown">
+        </div>
+      </div>
+      <div class="modal-field">
+        <label>Specific Address <span class="req">*</span></label>
+        <textarea>123 Main Street</textarea>
+      </div>
+      <label class="modal-checkbox" style="margin-top:14px;">
+        <input type="checkbox" checked>
+        Set as Default
+      </label>
+    </div>
+    <div class="modal-footer">
+      <button class="modal-go-back" onclick="closeModal()">Go Back</button>
+      <button class="modal-confirm" onclick="closeModal()">Confirm</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function toggleNotif() {
+    const dd = document.getElementById('notifDropdown');
+    const isOpen = dd.classList.contains('open');
+    // close user dropdown too
+    closeDropdown();
+    dd.classList.toggle('open', !isOpen);
+  }
+
+  function setNotifTab(btn) {
+    btn.closest('.notif-tabs').querySelectorAll('.notif-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  function sfView(name) {
+    document.querySelectorAll('.sf-view').forEach(el => el.classList.remove('active'));
+    const el = document.getElementById('sf-view-' + name);
+    if (el) { el.classList.add('active'); window.scrollTo({top:0}); }
+  }
+
+  function toggleUserDropdown() {
+    document.getElementById('userDropdown').classList.toggle('open');
+  }
+
+  function closeDropdown() {
+    document.getElementById('userDropdown').classList.remove('open');
+  }
+
+  // Close dropdowns on outside click
+  document.addEventListener('click', function(e) {
+    const userArea = document.querySelector('.user-area');
+    if (userArea && !userArea.contains(e.target)) closeDropdown();
+    const notifArea = document.querySelector('.notif-area');
+    if (notifArea && !notifArea.contains(e.target)) {
+      document.getElementById('notifDropdown').classList.remove('open');
+    }
+  });
+
+  // ===== CART FUNCTIONS =====
+  function changeQty(btn, delta) {
+    const input = btn.parentElement.querySelector('.qty-input');
+    let val = parseInt(input.value) || 1;
+    val = Math.max(1, val + delta);
+    input.value = val;
+    updateSubtotal(btn.closest('.cart-item-row'));
+    updateSummary();
+  }
+
+  function updateSubtotal(row) {
+    const priceText = row.querySelector('.cart-item-price-col').textContent.replace(/[^\d]/g, '');
+    const qty = parseInt(row.querySelector('.qty-input').value) || 1;
+    const subtotal = parseInt(priceText) * qty;
+    row.querySelector('.cart-item-subtotal').textContent = subtotal.toLocaleString('vi-VN') + ' ₫';
+  }
+
+  function removeItem(btn) {
+    const row = btn.closest('.cart-item-row');
+    row.remove();
+    updateSummary();
+    updateCartCount();
+  }
+
+  function toggleSeller(checkbox) {
+    const group = checkbox.closest('.cart-seller-group');
+    group.querySelectorAll('.cart-item-check').forEach(cb => { cb.checked = checkbox.checked; });
+    updateSummary();
+  }
+
+  function toggleAll(checkbox) {
+    document.querySelectorAll('#sf-view-cart .cart-item-check, #sf-view-cart .cart-seller-check').forEach(cb => {
+      cb.checked = checkbox.checked;
+    });
+    updateSummary();
+  }
+
+  function updateSummary() {
+    let subtotal = 0;
+    let count = 0;
+    document.querySelectorAll('#sf-view-cart .cart-item-row').forEach(row => {
+      const cb = row.querySelector('.cart-item-check');
+      if (cb && cb.checked) {
+        const priceText = row.querySelector('.cart-item-price-col').textContent.replace(/[^\d]/g, '');
+        const qty = parseInt(row.querySelector('.qty-input').value) || 1;
+        subtotal += parseInt(priceText) * qty;
+        count++;
+      }
+    });
+    const discount = Math.round(subtotal * 0.05);
+    const shipping = count > 0 ? 30000 : 0;
+    const total = subtotal - discount + shipping;
+    const el = id => document.getElementById(id);
+    if (el('subtotalDisplay')) el('subtotalDisplay').textContent = subtotal.toLocaleString('vi-VN') + ' ₫';
+    if (el('totalDisplay')) el('totalDisplay').textContent = total.toLocaleString('vi-VN') + ' ₫';
+    if (el('selectedCount')) el('selectedCount').textContent = count;
+    const btn = document.querySelector('.checkout-btn');
+    if (btn) btn.textContent = 'Checkout (' + count + ')';
+    updateCartCount();
+  }
+
+  function updateCartCount() {
+    let total = 0;
+    document.querySelectorAll('#sf-view-cart .cart-item-row').forEach(row => {
+      total += parseInt(row.querySelector('.qty-input').value) || 1;
+    });
+    const badge = document.querySelector('.cart-ct');
+    if (badge) badge.textContent = total;
+  }
+
+  function openModal(mode) {
+    document.getElementById('modalTitle').textContent = mode === 'add' ? 'Add Address' : 'Update Address';
+    if (mode === 'add') {
+      document.querySelectorAll('#addrModal input[type=text], #addrModal textarea').forEach(i => i.value = '');
+      document.querySelector('#addrModal input[type=checkbox]').checked = false;
+    }
+    document.getElementById('addrModal').classList.remove('hidden');
+  }
+
+  function closeModal() {
+    document.getElementById('addrModal').classList.add('hidden');
+  }
+
+  // ===== CHECKOUT FUNCTIONS =====
+  function selectPayment(method) {
+    document.querySelectorAll('input[name="payment"]').forEach(r => r.checked = false);
+    const radio = document.getElementById('pay-' + method);
+    if (radio) radio.checked = true;
+    const stripeForm = document.getElementById('stripeForm');
+    if (stripeForm) {
+      stripeForm.classList.toggle('visible', method === 'stripe');
+    }
+  }
+
+  function fmtCard(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 16);
+    input.value = v.replace(/(.{4})/g, '$1 ').trim();
+  }
+
+  function fmtExpiry(input) {
+    let v = input.value.replace(/\D/g, '').substring(0, 4);
+    if (v.length >= 3) v = v.substring(0, 2) + ' / ' + v.substring(2);
+    input.value = v;
+  }
+
+  function placeOrder() {
+    document.getElementById('ckSuccessOverlay').classList.add('show');
+  }
+
+  function closeSuccess() {
+    document.getElementById('ckSuccessOverlay').classList.remove('show');
+  }
+
+  // Close success overlay on backdrop click
+  document.getElementById('ckSuccessOverlay').addEventListener('click', function(e) {
+    if (e.target === this) closeSuccess();
+  });
+
+  // Also sync checkout button text from cart summary
+  function updateSummaryAndCheckoutBtn() {
+    updateSummary();
+    const btn = document.querySelector('.checkout-btn');
+    if (btn) {
+      let count = 0;
+      document.querySelectorAll('#sf-view-cart .cart-item-row').forEach(row => {
+        const cb = row.querySelector('.cart-item-check');
+        if (cb && cb.checked) count++;
+      });
+      btn.textContent = 'Checkout (' + count + ')';
+      btn.onclick = function() { sfView('checkout'); };
+    }
+  }
+
+  // ===== ORDERS FUNCTIONS =====
+  function setOrderTab(btn, panel) {
+    btn.closest('.orders-tabs').querySelectorAll('.orders-tab').forEach(t => t.classList.remove('active'));
+    btn.classList.add('active');
+    const panels = ['all','waiting','processing','shipping','completed','cancelled','return'];
+    panels.forEach(p => {
+      const el = document.getElementById('orders-panel-' + p);
+      if (el) el.style.display = (p === panel) ? 'block' : 'none';
+    });
+  }
+
+  // ===== PRODUCT DETAIL FUNCTIONS =====
+  function pdpQty(delta) {
+    const inp = document.getElementById('pdpQtyInput');
+    let v = parseInt(inp.value) || 1;
+    v = Math.max(1, v + delta);
+    inp.value = v;
+  }
+
+  function pdpPickVariant(btn) {
+    btn.parentElement.querySelectorAll('.pdp-variant').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+
+  // Click any product/flash/recommend card → open the product detail view.
+  // We populate the hero and title from the clicked card's tile-N + name.
+  function openProductFromCard(card) {
+    // Find the source tile element (could be .prod-media-inner, .rec-thumb-inner,
+    // or the .flash-img on flash cards).
+    let tileEl = card.querySelector('.prod-media-inner, .rec-thumb-inner');
+    let label = '';
+    let bg = '';
+    if (tileEl) {
+      // Carry over the gradient class (tile-N) and the inner label.
+      label = tileEl.textContent.trim();
+      const tileClass = [...tileEl.classList].find(c => /^tile-\d+$/.test(c));
+      if (tileClass) bg = tileClass;
+    } else {
+      // Flash card: image is on .flash-img with inline gradient.
+      const img = card.querySelector('.flash-img');
+      if (img) bg = img.getAttribute('style') || '';
+      // Flash cards don't have a name; fall back to the price.
+      const price = card.querySelector('.flash-price');
+      label = price ? price.textContent.trim() + ' Flash Sale Item' : 'Featured Product';
+    }
+    const name = card.querySelector('.prod-name, .rec-name');
+    const fullName = name ? name.textContent.trim() : (label || 'Featured Product');
+
+    // Update hero + PDP title.
+    const hero = document.getElementById('pdpHero');
+    if (hero) {
+      // reset classes (keep .pdp-hero-inner)
+      hero.className = 'pdp-hero-inner';
+      hero.removeAttribute('style');
+      if (bg && bg.startsWith('tile-')) {
+        hero.classList.add(bg);
+      } else if (bg) {
+        // inline style from flash card
+        hero.setAttribute('style', bg);
+      } else {
+        hero.classList.add('tile-1');
+      }
+      hero.textContent = label || fullName;
+    }
+    const title = document.getElementById('pdpTitle');
+    if (title) title.textContent = fullName;
+    sfView('product');
+  }
+
+  // Delegate clicks: any product/flash/recommend card opens the PDP.
+  // We attach to document so it covers all current views and the PDP itself
+  // (related shelves are also clickable to navigate between products).
+  document.addEventListener('click', function(e) {
+    const card = e.target.closest('.prod-card, .flash-card, .rec-card');
+    if (!card) return;
+    // Skip if the click was on an interactive control inside a card (none today,
+    // but keeps this safe if the kit grows).
+    if (e.target.closest('button, input, a')) return;
+    openProductFromCard(card);
+  });
+
+  // Make the cards visibly clickable.
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.prod-card, .flash-card, .rec-card').forEach(c => {
+      c.style.cursor = 'pointer';
+    });
+  });
+
+  // Flash sale countdown
+  (function() {
+    let secs = 2 * 3600 + 47 * 60 + 33;
+    function tick() {
+      if (secs <= 0) return;
+      secs--;
+      const h = String(Math.floor(secs/3600)).padStart(2,'0');
+      const m = String(Math.floor((secs%3600)/60)).padStart(2,'0');
+      const s = String(secs%60).padStart(2,'0');
+      document.getElementById('fh').textContent = h;
+      document.getElementById('fm').textContent = m;
+      document.getElementById('fs').textContent = s;
+    }
+    setInterval(tick, 1000);
+  })();
+</script>
+</body>
+</html>

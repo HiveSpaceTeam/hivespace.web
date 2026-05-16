@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HiveSpace · Components</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="components.css">
+<style>
+  body { margin: 0; padding: 40px; background: var(--gray-50); }
+  .wrap { max-width: 1400px; margin: 0 auto; display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  h2 { font-size: 13px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 16px 0; }
+  .panel { background: #fff; border: 1px solid var(--gray-200); border-radius: 12px; padding: 28px; }
+  .panel.wide { grid-column: 1 / -1; }
+  .row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; margin-bottom: 16px; }
+  .row:last-child { margin-bottom: 0; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .form-grid > div { display: flex; flex-direction: column; }
+  .sub { font-size: 11px; color: var(--gray-400); font-family: var(--font-mono); margin-bottom: 8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="panel">
+    <h2>Buttons</h2>
+    <div class="sub">variants · 7 × sizes · sm, md</div>
+    <div class="row">
+      <button class="hs-btn hs-btn-primary">Save changes</button>
+      <button class="hs-btn hs-btn-primary-outline">Save changes</button>
+      <button class="hs-btn hs-btn-outline">Cancel</button>
+      <button class="hs-btn hs-btn-ghost">Learn more</button>
+    </div>
+    <div class="row">
+      <button class="hs-btn hs-btn-danger">Delete</button>
+      <button class="hs-btn hs-btn-success">Approve</button>
+      <button class="hs-btn hs-btn-secondary">Secondary</button>
+      <button class="hs-btn hs-btn-warning">Warn</button>
+    </div>
+    <div class="row">
+      <button class="hs-btn sm hs-btn-primary">Small</button>
+      <button class="hs-btn sm hs-btn-outline">+ Add item</button>
+      <button class="hs-btn hs-btn-icon hs-btn-outline" aria-label="edit"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>
+      <button class="hs-btn hs-btn-primary" disabled>Disabled</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Badges</h2>
+    <div class="sub">status pills · light + solid</div>
+    <div class="row">
+      <span class="hs-badge hs-badge-primary">Primary</span>
+      <span class="hs-badge hs-badge-success">Paid</span>
+      <span class="hs-badge hs-badge-warning">Pending</span>
+      <span class="hs-badge hs-badge-error">Failed</span>
+      <span class="hs-badge hs-badge-info">New</span>
+      <span class="hs-badge hs-badge-light">Draft</span>
+      <span class="hs-badge hs-badge-dark">Archived</span>
+    </div>
+    <div class="row">
+      <span class="hs-badge hs-badge-solid hs-badge-primary">Featured</span>
+      <span class="hs-badge hs-badge-solid hs-badge-success">Live</span>
+      <span class="hs-badge hs-badge-solid hs-badge-error">Blocked</span>
+    </div>
+    <div class="row">
+      <span class="hs-badge sm hs-badge-success">●&nbsp;Active</span>
+      <span class="hs-badge sm hs-badge-warning">●&nbsp;Review</span>
+      <span class="hs-badge sm hs-badge-error">●&nbsp;Inactive</span>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Form controls</h2>
+    <div class="form-grid">
+      <div>
+        <label class="hs-label hs-label-required">Email address</label>
+        <input class="hs-input" type="email" value="thao@hivespace.vn">
+      </div>
+      <div>
+        <label class="hs-label">Shop name</label>
+        <input class="hs-input" placeholder="e.g. Bánh Mì Sài Gòn">
+      </div>
+      <div>
+        <label class="hs-label">Price</label>
+        <input class="hs-input" value="149,000" style="padding-left:56px">
+        <div class="hs-help">VND · shown to buyers incl. VAT</div>
+      </div>
+      <div>
+        <label class="hs-label">Category</label>
+        <select class="hs-select">
+          <option>Food &amp; Beverage</option>
+          <option>Home &amp; Living</option>
+          <option>Fashion</option>
+        </select>
+      </div>
+      <div style="grid-column: 1 / -1;">
+        <label class="hs-label">Password</label>
+        <input class="hs-input hs-input-error" type="password" value="weak">
+        <div class="hs-error-text">Must be at least 8 characters and include a number.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Selection controls</h2>
+    <div class="row">
+      <span class="hs-checkbox checked"><svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg></span>
+      <span style="font-size:14px;color:var(--gray-700);">Email me order updates</span>
+    </div>
+    <div class="row">
+      <span class="hs-checkbox"></span>
+      <span style="font-size:14px;color:var(--gray-700);">Subscribe to the newsletter</span>
+    </div>
+    <div class="row">
+      <span class="hs-radio checked"></span>
+      <span style="font-size:14px;color:var(--gray-700);">Pay on delivery (COD)</span>
+    </div>
+    <div class="row">
+      <span class="hs-radio"></span>
+      <span style="font-size:14px;color:var(--gray-700);">Pay with MoMo</span>
+    </div>
+    <div class="row">
+      <span class="hs-toggle on"></span>
+      <span style="font-size:14px;color:var(--gray-700);">Public profile</span>
+      <span class="hs-toggle" style="margin-left:32px"></span>
+      <span style="font-size:14px;color:var(--gray-700);">2-factor auth</span>
+    </div>
+  </div>
+
+  <div class="panel wide">
+    <h2>Alerts</h2>
+    <div style="display:flex; flex-direction:column; gap:12px;">
+      <div class="hs-alert hs-alert-success"><span>✓</span><div><div class="hs-alert-title">Order #A-2418 confirmed</div><div class="hs-alert-body">Paid by MoMo · expected delivery Thursday.</div></div></div>
+      <div class="hs-alert hs-alert-warning"><span>!</span><div><div class="hs-alert-title">Low stock on 3 variants</div><div class="hs-alert-body">Cà Phê Trứng · Small, Medium, Large will be unlisted if not restocked.</div></div></div>
+      <div class="hs-alert hs-alert-error"><span>✕</span><div><div class="hs-alert-title">Payout failed</div><div class="hs-alert-body">Bank account validation returned &ldquo;account not found.&rdquo; Update your details.</div></div></div>
+      <div class="hs-alert hs-alert-info"><span>i</span><div><div class="hs-alert-title">New promotion engine</div><div class="hs-alert-body">You can now stack store-wide promos with flash sales. <a href="#" style="color:inherit;text-decoration:underline">Read the guide</a>.</div></div></div>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Avatars &amp; tabs</h2>
+    <div class="row">
+      <span class="hs-avatar sm" style="background:#dde9ff;color:#2a31d8">TN</span>
+      <span class="hs-avatar" style="background:#ffead5;color:#c4320a">HS</span>
+      <span class="hs-avatar lg" style="background:#d1fadf;color:#027a48">LM</span>
+      <span class="hs-avatar lg" style="background:linear-gradient(135deg,#465fff,#b44197);color:#fff">AT</span>
+    </div>
+    <div style="margin-top:20px" class="hs-tabs">
+      <button class="hs-tab active">Overview</button>
+      <button class="hs-tab">Orders <span class="hs-badge sm hs-badge-primary" style="margin-left:6px">14</span></button>
+      <button class="hs-tab">Reviews</button>
+      <button class="hs-tab">Payouts</button>
+    </div>
+  </div>
+
+  <div class="panel">
+    <h2>Pagination &amp; breadcrumbs</h2>
+    <div class="hs-crumb" style="margin-bottom:20px">
+      <a href="#">Home</a><span class="sep">/</span>
+      <a href="#">Products</a><span class="sep">/</span>
+      <span class="current">Cà Phê Trứng</span>
+    </div>
+    <div class="hs-pagination">
+      <button class="hs-page-btn">‹</button>
+      <button class="hs-page-btn active">1</button>
+      <button class="hs-page-btn">2</button>
+      <button class="hs-page-btn">3</button>
+      <button class="hs-page-btn">…</button>
+      <button class="hs-page-btn">24</button>
+      <button class="hs-page-btn">›</button>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>

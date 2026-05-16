@@ -15,18 +15,18 @@
     </div>
     <div class="mx-auto w-full max-w-60.5 text-center sm:max-w-118">
       <h1 class="text-title-md mb-8 font-bold text-gray-800 dark:text-white/90 xl:text-title-2xl">
-        {{ t('pages.notFound.title') }}
+        {{ t('common.notFound.title') }}
       </h1>
       <img :src="error404" alt="404" class="dark:hidden" />
       <img :src="error404Dark" alt="404" class="hidden dark:block" />
       <p class="mb-6 mt-10 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
-        {{ t('pages.notFound.message') }}
+        {{ t('common.notFound.message') }}
       </p>
       <a
         href="/"
         class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200"
       >
-        {{ t('pages.common.backHome') }}
+        {{ t('common.backHome') }}
       </a>
     </div>
     <p

@@ -12,9 +12,6 @@ import { useUserSettingsStore } from '@/stores/user-settings.store'
 import {
   CULTURE_TEXT,
   THEME_TEXT,
-  stringToNumericCulture,
-  numericToStringCulture,
-  stringToNumericTheme,
   initializeAuth,
   getCookie,
 } from '@hivespace/shared'
@@ -40,14 +37,15 @@ const initializeApp = async () => {
   const userSettingsStore = useUserSettingsStore()
 
   const cookieCulture = getCookie('culture')
-  const cultureText = cookieCulture || CULTURE_TEXT.VIETNAMESE
-  const numericCulture = stringToNumericCulture(cultureText)
-  i18n.global.locale.value = numericToStringCulture(numericCulture)
+  const culture = cookieCulture === CULTURE_TEXT.ENGLISH
+    ? CULTURE_TEXT.ENGLISH
+    : CULTURE_TEXT.VIETNAMESE
+  i18n.global.locale.value = culture
 
   const cookieTheme = getCookie('theme')
-  const numericTheme = stringToNumericTheme(cookieTheme || THEME_TEXT.LIGHT)
+  const theme = cookieTheme === THEME_TEXT.DARK ? THEME_TEXT.DARK : THEME_TEXT.LIGHT
 
-  userSettingsStore.setUserSettings({ culture: numericCulture, theme: numericTheme })
+  userSettingsStore.setUserSettings({ culture, theme })
 
   return app
 }

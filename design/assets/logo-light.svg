@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 145 32" role="img" aria-label="HiveSpace logo light">
+  <defs>
+    <linearGradient id="outerStroke" x1="3" y1="2" x2="29" y2="30" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#465FFF"/>
+      <stop offset="100%" stop-color="#B44197"/>
+    </linearGradient>
+    <linearGradient id="innerFill" x1="7" y1="5" x2="25" y2="27" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#7D49F9"/>
+      <stop offset="100%" stop-color="#45B7FE"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(1 0)">
+    <path d="M16 2 30 10v12L16 30 2 22V10L16 2Z" fill="none" stroke="url(#outerStroke)" stroke-width="2.5" stroke-linejoin="round"/>
+    <path d="M16 8 24 12.5v9L16 26 8 21.5v-9L16 8Z" fill="url(#innerFill)"/>
+  </g>
+  <text x="40" y="21.5" fill="#101828" font-family="Montserrat, Inter, Arial, sans-serif" font-size="16" font-weight="700" letter-spacing="-0.02em">HiveSpace</text>
+</svg>

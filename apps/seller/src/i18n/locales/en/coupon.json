@@ -94,6 +94,7 @@
       "displaySettings": "Display Settings",
       "displayPublic": "Display in many places",
       "displayCodeOnly": "Share via Coupon code",
+      "displayCodeOnlyHint": "Buyers can only use this coupon when they enter the code directly.",
       "displayCodeOnlyFixed": "To be shared through voucher code",
       "applicableProducts": "Applicable Products",
       "allProducts": "All products",
@@ -153,6 +154,7 @@
         "select": "Select",
         "upload": "Upload Product List"
       },
+      "uploadComingSoon": "Upload product list feature coming soon.",
       "category": "Category",
       "allCategories": "All Categories",
       "search": "Search",
@@ -166,6 +168,7 @@
         "price": "Price",
         "stock": "Stock"
       },
+      "noProductsFound": "No products found.",
       "cancel": "Cancel",
       "confirm": "Confirm"
     }

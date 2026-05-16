@@ -1,18 +1,6 @@
 <template>
-  <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-2xl w-full max-w-lg">
-    <!-- Header -->
-    <div class="flex items-center justify-between px-6 pt-6 pb-4 border-b border-gray-100 dark:border-gray-700">
-      <h2 class="text-base font-semibold text-gray-800 dark:text-gray-100">
-        {{ t('checkout.changeAddressTitle') }}
-      </h2>
-      <button type="button" @click="closeModal(null)"
-        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors">
-        <X class="w-5 h-5" />
-      </button>
-    </div>
-
-    <!-- Body -->
-    <div class="px-6 py-2 max-h-[55vh] overflow-y-auto">
+  <div class="-mx-6 -mb-6">
+    <div class="px-6 pb-2 max-h-[55vh] overflow-y-auto">
       <!-- Loading -->
       <div v-if="isLoading" class="flex justify-center py-8">
         <Spinner />
@@ -71,7 +59,7 @@
     </div>
 
     <!-- Footer: Thêm địa chỉ mới + Hủy + Xác nhận -->
-    <div class="flex items-center justify-between px-6 py-4 border-t border-gray-100 dark:border-gray-700">
+    <div class="flex items-center justify-between border-t border-gray-100 dark:border-gray-700 px-6 py-4">
       <button
         type="button"
         @click="handleAddNew"
@@ -94,7 +82,7 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { X, Plus } from 'lucide-vue-next'
+import { Plus } from 'lucide-vue-next'
 import { Button, Badge, Spinner, useModal } from '@hivespace/shared'
 import { useI18n } from 'vue-i18n'
 import { storeToRefs } from 'pinia'

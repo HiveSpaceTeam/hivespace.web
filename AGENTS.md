@@ -79,13 +79,13 @@ Strong success criteria let you loop independently. Weak criteria ("make it work
 |---|---|---|---|
 | `apps/admin/` | `@hivespace/admin` | Platform admin dashboard | 5173 |
 | `apps/seller/` | `@hivespace/seller` | Seller-facing dashboard | 5174 |
-| `apps/storefront/` | `@hivespace/storefront` | Customer-facing storefront | 5175 |
+| `apps/buyer/` | `@hivespace/buyer` | Customer-facing storefront | 5175 |
 | `packages/shared/` | `@hivespace/shared` | Shared component library consumed by all apps | - |
 | `packages/eslint-config/` | `@hivespace/eslint-config` | Shared ESLint rules with architectural boundary enforcement | - |
 | `packages/tsconfig/` | `@hivespace/tsconfig` | Shared TypeScript configurations | - |
 | `packages/demo/` | `@hivespace/demo` | Dev-only demo pages (injected into admin & seller in DEV mode) | - |
 
-> **Note:** `apps/storefront/` has not been scaffolded yet. Storefront-specific guidance in this document describes the intended design for when development begins.
+> `apps/buyer/` is the active storefront app. Storefront-specific guidance below applies to buyer unless stated otherwise.
 
 ## Commands
 
@@ -101,7 +101,7 @@ pnpm lint             # Lint all workspaces
 pnpm format           # Prettier format all workspaces
 ```
 
-### Per-App (run from `apps/{admin|seller|storefront}/`)
+### Per-App (run from `apps/{admin|seller|buyer}/`)
 
 ```bash
 pnpm dev              # Dev server
@@ -134,7 +134,7 @@ VITE_APP_CLIENT_ID=your-oidc-client-id
 VITE_GATEWAY_BASE_URL=https://localhost:7001
 VITE_APP_REDIRECT_URI=http://localhost:{PORT}/callback/login
 VITE_APP_POST_LOGOUT_REDIRECT_URI=http://localhost:{PORT}/callback/logout
-VITE_APP_SCOPE=openid profile email offline_access   # storefront also adds: catalog order
+VITE_APP_SCOPE=openid profile email offline_access   # buyer also adds: catalog order
 VITE_APP_ENVIRONMENT=development
 VITE_ENABLE_LOGGING=true
 VITE_ENABLE_DEBUG=true
@@ -193,7 +193,9 @@ const result = await openModal(MyModalComponent, { prop1: value1 })
 ```
 
 - `ModalManager` must exist in `App.vue`; add it if missing.
-- Use `ModalWrapper` for consistent modal chrome.
+- `ModalWrapper` owns the shared modal shell for `useModal()` flows.
+- Components opened through `openModal()` must render content only. Do not add a second outer dialog shell, duplicate modal header, or duplicate top-right close button inside the modal component.
+- Pass shared modal chrome through `openModal()` props such as `title`, `description`, and `maxWidth` instead of hardcoding them inside the modal component.
 - Use `ConfirmModal` for all destructive confirmation flows.
 - The component passed to `openModal()` resolves the promise with `closeModal(result)`.
 
@@ -232,20 +234,34 @@ Never write raw `<div class="animate-spin ...">` inline. Use shared loading comp
 
 ## Implementation Workflow
 
-For each new backend or feature domain, follow this order:
+For every feature implementation, follow this order:
 
 1. **Reuse check** - inspect `@hivespace/shared` components, composables, icons, and types first.
 2. **Types** - add `src/types/{module}.types.ts` and export from `src/types/index.ts`.
-3. **Service** - add `src/services/{module}.service.ts` using the app's singleton `apiService` or `apiClient`.
+3. **Service** - add `src/services/{module}.service.ts` using the app's singleton `apiService`.
 4. **Store** - add `src/stores/{module}.store.ts`, keep HTTP out of components, and export from `src/stores/index.ts`.
 5. **Components / pages** - place reusable UI in `src/components/` and page orchestration in `src/pages/`.
 6. **Route** - register route entries in `src/router/index.ts` where needed.
-7. **i18n** - add `src/i18n/locales/en/{module}.json` and `src/i18n/locales/vi/{module}.json`, then import them in `src/i18n/index.ts`.
+7. **i18n** - before adding keys, classify each new user-facing string as either `common` or module-owned. Put app-shell/reusable copy in `src/i18n/locales/{en,vi}/common.json`; put feature-owned copy in `src/i18n/locales/{en,vi}/{module}.json`; then import the affected files in `src/i18n/index.ts`.
 8. **Verify** - run the required checks from `Verification` and ensure no equivalent shared helper was introduced locally.
+
+### Feature Consistency Checklist
+
+Apply these rules on every feature change:
+
+- Routed views must live in `src/pages/` and use `*Page.vue` names.
+- `src/pages/` is for route entry components only. Non-route UI such as modals, drawers, popups, panels, and reusable page sections belongs in `src/components/`, preferably under `src/components/{feature}/` when feature-local.
+- Feature/domain translation keys must use a stable module namespace such as `accounts.*`, `auditLog.*`, `buyers.*`, or `configuration.*`.
+- Shared or app-shell labels that are plain strings, especially sidebar and navigation labels, must use shared/common translation keys rather than a feature namespace root that is also an object. Use `common.*` for shell/navigation labels instead of calling keys such as `t('accounts')` once `accounts.*` is a feature namespace.
+- Use `common` for app-level reusable copy: shell labels, navigation groups, header/footer labels, generic error/default screens, document titles for non-domain screens, and generic UI strings such as pagination, loading, confirmation, and session-state messages.
+- Never reuse one i18n key as both a string value and an object namespace.
+- Do not use container files such as `pages.json` to mix navigation/common shell copy with feature-specific page content. If a file contains shared app-shell copy, move that copy to `common`.
+- When renaming a page file, feature namespace, or shared label key, update all affected imports, router entries, app-shell navigation labels, and related references in the same change.
+- Before finishing a structural refactor, search for stale filenames, old i18n roots, and outdated imports so the repo does not keep partially migrated references.
 
 ### API Layer
 
-Each app has a singleton `apiService` (admin/seller) or `apiClient` (storefront) in `src/services/api.ts`, configured with:
+Each app has a singleton `apiService` in `src/services/api.ts`, configured with:
 - Base URL from `config.api.baseUrl`
 - `ensureFreshUser` callback that runs refresh-token exchange via `src/services/refresh.service.ts` and forces logout on `invalid_grant`
 - `notifyCallback` that calls `useAppStore().notifyError(...)` for HTTP error toasts with i18n-sourced messages
@@ -271,6 +287,13 @@ Never construct `ApiService` directly inside a feature service.
 - Shared translations merge first; local keys override them.
 - New backend error codes go into `backend-errors.json`.
 - All user-facing strings must go through `$t('module.key')`.
+- Before adding any new translation key, explicitly classify it as `common` or module-owned and place it in the correct file in the same change.
+- Keep one translation file per feature/domain and use that file's module root consistently across pages, stores, and feature-local components.
+- Use feature namespaces for feature copy and `common` for app-shell or cross-feature labels.
+- Put strings in `common` when they are not owned by one business domain: shell navigation, header/footer labels, generic error/default pages, reusable actions, pagination text, and session-state copy.
+- Keep strings in a module file when they describe feature behavior, feature forms/tables/filters, domain statuses, feature notifications, or content that only makes sense inside one feature.
+- Do not store shell/navigation/error/default/pagination/session copy inside feature files or overloaded container files such as `pages.json`.
+- Do not create collisions where the same key is sometimes a string and sometimes an object namespace.
 
 ## App-Specific Rules
 
@@ -292,11 +315,9 @@ Never construct `ApiService` directly inside a feature service.
   4. Non-seller with verified email -> `/register-seller`
   5. Verified seller -> pass through
 
-### Storefront (Planned)
+### Buyer (Storefront)
 
-`apps/storefront/` is not scaffolded yet. Apply these rules once storefront development begins:
-
-- Name the singleton client `apiClient` in `src/services/api.ts`.
+- Apply these rules in `apps/buyer/`.
 - Auth flow in `src/router/index.ts`:
   1. `meta.allowAnonymous: true` -> skip auth
   2. Unauthenticated on protected route -> redirect to OIDC login
@@ -305,9 +326,11 @@ Never construct `ApiService` directly inside a feature service.
 - `App.vue` should conditionally wrap routes in `StorefrontLayout` based on `route.meta.layout`.
 - Routes with `meta.layout: 'none'` should render without the standard header/footer and use dedicated flows such as Cart or Checkout headers.
 
-### UI Coding From Design Images
+### UI Coding From Design Sources
 
-When given a design image (screenshot, mockup, Figma export):
+When the user provides any design source, always apply the following workflow. This includes
+pasted images, screenshots, mockups, Figma links or exports, design files, and any other design
+reference link, file, or source:
 
 1. Scan `packages/shared/src/components/` first and identify reusable shared primitives.
 2. Ask before coding by listing the shared components that map to the design.
@@ -333,12 +356,19 @@ When given a design image (screenshot, mockup, Figma export):
 After completing any task in an app, always run lint and type-check for that app and fix all introduced issues before reporting done:
 
 ```bash
-# From the affected app directory (apps/admin, apps/seller, or apps/storefront)
-pnpm lint        # storefront has no lint script - skip there
+# From the affected app directory (apps/admin, apps/seller, or apps/buyer)
+pnpm lint
 pnpm type-check  # Vue-tsc validation
 ```
 
 If you introduced a new helper or composable, verify before finishing that an equivalent shared composable does not already exist in `packages/shared/src/composables/`.
+
+If you renamed files, moved components, or changed i18n namespaces, also verify before finishing that:
+- router imports point to the final `*Page.vue` files
+- stale filenames and old import paths are removed
+- stale translation roots and outdated key prefixes are removed
+- shared navigation or app-shell labels still point to valid plain-string keys
+- new shell/navigation/error/default/pagination/session strings were added to `common`, not to feature files
 
 **Known baseline failures that must not be treated as new errors** (admin & seller only):
 - `type-check`: ~11 pre-existing errors from missing `@/services/user.service`, missing `quill-image-uploader` types, and TS strict violations in demo files

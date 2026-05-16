@@ -4,34 +4,8 @@
   "products": "Sản phẩm",
   "marketing": "Marketing",
   "coupons": "Mã giảm giá",
+  "demo": "Demo",
+  "icons": "Biểu tượng",
   "productList": "Danh sách sản phẩm",
-  "addNewProduct": "Thêm sản phẩm mới",
-  "maintenance": {
-    "title": "BẢO TRÌ",
-    "message": "Trang web đang được bảo trì. Chúng tôi sẽ sớm quay trở lại. Cảm ơn bạn đã kiên nhẫn."
-  },
-  "notFound": {
-    "title": "LỖI",
-    "message": "Chúng tôi không thể tìm thấy trang bạn đang tìm!"
-  },
-  "serverError": {
-    "title": "LỖI",
-    "message": "Đã xảy ra sự cố từ phía chúng tôi. Vui lòng thử lại sau hoặc liên hệ hỗ trợ nếu vấn đề vẫn tiếp diễn."
-  },
-  "common": {
-    "backHome": "Quay lại trang chủ",
-    "showing": "Hiển thị",
-    "of": "trên",
-    "prev": "Trước",
-    "next": "Tiếp"
-  },
-  "default": {
-    "welcome": "Chào mừng đến HiveSpace Seller Center.",
-    "signIn": "Đăng nhập",
-    "signUp": "Đăng ký"
-  },
-  "header": {
-    "openApplicationMenu": "Mở menu ứng dụng",
-    "closeApplicationMenu": "Đóng menu ứng dụng"
-  }
+  "addNewProduct": "Thêm sản phẩm mới"
 }

@@ -22,9 +22,6 @@ import {
   useAuth,
   CULTURE_TEXT,
   THEME_TEXT,
-  stringToNumericCulture,
-  numericToStringCulture,
-  stringToNumericTheme,
   initializeAuth,
   getCookie,
 } from '@hivespace/shared'
@@ -58,25 +55,24 @@ const initializeApp = async () => {
     ])
 
     if (settingsResult.status === 'fulfilled') {
-      i18n.global.locale.value = numericToStringCulture(settingsResult.value.culture)
+      i18n.global.locale.value = settingsResult.value.culture
     }
   } else {
     // For unauthenticated users, read from cookies or use defaults
     // Initialize culture from cookie
     const cookieCulture = getCookie('culture')
-    const cultureText = cookieCulture || CULTURE_TEXT.VIETNAMESE
-    const numericCulture = stringToNumericCulture(cultureText)
-    const validCultureText = numericToStringCulture(numericCulture)
-    i18n.global.locale.value = validCultureText
+    const culture = cookieCulture === CULTURE_TEXT.ENGLISH
+      ? CULTURE_TEXT.ENGLISH
+      : CULTURE_TEXT.VIETNAMESE
+    i18n.global.locale.value = culture
 
     // Initialize theme from cookie
     const cookieTheme = getCookie('theme')
-    const themeTextCookie = cookieTheme || THEME_TEXT.LIGHT
-    const numericTheme = stringToNumericTheme(themeTextCookie)
+    const theme = cookieTheme === THEME_TEXT.DARK ? THEME_TEXT.DARK : THEME_TEXT.LIGHT
 
     userSettingsStore.setUserSettings({
-      culture: numericCulture,
-      theme: numericTheme,
+      culture,
+      theme,
     })
     profileStore.clearMyProfile()
   }

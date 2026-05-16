@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>HiveSpace · Colors</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<style>
+  body { margin: 0; padding: 40px; background: #fff; }
+  .wrap { max-width: 1400px; margin: 0 auto; display: flex; flex-direction: column; gap: 40px; }
+  h2 { font-size: 13px; font-weight: 600; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.06em; margin: 0 0 12px 0; }
+  .group-head { font-size: 11px; color: var(--gray-400); font-family: var(--font-mono); margin-top: 4px; }
+  .ramp { display: grid; grid-template-columns: repeat(13, 1fr); gap: 8px; }
+  .swatch {
+    aspect-ratio: 1 / 1.2; border-radius: 8px; position: relative;
+    display: flex; flex-direction: column; justify-content: flex-end; padding: 8px;
+    font-family: var(--font-mono); font-size: 10px; color: rgba(0,0,0,0.6);
+  }
+  .swatch.on-dark { color: rgba(255,255,255,0.85); }
+  .swatch .w { font-weight: 600; font-size: 11px; }
+  .swatch .h { opacity: .7; }
+  .status-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+  .status-card { border: 1px solid var(--gray-200); border-radius: 12px; overflow: hidden; }
+  .status-head { padding: 16px 20px; color: white; font-weight: 600; }
+  .status-body { padding: 16px 20px; display: flex; flex-direction: column; gap: 6px; font-family: var(--font-mono); font-size: 12px; color: var(--gray-600); }
+  .chip { display: inline-flex; align-items: center; gap: 8px; padding: 4px 10px; border-radius: 9999px; font-size: 12px; font-weight: 500; }
+  .featured { display: grid; grid-template-columns: 2fr 1fr 1fr 1fr 1fr 1fr; gap: 8px; }
+  .featured .swatch { aspect-ratio: auto; height: 120px; }
+  .featured .swatch.hero { aspect-ratio: auto; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <section>
+    <h2>Brand — indigo (primary interactive)</h2>
+    <div class="featured">
+      <div class="swatch hero on-dark" style="background:#465fff">
+        <div class="w">brand-500</div>
+        <div class="h">#465FFF · Primary. Buttons, links, focus, selected.</div>
+      </div>
+      <div class="swatch" style="background:#ecf3ff"><span class="w">50</span><span class="h">#ECF3FF</span></div>
+      <div class="swatch" style="background:#dde9ff"><span class="w">100</span><span class="h">#DDE9FF</span></div>
+      <div class="swatch on-dark" style="background:#7592ff"><span class="w">400</span><span class="h">#7592FF</span></div>
+      <div class="swatch on-dark" style="background:#3641f5"><span class="w">600 hover</span><span class="h">#3641F5</span></div>
+      <div class="swatch on-dark" style="background:#262e89"><span class="w">900</span><span class="h">#262E89</span></div>
+    </div>
+
+    <div class="ramp" style="margin-top:12px">
+      <div class="swatch" style="background:#f2f7ff"><span class="w">25</span><span class="h">#F2F7FF</span></div>
+      <div class="swatch" style="background:#ecf3ff"><span class="w">50</span><span class="h">#ECF3FF</span></div>
+      <div class="swatch" style="background:#dde9ff"><span class="w">100</span><span class="h">#DDE9FF</span></div>
+      <div class="swatch" style="background:#c2d6ff"><span class="w">200</span><span class="h">#C2D6FF</span></div>
+      <div class="swatch" style="background:#9cb9ff"><span class="w">300</span><span class="h">#9CB9FF</span></div>
+      <div class="swatch on-dark" style="background:#7592ff"><span class="w">400</span><span class="h">#7592FF</span></div>
+      <div class="swatch on-dark" style="background:#465fff"><span class="w">500</span><span class="h">#465FFF</span></div>
+      <div class="swatch on-dark" style="background:#3641f5"><span class="w">600</span><span class="h">#3641F5</span></div>
+      <div class="swatch on-dark" style="background:#2a31d8"><span class="w">700</span><span class="h">#2A31D8</span></div>
+      <div class="swatch on-dark" style="background:#252dae"><span class="w">800</span><span class="h">#252DAE</span></div>
+      <div class="swatch on-dark" style="background:#262e89"><span class="w">900</span><span class="h">#262E89</span></div>
+      <div class="swatch on-dark" style="background:#161950"><span class="w">950</span><span class="h">#161950</span></div>
+      <div class="swatch on-dark" style="background:linear-gradient(135deg,#465fff,#b44197)"><span class="w">grad</span><span class="h">logo outer</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Gray — neutrals</h2>
+    <div class="ramp">
+      <div class="swatch" style="background:#fcfcfd"><span class="w">25</span><span class="h">#FCFCFD</span></div>
+      <div class="swatch" style="background:#f9fafb"><span class="w">50 body</span><span class="h">#F9FAFB</span></div>
+      <div class="swatch" style="background:#f2f4f7"><span class="w">100</span><span class="h">#F2F4F7</span></div>
+      <div class="swatch" style="background:#e4e7ec"><span class="w">200 border</span><span class="h">#E4E7EC</span></div>
+      <div class="swatch" style="background:#d0d5dd"><span class="w">300 input</span><span class="h">#D0D5DD</span></div>
+      <div class="swatch on-dark" style="background:#98a2b3"><span class="w">400</span><span class="h">#98A2B3</span></div>
+      <div class="swatch on-dark" style="background:#667085"><span class="w">500 muted</span><span class="h">#667085</span></div>
+      <div class="swatch on-dark" style="background:#475467"><span class="w">600</span><span class="h">#475467</span></div>
+      <div class="swatch on-dark" style="background:#344054"><span class="w">700 label</span><span class="h">#344054</span></div>
+      <div class="swatch on-dark" style="background:#1d2939"><span class="w">800</span><span class="h">#1D2939</span></div>
+      <div class="swatch on-dark" style="background:#101828"><span class="w">900 text</span><span class="h">#101828</span></div>
+      <div class="swatch on-dark" style="background:#0c111d"><span class="w">950</span><span class="h">#0C111D</span></div>
+      <div class="swatch on-dark" style="background:#1a2231"><span class="w">dark-bg</span><span class="h">#1A2231</span></div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Status</h2>
+    <div class="status-grid">
+      <div class="status-card">
+        <div class="status-head" style="background:#12b76a">Success</div>
+        <div class="status-body">
+          <div><span class="chip" style="background:#ecfdf3;color:#039855">✓ Payment received</span></div>
+          <div>50 · #ECFDF3</div><div>500 · #12B76A</div><div>600 · #039855</div>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-head" style="background:#f79009">Warning</div>
+        <div class="status-body">
+          <div><span class="chip" style="background:#fffaeb;color:#dc6803">! Low stock</span></div>
+          <div>50 · #FFFAEB</div><div>500 · #F79009</div><div>600 · #DC6803</div>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-head" style="background:#f04438">Error</div>
+        <div class="status-body">
+          <div><span class="chip" style="background:#fef3f2;color:#d92d20">✕ Declined</span></div>
+          <div>50 · #FEF3F2</div><div>500 · #F04438</div><div>600 · #D92D20</div>
+        </div>
+      </div>
+      <div class="status-card">
+        <div class="status-head" style="background:#0ba5ec">Info</div>
+        <div class="status-body">
+          <div><span class="chip" style="background:#f0f9ff;color:#026aa2">i Tip</span></div>
+          <div>50 · #F0F9FF</div><div>500 · #0BA5EC</div><div>600 · #0086C9</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+</div>
+</body>
+</html>

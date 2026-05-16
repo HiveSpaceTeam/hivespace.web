@@ -2,25 +2,13 @@
 // Marketing Domain - Coupon Types
 // Mirrors the backend HiveSpace.OrderService domain contracts
 // ============================================================
-import type { PaginationMetadata } from '@hivespace/shared'
+import { type PaginationMetadata, CouponScope, DiscountType } from '@hivespace/shared'
 
 /** Front-end coupon category selection enum */
 export enum CouponType {
     ENTIRE_SHOP = 1,
     SPECIFIC_PRODUCTS = 2,
     PRIVATE = 3,
-}
-
-/** Mirrors backend DiscountType enum */
-export enum DiscountType {
-    FixedAmount = 1,
-    Percentage = 2,
-}
-
-/** Mirrors backend CouponScope enum */
-export enum CouponScope {
-    ShippingFee = 1,
-    ItemPrice = 2,
 }
 
 export enum CouponStatus {

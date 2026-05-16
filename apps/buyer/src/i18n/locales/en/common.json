@@ -1,0 +1,54 @@
+{
+  "home": "Home",
+  "search": "Search products...",
+  "categories": "Categories",
+  "flashSale": "Flash Sale",
+  "viewAll": "View All",
+  "addToCart": "Add To Cart",
+  "buyNow": "Buy Now",
+  "sold": "Sold",
+  "topProducts": "Top Products",
+  "newArrivals": "New Arrivals",
+  "bestSellers": "Best Sellers",
+  "seeMore": "See More",
+  "freeShipping": "Free Shipping",
+  "guarantee": "100% Genuine",
+  "freeReturns": "Free Returns",
+  "customerService": "24/7 Support",
+  "todaysSuggestions": "Today's Suggestions",
+  "discount": "Off",
+  "soldOut": "Sold Out",
+  "soldCount": "{count} Sold",
+  "default": "Default",
+  "auth": {
+    "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signingOut": "Signing out..."
+  },
+  "profile": {
+    "myAccount": "My Account",
+    "myOrders": "My Orders",
+    "signOut": "Sign Out"
+  },
+  "mockProductName": "[OFFICIAL] Sample Demo Product {index} - Latest design, high quality, 12-month warranty",
+  "header": {
+    "searchPlaceholder": "Search by product, order or buyer...",
+    "openApplicationMenu": "Open application menu",
+    "closeApplicationMenu": "Close application menu"
+  },
+  "pageTitle": {
+    "home": "HiveSpace - Online Shopping",
+    "cart": "Cart - HiveSpace",
+    "checkout": "Checkout - HiveSpace",
+    "product": "HiveSpace - Online Shopping",
+    "serverError": "Server Error",
+    "maintenance": "Maintenance",
+    "notFound": "Not Found",
+    "profile": "My Profile - HiveSpace",
+    "address": "My Addresses - HiveSpace",
+    "paymentResult": "Payment Result - HiveSpace",
+    "orders": "My Orders - HiveSpace",
+    "orderDetail": "Order Detail - HiveSpace",
+    "notifications": "Notifications - HiveSpace"
+  }
+}

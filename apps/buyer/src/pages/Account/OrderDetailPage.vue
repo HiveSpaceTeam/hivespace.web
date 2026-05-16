@@ -42,10 +42,6 @@
                     class="block px-3 py-1.5 text-sm rounded transition-colors text-gray-500 dark:text-gray-400 hover:text-primary">
                     {{ $t('storefront.profilePage.navAddress') }}
                   </RouterLink>
-                  <RouterLink to="/profile/change-password"
-                    class="block px-3 py-1.5 text-sm rounded transition-colors text-gray-500 dark:text-gray-400 hover:text-primary">
-                    {{ $t('storefront.profilePage.navChangePassword') }}
-                  </RouterLink>
                 </div>
               </div>
 

@@ -34,8 +34,8 @@ import {
   type SidebarMenuGroup,
   type SidebarMenuItem,
   type MenuItem,
-  stringToNumericTheme,
-  stringToNumericCulture,
+  type ThemeText,
+  type CultureText,
 } from '@hivespace/shared'
 import { useNotificationStore, useProfileStore, useUserSettingsStore } from '@/stores'
 import { config, isDevelopment } from '@/config'
@@ -93,15 +93,15 @@ const menuGroups = computed<SidebarMenuGroup[]>(() => {
       ],
     },
     {
-      name: t('pages.marketing') || 'Marketing',
+      name: t('pages.marketing'),
       icon: BoxIcon,
       subItems: [
-        { name: t('pages.coupons') || 'Coupons', path: '/marketing/coupons' },
+        { name: t('pages.coupons'), path: '/marketing/coupons' },
       ],
     },
   ]
   if (isDevelopment()) {
-    items.push({ icon: GridIcon, name: 'Demo', path: '/demo' })
+    items.push({ icon: GridIcon, name: t('pages.demo'), path: '/demo' })
   }
   return [{ title: t('common.sidebar.menu'), items }]
 })
@@ -121,9 +121,9 @@ provideAppShell({
   markAsRead: notificationStore.markAsRead,
   fetchNotifications: notificationStore.fetchNotifications,
   loadMore: notificationStore.loadMore,
-  themeChange: async (theme) => { await userSettingsStore.updateTheme(stringToNumericTheme(theme)) },
-  cultureChange: async (culture) => {
-    await userSettingsStore.updateCulture(stringToNumericCulture(culture))
+  themeChange: async (theme: ThemeText) => { await userSettingsStore.updateTheme(theme) },
+  cultureChange: async (culture: CultureText) => {
+    await userSettingsStore.updateCulture(culture)
   },
 })
 

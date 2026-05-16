@@ -1,0 +1,31 @@
+{
+  "title": "Tổng quan",
+  "pageTitle": "Tổng quan nền tảng",
+  "actions": {
+    "exportAudit": "Xuất nhật ký",
+    "inviteAdmin": "Mời quản trị viên"
+  },
+  "kpi": {
+    "activeMerchants": "Thương nhân đang hoạt động",
+    "gmvLast24h": "GMV 24 giờ qua",
+    "openDisputes": "Khiếu nại đang mở",
+    "kycPending": "KYC chờ xử lý",
+    "vsLast30d": "so với 30 ngày qua",
+    "gmvUnit": "tỷ"
+  },
+  "chart": {
+    "title": "Xu hướng GMV",
+    "gmvSeries": "GMV (₫ tỷ)",
+    "tooltipUnit": "₫{value} tỷ"
+  },
+  "activity": {
+    "title": "Hoạt động gần đây"
+  },
+  "adminTable": {
+    "title": "Đăng nhập quản trị gần đây",
+    "subtitle": "24 giờ qua · hoạt động nhân viên tổng quan",
+    "viewAll": "Xem tất cả quản trị viên",
+    "footerStats": "21 quản trị viên đang hoạt động · 3 lời mời đang chờ · ",
+    "manageAll": "quản lý tất cả"
+  }
+}

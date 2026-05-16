@@ -1,0 +1,2657 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><script data-od-sandbox-shim>(function(){
+  function makeStore(){
+    var data = {};
+    var api = {
+      getItem: function(k){ return Object.prototype.hasOwnProperty.call(data, k) ? data[k] : null; },
+      setItem: function(k, v){ data[k] = String(v); },
+      removeItem: function(k){ delete data[k]; },
+      clear: function(){ data = {}; },
+      key: function(i){ return Object.keys(data)[i] || null; }
+    };
+    Object.defineProperty(api, 'length', { get: function(){ return Object.keys(data).length; } });
+    return api;
+  }
+  function tryShim(name){
+    var works = false;
+    try { works = !!window[name] && typeof window[name].getItem === 'function'; void window[name].length; }
+    catch (_) { works = false; }
+    if (works) return;
+    try { Object.defineProperty(window, name, { configurable: true, value: makeStore() }); }
+    catch (_) { try { window[name] = makeStore(); } catch (__) {} }
+  }
+  tryShim('localStorage');
+  tryShim('sessionStorage');
+})();</script>
+<meta charset="UTF-8">
+<title>HiveSpace · Admin Portal UI Kit</title>
+<link rel="stylesheet" href="colors_and_type.css">
+<link rel="stylesheet" href="components.css">
+<link rel="stylesheet" href="audit_log.css">
+<style>
+  body { margin: 0; background: var(--gray-50); }
+  .app { display: grid; grid-template-columns: 260px 1fr; min-height: 100vh; }
+
+  /* Sidebar */
+  .side { background: #fff; border-right: 1px solid var(--gray-200); padding: 20px 16px; display: flex; flex-direction: column; gap: 20px; }
+  .side .logo { padding: 8px 12px; }
+  .side .logo img { height: 28px; display: block; }
+  .nav-head { font-size: 11px; font-weight: 600; color: var(--gray-400); text-transform: uppercase; letter-spacing: 0.06em; padding: 0 12px; margin-top: 8px; }
+  .nav-list { display: flex; flex-direction: column; gap: 2px; }
+
+  /* Topbar */
+  .topbar {
+    background: #fff; border-bottom: 1px solid var(--gray-200);
+    height: 68px; padding: 0 28px;
+    display: flex; align-items: center; justify-content: space-between; gap: 24px;
+  }
+  .search { flex: 1; max-width: 480px; position: relative; }
+  .search input {
+    width: 100%; height: 40px; border-radius: 8px; border: 1px solid var(--gray-200);
+    background: var(--gray-50); padding: 0 16px 0 42px; font-size: 14px;
+  }
+  .search svg { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+  .topbar-actions { display: flex; align-items: center; gap: 12px; }
+  .icon-btn {
+    width: 40px; height: 40px; border-radius: 9999px; border: 1px solid var(--gray-200);
+    background: #fff; display: inline-flex; align-items: center; justify-content: center;
+    color: var(--gray-500); cursor: pointer; position: relative;
+  }
+  .icon-btn .dot { position: absolute; top: 8px; right: 8px; width: 8px; height: 8px; border-radius: 9999px; background: var(--error-500); border: 2px solid #fff; }
+
+  /* Main */
+  .main { padding: 28px; display: flex; flex-direction: column; gap: 20px; }
+  .page-head { display: flex; flex-direction: column; gap: 12px; }
+  .page-head-top,
+  .page-head-meta { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; }
+  .page-head-meta { flex-wrap: wrap; }
+  .page-title { margin: 0; font-size: 24px; font-weight: 700; color: var(--gray-900); }
+  .page-sub { margin: 0; font-size: 14px; line-height: 1.5; color: var(--gray-500); }
+  .page-head-actions { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  .hs-crumb.page-crumb { margin: 0; justify-content: flex-end; white-space: nowrap; }
+
+  /* KPI */
+  .kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+  .kpi {
+    background: #fff; border: 1px solid var(--gray-200); border-radius: 12px;
+    padding: 20px;
+  }
+  .kpi .label { font-size: 13px; color: var(--gray-500); }
+  .kpi .val { font-size: 30px; font-weight: 600; color: var(--gray-900); margin: 6px 0 2px; letter-spacing: -0.02em; }
+  .kpi .delta { font-size: 12px; display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 9999px; }
+  .kpi .up { background: var(--success-50); color: var(--success-700); }
+  .kpi .down { background: var(--error-50); color: var(--error-700); }
+
+  /* Two-col */
+  .split { display: grid; grid-template-columns: 2fr 1fr; gap: 20px; }
+
+  /* Chart */
+  .chart-wrap { padding: 24px; }
+  .chart {
+    height: 220px; position: relative; background:
+      linear-gradient(to top, transparent 0 1px, rgba(16,24,40,.05) 1px 2px, transparent 2px) 0 0 / 100% 25%;
+  }
+  .chart svg { width: 100%; height: 100%; display: block; }
+
+  /* Activity */
+  .act-item {
+    display: flex; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--gray-100);
+  }
+  .act-item:last-child { border-bottom: none; }
+  .act-dot { width: 32px; height: 32px; border-radius: 9999px; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .act-text { font-size: 14px; color: var(--gray-700); line-height: 1.5; }
+  .act-text b { color: var(--gray-900); font-weight: 600; }
+  .act-time { font-size: 12px; color: var(--gray-400); margin-top: 2px; }
+
+  /* Table */
+  .toolbar {
+    padding: 16px 20px; border-bottom: 1px solid var(--gray-200);
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  }
+  .filter-row { display: flex; gap: 10px; align-items: center; }
+  .filter-row .hs-input, .filter-row .hs-select { height: 40px; font-size: 14px; }
+  .stat-dot { width: 8px; height: 8px; border-radius: 9999px; display: inline-block; margin-right: 6px; vertical-align: middle; }
+  .name-cell { display: flex; align-items: center; gap: 12px; }
+  .role-tag { font-size: 11px; color: var(--gray-500); }
+
+  .footer-bar { padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; color: var(--gray-500); font-size: 13px; }
+
+  .code {
+    font-family: var(--font-mono); font-size: 12px; color: var(--gray-500);
+    padding: 24px 28px 0;
+  }
+
+  .view { display: none; }
+  .view.active { display: flex; flex-direction: column; }
+
+/* ---------- Settings layout: rail + content ---------- */
+  .config { display: grid; grid-template-columns: 248px 1fr; gap: 20px; align-items: start; }
+
+  .rail {
+    background: #fff; border: 1px solid var(--gray-200); border-radius: 12px;
+    padding: 12px; position: sticky; top: 88px;
+  }
+  .rail .group-label {
+    font-size: 11px; font-weight: 600; color: var(--gray-400);
+    text-transform: uppercase; letter-spacing: 0.06em; padding: 12px 12px 6px;
+  }
+  .rail-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 9px 12px; border-radius: 8px;
+    font-size: 14px; color: var(--gray-700); cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .rail-item:hover { background: var(--gray-50); color: var(--gray-900); }
+  .rail-item.active {
+    background: var(--brand-50); color: var(--brand-700); font-weight: 500;
+  }
+  .rail-item .ri-icon {
+    width: 18px; height: 18px; flex-shrink: 0; color: var(--gray-400);
+  }
+  .rail-item.active .ri-icon { color: var(--brand-500); }
+  .rail-item .ri-meta {
+    margin-left: auto; font-size: 11px; color: var(--gray-400); font-weight: 500;
+  }
+  .rail-item.active .ri-meta { color: var(--brand-500); }
+
+  .rail-search { position: relative; padding: 4px 4px 8px; }
+  .rail-search input {
+    width: 100%; height: 36px; padding: 0 12px 0 34px; font-size: 13px;
+    border: 1px solid var(--gray-200); border-radius: 8px; background: var(--gray-50);
+  }
+  .rail-search svg { position: absolute; left: 16px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+
+  /* ---------- Content sections ---------- */
+  .content { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+  .sec {
+    background: #fff; border: 1px solid var(--gray-200); border-radius: 12px;
+    overflow: hidden;
+  }
+  .sec-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 16px; padding: 20px 24px; border-bottom: 1px solid var(--gray-200);
+  }
+  .sec-head h2 { margin: 0; font-size: 16px; font-weight: 600; color: var(--gray-900); }
+  .sec-head p { margin: 4px 0 0; font-size: 13px; color: var(--gray-500); max-width: 540px; }
+  .sec-body { padding: 4px 24px; }
+
+  /* Field row: label/help on left, control on right */
+  .row {
+    display: grid; grid-template-columns: minmax(220px, 280px) 1fr;
+    gap: 32px; padding: 20px 0; border-bottom: 1px solid var(--gray-100);
+  }
+  .row:last-child { border-bottom: none; }
+  .row-label { font-size: 14px; font-weight: 500; color: var(--gray-900); }
+  .row-help { font-size: 13px; color: var(--gray-500); margin-top: 4px; line-height: 1.5; }
+  .row-control { min-width: 0; }
+  .row-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+
+  .hint {
+    margin-top: 6px; font-size: 12px; color: var(--gray-500);
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  /* Toggle row variant: stacked label/help on left, switch on right */
+  .row-toggle {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    gap: 24px; padding: 16px 0; border-bottom: 1px solid var(--gray-100);
+  }
+  .row-toggle:last-child { border-bottom: none; }
+  .row-toggle .copy { max-width: 560px; }
+  .row-toggle .copy .t { font-size: 14px; font-weight: 500; color: var(--gray-900); }
+  .row-toggle .copy .d { font-size: 13px; color: var(--gray-500); margin-top: 2px; line-height: 1.5; }
+
+  /* Provider cards */
+  .providers { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .provider {
+    border: 1px solid var(--gray-200); border-radius: 12px;
+    padding: 16px; background: #fff; display: flex; gap: 14px; align-items: flex-start;
+    cursor: pointer; transition: border-color .15s, box-shadow .15s;
+    position: relative;
+  }
+  .provider:hover { border-color: var(--gray-300); }
+  .provider.connected {
+    border-color: var(--brand-500);
+    box-shadow: 0 0 0 3px rgba(70,95,255,.10);
+  }
+  .provider .logo {
+    width: 40px; height: 40px; border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px; color: #fff; flex-shrink: 0;
+  }
+  .provider .l-vnpay { background: linear-gradient(135deg,#005baa,#0090d4); }
+  .provider .l-momo  { background: linear-gradient(135deg,#a50064,#d82e7c); }
+  .provider .l-stripe{ background: linear-gradient(135deg,#635bff,#9290ff); }
+  .provider .l-zalo  { background: linear-gradient(135deg,#0068ff,#27a3ff); }
+  .provider .name { font-size: 14px; font-weight: 600; color: var(--gray-900); }
+  .provider .desc { font-size: 12px; color: var(--gray-500); margin-top: 2px; line-height: 1.45; }
+  .provider .meta { font-size: 11px; color: var(--gray-400); margin-top: 8px; font-family: var(--font-mono); }
+  .provider .corner-badge {
+    position: absolute; top: 12px; right: 12px;
+  }
+
+  /* Fee table */
+  .fee-table { width: 100%; border-collapse: collapse; }
+  .fee-table th, .fee-table td {
+    padding: 12px 14px; font-size: 13px; text-align: left;
+    border-bottom: 1px solid var(--gray-100);
+  }
+  .fee-table th {
+    font-size: 11px; font-weight: 600; color: var(--gray-500);
+    text-transform: uppercase; letter-spacing: .04em;
+    background: var(--gray-50);
+  }
+  .fee-table td { color: var(--gray-700); }
+  .fee-table td:first-child { color: var(--gray-900); font-weight: 500; }
+  .fee-table tr:last-child td { border-bottom: none; }
+  .fee-table .num { font-variant-numeric: tabular-nums; text-align: right; }
+  .fee-edit {
+    background: var(--gray-50); border: 1px solid var(--gray-200);
+    color: var(--gray-700); height: 32px; border-radius: 6px;
+    padding: 0 10px; font-size: 13px; cursor: pointer;
+  }
+  .fee-edit:hover { background: #fff; }
+
+  /* Payout schedule chooser */
+  .seg {
+    display: inline-flex; padding: 4px; background: var(--gray-100); border-radius: 10px; gap: 2px;
+  }
+  .seg button {
+    padding: 7px 14px; font-size: 13px; font-weight: 500;
+    border: none; background: transparent; color: var(--gray-600);
+    border-radius: 7px; cursor: pointer;
+  }
+  .seg button.active { background: #fff; color: var(--gray-900); box-shadow: var(--shadow-xs); }
+
+  /* Risk slider */
+  .risk-track {
+    position: relative; height: 8px; border-radius: 4px;
+    background: linear-gradient(to right, #d1fadf 0%, #fef0c7 50%, #fee4e2 100%);
+    margin: 18px 4px 6px;
+  }
+  .risk-knob {
+    position: absolute; top: 50%; transform: translate(-50%, -50%);
+    left: 38%; width: 18px; height: 18px; border-radius: 50%;
+    background: #fff; border: 2px solid var(--brand-500);
+    box-shadow: var(--shadow-sm); cursor: grab;
+  }
+  .risk-marks {
+    display: flex; justify-content: space-between; padding: 0 4px;
+    font-size: 11px; color: var(--gray-500);
+  }
+  .risk-current {
+    margin-top: 14px; font-size: 13px; color: var(--gray-700);
+    background: var(--gray-50); border: 1px solid var(--gray-200);
+    border-radius: 8px; padding: 10px 12px;
+  }
+  .risk-current b { color: var(--gray-900); font-weight: 600; }
+
+  /* Currencies chip-list */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 6px 4px 6px 12px; border-radius: 9999px;
+    background: var(--brand-50); color: var(--brand-700); font-size: 13px; font-weight: 500;
+  }
+  .chip.is-default { background: var(--brand-500); color: #fff; }
+  .chip .x {
+    width: 22px; height: 22px; border-radius: 9999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    cursor: pointer;
+  }
+  .chip .x:hover { background: rgba(255,255,255,.25); }
+  .chip-add {
+    border: 1px dashed var(--gray-300); color: var(--gray-500); background: #fff;
+    padding: 6px 14px; cursor: pointer;
+  }
+  .chip-add:hover { background: var(--gray-50); border-color: var(--gray-400); }
+
+  /* Side info card (right rail inside section) */
+  .info-card {
+    background: var(--brand-50); border: 1px solid #d4dcff; border-radius: 10px;
+    padding: 14px 16px; display: flex; gap: 12px; align-items: flex-start;
+  }
+  .info-card .icon {
+    width: 28px; height: 28px; border-radius: 8px; flex-shrink: 0;
+    background: #fff; color: var(--brand-500);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .info-card .t { font-size: 13px; font-weight: 600; color: var(--brand-700); }
+  .info-card .d { font-size: 12px; color: var(--gray-700); margin-top: 2px; line-height: 1.5; }
+
+  /* Recent changes timeline */
+  .timeline { display: flex; flex-direction: column; gap: 0; padding: 8px 0; }
+  .tl-item {
+    display: grid; grid-template-columns: 28px 1fr;
+    gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--gray-100);
+    position: relative;
+  }
+  .tl-item:last-child { border-bottom: none; }
+  .tl-dot {
+    width: 28px; height: 28px; border-radius: 9999px;
+    display: inline-flex; align-items: center; justify-content: center;
+    background: var(--gray-100); color: var(--gray-600); font-size: 12px;
+  }
+  .tl-dot.brand { background: var(--brand-50); color: var(--brand-500); }
+  .tl-dot.warn  { background: var(--warning-50); color: var(--warning-700); }
+  .tl-dot.ok    { background: var(--success-50); color: var(--success-600); }
+  .tl-text { font-size: 13px; color: var(--gray-700); line-height: 1.5; }
+  .tl-text b { color: var(--gray-900); font-weight: 600; }
+  .tl-text code { font-family: var(--font-mono); font-size: 12px; background: var(--gray-100); padding: 1px 6px; border-radius: 4px; color: var(--gray-700); }
+  .tl-time { font-size: 11px; color: var(--gray-400); margin-top: 2px; }
+
+  /* Sticky save bar */
+  .savebar {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%);
+    background: var(--gray-900); color: #fff; border-radius: 14px;
+    padding: 12px 12px 12px 20px; display: flex; align-items: center; gap: 16px;
+    box-shadow: var(--shadow-lg);
+    width: min(720px, calc(100vw - 320px));
+    transition: opacity .2s, transform .2s;
+  }
+  .savebar.hidden { opacity: 0; transform: translate(-50%, 16px); pointer-events: none; }
+  .savebar .pulse {
+    width: 8px; height: 8px; border-radius: 9999px; background: var(--warning-400);
+    box-shadow: 0 0 0 4px rgba(247, 144, 9, .25);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 4px rgba(247, 144, 9, .25); }
+    50%      { box-shadow: 0 0 0 8px rgba(247, 144, 9, .08); }
+  }
+  .savebar .label { font-size: 13px; flex: 1; }
+  .savebar .label b { color: #fff; font-weight: 600; }
+  .savebar .label .sub { color: rgba(255,255,255,.6); margin-left: 6px; font-weight: 400; }
+  .savebar button {
+    height: 36px; padding: 0 14px; border-radius: 8px; border: none;
+    font-size: 13px; font-weight: 500; cursor: pointer;
+  }
+  .savebar .discard { background: transparent; color: rgba(255,255,255,.7); }
+  .savebar .discard:hover { color: #fff; }
+  .savebar .save { background: var(--brand-500); color: #fff; }
+  .savebar .save:hover { background: var(--brand-600); }
+
+  /* Toast */
+  .toast {
+    position: fixed; bottom: 92px; left: 50%; transform: translateX(-50%);
+    background: var(--gray-900); color: #fff;
+    padding: 12px 18px; border-radius: 10px; font-size: 13px;
+    display: flex; align-items: center; gap: 10px;
+    box-shadow: var(--shadow-lg);
+    opacity: 0; transition: opacity .25s, transform .25s;
+    pointer-events: none;
+  }
+  .toast.show { opacity: 1; transform: translate(-50%, -8px); }
+  .toast .check {
+    width: 22px; height: 22px; border-radius: 9999px;
+    background: var(--success-500); display: inline-flex; align-items: center; justify-content: center;
+  }
+
+  /* Section anchor offset */
+  .anchor { scroll-margin-top: 88px; }
+
+  /* ============================================================
+     MERCHANTS VIEW
+     ============================================================ */
+  .merch-layout { display: grid; grid-template-columns: 1fr 320px; gap: 20px; align-items: start; }
+  @media (max-width: 1280px) { .merch-layout { grid-template-columns: 1fr; } }
+
+  /* KPI strip — denser variant */
+  .merch-kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 0;
+    background: #fff; border: 1px solid var(--gray-200); border-radius: 12px; overflow: hidden;
+  }
+  .merch-kpi { padding: 18px 20px; border-right: 1px solid var(--gray-100); position: relative; }
+  .merch-kpi:last-child { border-right: none; }
+  .merch-kpi .lbl { font-size: 12px; color: var(--gray-500); display: flex; align-items: center; gap: 6px; }
+  .merch-kpi .lbl svg { color: var(--gray-400); }
+  .merch-kpi .val { font-size: 24px; font-weight: 600; color: var(--gray-900); margin: 6px 0 4px; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .merch-kpi .sub { font-size: 12px; color: var(--gray-500); }
+  .merch-kpi .sub.up { color: var(--success-600); }
+  .merch-kpi .sub.down { color: var(--error-600); }
+  .merch-kpi .spark { position: absolute; right: 14px; top: 18px; opacity: .9; }
+
+  /* Filter chips */
+  .seg-filters { display: flex; gap: 4px; padding: 4px; background: var(--gray-100); border-radius: 10px; }
+  .seg-filters button {
+    height: 32px; padding: 0 12px; font-size: 13px; font-weight: 500;
+    border: none; background: transparent; color: var(--gray-600);
+    border-radius: 7px; cursor: pointer; display: inline-flex; align-items: center; gap: 6px;
+  }
+  .seg-filters button.active { background: #fff; color: var(--gray-900); box-shadow: var(--shadow-xs); }
+  .seg-filters .count {
+    font-size: 11px; font-weight: 500; padding: 1px 6px; border-radius: 9999px;
+    background: var(--gray-200); color: var(--gray-600);
+  }
+  .seg-filters button.active .count { background: var(--brand-50); color: var(--brand-500); }
+
+  /* Merchant row visuals */
+  .merch-name { display: flex; align-items: center; gap: 12px; min-width: 0; }
+  .merch-logo {
+    width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 13px; font-weight: 700; color: #fff; letter-spacing: -.01em;
+  }
+  .merch-logo.l1 { background: linear-gradient(135deg, #ff8a4c, #f04438); }
+  .merch-logo.l2 { background: linear-gradient(135deg, #1f7aec, #465fff); }
+  .merch-logo.l3 { background: linear-gradient(135deg, #12b76a, #027a48); }
+  .merch-logo.l4 { background: linear-gradient(135deg, #f79009, #b54708); }
+  .merch-logo.l5 { background: linear-gradient(135deg, #7a5af8, #6938ef); }
+  .merch-logo.l6 { background: linear-gradient(135deg, #ee46bc, #c11574); }
+  .merch-logo.l7 { background: linear-gradient(135deg, #06aed4, #0e7090); }
+  .merch-logo.l8 { background: linear-gradient(135deg, #344054, #1d2939); }
+  .merch-info { min-width: 0; }
+  .merch-info .nm { font-size: 14px; font-weight: 600; color: var(--gray-900); display: flex; align-items: center; gap: 6px; }
+  .merch-info .nm .verified { color: var(--brand-500); }
+  .merch-info .id { font-size: 12px; color: var(--gray-500); font-family: var(--font-mono); }
+
+  .tier { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; }
+  .tier .pip { width: 14px; height: 14px; border-radius: 4px; display: inline-flex; align-items: center; justify-content: center; color: #fff; font-size: 9px; font-weight: 700; }
+  .tier-1 .pip { background: var(--gray-400); }
+  .tier-2 .pip { background: var(--brand-400, #7d8cff); }
+  .tier-3 .pip { background: var(--brand-500); }
+  .tier-4 .pip { background: var(--success-500); }
+
+  .gmv-bar { width: 100%; max-width: 140px; height: 6px; background: var(--gray-100); border-radius: 4px; overflow: hidden; margin-top: 4px; }
+  .gmv-bar > span { display: block; height: 100%; background: var(--brand-500); border-radius: 4px; }
+  .gmv-cell { font-variant-numeric: tabular-nums; }
+  .gmv-cell .num { font-weight: 500; color: var(--gray-900); }
+  .gmv-cell .delta { font-size: 11px; color: var(--success-600); margin-left: 6px; }
+  .gmv-cell .delta.down { color: var(--error-600); }
+
+  .row-actions { display: inline-flex; gap: 4px; }
+  .icon-action {
+    width: 32px; height: 32px; border-radius: 8px; border: 1px solid var(--gray-200);
+    background: #fff; color: var(--gray-500); cursor: pointer;
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .icon-action:hover { background: var(--gray-50); color: var(--gray-700); }
+
+  .selection-bar {
+    display: none; align-items: center; gap: 12px;
+    background: var(--gray-900); color: #fff;
+    padding: 10px 14px; border-radius: 10px;
+    font-size: 13px; margin-bottom: 12px;
+  }
+  .selection-bar.show { display: flex; }
+  .selection-bar .count { font-weight: 600; }
+  .selection-bar .spacer { flex: 1; }
+  .selection-bar button {
+    height: 30px; padding: 0 12px; border-radius: 6px; border: 1px solid rgba(255,255,255,.18);
+    background: transparent; color: #fff; font-size: 12px; cursor: pointer;
+  }
+  .selection-bar button:hover { background: rgba(255,255,255,.08); }
+  .selection-bar button.danger { color: #ffb4a8; border-color: rgba(255,180,168,.35); }
+
+  /* Side rail (KYC queue + breakdown) */
+  .merch-aside { display: flex; flex-direction: column; gap: 16px; position: sticky; top: 88px; }
+
+  .kyc-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 12px; overflow: hidden; }
+  .kyc-head { padding: 16px 18px; border-bottom: 1px solid var(--gray-100); display: flex; align-items: center; justify-content: space-between; }
+  .kyc-head h3 { margin: 0; font-size: 14px; font-weight: 600; color: var(--gray-900); }
+  .kyc-head .count {
+    font-size: 11px; font-weight: 600;
+    background: var(--warning-50); color: var(--warning-700);
+    padding: 3px 8px; border-radius: 9999px;
+  }
+  .kyc-list { display: flex; flex-direction: column; }
+  .kyc-item {
+    padding: 12px 18px; border-bottom: 1px solid var(--gray-100);
+    display: flex; gap: 10px; cursor: pointer; transition: background .15s;
+  }
+  .kyc-item:hover { background: var(--gray-50); }
+  .kyc-item:last-child { border-bottom: none; }
+  .kyc-item .av {
+    width: 32px; height: 32px; border-radius: 8px; flex-shrink: 0;
+    display: inline-flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff;
+  }
+  .kyc-item .meta { min-width: 0; flex: 1; }
+  .kyc-item .nm { font-size: 13px; font-weight: 500; color: var(--gray-900); }
+  .kyc-item .sub { font-size: 12px; color: var(--gray-500); margin-top: 2px; }
+  .kyc-item .age { font-size: 11px; color: var(--gray-400); margin-top: 4px; display: flex; align-items: center; gap: 4px; }
+  .kyc-item .age.warn { color: var(--error-600); font-weight: 500; }
+
+  .kyc-foot { padding: 12px 18px; border-top: 1px solid var(--gray-100); }
+  .kyc-foot a { color: var(--brand-500); font-size: 13px; font-weight: 500; text-decoration: none; }
+
+  /* Category breakdown */
+  .cat-card { background: #fff; border: 1px solid var(--gray-200); border-radius: 12px; padding: 16px 18px; }
+  .cat-card h3 { margin: 0 0 4px; font-size: 14px; font-weight: 600; color: var(--gray-900); }
+  .cat-card .csub { font-size: 12px; color: var(--gray-500); margin-bottom: 14px; }
+  .cat-row { display: grid; grid-template-columns: 1fr auto; gap: 6px 10px; align-items: center; padding: 8px 0; }
+  .cat-row .lbl { font-size: 13px; color: var(--gray-700); display: flex; align-items: center; gap: 8px; }
+  .cat-row .lbl .swatch { width: 8px; height: 8px; border-radius: 2px; }
+  .cat-row .pct { font-size: 12px; color: var(--gray-500); font-variant-numeric: tabular-nums; }
+  .cat-row .bar { grid-column: 1 / -1; height: 6px; background: var(--gray-100); border-radius: 4px; overflow: hidden; }
+  .cat-row .bar > span { display: block; height: 100%; border-radius: 4px; }
+
+  /* Density toggle */
+  .density-toggle { display: inline-flex; gap: 2px; padding: 3px; background: var(--gray-100); border-radius: 8px; }
+  .density-toggle button {
+    width: 30px; height: 28px; border: none; background: transparent;
+    border-radius: 5px; cursor: pointer; color: var(--gray-500);
+    display: inline-flex; align-items: center; justify-content: center;
+  }
+  .density-toggle button.active { background: #fff; color: var(--gray-900); box-shadow: var(--shadow-xs); }
+
+  /* Compact header band above table */
+  .table-head-band {
+    padding: 16px 20px; border-bottom: 1px solid var(--gray-200);
+    display: flex; flex-direction: column; gap: 12px;
+  }
+  .thb-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+  .thb-bottom { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+  .thb-search {
+    position: relative; flex: 1; min-width: 240px; max-width: 360px;
+  }
+  .thb-search input {
+    width: 100%; height: 36px; padding: 0 12px 0 36px; font-size: 13px;
+    border: 1px solid var(--gray-200); border-radius: 8px; background: #fff;
+  }
+  .thb-search svg { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--gray-400); }
+  .thb-meta { font-size: 12px; color: var(--gray-500); margin-left: auto; }
+
+</style>
+</head>
+<body>
+<div class="app">
+
+  <aside class="side">
+    <div class="logo"><img src="assets/logo-light.svg" alt="HiveSpace"></div>
+
+    <div>
+      <div class="nav-head">Platform</div>
+      <div class="nav-list">
+        <div class="hs-sidebar-item active" data-view-link="dashboard"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>Dashboard</div>
+        <div class="hs-sidebar-item" data-view-link="accounts"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>Accounts<span style="margin-left:auto" class="hs-badge sm hs-badge-primary">25</span></div>
+        <div class="hs-sidebar-item" data-view-link="buyers"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>Buyers<span style="margin-left:auto" class="hs-badge sm hs-badge-success">842k</span></div>
+        <div class="hs-sidebar-item" data-view-link="merchants"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-7L9 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>Merchants<span style="margin-left:auto" class="hs-badge sm hs-badge-light">12,487</span></div>        <div class="hs-sidebar-item" data-view-link="audit-log"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>Audit log<span style="margin-left:auto" class="hs-badge sm hs-badge-error">3</span></div>
+        <div class="hs-sidebar-item" data-view-link="configuration"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>Configuration</div>
+      </div>
+    </div>
+
+    <div>
+      <div class="nav-head">Compliance</div>
+      <div class="nav-list">
+        <div class="hs-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>KYC / KYB queue<span style="margin-left:auto" class="hs-badge sm hs-badge-warning">14</span></div>
+        <div class="hs-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>Disputes</div>
+        <div class="hs-sidebar-item"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>Scheduled jobs</div>
+      </div>
+    </div>
+
+    <div style="margin-top:auto; padding: 16px 12px; background: var(--brand-50); border-radius: 12px;">
+      <div style="font-size:13px; font-weight:600; color: var(--brand-700); margin-bottom:4px;">Platform healthy</div>
+      <div style="font-size:12px; color: var(--gray-600); line-height:1.5;">All regions reporting &lt;120ms p95. Last audit · 2 min ago.</div>
+    </div>
+  </aside>
+
+  <div style="display:flex; flex-direction:column; min-width:0;">
+    <header class="topbar">
+      <div class="search">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input placeholder="Search accounts, merchants, orders, audit events…">
+      </div>
+      <div class="topbar-actions">
+        <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg></button>
+        <button class="icon-btn"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg><span class="dot"></span></button>
+        <span style="font-size:13px;color:var(--gray-400);margin:0 4px;">EN</span>
+        <div style="display:flex; align-items:center; gap:10px; padding-left:12px; border-left:1px solid var(--gray-200);">
+          <span class="hs-avatar sm" style="background:#dde9ff;color:#2a31d8">AT</span>
+          <div style="line-height:1.2;">
+            <div style="font-size:13px;font-weight:600;color:var(--gray-900);">Anh Tuấn</div>
+            <div style="font-size:11px;color:var(--gray-500);">System admin</div>
+          </div>
+        </div>
+      </div>
+    </header>
+    <div class="view active" data-view="dashboard"><main class="main" data-view-main="dashboard">
+      <div class="page-head">
+        <div class="page-head-top">
+          <h1 class="page-title">Platform overview</h1>
+          <div class="hs-crumb page-crumb">
+            <a href="#">Dashboard</a><span class="sep">/</span>
+            <span class="current">Platform overview</span>
+          </div>
+        </div>
+        <div class="page-head-meta">
+          <p class="page-sub">High-level health for merchants, GMV, disputes, and KYC across the platform.</p>
+          <div class="page-head-actions">
+            <button class="hs-btn hs-btn-outline">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export audit
+            </button>
+            <button class="hs-btn hs-btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Invite admin
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="label">Active merchants</div>
+          <div class="val">12,487</div>
+          <span class="delta up">↑ 4.8% · 7d</span>
+        </div>
+        <div class="kpi">
+          <div class="label">GMV · last 24h</div>
+          <div class="val">₫8.42B</div>
+          <span class="delta up">↑ 12.1% · vs yesterday</span>
+        </div>
+        <div class="kpi">
+          <div class="label">Open disputes</div>
+          <div class="val">47</div>
+          <span class="delta down">↑ 9 since Mon</span>
+        </div>
+        <div class="kpi">
+          <div class="label">KYC pending</div>
+          <div class="val">14</div>
+          <span class="delta up" style="background:var(--warning-50);color:var(--warning-700);">Review today</span>
+        </div>
+      </div>
+
+      <div class="split">
+        <div class="hs-card">
+          <div class="hs-card-header">
+            <div>
+              <h3 class="hs-card-title">GMV · last 30 days</h3>
+              <div style="font-size:13px;color:var(--gray-500);margin-top:2px;">Hourly buckets · all regions</div>
+            </div>
+            <div style="display:flex;gap:8px;">
+              <button class="hs-btn sm hs-btn-outline">7D</button>
+              <button class="hs-btn sm hs-btn-primary">30D</button>
+              <button class="hs-btn sm hs-btn-outline">QTD</button>
+            </div>
+          </div>
+          <div class="chart-wrap">
+            <div class="chart">
+              <svg viewBox="0 0 600 220" preserveAspectRatio="none">
+                <defs>
+                  <linearGradient id="fill" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="0%" stop-color="#465fff" stop-opacity="0.25"/>
+                    <stop offset="100%" stop-color="#465fff" stop-opacity="0"/>
+                  </linearGradient>
+                </defs>
+                <path d="M0,180 C40,160 80,120 120,130 C160,140 200,90 240,95 C280,100 320,60 360,70 C400,80 440,50 480,30 C520,15 560,45 600,25 L600,220 L0,220 Z" fill="url(#fill)"/>
+                <path d="M0,180 C40,160 80,120 120,130 C160,140 200,90 240,95 C280,100 320,60 360,70 C400,80 440,50 480,30 C520,15 560,45 600,25" fill="none" stroke="#465fff" stroke-width="2.5"/>
+                <circle cx="480" cy="30" r="5" fill="#465fff"/>
+                <circle cx="480" cy="30" r="10" fill="#465fff" opacity="0.2"/>
+              </svg>
+            </div>
+          </div>
+        </div>
+
+        <div class="hs-card">
+          <div class="hs-card-header">
+            <h3 class="hs-card-title">Recent activity</h3>
+            <a href="#" style="font-size:13px;color:var(--brand-500);text-decoration:none;font-weight:500;">View all</a>
+          </div>
+          <div class="hs-card-body" style="padding-top:8px;">
+            <div class="act-item">
+              <span class="act-dot" style="background:var(--success-50);color:var(--success-600);">✓</span>
+              <div>
+                <div class="act-text"><b>Linh Phạm</b> approved 3 new merchants</div>
+                <div class="act-time">2 min ago</div>
+              </div>
+            </div>
+            <div class="act-item">
+              <span class="act-dot" style="background:var(--warning-50);color:var(--warning-700);">!</span>
+              <div>
+                <div class="act-text">KYB flagged for <b>Bánh Cuốn Tây Hồ JSC</b> — mismatched tax ID</div>
+                <div class="act-time">28 min ago</div>
+              </div>
+            </div>
+            <div class="act-item">
+              <span class="act-dot" style="background:var(--brand-50);color:var(--brand-700);">↻</span>
+              <div>
+                <div class="act-text">Nightly reconciliation finished · <b>1,284,219</b> ledger rows</div>
+                <div class="act-time">3h ago</div>
+              </div>
+            </div>
+            <div class="act-item">
+              <span class="act-dot" style="background:var(--error-50);color:var(--error-600);">✕</span>
+              <div>
+                <div class="act-text">Webhook failed · merchant <b>#m-8812</b> (5× retries)</div>
+                <div class="act-time">4h ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="hs-card" style="padding:0;">
+        <div class="toolbar" style="padding:16px 20px; border-bottom:1px solid var(--gray-200); margin:0;">
+          <div>
+            <h3 class="hs-card-title" style="margin:0;">Recent admin sign-ins</h3>
+            <div style="font-size:12px; color:var(--gray-500); margin-top:2px;">Last 24h · staff activity at a glance</div>
+          </div>
+          <div class="filter-row">
+            <button class="hs-btn sm hs-btn-outline" data-deeplink="accounts">View all admins →</button>
+          </div>
+        </div>
+        <div style="padding:6px 8px;">
+          <style>
+            .recent-row { display:grid; grid-template-columns: 36px 1fr auto auto; gap:14px; align-items:center; padding:10px 12px; border-radius:8px; cursor:pointer; }
+            .recent-row:hover { background: var(--gray-50); }
+            .recent-row .nm { font-size:13px; font-weight:500; color: var(--gray-900); }
+            .recent-row .em { font-size:12px; color: var(--gray-500); }
+            .recent-row .ls { font-size:12px; color: var(--gray-500); font-variant-numeric: tabular-nums; white-space:nowrap; }
+            .recent-row .pill { display:inline-flex; align-items:center; gap:5px; padding:2px 9px; border-radius:9999px; font-size:11px; font-weight:600; }
+          </style>
+          <div class="recent-row" data-deeplink="accounts">
+            <span class="hs-avatar sm" style="background:#465fff;color:#fff;">NT</span>
+            <div><div class="nm">Nguyễn Anh Tuấn</div><div class="em">anhtuan@hivespace.vn</div></div>
+            <span class="pill" style="background: rgba(122,90,248,.12); color:#6938ef;"><span style="width:6px;height:6px;border-radius:9999px;background:#7a5af8;"></span>Super Admin</span>
+            <span class="ls">3m ago · Hà Nội</span>
+          </div>
+          <div class="recent-row" data-deeplink="accounts">
+            <span class="hs-avatar sm" style="background:#7a5af8;color:#fff;">TM</span>
+            <div><div class="nm">Trần Thu Mai</div><div class="em">thumai@hivespace.vn</div></div>
+            <span class="pill" style="background: var(--warning-50); color: var(--warning-700);"><span style="width:6px;height:6px;border-radius:9999px;background:var(--warning-500);"></span>Compliance</span>
+            <span class="ls">1h ago · Hà Nội</span>
+          </div>
+          <div class="recent-row" data-deeplink="accounts">
+            <span class="hs-avatar sm" style="background:#ee46bc;color:#fff;">PQ</span>
+            <div><div class="nm">Phạm Quốc Huy</div><div class="em">quochuy@hivespace.vn</div></div>
+            <span class="pill" style="background: var(--success-50); color: var(--success-700);"><span style="width:6px;height:6px;border-radius:9999px;background:var(--success-500);"></span>Finance</span>
+            <span class="ls">18m ago · TP. HCM</span>
+          </div>
+          <div class="recent-row" data-deeplink="accounts">
+            <span class="hs-avatar sm" style="background:#f79009;color:#fff;">LH</span>
+            <div><div class="nm">Lê Hồng Hải</div><div class="em">honghai@hivespace.vn</div></div>
+            <span class="pill" style="background: rgba(238,70,188,.12); color:#c11574;"><span style="width:6px;height:6px;border-radius:9999px;background:#ee46bc;"></span>Risk</span>
+            <span class="ls">45m ago · Đà Nẵng</span>
+          </div>
+          <div class="recent-row" data-deeplink="accounts">
+            <span class="hs-avatar sm" style="background:#0ba5ec;color:#fff;">ĐT</span>
+            <div><div class="nm">Đặng Tấn Dũng</div><div class="em">dangtan@hivespace.vn</div></div>
+            <span class="pill" style="background: var(--warning-50); color: var(--warning-700);"><span style="width:6px;height:6px;border-radius:9999px;background:var(--warning-500);"></span>Locked · 5 attempts</span>
+            <span class="ls">36h ago · Hà Nội</span>
+          </div>
+        </div>
+        <div class="footer-bar" style="border-top:1px solid var(--gray-200);">
+          <div>21 active admins · 3 pending invites · <a href="#accounts" data-deeplink="accounts" style="color:var(--brand-600); font-weight:500;">manage all →</a></div>
+        </div>
+      </div>
+
+      <div class="code">
+        admin-portal · layout: AdminLayout → PageBreadcrumb → ComponentCard(fullHeight) → table + pagination · header: AppHeader + HeaderLogo + UserMenu
+      </div>
+    </main></div>
+    <!-- ====================================================
+         ACCOUNTS VIEW
+         ==================================================== -->
+    <div class="view" data-view="accounts" data-screen-label="Accounts"><main class="main ac-main" data-view-main="accounts">
+      <div class="page-head">
+        <div class="page-head-top">
+          <h1 class="page-title">Admin accounts</h1>
+          <div class="hs-crumb page-crumb">
+            <a href="#" data-view-link="dashboard">Dashboard</a><span class="sep">/</span>
+            <span class="current">Admin accounts</span>
+          </div>
+        </div>
+        <div class="page-head-meta">
+          <p class="page-sub">Manage HiveSpace platform staff, permission scopes, 2FA coverage, and sign-in activity.</p>
+          <div class="ac-head-actions">
+            <button class="hs-btn sm hs-btn-outline">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export CSV
+            </button>
+            <button class="hs-btn sm hs-btn-primary" id="ac-invite">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Invite admin
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="ac-stats">
+        <div class="ac-stat">
+          <div class="lbl">Total accounts</div>
+          <div class="val" id="ac-stat-total">25</div>
+          <div class="sub"><span class="delta up">+3</span> this month</div>
+          <span class="stat-icon brand"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg></span>
+        </div>
+        <div class="ac-stat">
+          <div class="lbl">Active</div>
+          <div class="val" id="ac-stat-active">21</div>
+          <div class="sub">Signed in last 30d</div>
+          <span class="stat-icon success"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg></span>
+        </div>
+        <div class="ac-stat">
+          <div class="lbl">Pending invites</div>
+          <div class="val" id="ac-stat-invited">3</div>
+          <div class="sub">Awaiting first login</div>
+          <span class="stat-icon warn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>
+        </div>
+        <div class="ac-stat">
+          <div class="lbl">Needs attention</div>
+          <div class="val" id="ac-stat-flagged">5</div>
+          <div class="sub">2FA off · locked · suspended</div>
+          <span class="stat-icon error"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg></span>
+        </div>
+      </div>
+
+      <!-- Layout -->
+      <div class="ac-layout">
+        <div id="ac-content" class="ac-content" data-drawer="closed">
+          <div style="min-width:0;">
+            <!-- Filters -->
+            <div class="ac-filters">
+              <div class="ac-search">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input id="ac-q" type="search" placeholder="Search by name, email, city or IP…">
+              </div>
+              <div class="ac-seg" role="tablist" aria-label="Status filter">
+                <button class="active" data-status="all">All</button>
+                <button data-status="active">Active</button>
+                <button data-status="invited">Invited</button>
+                <button data-status="suspended">Suspended</button>
+                <button data-status="locked">Locked</button>
+              </div>
+            </div>
+
+            <!-- Table -->
+            <div class="ac-table-card" style="margin-top:12px;">
+              <div class="ac-table-head">
+                <div><b id="ac-count">25</b> accounts</div>
+                <div style="font-family: var(--font-mono); font-size:11px;">Sorted by last seen</div>
+              </div>
+              <table class="ac-table">
+                <thead>
+                  <tr>
+                    <th><input type="checkbox" class="ac-cb" id="ac-sel-all" aria-label="Select all"></th>
+                    <th>Account</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>2FA</th>
+                    <th>Last seen</th>
+                    <th>IP</th>
+                    <th></th>
+                  </tr>
+                </thead>
+                <tbody id="ac-tbody"></tbody>
+              </table>
+              <div class="ac-table-foot">
+                <div>Showing <b style="color: var(--gray-900);" id="ac-count-foot">25</b> of 25</div>
+                <div style="display:flex; gap:6px;">
+                  <button class="ac-icon-btn" disabled style="opacity:.4;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg></button>
+                  <button class="ac-icon-btn" disabled style="opacity:.4;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg></button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Bulk bar -->
+            <div id="ac-bulk" class="ac-bulk" style="margin-top:12px;">
+              <span class="count" id="ac-bulk-count">0 selected</span>
+              <span class="sub">Bulk actions are audited and require an admin reason.</span>
+              <button class="ghost" id="ac-bulk-clear">Clear</button>
+              <button class="ghost" id="ac-bulk-reset">Send password reset</button>
+              <button class="danger" id="ac-bulk-suspend">Suspend</button>
+            </div>
+          </div>
+
+          <!-- Drawer -->
+          <aside id="ac-drawer" class="ac-drawer" aria-label="Account details">
+            <div id="ac-drawer-head" class="ac-drawer-head"></div>
+            <div class="ac-drawer-tabs">
+              <button class="active" data-ac-drawer-tab="overview">Overview</button>
+              <button data-ac-drawer-tab="perms">Permissions</button>
+              <button data-ac-drawer-tab="activity">Activity</button>
+            </div>
+            <div class="ac-drawer-body">
+              <div class="ac-drawer-pane active" data-ac-drawer-pane="overview" id="ac-pane-overview"></div>
+              <div class="ac-drawer-pane" data-ac-drawer-pane="perms" id="ac-pane-perms"></div>
+              <div class="ac-drawer-pane" data-ac-drawer-pane="activity" id="ac-pane-activity"></div>
+            </div>
+            <div id="ac-drawer-foot" class="ac-drawer-foot"></div>
+          </aside>
+        </div>
+
+        <!-- Roles rail -->
+        <aside class="ac-rail">
+          <div class="ac-rail-head">
+            <h3>Roles</h3>
+            <span class="meta">6 defined</span>
+          </div>
+          <div class="ac-rail-list" id="ac-rail-list"></div>
+          <div class="ac-rail-foot">
+            <button class="hs-btn sm hs-btn-outline" style="width:100%;">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09A1.65 1.65 0 0 0 4.6 9 1.65 1.65 0 0 0 4.27 7.18l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.6a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+              Manage role permissions
+            </button>
+          </div>
+        </aside>
+      </div>
+
+      <!-- Invite modal -->
+      <div id="ac-invite-modal" class="ac-modal-overlay" role="dialog" aria-modal="true" aria-labelledby="ac-invite-title">
+        <div class="ac-modal">
+          <div class="ac-modal-head">
+            <h3 id="ac-invite-title">Invite admin to HiveSpace</h3>
+            <p>They will receive a magic-link email and must enable 2FA on first sign-in.</p>
+          </div>
+          <div class="ac-modal-body">
+            <div class="ac-invite-row">
+              <div class="field">
+                <label for="ac-inv-name">Full name</label>
+                <input id="ac-inv-name" type="text" placeholder="Nguyễn Văn A">
+              </div>
+              <div class="field">
+                <label for="ac-inv-email">Work email</label>
+                <input id="ac-inv-email" type="email" placeholder="vana@hivespace.vn">
+              </div>
+            </div>
+            <div class="ac-invite-row">
+              <div class="field">
+                <label for="ac-inv-role">Role</label>
+                <select id="ac-inv-role">
+                  <option value="support">Customer Support</option>
+                  <option value="finance">Finance</option>
+                  <option value="compliance">Compliance</option>
+                  <option value="risk">Risk</option>
+                  <option value="admin">Platform Admin</option>
+                  <option value="superadmin">Super Admin</option>
+                </select>
+              </div>
+              <div class="field">
+                <label for="ac-inv-expires">Invite expires</label>
+                <select id="ac-inv-expires">
+                  <option>24 hours</option>
+                  <option selected>3 days</option>
+                  <option>7 days</option>
+                </select>
+              </div>
+            </div>
+          </div>
+          <div class="ac-modal-foot">
+            <button class="hs-btn sm hs-btn-outline" data-close>Cancel</button>
+            <button class="hs-btn sm hs-btn-primary" id="ac-invite-send">Send invitation</button>
+          </div>
+        </div>
+      </div>
+    </main></div>
+
+    <div class="view" data-view="buyers" data-screen-label="Buyers"><main class="main cu-main" data-view-main="buyers">
+      <div class="page-head">
+        <div class="page-head-top">
+          <h1 class="page-title">Buyer management</h1>
+          <div class="hs-crumb page-crumb">
+            <a href="#" data-view-link="dashboard">Dashboard</a><span class="sep">/</span>
+            <span class="current">Buyer management</span>
+          </div>
+        </div>
+        <div class="page-head-meta">
+          <p class="page-sub">Monitor buyer growth, engagement, verification health, and recent account activity.</p>
+          <div class="page-head-actions">
+            <span class="cu-mark">ACTIVE</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="cu-stats" style="margin-top:20px">
+        <div class="cu-stat">
+          <div class="lbl">Total Buyers</div>
+          <div class="val" id="bu-stat-total">0</div>
+          <div class="sub">Registered shoppers</div>
+          <div class="stat-icon purple">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+          </div>
+        </div>
+        <div class="cu-stat">
+          <div class="lbl">Active (30d)</div>
+          <div class="val" id="bu-stat-active">0</div>
+          <div class="sub"><span class="delta up">▲ 12.4%</span> vs LY</div>
+          <div class="stat-icon success">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+          </div>
+        </div>
+        <div class="cu-stat">
+          <div class="lbl">New Today</div>
+          <div class="val" id="bu-stat-new">0</div>
+          <div class="sub">Across all regions</div>
+          <div class="stat-icon brand">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="8.5" cy="7" r="4"/><line x1="20" y1="8" x2="20" y2="14"/><line x1="17" y1="11" x2="23" y2="11"/></svg>
+          </div>
+        </div>
+        <div class="cu-stat">
+          <div class="lbl">Suspended</div>
+          <div class="val" id="bu-stat-suspended">0</div>
+          <div class="sub" style="color:var(--error-600)">Restricted accounts</div>
+          <div class="stat-icon error">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>
+          </div>
+        </div>
+        <div class="cu-stat">
+          <div class="lbl">Avg. LTV</div>
+          <div class="val">₫1.2M</div>
+          <div class="sub">Lifetime value</div>
+          <div class="stat-icon warn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><line x1="12" y1="6" x2="12" y2="18"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div class="cu-filters" style="margin-top:16px">
+        <div class="cu-search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="bu-q" placeholder="Search buyers by name, email, location...">
+        </div>
+        <div class="cu-seg">
+          <button class="active" data-status="all">All</button>
+          <button data-status="active">Active</button>
+          <button data-status="unverified">Unverified</button>
+          <button data-status="suspended">Suspended</button>
+          <button data-status="dormant">Dormant</button>
+        </div>
+        <div style="margin-left:auto; display:flex; gap:8px;">
+          <button class="hs-btn sm hs-btn-outline">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+            Export
+          </button>
+        </div>
+      </div>
+
+      <div class="cu-table-card" style="margin-top:16px">
+        <div class="cu-table-head">
+          <div>Displaying all registered buyers</div>
+          <div class="cu-pager">
+            <button disabled>&lt;</button>
+            <button class="active">1</button>
+            <button>2</button>
+            <button>3</button>
+            <button>...</button>
+            <button>12</button>
+            <button>&gt;</button>
+          </div>
+        </div>
+        <table class="cu-table">
+          <thead>
+            <tr>
+              <th>Buyer</th>
+              <th>Status</th>
+              <th>Orders</th>
+              <th>Total Spend</th>
+              <th>Last Active</th>
+              <th>Join Date</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="bu-tbody"></tbody>
+        </table>
+      </div>
+    </main></div>
+
+    <div class="view" data-view="merchants" data-screen-label="Merchants"><main class="main" data-view-main="merchants">
+      <!-- ====== Page header ====== -->
+      <div class="page-head">
+        <div class="page-head-top">
+          <h1 class="page-title">Merchants</h1>
+          <div class="hs-crumb page-crumb">
+            <a href="#" data-view-link="dashboard">Dashboard</a><span class="sep">/</span>
+            <span class="current">Merchants</span>
+          </div>
+        </div>
+        <div class="page-head-meta">
+          <p class="page-sub">12,487 active sellers across 38 categories. Approve onboarding, manage tiers, and monitor GMV health.</p>
+          <div class="page-head-actions">
+            <button class="hs-btn hs-btn-outline">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export CSV
+            </button>
+            <button class="hs-btn hs-btn-outline">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              Send announcement
+            </button>
+            <button class="hs-btn hs-btn-primary">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Invite merchant
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== KPI strip ====== -->
+      <div class="merch-kpis">
+        <div class="merch-kpi">
+          <div class="lbl">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 7h-7L9 3H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2z"/></svg>
+            Active merchants
+          </div>
+          <div class="val">12,487</div>
+          <div class="sub up">↑ 4.8% · 7d</div>
+        </div>
+        <div class="merch-kpi">
+          <div class="lbl">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2v20M5 5a4 4 0 0 0 0 8h7a4 4 0 0 1 0 8H4"/></svg>
+            GMV · 7d
+          </div>
+          <div class="val">₫58.2B</div>
+          <div class="sub up">↑ 12.1% vs last week</div>
+        </div>
+        <div class="merch-kpi">
+          <div class="lbl">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+            Pending KYB
+          </div>
+          <div class="val">14</div>
+          <div class="sub" style="color:var(--warning-700);">3 over 48h SLA</div>
+        </div>
+        <div class="merch-kpi">
+          <div class="lbl">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Suspended
+          </div>
+          <div class="val">38</div>
+          <div class="sub down">↑ 5 this month</div>
+        </div>
+        <div class="merch-kpi">
+          <div class="lbl">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+            Avg. activation
+          </div>
+          <div class="val">2.4 <span style="font-size:14px; color:var(--gray-500); font-weight:500;">days</span></div>
+          <div class="sub up">↓ 0.3d faster</div>
+        </div>
+      </div>
+
+      <!-- ====== Two column layout: table + side rail ====== -->
+      <div class="merch-layout">
+
+        <!-- ===== Merchants table ===== -->
+        <div class="hs-card">
+          <div class="table-head-band">
+            <div class="thb-top">
+              <div class="seg-filters" role="tablist">
+                <button class="active">All <span class="count">12,487</span></button>
+                <button>Active <span class="count">11,920</span></button>
+                <button>Pending <span class="count">14</span></button>
+                <button>Suspended <span class="count">38</span></button>
+                <button>Archived <span class="count">515</span></button>
+              </div>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div class="density-toggle" role="group" aria-label="Row density">
+                  <button title="Comfortable"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="6" x2="20" y2="6"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="18" x2="20" y2="18"/></svg></button>
+                  <button class="active" title="Default"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="4" y1="5" x2="20" y2="5"/><line x1="4" y1="9" x2="20" y2="9"/><line x1="4" y1="13" x2="20" y2="13"/><line x1="4" y1="17" x2="20" y2="17"/></svg></button>
+                </div>
+                <button class="hs-btn sm hs-btn-outline">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                  Columns
+                </button>
+              </div>
+            </div>
+
+            <div class="thb-bottom">
+              <div class="thb-search">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                <input placeholder="Search by name, ID, owner email…">
+              </div>
+              <select class="hs-select" style="height:36px; font-size:13px; width:auto;">
+                <option>All categories</option>
+                <option>Food &amp; beverage</option>
+                <option>Fashion</option>
+                <option>Electronics</option>
+                <option>Health &amp; beauty</option>
+              </select>
+              <select class="hs-select" style="height:36px; font-size:13px; width:auto;">
+                <option>All tiers</option>
+                <option>Tier 1 — Starter</option>
+                <option>Tier 2 — Growth</option>
+                <option>Tier 3 — Pro</option>
+                <option>Tier 4 — Enterprise</option>
+              </select>
+              <select class="hs-select" style="height:36px; font-size:13px; width:auto;">
+                <option>All regions</option>
+                <option>Hà Nội</option>
+                <option>TP. Hồ Chí Minh</option>
+                <option>Đà Nẵng</option>
+                <option>Cross-border</option>
+              </select>
+              <button class="hs-btn sm hs-btn-outline">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                More filters
+              </button>
+              <span class="thb-meta">Sorted by GMV · last 30d</span>
+            </div>
+
+            <div class="selection-bar" id="merch-sel-bar">
+              <span class="count">0 selected</span>
+              <span style="color: rgba(255,255,255,.5);">·</span>
+              <button>Move to tier…</button>
+              <button>Add tag</button>
+              <button>Send notice</button>
+              <span class="spacer"></span>
+              <button class="danger">Suspend</button>
+              <button id="merch-sel-clear">Clear</button>
+            </div>
+          </div>
+
+          <table class="hs-table">
+            <thead>
+              <tr>
+                <th style="width:36px;"><input type="checkbox" id="merch-sel-all"></th>
+                <th>Merchant</th>
+                <th>Status</th>
+                <th>Tier</th>
+                <th>Category</th>
+                <th>GMV · 30d</th>
+                <th>Orders</th>
+                <th>Joined</th>
+                <th style="text-align:right;">Actions</th>
+              </tr>
+            </thead>
+            <tbody id="merch-tbody">
+              <tr>
+                <td><input type="checkbox" class="merch-row-cb"></td>
+                <td>
+                  <div class="merch-name">
+                    <span class="merch-logo l1">BC</span>
+                    <div class="merch-info">
+                      <div class="nm">Bánh Cuốn Tây Hồ <svg class="verified" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                      <div class="id">m_8a3f12 · Hà Nội</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="hs-badge sm hs-badge-success"><span class="stat-dot" style="background:var(--success-500)"></span>Active</span></td>
+                <td><span class="tier tier-4"><span class="pip">4</span>Enterprise</span></td>
+                <td>Food &amp; beverage</td>
+                <td>
+                  <div class="gmv-cell">
+                    <div><span class="num">₫1.42B</span><span class="delta">↑ 18%</span></div>
+                    <div class="gmv-bar"><span style="width:92%"></span></div>
+                  </div>
+                </td>
+                <td style="font-variant-numeric:tabular-nums;">8,194</td>
+                <td>Apr 2022</td>
+                <td style="text-align:right;">
+                  <div class="row-actions">
+                    <button class="icon-action" title="View"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-action" title="More"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><input type="checkbox" class="merch-row-cb"></td>
+                <td>
+                  <div class="merch-name">
+                    <span class="merch-logo l2">SG</span>
+                    <div class="merch-info">
+                      <div class="nm">Saigon Threads Co. <svg class="verified" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                      <div class="id">m_4c8b91 · TP.HCM</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="hs-badge sm hs-badge-success"><span class="stat-dot" style="background:var(--success-500)"></span>Active</span></td>
+                <td><span class="tier tier-3"><span class="pip">3</span>Pro</span></td>
+                <td>Fashion</td>
+                <td>
+                  <div class="gmv-cell">
+                    <div><span class="num">₫812M</span><span class="delta">↑ 9%</span></div>
+                    <div class="gmv-bar"><span style="width:60%"></span></div>
+                  </div>
+                </td>
+                <td style="font-variant-numeric:tabular-nums;">4,217</td>
+                <td>Jul 2023</td>
+                <td style="text-align:right;">
+                  <div class="row-actions">
+                    <button class="icon-action" title="View"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-action" title="More"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><input type="checkbox" class="merch-row-cb"></td>
+                <td>
+                  <div class="merch-name">
+                    <span class="merch-logo l3">NV</span>
+                    <div class="merch-info">
+                      <div class="nm">Nông Việt Organic</div>
+                      <div class="id">m_7d2a45 · Đà Lạt</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="hs-badge sm hs-badge-success"><span class="stat-dot" style="background:var(--success-500)"></span>Active</span></td>
+                <td><span class="tier tier-3"><span class="pip">3</span>Pro</span></td>
+                <td>Grocery</td>
+                <td>
+                  <div class="gmv-cell">
+                    <div><span class="num">₫648M</span><span class="delta down">↓ 3%</span></div>
+                    <div class="gmv-bar"><span style="width:48%; background:var(--warning-500);"></span></div>
+                  </div>
+                </td>
+                <td style="font-variant-numeric:tabular-nums;">2,891</td>
+                <td>Mar 2024</td>
+                <td style="text-align:right;">
+                  <div class="row-actions">
+                    <button class="icon-action" title="View"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-action" title="More"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><input type="checkbox" class="merch-row-cb"></td>
+                <td>
+                  <div class="merch-name">
+                    <span class="merch-logo l5">HX</span>
+                    <div class="merch-info">
+                      <div class="nm">Hex Studio</div>
+                      <div class="id">m_2e9c30 · TP.HCM</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="hs-badge sm hs-badge-warning"><span class="stat-dot" style="background:var(--warning-500)"></span>Review</span></td>
+                <td><span class="tier tier-2"><span class="pip">2</span>Growth</span></td>
+                <td>Electronics</td>
+                <td>
+                  <div class="gmv-cell">
+                    <div><span class="num">₫421M</span><span class="delta">↑ 4%</span></div>
+                    <div class="gmv-bar"><span style="width:32%"></span></div>
+                  </div>
+                </td>
+                <td style="font-variant-numeric:tabular-nums;">1,508</td>
+                <td>Sep 2024</td>
+                <td style="text-align:right;">
+                  <div class="row-actions">
+                    <button class="icon-action" title="View"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-action" title="More"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><input type="checkbox" class="merch-row-cb"></td>
+                <td>
+                  <div class="merch-name">
+                    <span class="merch-logo l6">LM</span>
+                    <div class="merch-info">
+                      <div class="nm">La Maison Beauté <svg class="verified" width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M9 16.17 4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></div>
+                      <div class="id">m_9b1f08 · Hà Nội</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="hs-badge sm hs-badge-success"><span class="stat-dot" style="background:var(--success-500)"></span>Active</span></td>
+                <td><span class="tier tier-3"><span class="pip">3</span>Pro</span></td>
+                <td>Health &amp; beauty</td>
+                <td>
+                  <div class="gmv-cell">
+                    <div><span class="num">₫389M</span><span class="delta">↑ 22%</span></div>
+                    <div class="gmv-bar"><span style="width:28%"></span></div>
+                  </div>
+                </td>
+                <td style="font-variant-numeric:tabular-nums;">3,042</td>
+                <td>Feb 2024</td>
+                <td style="text-align:right;">
+                  <div class="row-actions">
+                    <button class="icon-action" title="View"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-action" title="More"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><input type="checkbox" class="merch-row-cb"></td>
+                <td>
+                  <div class="merch-name">
+                    <span class="merch-logo l4">PH</span>
+                    <div class="merch-info">
+                      <div class="nm">Phở Hà Nội Express</div>
+                      <div class="id">m_5a7e22 · Hà Nội</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="hs-badge sm hs-badge-success"><span class="stat-dot" style="background:var(--success-500)"></span>Active</span></td>
+                <td><span class="tier tier-2"><span class="pip">2</span>Growth</span></td>
+                <td>Food &amp; beverage</td>
+                <td>
+                  <div class="gmv-cell">
+                    <div><span class="num">₫284M</span><span class="delta">↑ 7%</span></div>
+                    <div class="gmv-bar"><span style="width:21%"></span></div>
+                  </div>
+                </td>
+                <td style="font-variant-numeric:tabular-nums;">5,718</td>
+                <td>Aug 2023</td>
+                <td style="text-align:right;">
+                  <div class="row-actions">
+                    <button class="icon-action" title="View"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-action" title="More"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><input type="checkbox" class="merch-row-cb"></td>
+                <td>
+                  <div class="merch-name">
+                    <span class="merch-logo l7">CT</span>
+                    <div class="merch-info">
+                      <div class="nm">CitruShop</div>
+                      <div class="id">m_3f60d4 · Cross-border</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="hs-badge sm hs-badge-light"><span class="stat-dot" style="background:var(--gray-400)"></span>Pending KYB</span></td>
+                <td><span class="tier tier-1"><span class="pip">1</span>Starter</span></td>
+                <td>Home goods</td>
+                <td>
+                  <div class="gmv-cell">
+                    <div><span class="num" style="color:var(--gray-400);">—</span></div>
+                    <div class="gmv-bar"><span style="width:0%"></span></div>
+                  </div>
+                </td>
+                <td style="color:var(--gray-400);">—</td>
+                <td>5 days ago</td>
+                <td style="text-align:right;">
+                  <div class="row-actions">
+                    <button class="icon-action" title="View"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-action" title="More"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><input type="checkbox" class="merch-row-cb"></td>
+                <td>
+                  <div class="merch-name">
+                    <span class="merch-logo l8">VK</span>
+                    <div class="merch-info">
+                      <div class="nm">VinKids Toys</div>
+                      <div class="id">m_1b4a76 · TP.HCM</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="hs-badge sm hs-badge-error"><span class="stat-dot" style="background:var(--error-500)"></span>Suspended</span></td>
+                <td><span class="tier tier-2"><span class="pip">2</span>Growth</span></td>
+                <td>Toys &amp; kids</td>
+                <td>
+                  <div class="gmv-cell">
+                    <div><span class="num" style="color:var(--gray-500);">₫0</span></div>
+                    <div class="gmv-bar"><span style="width:0%"></span></div>
+                  </div>
+                </td>
+                <td style="font-variant-numeric:tabular-nums; color:var(--gray-500);">0</td>
+                <td>Jun 2024</td>
+                <td style="text-align:right;">
+                  <div class="row-actions">
+                    <button class="icon-action" title="View"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-action" title="More"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><input type="checkbox" class="merch-row-cb"></td>
+                <td>
+                  <div class="merch-name">
+                    <span class="merch-logo l1">AT</span>
+                    <div class="merch-info">
+                      <div class="nm">An Tâm Pharmacy</div>
+                      <div class="id">m_6c0e58 · Đà Nẵng</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="hs-badge sm hs-badge-success"><span class="stat-dot" style="background:var(--success-500)"></span>Active</span></td>
+                <td><span class="tier tier-2"><span class="pip">2</span>Growth</span></td>
+                <td>Health &amp; beauty</td>
+                <td>
+                  <div class="gmv-cell">
+                    <div><span class="num">₫196M</span><span class="delta">↑ 11%</span></div>
+                    <div class="gmv-bar"><span style="width:14%"></span></div>
+                  </div>
+                </td>
+                <td style="font-variant-numeric:tabular-nums;">1,892</td>
+                <td>Nov 2024</td>
+                <td style="text-align:right;">
+                  <div class="row-actions">
+                    <button class="icon-action" title="View"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-action" title="More"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+
+              <tr>
+                <td><input type="checkbox" class="merch-row-cb"></td>
+                <td>
+                  <div class="merch-name">
+                    <span class="merch-logo l2">RB</span>
+                    <div class="merch-info">
+                      <div class="nm">Rivière Bookstore</div>
+                      <div class="id">m_8d4b19 · Hà Nội</div>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="hs-badge sm hs-badge-success"><span class="stat-dot" style="background:var(--success-500)"></span>Active</span></td>
+                <td><span class="tier tier-1"><span class="pip">1</span>Starter</span></td>
+                <td>Books &amp; media</td>
+                <td>
+                  <div class="gmv-cell">
+                    <div><span class="num">₫84M</span><span class="delta">↑ 2%</span></div>
+                    <div class="gmv-bar"><span style="width:6%"></span></div>
+                  </div>
+                </td>
+                <td style="font-variant-numeric:tabular-nums;">412</td>
+                <td>Jan 2025</td>
+                <td style="text-align:right;">
+                  <div class="row-actions">
+                    <button class="icon-action" title="View"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+                    <button class="icon-action" title="More"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="5" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="12" cy="19" r="1"/></svg></button>
+                  </div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div class="footer-bar">
+            <div>Showing <b style="color:var(--gray-700);">1–10</b> of 12,487 merchants</div>
+            <div class="hs-pagination">
+              <button class="hs-page-btn">‹</button>
+              <button class="hs-page-btn active">1</button>
+              <button class="hs-page-btn">2</button>
+              <button class="hs-page-btn">3</button>
+              <button class="hs-page-btn">…</button>
+              <button class="hs-page-btn">1,249</button>
+              <button class="hs-page-btn">›</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ===== Right rail: KYC queue + category breakdown ===== -->
+        <aside class="merch-aside">
+
+          <div class="kyc-card">
+            <div class="kyc-head">
+              <h3>KYB approval queue</h3>
+              <span class="count">14 pending</span>
+            </div>
+            <div class="kyc-list">
+
+              <div class="kyc-item">
+                <span class="av" style="background:linear-gradient(135deg,#06aed4,#0e7090);">CT</span>
+                <div class="meta">
+                  <div class="nm">CitruShop</div>
+                  <div class="sub">Home goods · 2 docs uploaded</div>
+                  <div class="age warn">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    SLA breached · 5d ago
+                  </div>
+                </div>
+              </div>
+
+              <div class="kyc-item">
+                <span class="av" style="background:linear-gradient(135deg,#7a5af8,#6938ef);">MT</span>
+                <div class="meta">
+                  <div class="nm">Mộc Trà Tea Co.</div>
+                  <div class="sub">F&amp;B · awaiting business license</div>
+                  <div class="age warn">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    52 hours · over SLA
+                  </div>
+                </div>
+              </div>
+
+              <div class="kyc-item">
+                <span class="av" style="background:linear-gradient(135deg,#ee46bc,#c11574);">KH</span>
+                <div class="meta">
+                  <div class="nm">Khải Hoàn Garments</div>
+                  <div class="sub">Fashion · tax ID flagged</div>
+                  <div class="age">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    18 hours
+                  </div>
+                </div>
+              </div>
+
+              <div class="kyc-item">
+                <span class="av" style="background:linear-gradient(135deg,#12b76a,#027a48);">DV</span>
+                <div class="meta">
+                  <div class="nm">Đại Việt Hardware</div>
+                  <div class="sub">Industrial · re-submitted</div>
+                  <div class="age">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    6 hours
+                  </div>
+                </div>
+              </div>
+
+              <div class="kyc-item">
+                <span class="av" style="background:linear-gradient(135deg,#f79009,#b54708);">BN</span>
+                <div class="meta">
+                  <div class="nm">Bún Ngọc Lan</div>
+                  <div class="sub">F&amp;B · ready for review</div>
+                  <div class="age">
+                    <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                    35 min
+                  </div>
+                </div>
+              </div>
+
+            </div>
+            <div class="kyc-foot">
+              <a href="#">Open full queue (14) →</a>
+            </div>
+          </div>
+
+          <div class="cat-card">
+            <h3>GMV by category</h3>
+            <div class="csub">Last 30 days · top 5</div>
+            <div class="cat-row">
+              <div class="lbl"><span class="swatch" style="background:#465fff;"></span>Fashion</div>
+              <div class="pct">28.4%</div>
+              <div class="bar"><span style="width:80%; background:#465fff;"></span></div>
+            </div>
+            <div class="cat-row">
+              <div class="lbl"><span class="swatch" style="background:#12b76a;"></span>Food &amp; beverage</div>
+              <div class="pct">22.1%</div>
+              <div class="bar"><span style="width:62%; background:#12b76a;"></span></div>
+            </div>
+            <div class="cat-row">
+              <div class="lbl"><span class="swatch" style="background:#f79009;"></span>Health &amp; beauty</div>
+              <div class="pct">18.7%</div>
+              <div class="bar"><span style="width:53%; background:#f79009;"></span></div>
+            </div>
+            <div class="cat-row">
+              <div class="lbl"><span class="swatch" style="background:#7a5af8;"></span>Electronics</div>
+              <div class="pct">14.2%</div>
+              <div class="bar"><span style="width:40%; background:#7a5af8;"></span></div>
+            </div>
+            <div class="cat-row">
+              <div class="lbl"><span class="swatch" style="background:#06aed4;"></span>Home goods</div>
+              <div class="pct">9.8%</div>
+              <div class="bar"><span style="width:28%; background:#06aed4;"></span></div>
+            </div>
+          </div>
+
+          <div class="info-card">
+            <div class="icon">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+            </div>
+            <div>
+              <div class="t">3 KYB cases over SLA</div>
+              <div class="d">Cases unattended for &gt;48h auto-escalate to Compliance lead. Approve or request docs to clear.</div>
+            </div>
+          </div>
+
+        </aside>
+      </div>
+
+      <div class="code">
+        admin-portal · /admin/merchants · AdminLayout → PageHeader → KPIStrip → MerchantsTable + KYBQueueRail · row density · multi-select bulk actions
+      </div>
+    </main></div>
+    <div class="view" data-view="configuration"><main class="main" data-view-main="configuration">
+      <!-- ====== Page header ====== -->
+      <div class="page-head">
+        <div class="page-head-top">
+          <h1 class="page-title">Configuration</h1>
+          <div class="hs-crumb page-crumb">
+            <a href="#" data-view-link="dashboard">Dashboard</a><span class="sep">/</span>
+            <span class="current">Configuration</span>
+          </div>
+        </div>
+        <div class="page-head-meta">
+          <p class="page-sub">Platform-wide defaults that apply to every storefront, seller center, and admin surface. Changes are versioned and audited.</p>
+          <div class="page-head-actions">
+            <span class="env-pill"><span class="env-dot"></span>Production · ap-southeast-1</span>
+            <button class="hs-btn hs-btn-outline">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 9-9"/><polyline points="3 4 3 12 11 12"/></svg>
+              Change history
+            </button>
+            <button class="hs-btn hs-btn-outline">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export config
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- ====== Settings rail + content ====== -->
+      <div class="config">
+        <!-- Rail -->
+        <nav class="rail" aria-label="Settings sections">
+          <div class="rail-search">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input placeholder="Search settings…" style="width: 1px">
+          </div>
+
+          <div class="group-label">Workspace</div>
+          <a href="#general" class="rail-item" data-rail="general">
+            <svg class="ri-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            General
+          </a>
+          <a href="#branding" class="rail-item" data-rail="branding">
+            <svg class="ri-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            Branding
+          </a>
+          <a href="#localization" class="rail-item" data-rail="localization">
+            <svg class="ri-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 2v20M2 12h20"/></svg>
+            Localization
+          </a>
+
+          <div class="group-label">Commerce</div>
+          <a href="#payments" class="rail-item active" data-rail="payments">
+            <svg class="ri-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="5" width="20" height="14" rx="2"/><line x1="2" y1="10" x2="22" y2="10"/></svg>
+            Payments
+            <span class="ri-meta">4</span>
+          </a>
+          <a href="#tax" class="rail-item" data-rail="tax">
+            <svg class="ri-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Tax &amp; invoicing
+          </a>
+          <a href="#shipping" class="rail-item" data-rail="shipping">
+            <svg class="ri-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>
+            Shipping
+          </a>
+
+          <div class="group-label">Platform</div>
+          <a href="#email" class="rail-item" data-rail="email">
+            <svg class="ri-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+            Email &amp; notifications
+          </a>
+          <a href="#api" class="rail-item" data-rail="api">
+            <svg class="ri-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+            API &amp; webhooks
+          </a>
+          <a href="#security" class="rail-item" data-rail="security">
+            <svg class="ri-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+            Security
+          </a>
+          <a href="#flags" class="rail-item" data-rail="flags">
+            <svg class="ri-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" y1="22" x2="4" y2="15"/></svg>
+            Feature flags
+            <span class="ri-meta">7 on</span>
+          </a>
+        </nav>
+
+        <!-- Content -->
+        <div class="content">
+
+          <!-- ===== Section: Payments (open) ===== -->
+          <section id="payments" class="sec anchor">
+            <div class="sec-head">
+              <div>
+                <h2>Payments</h2>
+                <p>Configure which payment methods appear at checkout, fee splits, and how merchant payouts are scheduled. Applies to all storefronts on the platform.</p>
+              </div>
+              <span class="hs-badge sm hs-badge-primary" style="text-transform:none;">Production</span>
+            </div>
+            <div class="sec-body">
+
+              <!-- Providers -->
+              <div class="row">
+                <div>
+                  <div class="row-label">Connected providers</div>
+                  <div class="row-help">At least one provider must be enabled. Disabling a live provider is irreversible during settlement windows.</div>
+                </div>
+                <div class="row-control">
+                  <div class="providers">
+                    <div class="provider connected">
+                      <div class="logo l-vnpay">VNP</div>
+                      <div style="min-width:0; flex:1;">
+                        <div class="name">VNPay</div>
+                        <div class="desc">ATM domestic, QR code, international cards. Vietnam's largest gateway.</div>
+                        <div class="meta">acct · vnp_TmnCode 8K3R…W2</div>
+                      </div>
+                      <span class="hs-badge sm hs-badge-success corner-badge">Live</span>
+                    </div>
+
+                    <div class="provider connected">
+                      <div class="logo l-momo">MO</div>
+                      <div style="min-width:0; flex:1;">
+                        <div class="name">MoMo Wallet</div>
+                        <div class="desc">E-wallet checkout. Highest conversion under ₫500K.</div>
+                        <div class="meta">partnerCode · MOMO5R83</div>
+                      </div>
+                      <span class="hs-badge sm hs-badge-success corner-badge">Live</span>
+                    </div>
+
+                    <div class="provider">
+                      <div class="logo l-stripe">S</div>
+                      <div style="min-width:0; flex:1;">
+                        <div class="name">Stripe</div>
+                        <div class="desc">International cards (USD, EUR, SGD). Required for cross-border merchants.</div>
+                        <div class="meta">Not connected · keys missing</div>
+                      </div>
+                      <span class="hs-badge sm hs-badge-light corner-badge">Setup</span>
+                    </div>
+
+                    <div class="provider">
+                      <div class="logo l-zalo">Z</div>
+                      <div style="min-width:0; flex:1;">
+                        <div class="name">ZaloPay</div>
+                        <div class="desc">Wallet + QR. 2.1% on all transactions, no monthly minimum.</div>
+                        <div class="meta">Available · 1-click connect</div>
+                      </div>
+                      <span class="hs-badge sm hs-badge-light corner-badge">Connect</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Fee structure -->
+              <div class="row">
+                <div>
+                  <div class="row-label">Platform fee split</div>
+                  <div class="row-help">Per-transaction fees retained by HiveSpace before payout. Tier overrides can be set per merchant in <a href="#" style="color:var(--brand-500);">Merchants → Pricing</a>.</div>
+                </div>
+                <div class="row-control" style="border:1px solid var(--gray-200); border-radius:10px; overflow:hidden;">
+                  <table class="fee-table">
+                    <thead>
+                      <tr>
+                        <th>Method</th>
+                        <th class="num">Platform %</th>
+                        <th class="num">Fixed fee</th>
+                        <th class="num">Cap</th>
+                        <th></th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td>VNPay · domestic ATM</td>
+                        <td class="num">1.10%</td>
+                        <td class="num">₫1,500</td>
+                        <td class="num">₫22,000</td>
+                        <td style="text-align:right;"><button class="fee-edit">Edit</button></td>
+                      </tr>
+                      <tr>
+                        <td>VNPay · international card</td>
+                        <td class="num">3.30%</td>
+                        <td class="num">—</td>
+                        <td class="num">—</td>
+                        <td style="text-align:right;"><button class="fee-edit">Edit</button></td>
+                      </tr>
+                      <tr>
+                        <td>MoMo Wallet</td>
+                        <td class="num">1.95%</td>
+                        <td class="num">—</td>
+                        <td class="num">—</td>
+                        <td style="text-align:right;"><button class="fee-edit">Edit</button></td>
+                      </tr>
+                      <tr>
+                        <td>Cash on delivery</td>
+                        <td class="num">0.40%</td>
+                        <td class="num">₫3,000</td>
+                        <td class="num">₫15,000</td>
+                        <td style="text-align:right;"><button class="fee-edit">Edit</button></td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              <!-- Payout schedule -->
+              <div class="row">
+                <div>
+                  <div class="row-label">Default payout schedule</div>
+                  <div class="row-help">When merchants are paid out from the platform escrow. Individual merchants on KYC tier 3+ can request a custom schedule.</div>
+                </div>
+                <div class="row-control">
+                  <div class="seg" role="tablist">
+                    <button>Daily</button>
+                    <button class="active">Weekly</button>
+                    <button>Bi-weekly</button>
+                    <button>Monthly</button>
+                  </div>
+                  <div class="row-grid-2" style="margin-top:14px;">
+                    <div>
+                      <label class="hs-label">Payout day</label>
+                      <select class="hs-select">
+                        <option>Wednesday</option>
+                        <option>Monday</option>
+                        <option>Friday</option>
+                      </select>
+                    </div>
+                    <div>
+                      <label class="hs-label">Hold period</label>
+                      <select class="hs-select">
+                        <option>3 business days</option>
+                        <option>1 business day</option>
+                        <option>7 business days</option>
+                      </select>
+                    </div>
+                  </div>
+                  <div class="hint">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                    Next platform-wide payout · <b style="color:var(--gray-700);margin-left:2px;">Wed, May 13 · 02:00 ICT</b> · 8,427 merchants
+                  </div>
+                </div>
+              </div>
+
+              <!-- Risk / 3DS -->
+              <div class="row">
+                <div>
+                  <div class="row-label">Fraud &amp; 3-D Secure</div>
+                  <div class="row-help">Higher risk levels reduce chargebacks but add checkout friction. We recommend "Balanced" for general retail.</div>
+                </div>
+                <div class="row-control">
+                  <div class="risk-track">
+                    <div class="risk-knob" title="Balanced"></div>
+                  </div>
+                  <div class="risk-marks">
+                    <span>Off</span><span>Lenient</span><span>Balanced</span><span>Strict</span><span>Lockdown</span>
+                  </div>
+                  <div class="risk-current">
+                    Currently <b>Balanced</b> · 3DS triggered on transactions over <b>₫2,000,000</b> or score &gt; <b>72</b>. Last 30d: <b>1.4%</b> step-up rate, <b>0.21%</b> chargeback.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Toggles -->
+              <div class="row" style="display:block;">
+                <div class="row-label" style="margin-bottom:4px;">Checkout behavior</div>
+                <div class="row-help" style="margin-bottom:8px;">Lower-level toggles that affect every storefront's checkout experience.</div>
+
+                <div class="row-toggle">
+                  <div class="copy">
+                    <div class="t">Save card for future purchases</div>
+                    <div class="d">Tokenize cards via the gateway vault. Required for subscriptions and one-tap reorder.</div>
+                  </div>
+                  <span class="hs-toggle on" data-toggle></span>
+                </div>
+                <div class="row-toggle">
+                  <div class="copy">
+                    <div class="t">Allow guest checkout</div>
+                    <div class="d">Buyers without a HiveSpace account can complete a purchase. Email is still required for receipts.</div>
+                  </div>
+                  <span class="hs-toggle on" data-toggle></span>
+                </div>
+                <div class="row-toggle">
+                  <div class="copy">
+                    <div class="t">Cash on delivery (COD)</div>
+                    <div class="d">Available to merchants in tier 2+. Adds a flat ₫5,000 verification fee paid by buyer.</div>
+                  </div>
+                  <span class="hs-toggle on" data-toggle></span>
+                </div>
+                <div class="row-toggle">
+                  <div class="copy">
+                    <div class="t">Buy-now-pay-later (Atome, Kredivo)</div>
+                    <div class="d">Show BNPL options on cart over ₫500,000. Currently in <b style="color:var(--warning-700);">staging only</b>.</div>
+                  </div>
+                  <span class="hs-toggle" data-toggle></span>
+                </div>
+              </div>
+
+            </div>
+          </section>
+
+          <!-- ===== Section: Tax & invoicing (preview / collapsed) ===== -->
+          <section id="tax" class="sec anchor">
+            <div class="sec-head">
+              <div>
+                <h2>Tax &amp; invoicing</h2>
+                <p>VAT rates, tax-inclusive pricing rules, e-invoice provider, and invoice numbering.</p>
+              </div>
+              <button class="hs-btn sm hs-btn-outline">Open ›</button>
+            </div>
+            <div class="sec-body">
+              <div class="row">
+                <div>
+                  <div class="row-label">VAT collection</div>
+                  <div class="row-help">10% standard rate applied automatically to all VN-resident orders. Set per-category overrides in Catalog.</div>
+                </div>
+                <div class="row-control" style="display:flex; gap:8px; flex-wrap:wrap;">
+                  <span class="hs-badge sm hs-badge-success">Auto-calculated</span>
+                  <span class="hs-badge sm hs-badge-light">10% default</span>
+                  <span class="hs-badge sm hs-badge-light">Inclusive pricing</span>
+                  <span class="hs-badge sm hs-badge-light">e-Invoice · MISA</span>
+                </div>
+              </div>
+              <div class="row" style="border-bottom:none;">
+                <div>
+                  <div class="row-label">Invoice number format</div>
+                  <div class="row-help">Sequential numbers reset every fiscal year. Cannot be changed retroactively.</div>
+                </div>
+                <div class="row-control" style="font-family:var(--font-mono); font-size:13px; color:var(--gray-700);">
+                  HVS-{YEAR}-{SELLER_PREFIX}-{0000000}
+                  <div class="hint">Last issued · <b style="color:var(--gray-700);margin-left:2px;">HVS-2026-FOOD-0184392</b></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== Section: Localization (preview) ===== -->
+          <section id="localization" class="sec anchor">
+            <div class="sec-head">
+              <div>
+                <h2>Localization</h2>
+                <p>Default locale, supported currencies, and the languages buyers can switch between.</p>
+              </div>
+              <button class="hs-btn sm hs-btn-outline">Open ›</button>
+            </div>
+            <div class="sec-body">
+              <div class="row">
+                <div>
+                  <div class="row-label">Default locale</div>
+                  <div class="row-help">Used for new sellers and as fallback when buyer's preferred locale is unavailable.</div>
+                </div>
+                <div class="row-control">
+                  <div class="row-grid-2">
+                    <select class="hs-select"><option>Tiếng Việt (vi-VN)</option><option>English (en-US)</option></select>
+                    <select class="hs-select"><option>Asia/Ho_Chi_Minh (UTC+7)</option><option>Asia/Singapore (UTC+8)</option></select>
+                  </div>
+                </div>
+              </div>
+              <div class="row" style="border-bottom:none;">
+                <div>
+                  <div class="row-label">Supported currencies</div>
+                  <div class="row-help">Buyers see prices in their selected currency. Settlement always happens in the merchant's payout currency.</div>
+                </div>
+                <div class="row-control">
+                  <div class="chips">
+                    <span class="chip is-default">VND <span class="x">×</span></span>
+                    <span class="chip">USD <span class="x">×</span></span>
+                    <span class="chip">SGD <span class="x">×</span></span>
+                    <span class="chip">THB <span class="x">×</span></span>
+                    <button class="chip chip-add">+ Add currency</button>
+                  </div>
+                  <div class="hint">FX rates refresh every <b style="color:var(--gray-700);margin-left:2px;">15 min</b> from XE Currency Data.</div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== Section: API & webhooks (compact info) ===== -->
+          <section id="api" class="sec anchor">
+            <div class="sec-head">
+              <div>
+                <h2>API &amp; webhooks</h2>
+                <p>Manage public API keys, rate limits, and the endpoints that receive platform events.</p>
+              </div>
+              <button class="hs-btn sm hs-btn-outline">Open ›</button>
+            </div>
+            <div class="sec-body" style="padding-bottom:24px;">
+              <div class="row" style="border-bottom:none;">
+                <div>
+                  <div class="row-label">Quick stats</div>
+                  <div class="row-help">Last 24 hours across all platform tenants.</div>
+                </div>
+                <div class="row-control">
+                  <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;">
+                    <div style="background:var(--gray-50); border:1px solid var(--gray-200); border-radius:10px; padding:14px;">
+                      <div style="font-size:11px; color:var(--gray-500); text-transform:uppercase; letter-spacing:.04em;">Requests</div>
+                      <div style="font-size:22px; font-weight:600; color:var(--gray-900); margin-top:4px;">4.21M</div>
+                      <div style="font-size:12px; color:var(--success-600); margin-top:2px;">↑ 8.4% vs yesterday</div>
+                    </div>
+                    <div style="background:var(--gray-50); border:1px solid var(--gray-200); border-radius:10px; padding:14px;">
+                      <div style="font-size:11px; color:var(--gray-500); text-transform:uppercase; letter-spacing:.04em;">Webhooks delivered</div>
+                      <div style="font-size:22px; font-weight:600; color:var(--gray-900); margin-top:4px;">182,394</div>
+                      <div style="font-size:12px; color:var(--gray-500); margin-top:2px;">99.7% success</div>
+                    </div>
+                    <div style="background:var(--gray-50); border:1px solid var(--gray-200); border-radius:10px; padding:14px;">
+                      <div style="font-size:11px; color:var(--gray-500); text-transform:uppercase; letter-spacing:.04em;">Failed deliveries</div>
+                      <div style="font-size:22px; font-weight:600; color:var(--gray-900); margin-top:4px;">541</div>
+                      <div style="font-size:12px; color:var(--error-600); margin-top:2px;">12 merchants affected</div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- ===== Recent changes ===== -->
+          <section class="sec">
+            <div class="sec-head">
+              <div>
+                <h2>Recent configuration changes</h2>
+                <p>Every config change is versioned and reversible from <a href="#" style="color:var(--brand-500);">Audit log</a>.</p>
+              </div>
+              <a href="#" style="font-size:13px; color:var(--brand-500); text-decoration:none; font-weight:500;">View all 248 ›</a>
+            </div>
+            <div class="sec-body">
+              <div class="timeline">
+                <div class="tl-item">
+                  <span class="tl-dot brand">↻</span>
+                  <div>
+                    <div class="tl-text"><b>Anh Tuấn</b> changed <code>payments.payout.day</code> from <code>Friday</code> to <code>Wednesday</code></div>
+                    <div class="tl-time">2 hours ago · v2.184</div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <span class="tl-dot ok">+</span>
+                  <div>
+                    <div class="tl-text"><b>Linh Phạm</b> connected payment provider <b>MoMo Wallet</b> for production</div>
+                    <div class="tl-time">Yesterday · 16:42 · v2.183</div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <span class="tl-dot warn">⚠</span>
+                  <div>
+                    <div class="tl-text"><b>Hoàng Quang</b> raised <code>fraud.risk_threshold</code> from <code>65</code> to <code>72</code> after dispute spike</div>
+                    <div class="tl-time">2 days ago · v2.181</div>
+                  </div>
+                </div>
+                <div class="tl-item">
+                  <span class="tl-dot">·</span>
+                  <div>
+                    <div class="tl-text">System rotated webhook signing key <code>whsec_…7Y2k</code> automatically</div>
+                    <div class="tl-time">5 days ago · v2.176</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <div style="font-family: var(--font-mono); font-size: 12px; color: var(--gray-400); padding: 4px 4px 0;">
+            admin-portal · /admin/configuration · AdminLayout → SettingsRail → SectionedForm · dirty-state save bar
+          </div>
+
+        </div>
+      </div>
+
+    </main></div>
+
+    <!-- ====================================================
+         AUDIT LOG VIEW
+         ==================================================== -->
+    <div class="view" data-view="audit-log" data-screen-label="Audit Log"><main class="main al-main" data-view-main="audit-log">
+
+      <!-- Header -->
+      <div class="page-head">
+        <div class="page-head-top">
+          <h1 class="page-title">Audit log</h1>
+          <div class="hs-crumb page-crumb">
+            <a href="#" data-view-link="dashboard">Dashboard</a><span class="sep">/</span>
+            <span class="current">Audit log</span>
+          </div>
+        </div>
+        <div class="page-head-meta">
+          <p class="page-sub" style="max-width:680px;">Append-only record of every privileged action across Admin, Seller Center, and Storefront. Retained 24 months. Tamper-evident hash-chained.</p>
+          <div class="al-head-actions">
+            <button class="al-live" id="al-live" data-state="on" type="button" title="Toggle live stream">
+              <span class="al-live-dot"></span>
+              <span> Live</span>
+            </button>
+            <button class="al-theme-btn" id="al-theme-toggle" title="Toggle theme" aria-label="Toggle theme"></button>
+            <button class="hs-btn hs-btn-outline" id="al-export">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+              Export
+            </button>
+            <button class="hs-btn hs-btn-primary-outline">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/></svg>
+              Saved views
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Stats -->
+      <div class="al-stats">
+        <div class="al-stat">
+          <div class="lbl">Events · today</div>
+          <div class="val" id="stat-today">—</div>
+          <div class="sub"><span class="delta up">▲ 12.4%</span> vs. yesterday</div>
+          <span class="stat-icon brand"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></span>
+        </div>
+        <div class="al-stat">
+          <div class="lbl">Critical alerts</div>
+          <div class="val" id="stat-crit">—</div>
+          <div class="sub"><span class="delta down">▼ 2</span> resolved in last 4h</div>
+          <span class="stat-icon error"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/></svg></span>
+        </div>
+        <div class="al-stat">
+          <div class="lbl">Unique actors</div>
+          <div class="val" id="stat-actors">—</div>
+          <div class="sub">7 admin · 14 merchants · 2 system</div>
+          <span class="stat-icon info"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/></svg></span>
+        </div>
+        <div class="al-stat">
+          <div class="lbl">Failed / blocked</div>
+          <div class="val" id="stat-failed">—</div>
+          <div class="sub">Lockouts &amp; fraud blocks</div>
+          <span class="stat-icon warn"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+        </div>
+      </div>
+
+      <!-- Density mini-chart -->
+      <div class="al-density">
+        <div style="min-width:0;">
+          <div class="al-density-head">
+            <div class="t">Event density</div>
+            <div class="sub">24 buckets · click a bar to drill in</div>
+          </div>
+          <div class="al-density-chart" id="al-density-chart"></div>
+          <div class="al-density-axis" id="al-density-axis"></div>
+        </div>
+        <div class="al-density-legend">
+          <div class="leg"><span class="swatch s1"></span> Activity</div>
+          <div class="leg"><span class="swatch s2"></span> Selected range</div>
+          <div class="leg"><span class="swatch s3"></span> Critical present</div>
+        </div>
+      </div>
+
+      <!-- Filter bar -->
+      <div class="al-filters">
+        <div class="al-search">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input id="al-q" placeholder="Search actor, action, resource ID, IP… (Vietnamese supported)" />
+          <kbd>/</kbd>
+        </div>
+        <div class="al-time-seg" role="tablist" aria-label="Time range">
+          <button data-time="1h" type="button">1h</button>
+          <button data-time="24h" type="button" class="active">24h</button>
+          <button data-time="7d" type="button">7d</button>
+          <button data-time="30d" type="button">30d</button>
+        </div>
+        <div style="position:relative;">
+          <button class="al-filter-btn" id="flt-surface" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></svg>
+            Surface
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="al-pop" id="pop-surface"></div>
+        </div>
+        <div style="position:relative;">
+          <button class="al-filter-btn" id="flt-sev" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+            Severity
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="al-pop" id="pop-sev"></div>
+        </div>
+        <div style="position:relative;">
+          <button class="al-filter-btn" id="flt-actor" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="7" r="4"/><path d="M5.5 21a6.5 6.5 0 0 1 13 0"/></svg>
+            Actor
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="al-pop" id="pop-actor"></div>
+        </div>
+
+        <div class="al-view-toggle" role="tablist" aria-label="View mode">
+          <button data-view-mode="table" type="button" class="active">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+            Table
+          </button>
+          <button data-view-mode="timeline" type="button">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            Timeline
+          </button>
+        </div>
+      </div>
+
+      <div class="al-chips" id="al-chips"></div>
+
+      <!-- Main content: table + drawer -->
+      <div class="al-content" id="al-content" data-drawer="closed">
+        <div>
+          <!-- Table view -->
+          <div class="al-table-card" id="al-table-card">
+            <div class="al-table-head">
+              <div>Showing <b id="al-count">0</b> events</div>
+              <div class="al-streaming" id="al-stream" data-state="on">
+                <span class="s-dot"></span>
+                <span class="s-label">Streaming</span>
+                <span style="font-family:var(--font-mono); font-size:11px; opacity:.7; margin-left:4px;">· refresh every ~5s</span>
+              </div>
+            </div>
+            <div style="overflow-x:auto;">
+              <table class="al-table">
+                <thead>
+                  <tr>
+                    <th style="width:120px;">Time</th>
+                    <th style="width:230px;">Actor</th>
+                    <th>Action</th>
+                    <th style="width:130px;">Surface</th>
+                    <th style="width:110px;">Severity</th>
+                    <th style="width:130px;">IP</th>
+                  </tr>
+                </thead>
+                <tbody id="al-tbody"></tbody>
+              </table>
+            </div>
+            <div class="al-table-foot">
+              <div>Showing first 20 events · sorted by time desc</div>
+              <div class="al-page-controls">
+                <button class="al-page-btn" disabled>‹</button>
+                <button class="al-page-btn active">1</button>
+                <button class="al-page-btn">2</button>
+                <button class="al-page-btn">3</button>
+                <button class="al-page-btn">…</button>
+                <button class="al-page-btn">›</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Timeline view (hidden by default) -->
+          <div class="al-timeline-card" id="al-timeline-card">
+            <div id="al-tl-body"></div>
+          </div>
+        </div>
+
+        <!-- Drawer -->
+        <aside class="al-drawer" id="al-drawer">
+          <div class="al-drawer-head" id="al-drawer-head"></div>
+          <div class="al-drawer-tabs">
+            <button data-drawer-tab="overview" class="active" type="button">Overview</button>
+            <button data-drawer-tab="diff" type="button">Diff</button>
+            <button data-drawer-tab="json" type="button">Raw JSON</button>
+            <button data-drawer-tab="related" type="button">Related</button>
+          </div>
+          <div class="al-drawer-body">
+            <div class="al-drawer-pane active" data-drawer-pane="overview" id="al-pane-overview"></div>
+            <div class="al-drawer-pane" data-drawer-pane="diff" id="al-pane-diff"></div>
+            <div class="al-drawer-pane" data-drawer-pane="json" id="al-pane-json"></div>
+            <div class="al-drawer-pane" data-drawer-pane="related" id="al-pane-related"></div>
+          </div>
+          <div class="al-drawer-foot" id="al-drawer-foot"></div>
+        </aside>
+      </div>
+
+      <!-- Export modal -->
+      <div class="al-modal-overlay" id="al-export-modal">
+        <div class="al-modal" role="dialog" aria-labelledby="al-modal-t">
+          <div class="al-modal-head">
+            <h3 id="al-modal-t">Export audit events</h3>
+            <p>Includes only events matching the active filters.</p>
+          </div>
+          <div class="al-modal-body">
+            <div style="font-size:12px; font-weight:600; color:var(--gray-500); text-transform:uppercase; letter-spacing:.04em; margin-bottom:8px;">Format</div>
+            <div class="al-fmt-grid">
+              <div class="al-fmt-card active" data-fmt="csv">
+                <div class="fmt-name">CSV</div>
+                <div class="fmt-ext">.csv</div>
+              </div>
+              <div class="al-fmt-card" data-fmt="json">
+                <div class="fmt-name">JSON</div>
+                <div class="fmt-ext">.jsonl</div>
+              </div>
+              <div class="al-fmt-card" data-fmt="parquet">
+                <div class="fmt-name">Parquet</div>
+                <div class="fmt-ext">.parquet</div>
+              </div>
+            </div>
+            <div style="font-size:12px; font-weight:600; color:var(--gray-500); text-transform:uppercase; letter-spacing:.04em; margin: 4px 0 8px;">Delivery</div>
+            <label style="display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--gray-200); border-radius:8px; font-size:13px; cursor:pointer; margin-bottom:8px;">
+              <input type="radio" name="dl" checked>
+              <div>
+                <div style="font-weight:500;">Download to browser</div>
+                <div style="font-size:12px; color:var(--gray-500);">Encrypted ZIP, streamed in &lt;30s</div>
+              </div>
+            </label>
+            <label style="display:flex; align-items:center; gap:10px; padding:10px 12px; border:1px solid var(--gray-200); border-radius:8px; font-size:13px; cursor:pointer;">
+              <input type="radio" name="dl">
+              <div>
+                <div style="font-weight:500;">Send to S3 bucket</div>
+                <div style="font-size:12px; color:var(--gray-500);">s3://hivespace-audit-prod/exports/</div>
+              </div>
+            </label>
+          </div>
+          <div class="al-modal-foot">
+            <button class="hs-btn hs-btn-outline" data-close type="button">Cancel</button>
+            <button class="hs-btn hs-btn-primary" id="al-export-go" type="button">Export</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Toast -->
+      <div class="al-toast" id="al-toast">
+        <span class="icn"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+        <span class="msg">Saved</span>
+      </div>
+
+    </main></div>
+  </div>
+</div>
+<!-- ====== Sticky save bar ====== -->
+<div class="savebar hidden" id="savebar" role="status" aria-live="polite">
+  <span class="pulse"></span>
+  <div class="label"><b id="savebar-count">0 unsaved changes</b><span class="sub" id="savebar-detail">in Payments</span></div>
+  <button class="discard" id="discard-btn">Discard</button>
+  <button class="save" id="save-btn">Save changes</button>
+</div>
+
+<!-- ====== Toast ====== -->
+<div class="toast" id="toast">
+  <span class="check">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+  </span>
+  <span id="toast-msg">Configuration saved</span>
+</div>
+
+<script>
+  // --- Rail active highlighting on scroll (via IntersectionObserver) ---
+  const railLinks = document.querySelectorAll('.rail-item[data-rail]');
+  const sections = ['general','branding','localization','payments','tax','shipping','email','api','security','flags']
+    .map(id => document.getElementById(id))
+    .filter(Boolean);
+
+  function setActive(id) {
+    railLinks.forEach(l => l.classList.toggle('active', l.dataset.rail === id));
+  }
+
+  if ('IntersectionObserver' in window) {
+    const io = new IntersectionObserver((entries) => {
+      // Find the topmost section currently in view
+      const visible = entries
+        .filter(e => e.isIntersecting)
+        .sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top);
+      if (visible[0]) setActive(visible[0].target.id);
+    }, { rootMargin: '-80px 0px -55% 0px', threshold: 0 });
+    sections.forEach(s => io.observe(s));
+  }
+
+  // --- Smooth scroll for rail anchor clicks ---
+  document.querySelectorAll('.rail-item[href^="#"]').forEach(a => {
+    a.addEventListener('click', (e) => {
+      const id = a.getAttribute('href').slice(1);
+      const el = document.getElementById(id);
+      if (el) {
+        e.preventDefault();
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        setActive(id);
+      }
+    });
+  });
+
+  // --- Save bar: track dirty state ---
+  let dirtyCount = 0;
+  const savebar = document.getElementById('savebar');
+  const savebarCount = document.getElementById('savebar-count');
+
+  function bumpDirty(label) {
+    dirtyCount++;
+    savebarCount.textContent = `${dirtyCount} unsaved change${dirtyCount === 1 ? '' : 's'}`;
+    savebar.classList.remove('hidden');
+  }
+  function resetDirty() {
+    dirtyCount = 0;
+    savebar.classList.add('hidden');
+  }
+
+  // Toggles
+  document.querySelectorAll('[data-toggle]').forEach(t => {
+    t.addEventListener('click', () => {
+      t.classList.toggle('on');
+      bumpDirty();
+    });
+  });
+
+  // Selects + segmented + chip removal
+  document.querySelectorAll('.hs-select').forEach(s => s.addEventListener('change', () => bumpDirty()));
+  document.querySelectorAll('.seg button').forEach(b => {
+    b.addEventListener('click', () => {
+      const parent = b.parentElement;
+      parent.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+      b.classList.add('active');
+      bumpDirty();
+    });
+  });
+  document.querySelectorAll('.chip .x').forEach(x => {
+    x.addEventListener('click', (e) => {
+      e.stopPropagation();
+      x.parentElement.style.opacity = '0.4';
+      x.parentElement.style.textDecoration = 'line-through';
+      bumpDirty();
+    });
+  });
+  document.querySelectorAll('.fee-edit').forEach(b => {
+    b.addEventListener('click', () => {
+      b.textContent = 'Editing…';
+      b.style.background = '#fff';
+      b.style.borderColor = 'var(--brand-500)';
+      b.style.color = 'var(--brand-500)';
+      bumpDirty();
+    });
+  });
+
+  // Save button
+  document.getElementById('save-btn').addEventListener('click', () => {
+    resetDirty();
+    showToast('Configuration saved · v2.185');
+  });
+  document.getElementById('discard-btn').addEventListener('click', () => {
+    resetDirty();
+    showToast('Changes discarded');
+  });
+
+  // Toast
+  const toast = document.getElementById('toast');
+  const toastMsg = document.getElementById('toast-msg');
+  let toastTimer;
+  function showToast(msg) {
+    toastMsg.textContent = msg;
+    toast.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => toast.classList.remove('show'), 2200);
+  }
+</script>
+<script>
+  // ----- View switching: sidebar ----- 
+  const views = document.querySelectorAll('[data-view]');
+  const sideLinks = document.querySelectorAll('[data-view-link]');
+
+  function setView(name) {
+    views.forEach(v => v.classList.toggle('active', v.dataset.view === name));
+    sideLinks.forEach(l => l.classList.toggle('active', l.dataset.viewLink === name));
+    window.scrollTo({ top: 0, behavior: 'instant' in window ? 'instant' : 'auto' });
+  }
+
+  sideLinks.forEach(l => l.addEventListener('click', () => setView(l.dataset.viewLink)));
+
+  document.querySelectorAll('[data-deeplink]').forEach(el => {
+    el.addEventListener('click', (e) => {
+      e.preventDefault();
+      setView(el.dataset.deeplink);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  });
+
+  // Honor #configuration / ?view=configuration on load for deep-linking
+  const __hash = location.hash.replace('#','');
+  const __qv = new URLSearchParams(location.search).get('view');
+  const __target = __hash || __qv;
+  const initial = ['configuration','merchants','audit-log','accounts','buyers'].includes(__target) ? __target : 'dashboard';
+  if (initial !== 'dashboard') setView(initial);
+</script>
+<script src="audit_log.js" defer></script>
+<link rel="stylesheet" href="accounts.css">
+<link rel="stylesheet" href="customers.css">
+<script src="accounts.js" defer></script>
+<script src="buyers.js" defer></script>
+
+<!-- Buyer Suspension Modal -->
+<div class="ac-modal-overlay" id="bu-suspend-modal">
+  <div class="ac-modal">
+    <div class="ac-modal-head">
+      <h3 style="color:var(--error-600)">Suspend Buyer Account</h3>
+      <p>This will restrict the buyer's access to the platform immediately.</p>
+    </div>
+    <div class="ac-modal-body">
+      <div style="padding: 12px; background: var(--gray-50); border-radius: 8px; border: 1px solid var(--gray-200); margin-bottom: 20px;">
+        <div style="font-size: 11px; color: var(--gray-500); text-transform: uppercase; letter-spacing: .04em; font-weight: 600; margin-bottom: 4px;">Selected Buyer</div>
+        <div id="bu-susp-name" style="font-weight: 600; color: var(--gray-900); font-size: 14px;">—</div>
+      </div>
+
+      <form id="bu-suspend-form">
+        <div class="field" style="margin-bottom: 16px;">
+          <label class="hs-label hs-label-required" for="bu-susp-reason">Reason for suspension</label>
+          <select class="hs-select" id="bu-susp-reason" required>
+            <option value="" disabled selected>Select a reason...</option>
+            <option value="Policy Violation">Policy Violation</option>
+            <option value="Suspected Fraud">Suspected Fraud</option>
+            <option value="Duplicate Account">Duplicate Account</option>
+            <option value="Payment Issues">Payment Issues</option>
+            <option value="User Request">User Request</option>
+            <option value="Other">Other</option>
+          </select>
+        </div>
+        <div class="field" style="margin-bottom: 16px;">
+          <label class="hs-label" for="bu-susp-note">Internal Notes</label>
+          <textarea class="hs-textarea" id="bu-susp-note" placeholder="Provide additional context for this suspension..."></textarea>
+        </div>
+        <div style="display:flex; align-items:center; gap:10px; margin-top:20px;">
+          <div class="ac-toggle on" id="bu-susp-notify-toggle" onclick="this.classList.toggle('on'); document.getElementById('bu-susp-notify').checked = this.classList.contains('on')"></div>
+          <input type="checkbox" id="bu-susp-notify" checked style="display:none">
+          <label for="bu-susp-notify" style="font-size: 14px; color: var(--gray-700); cursor: pointer;">Notify buyer via email</label>
+        </div>
+      </form>
+    </div>
+    <div class="ac-modal-foot">
+      <button class="hs-btn sm hs-btn-outline" data-close-modal>Cancel</button>
+      <button class="hs-btn sm hs-btn-danger" id="bu-susp-confirm">Suspend Account</button>
+    </div>
+  </div>
+</div>
+<script>
+  // ----- Merchants: row selection + bulk action bar -----
+  (function () {
+    const selAll = document.getElementById('merch-sel-all');
+    const rowCbs = document.querySelectorAll('.merch-row-cb');
+    const bar = document.getElementById('merch-sel-bar');
+    if (!bar) return;
+    const countLabel = bar.querySelector('.count');
+    const clearBtn = document.getElementById('merch-sel-clear');
+
+    function refresh() {
+      const checked = [...rowCbs].filter(c => c.checked);
+      const n = checked.length;
+      countLabel.textContent = `${n} selected`;
+      bar.classList.toggle('show', n > 0);
+      if (selAll) {
+        selAll.checked = n > 0 && n === rowCbs.length;
+        selAll.indeterminate = n > 0 && n < rowCbs.length;
+      }
+    }
+
+    rowCbs.forEach(cb => cb.addEventListener('change', refresh));
+    if (selAll) {
+      selAll.addEventListener('change', () => {
+        rowCbs.forEach(cb => { cb.checked = selAll.checked; });
+        refresh();
+      });
+    }
+    if (clearBtn) {
+      clearBtn.addEventListener('click', () => {
+        rowCbs.forEach(cb => { cb.checked = false; });
+        refresh();
+      });
+    }
+
+    // Segmented filter pills
+    document.querySelectorAll('.seg-filters').forEach(group => {
+      group.querySelectorAll('button').forEach(b => {
+        b.addEventListener('click', () => {
+          group.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+        });
+      });
+    });
+
+    // Density toggle
+    document.querySelectorAll('.density-toggle').forEach(group => {
+      group.querySelectorAll('button').forEach(b => {
+        b.addEventListener('click', () => {
+          group.querySelectorAll('button').forEach(x => x.classList.remove('active'));
+          b.classList.add('active');
+        });
+      });
+    });
+  })();
+</script>
+</body>
+</html>

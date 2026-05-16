@@ -2,8 +2,6 @@ import { defineStore, type StoreDefinition } from 'pinia'
 import { ref, type Ref } from 'vue'
 import {
   DEFAULT_USER_SETTINGS,
-  numericToStringCulture,
-  numericToStringTheme,
   type CultureText,
   type ThemeText,
   type IUserSettingsService,
@@ -15,8 +13,8 @@ export interface UserSettingsStoreReturn {
   setUserSettings: (settings: UserSettings) => void
   fetchUserSettings: () => Promise<UserSettings>
   updateUserSettings: (settings: UserSettings) => Promise<void>
-  updateTheme: (theme: number) => Promise<void>
-  updateCulture: (culture: number) => Promise<void>
+  updateTheme: (theme: ThemeText) => Promise<void>
+  updateCulture: (culture: CultureText) => Promise<void>
   getCurrentCulture: () => CultureText
   getCurrentTheme: () => ThemeText
 }
@@ -59,20 +57,20 @@ export const createUserSettingsStore = (
       userSettings.value = settings
     }
 
-    const updateTheme = async (theme: number) => {
+    const updateTheme = async (theme: ThemeText) => {
       await updateUserSettings({ ...userSettings.value, theme })
     }
 
-    const updateCulture = async (culture: number) => {
+    const updateCulture = async (culture: CultureText) => {
       await updateUserSettings({ ...userSettings.value, culture })
     }
 
     const getCurrentCulture = (): CultureText => {
-      return numericToStringCulture(userSettings.value.culture)
+      return userSettings.value.culture
     }
 
     const getCurrentTheme = (): ThemeText => {
-      return numericToStringTheme(userSettings.value.theme)
+      return userSettings.value.theme
     }
 
     return {

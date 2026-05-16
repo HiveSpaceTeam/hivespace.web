@@ -5,7 +5,7 @@
   "email": "Email",
   "password": "Mật khẩu",
   "confirmPassword": "Xác nhận mật khẩu",
-  "createAdmin": "Tạo Quản trị viên",
+  "createAdmin": "Tạo quản trị viên",
   "fullNamePlaceholder": "Nhập họ và tên",
   "emailPlaceholder": "Nhập địa chỉ email quản trị viên",
   "passwordPlaceholder": "Nhập mật khẩu bảo mật (tối thiểu 12 ký tự)",
@@ -23,7 +23,7 @@
   "passwordFair": "Trung bình",
   "passwordGood": "Tốt",
   "passwordStrong": "Mạnh",
-  "emailAddress": "Địa chỉ Email",
+  "emailAddress": "Địa chỉ email",
   "isSystemAdmin": "Quản trị viên hệ thống",
   "lastUpdatedDate": "Ngày cập nhật cuối",
   "fullName": "Họ và tên",
@@ -39,7 +39,7 @@
   "allStatus": "Tất cả trạng thái",
   "active": "Hoạt động",
   "inactive": "Tạm khóa",
-  "allAdmins": "Tất cả Quản trị viên",
+  "allAdmins": "Tất cả quản trị viên",
   "regularAdmin": "Quản trị viên thường",
   "systemAdmin": "Quản trị viên hệ thống",
   "alerts": {
@@ -54,7 +54,7 @@
   },
   "actions": {
     "deleteAdmin": {
-      "title": "Xóa Quản trị viên",
+      "title": "Xóa quản trị viên",
       "message": "Bạn có chắc chắn muốn xóa quản trị viên \"{email}\"? Hành động này không thể hoàn tác."
     }
   },
@@ -74,6 +74,10 @@
     "statusUpdateFailed": {
       "title": "Cập nhật thất bại",
       "message": "Không thể cập nhật trạng thái quản trị viên. Vui lòng thử lại."
+    },
+    "loadFailed": {
+      "title": "Tải dữ liệu thất bại",
+      "message": "Không thể tải danh sách tài khoản. Vui lòng thử lại."
     }
   },
   "values": {

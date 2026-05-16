@@ -1,0 +1,17 @@
+{
+  "common": {
+    "backHome": "Về trang chủ"
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "message": "Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển."
+  },
+  "serverError": {
+    "title": "Lỗi máy chủ",
+    "message": "Đã xảy ra sự cố ở phía hệ thống. Vui lòng thử lại sau."
+  },
+  "maintenance": {
+    "title": "Đang bảo trì",
+    "message": "Chúng tôi đang nâng cấp hệ thống. Vui lòng quay lại sau."
+  }
+}

@@ -23,14 +23,20 @@
     "shopCouponTitle": "{name} Promotions",
     "enterPromoCode": "Enter promo code",
     "apply": "Apply",
+    "back": "Back",
     "noCoupons": "No coupons available",
     "noCouponsHint": "If you have a shop coupon, enter it above",
     "couponApplied": "Applied: {code}",
     "discountLabel": "{percent}% off",
+    "discountFixedLabel": "Save {amount}",
     "minOrder": "Min. order {amount}",
     "expires": "Exp: {date}",
     "limitedQuantity": "Limited quantity",
+    "selected": "Selected",
     "expired": "Expired",
     "notEligible": "NOT\nELIGIBLE",
-    "addToCartSuccess": "Product has been added to cart"
+    "addToCartSuccess": "Product has been added to cart",
+    "checkoutSelectionRequired": "Please select at least one item before checkout",
+    "loadMore": "Load more",
+    "couponUnavailableTitle": "Coupon unavailable"
 }
