@@ -20,7 +20,7 @@
       <nav class="py-2">
         <RouterLink
           to="/notifications"
-          class="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+          class="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
         >
           <Bell class="w-4 h-4 shrink-0" />
           {{ $t('storefront.profilePage.navNotifications') }}
@@ -29,7 +29,7 @@
         <div>
           <button
             @click="accountOpen = !accountOpen"
-            class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-medium text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+            class="w-full flex items-center gap-3 px-4 py-2.5 text-sm font-semibold text-gray-700 dark:text-gray-200 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
           >
             <User class="w-4 h-4 shrink-0 text-primary" />
             <span class="flex-1 text-left">{{ $t('storefront.profilePage.navMyAccount') }}</span>
@@ -41,34 +41,27 @@
           <div v-show="accountOpen" class="pl-11 pr-3 pb-1 flex flex-col gap-0.5">
             <RouterLink
               to="/profile"
-              class="block px-3 py-1.5 text-sm rounded transition-colors"
+              class="block px-3 py-1.5 text-sm font-semibold rounded transition-colors"
               :class="activeClass('/profile')"
             >
               {{ $t('storefront.profilePage.navProfile') }}
             </RouterLink>
             <RouterLink
               to="/profile/address"
-              class="block px-3 py-1.5 text-sm rounded transition-colors"
+              class="block px-3 py-1.5 text-sm font-semibold rounded transition-colors"
               :class="activeClass('/profile/address')"
             >
               {{ $t('storefront.profilePage.navAddress') }}
-            </RouterLink>
-            <RouterLink
-              to="/profile/change-password"
-              class="block px-3 py-1.5 text-sm rounded transition-colors"
-              :class="activeClass('/profile/change-password')"
-            >
-              {{ $t('storefront.profilePage.navChangePassword') }}
             </RouterLink>
           </div>
         </div>
 
         <RouterLink
           to="/orders"
-          class="flex items-center gap-3 px-4 py-2.5 text-sm transition-colors"
+          class="flex items-center gap-3 px-4 py-2.5 text-sm font-semibold transition-colors"
           :class="
             route.path === '/orders'
-              ? 'text-primary font-medium'
+              ? 'text-primary'
               : 'text-gray-600 dark:text-gray-300 hover:text-primary hover:bg-gray-50 dark:hover:bg-gray-800'
           "
         >
@@ -101,6 +94,6 @@ const displayUsername = computed(
 
 const activeClass = (path: string) =>
   route.path === path
-    ? 'text-primary font-medium'
+    ? 'text-primary'
     : 'text-gray-500 dark:text-gray-400 hover:text-primary'
 </script>

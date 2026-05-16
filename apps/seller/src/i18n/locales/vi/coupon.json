@@ -94,6 +94,7 @@
       "displaySettings": "Thiết lập hiển thị",
       "displayPublic": "Hiển thị nhiều nơi",
       "displayCodeOnly": "Chia sẻ thông qua mã Coupon",
+      "displayCodeOnlyHint": "Người mua chỉ có thể sử dụng mã này khi nhập trực tiếp mã coupon.",
       "displayCodeOnlyFixed": "Chia sẻ thông qua Mã giảm giá",
       "applicableProducts": "Sản phẩm được áp dụng",
       "allProducts": "Tất cả sản phẩm",
@@ -153,6 +154,7 @@
         "select": "Chọn",
         "upload": "Tải Lên Danh Sách Sản Phẩm"
       },
+      "uploadComingSoon": "Tính năng tải lên danh sách sản phẩm sẽ sớm ra mắt.",
       "category": "Ngành hàng",
       "allCategories": "Tất cả ngành hàng",
       "search": "Tìm kiếm",
@@ -166,6 +168,7 @@
         "price": "Giá",
         "stock": "Kho"
       },
+      "noProductsFound": "Không tìm thấy sản phẩm.",
       "cancel": "Hủy",
       "confirm": "Xác nhận"
     }

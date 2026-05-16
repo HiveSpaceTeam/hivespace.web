@@ -1,0 +1,17 @@
+{
+  "common": {
+    "backHome": "Back to home"
+  },
+  "notFound": {
+    "title": "Page not found",
+    "message": "The page you are looking for does not exist or has been moved."
+  },
+  "serverError": {
+    "title": "Server error",
+    "message": "Something went wrong on our side. Please try again later."
+  },
+  "maintenance": {
+    "title": "Under maintenance",
+    "message": "We are working on improvements. Please check back soon."
+  }
+}

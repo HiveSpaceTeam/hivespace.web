@@ -1,0 +1,112 @@
+{
+  "title": "Tài khoản quản trị",
+  "description": "Theo dõi quyền truy cập quản trị, giám sát người dùng đặc quyền và quản lý vận hành nền tảng.",
+  "tableTitle": "Tài khoản nền tảng",
+  "actions": {
+    "exportCsv": "Xuất CSV",
+    "inviteAdmin": "Mời quản trị viên"
+  },
+  "stats": {
+    "total": "Tổng tài khoản",
+    "active": "Hoạt động",
+    "pendingInvites": "Lời mời chờ",
+    "needsAttention": "Cần chú ý",
+    "thisMonth": "tháng này",
+    "signedInLast30d": "Đăng nhập trong 30 ngày",
+    "awaitingFirstLogin": "Chờ đăng nhập đầu tiên",
+    "attentionSub": "Tắt 2FA · bị khóa · đình chỉ"
+  },
+  "filters": {
+    "searchPlaceholder": "Tìm theo tên, email, thành phố hoặc IP...",
+    "all": "Tất cả",
+    "active": "Hoạt động",
+    "invited": "Đã mời",
+    "suspended": "Đình chỉ",
+    "locked": "Bị khóa"
+  },
+  "table": {
+    "account": "Tài khoản",
+    "role": "Vai trò",
+    "status": "Trạng thái",
+    "mfa": "2FA",
+    "lastSeen": "Thấy lần cuối",
+    "ip": "IP",
+    "sortedByLastSeen": "Sắp xếp theo lần cuối",
+    "accountsLabel": "tài khoản",
+    "mfaEnabled": "Đã bật",
+    "mfaDisabled": "Chưa bật",
+    "noResults": "Không tìm thấy tài khoản nào khớp",
+    "noResultsSub": "Thử xóa bộ lọc hoặc mời quản trị viên mới.",
+    "bulkSelected": "Đã chọn {count}",
+    "bulkAuditNote": "Các thao tác hàng loạt được kiểm tra và yêu cầu lý do.",
+    "clear": "Xóa chọn",
+    "sendReset": "Gửi đặt lại mật khẩu",
+    "suspend": "Đình chỉ"
+  },
+  "permissions": {
+    "read": "Xem tài khoản",
+    "write": "Tạo / sửa tài khoản",
+    "merchantsSuspend": "Đình chỉ thương nhân",
+    "paymentsRefund": "Hoàn tiền",
+    "configWrite": "Sửa cấu hình nền tảng",
+    "auditExport": "Xuất nhật ký kiểm tra",
+    "kybApprove": "Phê duyệt hồ sơ KYB",
+    "riskRules": "Sửa quy tắc rủi ro"
+  },
+  "expiry": {
+    "h24": "24 giờ",
+    "d3": "3 ngày",
+    "d7": "7 ngày"
+  },
+  "drawer": {
+    "overview": "Tổng quan",
+    "permissions": "Quyền hạn",
+    "activity": "Hoạt động",
+    "accountId": "ID Tài khoản",
+    "email": "Email",
+    "mfa": "2FA",
+    "mfaEnabled": "Đã bật · Trình xác thực TOTP",
+    "mfaDisabled": "Đã tắt — đăng nhập không được bảo vệ",
+    "lastSeen": "Thấy lần cuối",
+    "lastIp": "IP cuối",
+    "memberSince": "Thành viên từ",
+    "permissionsNote": "Quyền hạn được kế thừa từ {role}. Việc thay đổi các quyền cá nhân sẽ tạo ra ghi đè cho tài khoản này.",
+    "impersonate": "Đóng vai",
+    "reactivate": "Kích hoạt lại",
+    "statusGood": "Tài khoản ở trạng thái tốt",
+    "statusInvited": "Lời mời đã gửi · chờ chấp nhận",
+    "statusLocked": "Bị khóa sau các lần đăng nhập thất bại",
+    "statusSuspended": "Bị đình chỉ bởi quản trị viên"
+  },
+  "roles": {
+    "title": "Vai trò",
+    "definedCount": "Đã định nghĩa {count}",
+    "all": "Tất cả tài khoản",
+    "allDesc": "Mọi quản trị viên",
+    "managePermissions": "Quản lý quyền vai trò",
+    "superadmin": "Siêu quản trị viên",
+    "superadminDesc": "Toàn quyền truy cập nền tảng · chỉ dùng khi khẩn cấp",
+    "admin": "Quản trị viên nền tảng",
+    "adminDesc": "Quản lý thương nhân, cấu hình, kiểm tra",
+    "finance": "Tài chính",
+    "financeDesc": "Thanh toán, phí, đối soát, hoàn tiền",
+    "compliance": "Tuân thủ",
+    "complianceDesc": "Xét duyệt KYC / KYB, phê duyệt tài liệu",
+    "risk": "Rủi ro",
+    "riskDesc": "Quy tắc gian lận, chặn, xét duyệt tranh chấp",
+    "support": "Hỗ trợ khách hàng",
+    "supportDesc": "Chỉ đọc, xử lý vấn đề của khách hàng"
+  },
+  "inviteModal": {
+    "title": "Mời quản trị viên vào HiveSpace",
+    "description": "Họ sẽ nhận được email chứa liên kết ảo và phải bật 2FA trong lần đăng nhập đầu tiên.",
+    "fullName": "Họ và tên",
+    "workEmail": "Email công việc",
+    "role": "Vai trò",
+    "inviteExpires": "Lời mời hết hạn trong",
+    "cancel": "Hủy bỏ",
+    "sendInvitation": "Gửi lời mời",
+    "newUserDefault": "Người dùng mới",
+    "newUserEmailDefault": "nguoimoi@hivespace.vn"
+  }
+}

@@ -1,0 +1,33 @@
+{
+  "pagination": {
+    "showing": "Showing",
+    "of": "of",
+    "prev": "Previous",
+    "next": "Next"
+  },
+  "auth": {
+    "signingOut": "Signing out..."
+  },
+  "default": {
+    "title": "HiveSpace - Seller Center",
+    "welcome": "Welcome to HiveSpace Seller Center.",
+    "signIn": "Sign in",
+    "signUp": "Sign up"
+  },
+  "maintenance": {
+    "title": "MAINTENANCE",
+    "message": "Our site is currently under maintenance. We will be back shortly. Thank you for your patience."
+  },
+  "notFound": {
+    "title": "ERROR",
+    "message": "We can't seem to find the page you are looking for!"
+  },
+  "serverError": {
+    "title": "ERROR",
+    "message": "Something went wrong on our end. Please try again in a moment or contact support if the issue persists."
+  },
+  "header": {
+    "openApplicationMenu": "Open application menu",
+    "closeApplicationMenu": "Close application menu"
+  }
+}

@@ -24,4 +24,14 @@
     "buyNow": "Mua ngay",
     "addCart": "Thêm vào giỏ",
     "details": "Chi tiết"
+,
+    "fallbackStoreName": "Cá»­a hÃ ng HiveSpace",
+    "noDefaultAddress": "ChÆ°a cÃ³ Ä‘á»‹a chá»‰",
+    "deliveryDayLabel": "Giao Thá»© SÃ¡u",
+    "deliveryDateExample": "20/03",
+    "deliveryStrikePrice": "38.000â‚«",
+    "freeshipPromotion": "Freeship 15k Ä‘Æ¡n tá»« 45k, Freeship 30k Ä‘Æ¡n tá»« 100k",
+    "discountCount": "3",
+    "discountPercentValue": "20%",
+    "discountFixedValue": "8K"
 }

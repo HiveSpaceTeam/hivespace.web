@@ -1,6 +1,7 @@
 import { BaseService } from './base.service'
 import type {
-  GetCartItemsResponse,
+  GetCartSummaryRequest,
+  GetCartSummaryResponse,
   AddCartItemRequest,
   AddCartItemResponse,
   UpdateCartItemsRequest,
@@ -8,8 +9,24 @@ import type {
 } from '@/types'
 
 class CartService extends BaseService {
-  getCartItems(): Promise<GetCartItemsResponse> {
-    return this.get<GetCartItemsResponse>('/carts/items')
+  getCartSummary(data: GetCartSummaryRequest): Promise<GetCartSummaryResponse> {
+    return this.post<GetCartSummaryResponse>('/carts/summary', data)
+  }
+
+  applyPlatformCoupon(couponCode: string) {
+    return this.post('/carts/coupons/platform', { couponCode })
+  }
+
+  removePlatformCoupon(couponCode: string) {
+    return this.delete(`/carts/coupons/platform/${encodeURIComponent(couponCode)}`)
+  }
+
+  applyStoreCoupon(storeId: string, couponCode: string) {
+    return this.put(`/carts/coupons/stores/${storeId}`, { couponCode })
+  }
+
+  removeStoreCoupon(storeId: string) {
+    return this.delete(`/carts/coupons/stores/${storeId}`)
   }
 
   addCartItem(data: AddCartItemRequest): Promise<AddCartItemResponse> {

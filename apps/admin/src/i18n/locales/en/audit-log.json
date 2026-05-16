@@ -1,0 +1,90 @@
+{
+  "title": "Audit log",
+  "description": "Append-only record of every privileged action across Admin, Seller Center, and Storefront. Retained 24 months. Tamper-evident hash-chained.",
+  "tableTitle": "Platform events",
+  "actions": {
+    "live": "Live",
+    "export": "Export",
+    "savedViews": "Saved views",
+    "streaming": "Streaming",
+    "paused": "Paused",
+    "refreshNote": "refresh every ~5s",
+    "unflag": "Unflag",
+    "flag": "Flag",
+    "reopen": "Reopen",
+    "markReviewed": "Mark reviewed",
+    "exportTitle": "Export audit events",
+    "exportSub": "Includes only events matching the active filters.",
+    "exportBtn": "Export events"
+  },
+  "metrics": {
+    "total": "Events · today",
+    "totalSub": "▲ 12.4% vs. yesterday",
+    "warning": "Critical alerts",
+    "warningSub": "▼ 2 resolved in last 4h",
+    "actors": "Unique actors",
+    "actorsSub": "7 admin · 14 merchants · 2 system",
+    "error": "Failed / blocked",
+    "errorSub": "Lockouts & fraud blocks"
+  },
+  "density": {
+    "title": "Event density",
+    "subtitle": "24 buckets · click a bar to drill in",
+    "activity": "Activity",
+    "selectedRange": "Selected range",
+    "criticalPresent": "Critical present"
+  },
+  "filters": {
+    "searchPlaceholder": "Search actor, action, resource ID, IP...",
+    "surface": "Surface",
+    "severity": "Severity",
+    "actor": "Actor",
+    "all": "All",
+    "surfaces": {
+      "admin": "Admin",
+      "sellerCenter": "Seller Center",
+      "storefront": "Storefront"
+    },
+    "severities": {
+      "info": "Info",
+      "warning": "Warning",
+      "critical": "Critical"
+    },
+    "clearAll": "Clear all"
+  },
+  "columns": {
+    "time": "Time",
+    "actor": "Actor",
+    "action": "Action",
+    "surface": "Surface",
+    "severity": "Severity",
+    "ip": "IP"
+  },
+  "drawer": {
+    "overview": "Overview",
+    "diff": "Diff",
+    "rawJson": "Raw JSON",
+    "related": "Related",
+    "event": "Event",
+    "resource": "Resource",
+    "when": "When",
+    "ipGeo": "IP / Geo",
+    "userAgent": "User-Agent",
+    "noDiff": "No state change",
+    "noDiffSub": "This event was logged without a persisted diff.",
+    "noRelated": "No related events",
+    "noRelatedSub": "Nothing nearby in actor, resource, or review trail.",
+    "statusFlagged": "Flagged for follow-up",
+    "statusReviewed": "Reviewed",
+    "statusAwaiting": "Awaiting review"
+  },
+  "viewModes": {
+    "table": "Table",
+    "timeline": "Timeline"
+  },
+  "results": "Showing first {count} events",
+  "totalResults": "Showing {count} of {total} events",
+  "modals": {
+    "cancel": "Cancel"
+  }
+}

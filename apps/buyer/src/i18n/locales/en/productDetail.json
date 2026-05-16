@@ -23,5 +23,14 @@
     "subtotal": "Subtotal",
     "buyNow": "Buy Now",
     "addCart": "Add to Cart",
-    "details": "Details"
+    "details": "Details",
+    "fallbackStoreName": "HiveSpace Store",
+    "noDefaultAddress": "No saved address",
+    "deliveryDayLabel": "Deliver Friday",
+    "deliveryDateExample": "20/03",
+    "deliveryStrikePrice": "38.000₫",
+    "freeshipPromotion": "Free shipping 15k from 45k, free shipping 30k from 100k",
+    "discountCount": "3",
+    "discountPercentValue": "20%",
+    "discountFixedValue": "8K"
 }

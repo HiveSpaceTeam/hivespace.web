@@ -16,18 +16,18 @@
 
     <div class="mx-auto w-full max-w-60.5 text-center sm:max-w-140.5">
       <h1 class="text-title-md mb-8 font-bold text-gray-800 dark:text-white/90 xl:text-title-2xl">
-        {{ t('pages.serverError.title') }}
+        {{ t('common.serverError.title') }}
       </h1>
       <img :src="error500" alt="500" class="dark:hidden" />
       <img :src="error500Dark" alt="500" class="hidden dark:block" />
       <p class="mb-6 mt-10 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
-        {{ t('pages.serverError.message') }}
+        {{ t('common.serverError.message') }}
       </p>
       <a
         href="/"
         class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200"
       >
-        {{ t('pages.common.backHome') }}
+        {{ t('common.backHome') }}
       </a>
     </div>
 

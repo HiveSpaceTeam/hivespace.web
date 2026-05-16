@@ -1,13 +1,17 @@
 import { BaseService } from './base.service'
-import type { ProductSummary, PagingRequest, PagedResponse, ProductDetail } from '@/types'
+import type {
+  GetProductDetailResponse,
+  GetProductListQuery,
+  GetProductListResponse,
+} from '@/types'
 
 class ProductService extends BaseService {
-  getProducts(params: PagingRequest): Promise<PagedResponse<ProductSummary>> {
-    return this.get<PagedResponse<ProductSummary>>('/products/summaries', { params })
+  getProducts(params: GetProductListQuery): Promise<GetProductListResponse> {
+    return this.get<GetProductListResponse>('/products/summaries', { params })
   }
 
-  getProductById(id: string): Promise<ProductDetail> {
-    return this.get<ProductDetail>(`/products/detail/${id}`)
+  getProductById(id: string): Promise<GetProductDetailResponse> {
+    return this.get<GetProductDetailResponse>(`/products/detail/${id}`)
   }
 }
 

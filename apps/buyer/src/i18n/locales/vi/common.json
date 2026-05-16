@@ -1,0 +1,54 @@
+{
+  "home": "Trang chủ",
+  "search": "Tìm kiếm sản phẩm...",
+  "categories": "Danh mục",
+  "flashSale": "Flash Sale",
+  "viewAll": "Xem tất cả",
+  "addToCart": "Thêm vào giỏ",
+  "buyNow": "Mua ngay",
+  "sold": "Đã bán",
+  "topProducts": "Sản phẩm nổi bật",
+  "newArrivals": "Hàng mới về",
+  "bestSellers": "Bán chạy nhất",
+  "seeMore": "Xem thêm",
+  "freeShipping": "Miễn phí vận chuyển",
+  "guarantee": "Hàng chính hãng 100%",
+  "freeReturns": "Đổi trả miễn phí",
+  "customerService": "Hỗ trợ 24/7",
+  "todaysSuggestions": "Gợi Ý Hôm Nay",
+  "discount": "Giảm",
+  "soldOut": "Đã bán hết",
+  "soldCount": "Đã bán {count}",
+  "default": "Mặc định",
+  "auth": {
+    "signIn": "Đăng nhập",
+    "signUp": "Đăng ký",
+    "signingOut": "Đang đăng xuất..."
+  },
+  "profile": {
+    "myAccount": "Tài khoản của tôi",
+    "myOrders": "Đơn mua",
+    "signOut": "Đăng xuất"
+  },
+  "mockProductName": "[CHÍNH HÃNG] Mẫu Sản phẩm Demo {index} - Thiết kế mới nhất năm nay, chất lượng cao, bảo hành 12 tháng",
+  "header": {
+    "searchPlaceholder": "Tìm theo sản phẩm, đơn hàng hoặc người mua...",
+    "openApplicationMenu": "Mở menu ứng dụng",
+    "closeApplicationMenu": "Đóng menu ứng dụng"
+  },
+  "pageTitle": {
+    "home": "HiveSpace - Mua sắm trực tuyến",
+    "cart": "Giỏ Hàng - HiveSpace",
+    "checkout": "Thanh Toán - HiveSpace",
+    "product": "HiveSpace - Mua sắm trực tuyến",
+    "serverError": "Lỗi máy chủ",
+    "maintenance": "Bảo trì",
+    "notFound": "Không tìm thấy trang",
+    "profile": "Hồ Sơ Của Tôi - HiveSpace",
+    "address": "Địa Chỉ Của Tôi - HiveSpace",
+    "paymentResult": "Kết Quả Thanh Toán - HiveSpace",
+    "orders": "Đơn Mua - HiveSpace",
+    "orderDetail": "Chi Tiết Đơn Hàng - HiveSpace",
+    "notifications": "Thông Báo - HiveSpace"
+  }
+}

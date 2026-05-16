@@ -1,10 +1,24 @@
-import type { PaginationMetadata } from '@hivespace/shared'
+export interface AppliedPlatformCoupon {
+  couponCode: string
+}
 
-// Cart UI types
+export interface AppliedStoreCoupon {
+  storeId: string
+  couponCode: string
+}
+
+export interface InvalidAppliedCoupon {
+  couponCode: string
+  ownerType: 'Platform' | 'Store'
+  storeId?: string | null
+  reasonCode: string
+  message: string
+}
 
 export interface CartItem {
   id: string
   cartItemId: string
+  productId: number
   skuId: number
   name: string
   image: string
@@ -18,13 +32,14 @@ export interface CartItem {
 }
 
 export interface CartGroup {
-  sellerName: string
+  storeId: string
+  storeName: string
+  storeStatus?: number | null
   isMall: boolean
   selected: boolean
+  appliedStoreCoupon?: AppliedStoreCoupon | null
   items: CartItem[]
 }
-
-// Cart API types
 
 export interface CartItemResponse {
   cartItemId: string
@@ -32,23 +47,50 @@ export interface CartItemResponse {
   skuId: number
   quantity: number
   isSelected: boolean
-  productName: string
-  productThumbnailUrl: string
-  productStatus: number
-  price: number
-  currency: string
-  skuNo: string
-  skuImageUrl: string
-  skuAttributes: string
-  storeName: string
-  storeStatus: number
+  productName: string | null
+  productThumbnailUrl: string | null
+  productStatus: number | null
+  originalPrice?: number | null
+  price: number | null
+  currency: string | null
+  skuNo: string | null
+  skuName?: string | null
+  skuImageUrl: string | null
+  skuAttributes: string | null
+  storeId: string
+  storeName: string | null
+  storeStatus: number | null
   createdAt: string
-  updatedAt: string
+  updatedAt: string | null
 }
 
-export interface GetCartItemsResponse {
+export interface CartStoreGroupResponse {
+  storeId: string
+  storeName: string
+  storeStatus?: number | null
+  isMall: boolean
+  isSelected: boolean
+  appliedStoreCoupon?: AppliedStoreCoupon | null
   items: CartItemResponse[]
-  pagination: PaginationMetadata
+}
+
+export interface CartSummary {
+  discountAmount: number
+  subTotal: number
+  total: number
+}
+
+export interface GetCartSummaryRequest {
+  page: number
+  pageSize: number
+}
+
+export interface GetCartSummaryResponse {
+  stores: CartStoreGroupResponse[]
+  summary: CartSummary
+  platformCoupons: AppliedPlatformCoupon[]
+  invalidatedCoupons: InvalidAppliedCoupon[]
+  hasMore: boolean
 }
 
 export interface AddCartItemRequest {
@@ -76,4 +118,3 @@ export interface UpdateCartItemsRequest {
 export interface GetSelectedItemsCountResponse {
   count: number
 }
-

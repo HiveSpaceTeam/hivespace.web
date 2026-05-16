@@ -1,7 +1,7 @@
 <template>
   <div class="relative" ref="multiSelectRef" :style="{ '--menu-width': menuWidthPx + 'px' }">
     <label
-      v-if="props.label"
+      v-if="props.label && props.variant === 'default'"
       class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400"
       >{{ props.label }}</label
     >
@@ -11,11 +11,29 @@
       @keydown.space.prevent="toggleDropdown"
       role="button"
       tabindex="0"
-      class="dark:bg-dark-900 h-11 flex items-center w-full appearance-none rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
-      :class="{ 'text-gray-800 dark:text-white/90': isOpen }"
+      class="flex items-center w-full appearance-none rounded-lg transition-all"
+      :class="[
+        props.variant === 'filter'
+          ? 'h-10 px-3 py-2 bg-white dark:bg-dark-900 border border-gray-200 dark:border-gray-800 shadow-theme-xs hover:border-gray-300 dark:hover:border-gray-700'
+          : 'h-11 px-4 py-2.5 bg-transparent dark:bg-dark-900 border border-gray-300 dark:border-gray-700 shadow-theme-xs focus:border-brand-300 focus:ring-3 focus:ring-brand-500/10 dark:focus:border-brand-800',
+        isOpen ? 'text-gray-800 dark:text-white/90 ring-3 ring-brand-500/10 border-brand-300' : 'text-gray-800 dark:text-white/90',
+      ]"
     >
-      <span v-if="selectedItems.length === 0" class="text-gray-400"> {{ placeholderText }} </span>
-      <div class="flex items-center flex-auto gap-2 flex-nowrap overflow-hidden">
+      <!-- Icon Slot for Filter variant -->
+      <div v-if="props.variant === 'filter'" class="flex-none text-gray-500 dark:text-gray-400 mr-2">
+        <slot name="icon"></slot>
+      </div>
+
+      <!-- Label for Filter variant -->
+      <span v-if="props.variant === 'filter'" class="text-sm font-medium text-gray-700 dark:text-gray-300 grow truncate">
+        {{ props.label || placeholderText }}
+      </span>
+
+      <!-- Default variant placeholder -->
+      <span v-else-if="selectedItems.length === 0" class="text-gray-400"> {{ placeholderText }} </span>
+
+      <!-- Default variant chips -->
+      <div v-if="props.variant === 'default'" class="flex items-center flex-auto gap-2 flex-nowrap overflow-hidden">
         <div
           v-for="item in visibleItems"
           :key="item.value"
@@ -30,18 +48,29 @@
             <CloseSmallIcon />
           </button>
         </div>
+      </div>
+
+      <!-- Summary / Badge area -->
+      <div class="flex items-center gap-2 flex-none ml-auto pl-2">
         <div
-          v-if="hiddenCount > 0"
-          class="flex items-center justify-center h-[30px] w-[30px] rounded-full bg-brand-500 text-white text-sm font-medium"
+          v-if="props.variant === 'default' && hiddenCount > 0"
+          class="flex items-center justify-center h-5 min-w-5 rounded-full bg-brand-500 px-1.5 text-[11px] font-semibold text-white"
         >
           +{{ hiddenCount }}
         </div>
+        <div
+          v-else-if="props.variant === 'filter' && selectedItems.length > 0"
+          class="flex items-center justify-center h-5 min-w-5 rounded-full bg-brand-500 px-1 text-[11px] font-bold text-white"
+        >
+          {{ selectedItems.length }}
+        </div>
+        
+        <ChevronDownIcon
+          ref="chevronRef"
+          class="text-gray-400 transition-transform"
+          :class="{ 'rotate-180': isOpen }"
+        />
       </div>
-      <ChevronDownIcon
-        ref="chevronRef"
-        class="ml-auto text-gray-400 transition-transform"
-        :class="{ 'rotate-180': isOpen }"
-      />
     </div>
     <transition
       enter-active-class="transition duration-100 ease-out"
@@ -70,12 +99,28 @@
               type="button"
               @click="toggleItem(item)"
               :class="[
-                'flex w-full px-3 py-2 font-medium text-left text-gray-500 rounded-lg text-theme-xs hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300',
+                'flex items-center w-full px-3 py-2 font-medium text-left text-gray-500 rounded-lg text-theme-xs transition-colors hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300',
                 isSelected(item) ? 'bg-gray-50 dark:bg-white/[0.03]' : '',
               ]"
             >
-              <span class="grow">{{ item.label }}</span>
-              <CheckLargeIcon v-if="isSelected(item)" />
+              <!-- Checkbox (Filter-style UI) -->
+              <div 
+                class="flex-none w-4 h-4 mr-3 rounded border transition-all flex items-center justify-center"
+                :class="[
+                  isSelected(item) 
+                    ? 'bg-brand-500 border-brand-500' 
+                    : 'bg-white border-gray-300 dark:bg-gray-900 dark:border-gray-700'
+                ]"
+              >
+                <CheckIcon v-if="isSelected(item)" class="w-2.5 h-2.5 text-white" />
+              </div>
+
+              <div class="grow flex items-center justify-between min-w-0">
+                <span class="truncate">{{ item.label }}</span>
+                <span v-if="item.description" class="flex-none text-[10px] text-gray-400 font-normal uppercase tracking-wider ml-4">
+                  {{ item.description }}
+                </span>
+              </div>
             </button>
           </li>
         </ul>
@@ -90,10 +135,12 @@
       class="inline-flex items-center h-[30px] rounded-full py-1 pl-2.5 pr-2 text-sm"
     >
       <span>{{ item.label }}</span>
+      <div class="w-[22px]"></div>
+      <!-- Space for CloseSmallIcon (14px) + pl-2 (8px) -->
     </div>
     <div
       ref="plusRef"
-      class="inline-flex items-center h-[30px] w-[30px] rounded-full bg-brand-500 text-white text-sm font-medium justify-center"
+      class="inline-flex items-center h-5 min-w-5 rounded-full bg-brand-500 px-1.5 text-[11px] font-semibold text-white justify-center"
     >
       +99
     </div>
@@ -105,24 +152,27 @@ import { ref, onMounted, onBeforeUnmount, nextTick, watch, computed } from 'vue'
 
 import CloseSmallIcon from '../../icons/CloseSmallIcon.vue'
 import ChevronDownIcon from '../../icons/ChevronDownIcon.vue'
-import CheckLargeIcon from '../../icons/CheckLargeIcon.vue'
+import CheckIcon from '../../icons/CheckIcon.vue'
 
 interface Option {
   value: string | number
   label: string
+  description?: string
 }
 
 const props = withDefaults(
   defineProps<{
     options: Option[]
     modelValue?: Option[]
-    label?: string // Added label prop
-    placeholder?: string // Added placeholder prop
+    label?: string
+    placeholder?: string
+    variant?: 'default' | 'filter'
   }>(),
   {
     modelValue: () => [],
-    label: '', // Default empty string for label
-    placeholder: 'Select items...', // Default placeholder text
+    label: '',
+    placeholder: 'Select items...',
+    variant: 'default',
   },
 )
 
@@ -136,9 +186,6 @@ const plusRef = ref<HTMLElement | null>(null)
 const chevronRef = ref<HTMLElement | null>(null)
 
 const visibleCount = ref<number>(selectedItems.value.length)
-
-// deterministic fallback: show up to this many chips, then +N
-const MAX_VISIBLE = 4
 
 // Placeholder text computed property
 const placeholderText = computed(() => props.placeholder)
@@ -213,12 +260,50 @@ const isSelected = (item: Option) => {
 }
 
 function updateVisibleCount() {
-  // Simple deterministic behavior to match design: show at most MAX_VISIBLE chips
-  if (selectedItems.value.length <= MAX_VISIBLE) {
-    visibleCount.value = selectedItems.value.length
-  } else {
-    visibleCount.value = MAX_VISIBLE
+  if (!multiSelectRef.value || !measureRef.value || !plusRef.value) return
+
+  // Available width: total width - padding (32px) - chevron (20px) - margin (8px)
+  const totalWidth = multiSelectRef.value.getBoundingClientRect().width
+  const availableWidth = totalWidth - 60 // Safe margin for padding and chevron
+
+  if (selectedItems.value.length === 0) {
+    visibleCount.value = 0
+    return
   }
+
+  // Get all measurement chips (all divs except the one with ref="plusRef")
+  const chips = Array.from(measureRef.value.children).filter(
+    (el) => el !== plusRef.value,
+  ) as HTMLElement[]
+  const plusBadgeWidth = plusRef.value.getBoundingClientRect().width + 8 // 8 for gap
+
+  let currentWidth = 0
+  let count = 0
+
+  for (let i = 0; i < selectedItems.value.length; i++) {
+    const chip = chips[i]
+    if (!chip) continue
+
+    const chipWidth = chip.getBoundingClientRect().width + 8 // 8 for gap
+
+    if (i === selectedItems.value.length - 1) {
+      // Last item: don't need to worry about plus badge
+      if (currentWidth + chipWidth <= availableWidth) {
+        count++
+      }
+      break
+    } else {
+      // Not the last item: must account for plus badge if we hide subsequent items
+      if (currentWidth + chipWidth + plusBadgeWidth <= availableWidth) {
+        currentWidth += chipWidth
+        count++
+      } else {
+        break
+      }
+    }
+  }
+
+  visibleCount.value = count
 }
 
 const visibleItems = computed(() => selectedItems.value.slice(0, visibleCount.value))

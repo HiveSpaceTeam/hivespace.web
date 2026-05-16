@@ -1,0 +1,102 @@
+{
+  "title": "Cấu hình",
+  "searchPlaceholder": "Tìm kiếm cài đặt...",
+  "notifications": {
+    "saved": "Đã lưu cấu hình",
+    "version": "v2.185"
+  },
+  "nav": {
+    "workspace": "Không gian làm việc",
+    "commerce": "Thương mại"
+  },
+  "tabs": {
+    "payments": "Thanh toán",
+    "tax": "Thuế",
+    "localization": "Địa phương hóa",
+    "api": "API & Webhooks"
+  },
+  "payments": {
+    "title": "Thanh toán",
+    "providers": {
+      "vnpay": "VNPay",
+      "vnpayDesc": "Cổng thanh toán nội địa",
+      "momo": "MoMo",
+      "momoDesc": "Ví điện tử",
+      "stripe": "Stripe",
+      "stripeDesc": "Quốc tế",
+      "zalopay": "ZaloPay",
+      "zalopayDesc": "Ví điện tử"
+    },
+    "platformFee": "Phí nền tảng theo hạng",
+    "table": {
+      "tier": "Hạng",
+      "feeRate": "Tỷ lệ phí",
+      "minThreshold": "Ngưỡng GMV tối thiểu"
+    },
+    "thresholds": {
+      "t1": "₫500M+",
+      "t2": "₫100M – 499M",
+      "t3": "₫20M – 99M",
+      "t4": "< ₫20M"
+    },
+    "payoutSchedule": "Lịch thanh toán",
+    "payout": {
+      "daily": "Hàng ngày",
+      "weekly": "Hàng tuần",
+      "monthly": "Hàng tháng"
+    },
+    "toggles": {
+      "autoRefund": "Hoàn tiền tự động khi hủy",
+      "autoRefundDesc": "Hoàn tiền trong 24 giờ cho đơn hàng bị hủy",
+      "splitPayment": "Hỗ trợ thanh toán trả góp",
+      "splitPaymentDesc": "Cho phép trả góp qua các ngân hàng đối tác",
+      "fraudBlock": "Chặn gian lận (AI)",
+      "fraudBlockDesc": "Tự động giữ giao dịch đáng ngờ > ₫5M",
+      "escrowHold": "Giữ tiền ký quỹ",
+      "escrowHoldDesc": "Giữ tiền đến khi xác nhận giao hàng"
+    }
+  },
+  "tax": {
+    "title": "Thuế",
+    "taxId": "Mã số thuế (MST)",
+    "taxIdPlaceholder": "0312345678",
+    "vatRate": "Thuế VAT (%)",
+    "vatRatePlaceholder": "10"
+  },
+  "localization": {
+    "title": "Địa phương hóa",
+    "currencies": "Đồng tiền được hỗ trợ",
+    "default": "(mặc định)",
+    "language": "Ngôn ngữ",
+    "timezone": "Múi giờ",
+    "languages": {
+      "vi": "Tiếng Việt",
+      "en": "Tiếng Anh"
+    },
+    "timezones": {
+      "hcm": "Asia/Ho_Chi_Minh (UTC+7)",
+      "utc": "UTC",
+      "sg": "Asia/Singapore (UTC+8)"
+    }
+  },
+  "api": {
+    "title": "API & Webhooks",
+    "endpoint": "Đầu cuối API",
+    "apiKey": "Khóa API",
+    "show": "Hiển thị",
+    "hide": "Ẩn",
+    "webhookUrl": "URL Webhook",
+    "deliveryMode": "Chế độ gửi",
+    "toggles": {
+      "autoRetry": "Thử lại tự động",
+      "autoRetryDesc": "Thử lại webhook thất bại tối đa 5 lần",
+      "asyncDelivery": "Gửi bất đồng bộ",
+      "asyncDeliveryDesc": "Gửi webhook không chặn luồng"
+    }
+  },
+  "saveBar": {
+    "unsavedChanges": "{count} thay đổi chưa lưu",
+    "discard": "Hủy bỏ",
+    "save": "Lưu"
+  }
+}

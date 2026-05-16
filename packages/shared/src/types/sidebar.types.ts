@@ -9,6 +9,8 @@ export interface SidebarMenuItem {
   icon: Component
   name: string
   path?: string
+  badge?: string
+  badgeTone?: 'primary' | 'success' | 'light' | 'error'
   subItems?: SidebarSubMenuItem[]
 }
 

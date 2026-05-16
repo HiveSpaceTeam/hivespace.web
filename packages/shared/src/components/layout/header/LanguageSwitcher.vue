@@ -53,13 +53,13 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { useI18n } from 'vue-i18n'
-import { stringToNumericCulture, CULTURE_TEXT, type CultureValue, type CultureText } from '../../../types'
+import { CULTURE_TEXT, type CultureText } from '../../../types'
 import { setCookie, getCookie } from '../../../utils/cookie'
 
 // Define emits
 const emit = defineEmits<{
   languageChanged: [language: CultureText]
-  updateUserCulture: [culture: CultureValue]
+  updateUserCulture: [culture: CultureText]
 }>()
 
 const { locale } = useI18n()
@@ -75,8 +75,7 @@ const changeLanguage = async (lang: CultureText) => {
   // Update i18n locale immediately for UI
   locale.value = lang
 
-  const cultureValue = stringToNumericCulture(lang)
-  emit('updateUserCulture', cultureValue)
+  emit('updateUserCulture', lang)
 
   // Always set cookie for persistence
   setCookie('culture', lang)

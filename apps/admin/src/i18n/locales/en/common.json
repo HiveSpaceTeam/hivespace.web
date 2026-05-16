@@ -1,0 +1,47 @@
+{
+  "accounts": "Accounts",
+  "buyer": "Buyer",
+  "userManagement": "User Management",
+  "adminManagement": "Admin Management",
+  "listOfUsers": "List of user",
+  "listOfAdmins": "List of admin",
+  "auditLog": "Audit Log",
+  "kycQueue": "KYC / KYB Queue",
+  "disputes": "Disputes",
+  "scheduledJobs": "Scheduled Jobs",
+  "backHome": "Back to Home Page",
+  "ago": "{value}{unit} ago",
+  "justNow": "Just now",
+  "comingSoon": "{name} - Coming soon",
+  "maintenance": {
+    "title": "MAINTENANCE",
+    "message": "Our site is currently under maintenance. We will be back shortly. Thank you for your patience."
+  },
+  "notFound": {
+    "title": "ERROR",
+    "message": "We can't seem to find the page you are looking for!"
+  },
+  "serverError": {
+    "title": "ERROR",
+    "message": "Something went wrong on our end. Please try again in a moment or contact support if the issue persists."
+  },
+  "default": {
+    "title": "HiveSpace - Admin Portal",
+    "welcome": "Welcome to HiveSpace Admin Portal.",
+    "signIn": "Sign in",
+    "signUp": "Sign up"
+  },
+  "auth": {
+    "signingOut": "Signing out..."
+  },
+  "header": {
+    "openApplicationMenu": "Open application menu",
+    "closeApplicationMenu": "Close application menu"
+  },
+  "sidebar": {
+    "groups": {
+      "platform": "Platform",
+      "compliance": "Compliance"
+    }
+  }
+}

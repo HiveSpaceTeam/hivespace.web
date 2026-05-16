@@ -1,5 +1,6 @@
 export * from './product.types'
 export * from './cart.types'
+export * from './coupon.types'
 export * from './checkout.types'
 export * from './profile.types'
 export * from './address.types'

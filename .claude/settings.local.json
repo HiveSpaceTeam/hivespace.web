@@ -106,7 +106,8 @@
       "PowerShell(wsl --status 2>&1; echo \"wsl_exit:$LASTEXITCODE\")",
       "PowerShell(Test-Path *)",
       "PowerShell(& \"$env:USERPROFILE\\\\.local\\\\bin\\\\rtk.exe\" init -g 2>&1)",
-      "PowerShell(& \"$env:USERPROFILE\\\\.local\\\\bin\\\\rtk.exe\" init -g --codex 2>&1)"
+      "PowerShell(& \"$env:USERPROFILE\\\\.local\\\\bin\\\\rtk.exe\" init -g --codex 2>&1)",
+      "Bash(rtk lint *)"
     ]
   }
 }

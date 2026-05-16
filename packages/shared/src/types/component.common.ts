@@ -1,3 +1,5 @@
+import type { ThemeText } from '../features/user-settings/user-settings.types'
+
 /**
  * Common Component Types
  * Shared types used across Vue components
@@ -18,7 +20,7 @@ export interface ComponentProps {
 
 // Common component event types
 export interface ComponentEvents {
-    themeChanged: [theme: string]
+    themeChanged: [theme: ThemeText]
     click: [event: MouseEvent]
     change: [value: any]
 }

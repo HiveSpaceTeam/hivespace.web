@@ -20,16 +20,16 @@
           <img :src="maintenanceDark" alt="maintenance" class="hidden dark:block" />
         </div>
         <h1 class="text-title-md mb-2 font-bold text-gray-800 dark:text-white/90 xl:text-title-2xl">
-          {{ t('pages.maintenance.title') }}
+          {{ t('common.maintenance.title') }}
         </h1>
         <p class="mb-6 mt-6 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
-          {{ t('pages.maintenance.message') }}
+          {{ t('common.maintenance.message') }}
         </p>
         <a
           href="/"
           class="inline-flex items-center justify-center rounded-lg border border-gray-300 bg-white px-5 py-3.5 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/3 dark:hover:text-gray-200"
         >
-          {{ t('pages.common.backHome') }}
+          {{ t('common.backHome') }}
         </a>
       </div>
       <p

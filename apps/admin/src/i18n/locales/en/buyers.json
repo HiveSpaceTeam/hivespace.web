@@ -1,0 +1,74 @@
+{
+  "title": "Buyers",
+  "description": "Monitor customer access, seller conversion, and account-level health signals.",
+  "tableTitle": "Buyer directory",
+  "actions": {
+    "export": "Export",
+    "inspect": "Inspect",
+    "reinstate": "Reinstate",
+    "suspend": "Suspend"
+  },
+  "stats": {
+    "total": "Total Buyers",
+    "totalSub": "Registered shoppers",
+    "active": "Active (30d)",
+    "activeSub": "vs LY",
+    "newToday": "New Today",
+    "newTodaySub": "Across all regions",
+    "suspended": "Suspended",
+    "suspendedSub": "Restricted accounts",
+    "avgLtv": "Avg. LTV",
+    "avgLtvSub": "Lifetime value"
+  },
+  "filters": {
+    "searchPlaceholder": "Search buyers by name, email, location...",
+    "all": "All",
+    "active": "Active",
+    "unverified": "Unverified",
+    "suspended": "Suspended",
+    "dormant": "Dormant",
+    "displayingAll": "Displaying all registered buyers",
+    "noResults": "No buyers match the current filters."
+  },
+  "table": {
+    "buyer": "Buyer",
+    "status": "Status",
+    "orders": "Orders",
+    "totalSpend": "Total Spend",
+    "lastActive": "Last Active",
+    "joinDate": "Join Date",
+    "actions": "Actions",
+    "showing": "Showing {count} of {total} buyers"
+  },
+  "summary": {
+    "total": "Total buyers",
+    "totalCaption": "All customer accounts",
+    "active": "Active buyers",
+    "activeCaption": "Able to access the platform",
+    "sellers": "Seller-linked",
+    "sellersCaption": "Accounts with seller status",
+    "recent": "Recent logins",
+    "recentCaption": "Logged in during the last 14 days"
+  },
+  "badges": {
+    "seller": "Seller",
+    "buyer": "Buyer",
+    "never": "Never"
+  },
+  "modals": {
+    "suspendTitle": "Suspend buyer account",
+    "suspendMessage": "This will immediately restrict {name}'s access to the platform.",
+    "suspendConfirm": "Suspend",
+    "cancel": "Cancel"
+  },
+  "notifications": {
+    "exportQueued": "Export queued",
+    "exportQueuedSub": "Buyer export will be available soon.",
+    "buyerProfile": "Buyer profile",
+    "buyerProfileSub": "Opened buyer profile for {name}.",
+    "reinstated": "Buyer reinstated",
+    "reinstatedSub": "{name} can access the platform again.",
+    "suspended": "Buyer suspended",
+    "suspendedSub": "{name} has been restricted from the platform."
+  }
+}

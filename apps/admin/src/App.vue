@@ -17,22 +17,21 @@ import {
   ModalManager,
   useAppStore,
   provideAppShell,
-  TableIcon,
   GridIcon,
   UserCircleIcon,
   SettingsIcon,
   SupportIcon,
-  LayoutDashboardIcon,
   UserGroupIcon,
-  ListIcon,
+  FolderIcon,
+  InfoIcon,
   ShieldIcon,
-  WarningIcon,
-  TaskIcon,
+  ChatIcon,
+  CalenderIcon,
   type SidebarMenuGroup,
   type SidebarMenuItem,
   type MenuItem,
-  stringToNumericTheme,
-  stringToNumericCulture,
+  type ThemeText,
+  type CultureText,
 } from '@hivespace/shared'
 import { useNotificationStore, useProfileStore, useUserSettingsStore } from '@/stores'
 import { isDevelopment } from '@/config'
@@ -66,27 +65,26 @@ const menuItems: MenuItem[] = [
 
 const menuGroups = computed<SidebarMenuGroup[]>(() => {
   const platformItems: SidebarMenuItem[] = [
-    { name: t('pages.dashboard.title'), icon: LayoutDashboardIcon, path: '/dashboard' },
-    { name: t('pages.adminManagement'), icon: TableIcon, path: '/account/admin-management' },
-    { name: t('pages.buyer'), icon: UserCircleIcon, path: '/account/user-management' },
-    { name: t('pages.merchants.title'), icon: UserGroupIcon, path: '/merchants' },
-    { name: t('pages.auditLog'), icon: ListIcon, path: '#' },
-    { name: t('pages.configuration.title'), icon: SettingsIcon, path: '/configuration' },
+    { name: t('dashboard.title'), icon: GridIcon, path: '/dashboard' },
+    { name: t('common.accounts'), icon: UserGroupIcon, path: '/accounts', badge: '25', badgeTone: 'primary' },
+    { name: t('buyers.title'), icon: UserCircleIcon, path: '/buyers', badge: '842k', badgeTone: 'success' },
+    { name: t('merchants.title'), icon: FolderIcon, path: '/merchants', badge: '12,487', badgeTone: 'light' },
+    { name: t('common.auditLog'), icon: InfoIcon, path: '/audit-log', badge: '3', badgeTone: 'error' },
+    { name: t('configuration.title'), icon: SettingsIcon, path: '/configuration' },
+  ]
+  const complianceItems: SidebarMenuItem[] = [
+    { name: t('common.kycQueue'), icon: ShieldIcon, path: '/kyc-queue', badge: '14', badgeTone: 'error' },
+    { name: t('common.disputes'), icon: ChatIcon, path: '/disputes' },
+    { name: t('common.scheduledJobs'), icon: CalenderIcon, path: '/scheduled-jobs' },
   ]
 
   if (isDevelopment()) {
-    platformItems.push({ icon: GridIcon, name: 'Demo', path: '/demo' })
+    complianceItems.push({ icon: GridIcon, name: 'Demo', path: '/demo' })
   }
 
-  const complianceItems: SidebarMenuItem[] = [
-    { name: t('pages.kycQueue'), icon: ShieldIcon, path: '#' },
-    { name: t('pages.disputes'), icon: WarningIcon, path: '#' },
-    { name: t('pages.scheduledJobs'), icon: TaskIcon, path: '#' },
-  ]
-
   return [
-    { title: 'Platform', items: platformItems },
-    { title: 'Compliance', items: complianceItems },
+    { title: t('common.sidebar.groups.platform'), items: platformItems },
+    { title: t('common.sidebar.groups.compliance'), items: complianceItems },
   ]
 })
 
@@ -105,9 +103,9 @@ provideAppShell({
   markAsRead: notificationStore.markAsRead,
   fetchNotifications: notificationStore.fetchNotifications,
   loadMore: notificationStore.loadMore,
-  themeChange: async (theme) => { await userSettingsStore.updateTheme(stringToNumericTheme(theme)) },
-  cultureChange: async (culture) => {
-    await userSettingsStore.updateCulture(stringToNumericCulture(culture))
+  themeChange: async (theme: ThemeText) => { await userSettingsStore.updateTheme(theme) },
+  cultureChange: async (culture: CultureText) => {
+    await userSettingsStore.updateCulture(culture)
   },
 })
 

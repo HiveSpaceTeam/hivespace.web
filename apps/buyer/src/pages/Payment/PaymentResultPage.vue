@@ -118,9 +118,10 @@ import { useRoute } from 'vue-router'
 import StorefrontHeader from '@/components/layout/StorefrontHeader.vue'
 import { useI18n } from 'vue-i18n'
 import { CheckCircle, XCircle, Clock } from 'lucide-vue-next'
-import { paymentService } from '@/services/payment.service'
+import { storeToRefs } from 'pinia'
+import { usePaymentStore } from '@/stores'
 import { isTerminalStatus } from '@/types'
-import type { PaymentDto, PaymentStatus } from '@/types'
+import type { PaymentStatus } from '@/types'
 
 const route = useRoute()
 const { t } = useI18n()
@@ -128,11 +129,12 @@ const { t } = useI18n()
 type PageState = 'loading' | 'success' | 'failed' | 'timeout'
 
 const pageState = ref<PageState>('loading')
-const payment = ref<PaymentDto | null>(null)
 const failedStatus = ref<PaymentStatus | null>(null)
 const pollCount = ref(0)
 const MAX_POLLS = 20
 let pollTimer: ReturnType<typeof setTimeout> | null = null
+const paymentStore = usePaymentStore()
+const { payment } = storeToRefs(paymentStore)
 
 const orderId = route.query.orderId as string | undefined
 const routeStatus = route.query.status as string | undefined
@@ -177,8 +179,7 @@ async function fetchAndEvaluate() {
     return
   }
   try {
-    const result = await paymentService.getPaymentByOrder(orderId)
-    payment.value = result
+    const result = await paymentStore.fetchPaymentByOrder(orderId)
 
     if (isTerminalStatus(result.status)) {
       failedStatus.value = result.status !== 'Succeeded' ? result.status : null
@@ -203,5 +204,8 @@ function manualRefresh() {
 }
 
 onMounted(() => fetchAndEvaluate())
-onUnmounted(() => { if (pollTimer) clearTimeout(pollTimer) })
+onUnmounted(() => {
+  if (pollTimer) clearTimeout(pollTimer)
+  paymentStore.resetPayment()
+})
 </script>

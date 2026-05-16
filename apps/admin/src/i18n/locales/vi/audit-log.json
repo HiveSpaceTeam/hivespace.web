@@ -1,0 +1,90 @@
+{
+  "title": "Nhật ký kiểm tra",
+  "description": "Bản ghi duy nhất của mọi hành động đặc quyền trên Admin, Seller Center và Storefront. Lưu giữ trong 24 tháng. Được băm chuỗi chống giả mạo.",
+  "tableTitle": "Sự kiện nền tảng",
+  "actions": {
+    "live": "Trực tiếp",
+    "export": "Xuất dữ liệu",
+    "savedViews": "Chế độ xem đã lưu",
+    "streaming": "Đang truyền",
+    "paused": "Đã tạm dừng",
+    "refreshNote": "làm mới sau mỗi ~5 giây",
+    "unflag": "Bỏ gắn cờ",
+    "flag": "Gắn cờ",
+    "reopen": "Mở lại",
+    "markReviewed": "Đánh dấu đã xem",
+    "exportTitle": "Xuất sự kiện kiểm tra",
+    "exportSub": "Chỉ bao gồm các sự kiện khớp với bộ lọc hiện tại.",
+    "exportBtn": "Xuất sự kiện"
+  },
+  "metrics": {
+    "total": "Sự kiện · hôm nay",
+    "totalSub": "▲ 12.4% so với hôm qua",
+    "warning": "Cảnh báo quan trọng",
+    "warningSub": "▼ 2 đã giải quyết trong 4 giờ qua",
+    "actors": "Tác nhân duy nhất",
+    "actorsSub": "7 admin · 14 thương nhân · 2 hệ thống",
+    "error": "Thất bại / bị chặn",
+    "errorSub": "Khóa tài khoản & chặn gian lận"
+  },
+  "density": {
+    "title": "Mật độ sự kiện",
+    "subtitle": "24 nhóm · bấm vào biểu đồ để xem chi tiết",
+    "activity": "Hoạt động",
+    "selectedRange": "Vùng đã chọn",
+    "criticalPresent": "Có sự kiện nghiêm trọng"
+  },
+  "filters": {
+    "searchPlaceholder": "Tìm tác nhân, hành động, ID tài nguyên, IP...",
+    "surface": "Bề mặt",
+    "severity": "Mức độ",
+    "actor": "Tác nhân",
+    "all": "Tất cả",
+    "surfaces": {
+      "admin": "Quản trị",
+      "sellerCenter": "Trung tâm người bán",
+      "storefront": "Cửa hàng"
+    },
+    "severities": {
+      "info": "Thông tin",
+      "warning": "Cảnh báo",
+      "critical": "Nghiêm trọng"
+    },
+    "clearAll": "Xóa tất cả"
+  },
+  "columns": {
+    "time": "Thời gian",
+    "actor": "Tác nhân",
+    "action": "Hành động",
+    "surface": "Bề mặt",
+    "severity": "Mức độ",
+    "ip": "IP"
+  },
+  "drawer": {
+    "overview": "Tổng quan",
+    "diff": "Thay đổi",
+    "rawJson": "JSON gốc",
+    "related": "Liên quan",
+    "event": "Sự kiện",
+    "resource": "Tài nguyên",
+    "when": "Khi nào",
+    "ipGeo": "IP / Địa lý",
+    "userAgent": "User-Agent",
+    "noDiff": "Không có thay đổi trạng thái",
+    "noDiffSub": "Sự kiện này được ghi lại mà không có sự khác biệt về dữ liệu.",
+    "noRelated": "Không có sự kiện liên quan",
+    "noRelatedSub": "Không có gì gần đây về tác nhân, tài nguyên hoặc vết kiểm tra.",
+    "statusFlagged": "Đã gắn cờ để theo dõi",
+    "statusReviewed": "Đã xem xét",
+    "statusAwaiting": "Đang chờ xem xét"
+  },
+  "viewModes": {
+    "table": "Bảng",
+    "timeline": "Dòng thời gian"
+  },
+  "results": "Hiển thị {count} sự kiện đầu tiên",
+  "totalResults": "Hiển thị {count} trên tổng số {total} sự kiện",
+  "modals": {
+    "cancel": "Hủy bỏ"
+  }
+}

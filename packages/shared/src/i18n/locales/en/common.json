@@ -1,6 +1,10 @@
 {
   "home": "Home",
   "menu": "Menu",
+  "loading": "Loading...",
+  "error": "Error",
+  "success": "Success",
+  "backHome": "Back to home",
   "cancel": "Cancel",
   "save": "Save",
   "actions": {
@@ -23,7 +27,24 @@
   },
   "auth": {
     "signIn": "Sign In",
+    "signUp": "Sign Up",
+    "signingOut": "Signing out..."
+  },
+  "default": {
+    "signIn": "Sign In",
     "signUp": "Sign Up"
+  },
+  "maintenance": {
+    "title": "Under maintenance",
+    "message": "We are working on improvements. Please check back soon."
+  },
+  "notFound": {
+    "title": "Page not found",
+    "message": "The page you are looking for does not exist or has been moved."
+  },
+  "serverError": {
+    "title": "Server error",
+    "message": "Something went wrong on our side. Please try again later."
   },
   "notifications": {
     "notification": "Notification",
@@ -39,6 +60,7 @@
     "minutesAgo": "{count} min ago",
     "hoursAgo": "{count}h ago",
     "close": "Close notification",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "loading": "Loading..."
   }
 }

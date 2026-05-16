@@ -1,0 +1,80 @@
+{
+  "title": "Merchants",
+  "actions": {
+    "exportCsv": "Export CSV",
+    "sendAnnouncement": "Send announcement",
+    "inviteMerchant": "Invite merchant"
+  },
+  "kpi": {
+    "activeMerchants": "Active merchants",
+    "gmv7d": "GMV 7d",
+    "pendingKyb": "Pending KYB",
+    "suspended": "Suspended",
+    "avgActivation": "Avg. activation",
+    "timeToFirstSale": "time to first sale",
+    "vsPrior": "↑ {value}% vs prior"
+  },
+  "tabs": {
+    "all": "All",
+    "active": "Active",
+    "review": "In review",
+    "pendingKyb": "Pending KYB",
+    "suspended": "Suspended"
+  },
+  "filters": {
+    "searchPlaceholder": "Search merchants...",
+    "allCategories": "All categories",
+    "allTiers": "All tiers",
+    "tier1": "Tier 1",
+    "tier2": "Tier 2",
+    "tier3": "Tier 3",
+    "tier4": "Tier 4",
+    "allRegions": "All regions",
+    "hcm": "Ho Chi Minh",
+    "hanoi": "Hanoi",
+    "danang": "Da Nang"
+  },
+  "bulk": {
+    "selected": "{count} selected",
+    "approveKyb": "Approve KYB",
+    "suspend": "Suspend",
+    "archive": "Archive",
+    "clear": "Clear"
+  },
+  "table": {
+    "merchant": "Merchant",
+    "status": "Status",
+    "tier": "Tier",
+    "gmv30d": "GMV 30d",
+    "orders": "Orders",
+    "joined": "Joined"
+  },
+  "status": {
+    "active": "Active",
+    "review": "In review",
+    "pendingKyb": "Pending KYB",
+    "suspended": "Suspended"
+  },
+  "pagination": {
+    "showing": "Showing {count} of {total} merchants"
+  },
+  "kyc": {
+    "title": "KYC pending",
+    "reviewAll": "Review all",
+    "urgent": "Urgent",
+    "types": {
+      "identity": "Identity doc",
+      "business": "Business reg.",
+      "bank": "Bank statement"
+    }
+  },
+  "categories": {
+    "fb": "F&B",
+    "fashion": "Fashion",
+    "electronics": "Electronics",
+    "home": "Home",
+    "beauty": "Beauty",
+    "sports": "Sports"
+  },
+  "gmvByCategory": "GMV by category"
+}

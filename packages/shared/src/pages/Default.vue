@@ -18,10 +18,10 @@
       <img class="h-auto w-full dark:hidden" :src="logoLight" alt="home" />
       <img class="hidden h-auto w-full dark:block" :src="logoDark" alt="home" />
       <p class="mb-6 mt-10 text-base text-gray-700 dark:text-gray-400 sm:text-lg">
-        {{ t('pages.default.welcome') }}
+        {{ t('common.default.welcome') }}
       </p>
       <Button :disabled="isSigningIn" variant="primary" @click="signIn">
-        {{ t('pages.default.signIn') }}
+        {{ t('common.default.signIn') }}
       </Button>
       <Button
         v-if="showSignUp"
@@ -30,7 +30,7 @@
         variant="outline"
         @click="signIn"
       >
-        {{ t('pages.default.signUp') }}
+        {{ t('common.default.signUp') }}
       </Button>
     </div>
 

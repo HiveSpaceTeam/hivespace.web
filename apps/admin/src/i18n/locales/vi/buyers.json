@@ -1,0 +1,74 @@
+{
+  "title": "Người mua",
+  "description": "Theo dõi truy cập khách hàng, tỷ lệ chuyển đổi sang người bán và tín hiệu sức khỏe tài khoản.",
+  "tableTitle": "Danh bạ người mua",
+  "actions": {
+    "export": "Xuất dữ liệu",
+    "inspect": "Kiểm tra",
+    "reinstate": "Khôi phục",
+    "suspend": "Đình chỉ"
+  },
+  "stats": {
+    "total": "Tổng người mua",
+    "totalSub": "Khách hàng đã đăng ký",
+    "active": "Hoạt động (30n)",
+    "activeSub": "so với năm ngoái",
+    "newToday": "Mới hôm nay",
+    "newTodaySub": "Trên mọi khu vực",
+    "suspended": "Bị đình chỉ",
+    "suspendedSub": "Tài khoản bị giới hạn",
+    "avgLtv": "LTV trung bình",
+    "avgLtvSub": "Giá trị vòng đời"
+  },
+  "filters": {
+    "searchPlaceholder": "Tìm người mua theo tên, email, khu vực...",
+    "all": "Tất cả",
+    "active": "Hoạt động",
+    "unverified": "Chưa xác minh",
+    "suspended": "Đình chỉ",
+    "dormant": "Ngừng hoạt động",
+    "displayingAll": "Hiển thị tất cả người mua đã đăng ký",
+    "noResults": "Không có người mua nào khớp với bộ lọc."
+  },
+  "table": {
+    "buyer": "Người mua",
+    "status": "Trạng thái",
+    "orders": "Đơn hàng",
+    "totalSpend": "Tổng chi tiêu",
+    "lastActive": "Hoạt động cuối",
+    "joinDate": "Ngày tham gia",
+    "actions": "Thao tác",
+    "showing": "Hiển thị {count} trên {total} người mua"
+  },
+  "summary": {
+    "total": "Tổng người mua",
+    "totalCaption": "Toàn bộ tài khoản khách hàng",
+    "active": "Người mua hoạt động",
+    "activeCaption": "Có thể truy cập nền tảng",
+    "sellers": "Đã lên người bán",
+    "sellersCaption": "Tài khoản có trạng thái người bán",
+    "recent": "Đăng nhập gần đây",
+    "recentCaption": "Đăng nhập trong 14 ngày gần nhất"
+  },
+  "badges": {
+    "seller": "Người bán",
+    "buyer": "Người mua",
+    "never": "Chưa từng"
+  },
+  "modals": {
+    "suspendTitle": "Đình chỉ tài khoản người mua",
+    "suspendMessage": "Hành động này sẽ ngay lập tức giới hạn quyền truy cập của {name} vào nền tảng.",
+    "suspendConfirm": "Đình chỉ",
+    "cancel": "Hủy bỏ"
+  },
+  "notifications": {
+    "exportQueued": "Đã đưa vào hàng đợi xuất",
+    "exportQueuedSub": "Dữ liệu người mua sẽ sớm có sẵn.",
+    "buyerProfile": "Hồ sơ người mua",
+    "buyerProfileSub": "Đã mở hồ sơ cho {name}.",
+    "reinstated": "Đã khôi phục người mua",
+    "reinstatedSub": "{name} có thể truy cập lại nền tảng.",
+    "suspended": "Đã đình chỉ người mua",
+    "suspendedSub": "{name} đã bị giới hạn truy cập nền tảng."
+  }
+}

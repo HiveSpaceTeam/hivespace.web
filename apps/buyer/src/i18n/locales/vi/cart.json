@@ -23,14 +23,21 @@
     "shopCouponTitle": "{name} Khuyến Mãi",
     "enterPromoCode": "Nhập Mã Khuyến Mãi",
     "apply": "Áp Dụng",
+    "back": "Trở Lại",
     "noCoupons": "Chưa có mã khuyến mãi nào",
     "noCouponsHint": "Nếu bạn có mã khuyến mãi của shop, hãy nhập vào thanh bên trên",
     "couponApplied": "Đã áp dụng: {code}",
     "discountLabel": "Giảm {percent}%",
+    "discountFixedLabel": "Giảm {amount}",
     "minOrder": "Đơn tối thiểu {amount}",
     "expires": "HSD: {date}",
     "limitedQuantity": "Số lượng có hạn",
+    "selected": "Đã Chọn",
     "expired": "Hết hạn",
     "notEligible": "CHƯ A THỎA\nĐIỀU KIỆN",
-    "addToCartSuccess": "Thêm vào giỏ hàng thành công"
+    "addToCartSuccess": "Thêm vào giỏ hàng thành công",
+    "checkoutSelectionRequired": "Vui lòng chọn ít nhất một sản phẩm trước khi thanh toán"
+,
+    "loadMore": "Xem thÃªm",
+    "couponUnavailableTitle": "MÃ£ giáº£m giÃ¡ khÃ´ng kháº£ dá»¥ng"
 }

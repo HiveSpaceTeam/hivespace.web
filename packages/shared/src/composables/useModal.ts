@@ -1,4 +1,4 @@
-import { ref, shallowRef, readonly, type Component, type Ref } from 'vue'
+import { markRaw, ref, shallowRef, readonly, type Component, type Ref } from 'vue'
 
 // This composable manages the global state for all modals.
 // By using a singleton pattern (creating the state outside the function),
@@ -44,7 +44,7 @@ export function useModal(): UseModalReturn {
     component: Component,
     props: UseModalProps = {},
   ): Promise<TResult | undefined> => {
-    modalComponent.value = component
+    modalComponent.value = markRaw(component)
     modalProps.value = props
     isOpen.value = true
 

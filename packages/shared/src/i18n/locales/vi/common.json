@@ -1,6 +1,10 @@
 {
   "home": "Trang chủ",
   "menu": "Menu",
+  "loading": "Đang tải...",
+  "error": "Lỗi",
+  "success": "Thành công",
+  "backHome": "Về trang chủ",
   "cancel": "Hủy",
   "save": "Lưu",
   "actions": {
@@ -23,7 +27,24 @@
   },
   "auth": {
     "signIn": "Đăng nhập",
+    "signUp": "Đăng ký",
+    "signingOut": "Đang đăng xuất..."
+  },
+  "default": {
+    "signIn": "Đăng nhập",
     "signUp": "Đăng ký"
+  },
+  "maintenance": {
+    "title": "Đang bảo trì",
+    "message": "Chúng tôi đang nâng cấp hệ thống. Vui lòng quay lại sau."
+  },
+  "notFound": {
+    "title": "Không tìm thấy trang",
+    "message": "Trang bạn đang tìm kiếm không tồn tại hoặc đã được di chuyển."
+  },
+  "serverError": {
+    "title": "Lỗi máy chủ",
+    "message": "Đã xảy ra sự cố ở phía hệ thống. Vui lòng thử lại sau."
   },
   "notifications": {
     "notification": "Thông báo",
@@ -39,6 +60,7 @@
     "minutesAgo": "{count} phút trước",
     "hoursAgo": "{count} giờ trước",
     "close": "Đóng thông báo",
-    "loadMore": "Xem thông báo trước đó"
+    "loadMore": "Xem thông báo trước đó",
+    "loading": "Đang tải..."
   }
 }

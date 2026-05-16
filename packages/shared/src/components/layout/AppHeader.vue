@@ -1,65 +1,44 @@
 <template>
-  <header
-    class="sticky top-0 flex w-full bg-white border-gray-200 z-999 dark:border-gray-800 dark:bg-gray-900 lg:border-b">
-    <div class="flex flex-col items-center justify-between grow lg:flex-row lg:px-6">
-      <div
-        class="flex items-center justify-between w-full gap-2 px-3 py-3 border-b border-gray-200 dark:border-gray-800 sm:gap-4 lg:justify-normal lg:border-b-0 lg:px-0 lg:py-4">
+  <header class="sticky top-0 z-999 border-b border-gray-200 bg-white dark:border-gray-800 dark:bg-gray-900">
+    <div class="flex h-[68px] items-center justify-between gap-4 px-4 md:px-6 lg:px-7">
+      <div class="flex min-w-0 flex-1 items-center gap-3">
         <button v-if="props.showSidebarToggle" @click="handleToggle"
           :aria-label="isMobileOpen ? $t('common.sidebar.close') : $t('common.sidebar.open')"
           :aria-expanded="isMobileOpen"
-          class="flex items-center justify-center w-10 h-10 text-gray-500 border-gray-200 rounded-lg z-999 dark:border-gray-800 dark:text-gray-400 lg:h-11 lg:w-11 lg:border"
-          :class="[isMobileOpen ? 'lg:bg-transparent dark:lg:bg-transparent bg-gray-100 dark:bg-gray-800' : '']">
+          class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-gray-200 text-gray-500 lg:hidden">
           <CloseMenuIcon v-if="isMobileOpen" />
           <MenuIcon v-else />
         </button>
-        <div v-else class="w-10 h-10 lg:w-11 lg:h-11"></div>
-        <button @click="toggleApplicationMenu"
-          :aria-label="isApplicationMenuOpen ? $t('pages.header.closeApplicationMenu') : $t('pages.header.openApplicationMenu')"
-          :aria-expanded="isApplicationMenuOpen" aria-controls="application-menu"
-          class="flex items-center justify-center w-10 h-10 text-gray-700 rounded-lg z-999 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 lg:hidden">
-          <MenuDotsIcon />
-        </button>
-        <HeaderLogo />
-        <button @click="toggleApplicationMenu"
-          class="flex items-center justify-center w-10 h-10 text-gray-700 rounded-lg z-999 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 lg:hidden">
-          <MenuDotsIcon />
-        </button>
+
+        <div class="relative hidden max-w-[480px] flex-1 lg:block">
+          <SearchIcon class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+          <input type="search" placeholder="Search admin workspace..."
+            class="h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-10 text-sm text-gray-700 outline-none placeholder:text-gray-400 focus:border-brand-300 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-200" />
+        </div>
       </div>
 
-      <div :class="[isApplicationMenuOpen ? 'flex' : 'hidden']"
-        class="items-center justify-between w-full gap-4 px-5 py-4 shadow-theme-md lg:flex lg:justify-end lg:px-0 lg:shadow-none">
-        <div class="flex items-center gap-2 2xsm:gap-3">
-          <ThemeToggler @theme-changed="themeChange" />
-          <LanguageSwitcher @language-changed="cultureChange" />
-          <NotificationMenu :notifications="notifications" :unread-count="unreadCount"
-            :is-loading="notificationLoading" :has-more="hasMore" view-all-to="/notifications"
-            @notification-read="markAsRead" @notification-clicked="markAsRead"
-            @open="(unreadOnly: boolean) => fetchNotifications(unreadOnly)"
-            @filter-change="(unreadOnly: boolean) => fetchNotifications(unreadOnly)"
-            @load-more="loadMore" @view-all="() => router.push('/notifications')" />
-        </div>
-        <UserMenu
-          :user="user"
-          :menu-items="menuItems ?? []"
-          :display-name="resolvedDisplayName"
-          :full-name="resolvedFullName"
-          :email="resolvedEmail"
-          :avatar-src="resolvedAvatarSrc"
-          :show-sign-out="true"
-          @sign-out="logout"
-        />
+      <div class="flex items-center gap-3">
+        <ThemeToggler @theme-changed="themeChange" />
+        <LanguageSwitcher @language-changed="cultureChange" />
+        <NotificationMenu :notifications="notifications" :unread-count="unreadCount" :is-loading="notificationLoading"
+          :has-more="hasMore" view-all-to="/notifications" @notification-read="markAsRead"
+          @notification-clicked="markAsRead" @open="(unreadOnly: boolean) => fetchNotifications(unreadOnly)"
+          @filter-change="(unreadOnly: boolean) => fetchNotifications(unreadOnly)" @load-more="loadMore"
+          @view-all="() => router.push('/notifications')" />
+        <UserMenu :user="user" :menu-items="menuItems ?? []" :display-name="resolvedDisplayName"
+          :full-name="resolvedFullName" :email="resolvedEmail" :avatar-src="resolvedAvatarSrc" :show-sign-out="true"
+          @sign-out="logout" />
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import CloseMenuIcon from '../../icons/CloseMenuIcon.vue'
 import MenuIcon from '../../icons/MenuIcon.vue'
-import MenuDotsIcon from '../../icons/MenuDotsIcon.vue'
-import HeaderLogo from './header/HeaderLogo.vue'
+import SearchIcon from '../../icons/SearchIcon.vue'
 import ThemeToggler from '../common/ThemeToggler.vue'
 import LanguageSwitcher from './header/LanguageSwitcher.vue'
 import NotificationMenu from './header/NotificationMenu.vue'
@@ -71,69 +50,38 @@ import { useAppShell } from '../../composables/useAppShell'
 const props = withDefaults(defineProps<{ showSidebarToggle?: boolean }>(), { showSidebarToggle: true })
 
 const {
-  notifications, unreadCount, notificationLoading, hasMore,
-  menuItems, markAsRead, fetchNotifications, loadMore,
-  currentUserDisplayName, currentUserFullName, currentUserEmail, currentUserAvatarSrc,
-  themeChange, cultureChange,
+  notifications,
+  unreadCount,
+  notificationLoading,
+  hasMore,
+  menuItems,
+  markAsRead,
+  fetchNotifications,
+  loadMore,
+  currentUserDisplayName,
+  currentUserFullName,
+  currentUserEmail,
+  currentUserAvatarSrc,
+  themeChange,
+  cultureChange,
 } = useAppShell()
 
 const { currentUser: user, getCurrentUser, logout } = useAuth()
 const router = useRouter()
-const { toggleSidebar, toggleMobileSidebar, isMobileOpen } = useSidebar()
+const { toggleMobileSidebar, isMobileOpen } = useSidebar()
 
-const tokenUserName = computed(() => {
-  return typeof user.value?.profile?.username === 'string' ? user.value.profile.username : ''
-})
+const tokenUserName = computed(() => (typeof user.value?.profile?.username === 'string' ? user.value.profile.username : ''))
+const tokenFullName = computed(() => (typeof user.value?.profile?.name === 'string' ? user.value.profile.name : ''))
+const tokenEmail = computed(() => (typeof user.value?.profile?.email === 'string' ? user.value.profile.email : ''))
+const tokenAvatarSrc = computed(() => (typeof user.value?.profile?.picture === 'string' ? user.value.profile.picture : ''))
 
-const tokenFullName = computed(() => {
-  return typeof user.value?.profile?.name === 'string' ? user.value.profile.name : ''
-})
-
-const tokenEmail = computed(() => {
-  return typeof user.value?.profile?.email === 'string' ? user.value.profile.email : ''
-})
-
-const tokenAvatarSrc = computed(() => {
-  return typeof user.value?.profile?.picture === 'string' ? user.value.profile.picture : ''
-})
+const resolvedDisplayName = computed(() => currentUserDisplayName?.value || tokenUserName.value || tokenFullName.value || '')
+const resolvedFullName = computed(() => currentUserFullName?.value || tokenFullName.value || resolvedDisplayName.value)
+const resolvedEmail = computed(() => currentUserEmail?.value || tokenEmail.value || '')
+const resolvedAvatarSrc = computed(() => currentUserAvatarSrc?.value || tokenAvatarSrc.value || '')
 
 const handleToggle = () => {
-  if (window.innerWidth >= 1024) {
-    toggleSidebar()
-  } else {
-    toggleMobileSidebar()
-  }
-}
-
-const isApplicationMenuOpen = ref(false)
-
-const resolvedDisplayName = computed(() => {
-  return currentUserDisplayName?.value
-    || tokenUserName.value
-    || tokenFullName.value
-    || ''
-})
-
-const resolvedFullName = computed(() => {
-  return currentUserFullName?.value
-    || tokenFullName.value
-    || resolvedDisplayName.value
-})
-
-const resolvedEmail = computed(() => {
-  return currentUserEmail?.value
-    || tokenEmail.value
-    || ''
-})
-
-const resolvedAvatarSrc = computed(() => {
-  return currentUserAvatarSrc?.value
-    || tokenAvatarSrc.value
-    || ''
-})
-
-const toggleApplicationMenu = () => {
-  isApplicationMenuOpen.value = !isApplicationMenuOpen.value
+  toggleMobileSidebar()
 }
 
 onMounted(async () => {

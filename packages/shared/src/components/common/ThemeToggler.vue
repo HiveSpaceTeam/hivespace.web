@@ -9,24 +9,26 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import ThemeTogglerIcon from '../../icons/ThemeTogglerIcon.vue'
-import { THEME_TEXT } from '../../types'
+import { THEME_TEXT, type ThemeText } from '../../types'
 import { setCookie, getCookie } from '../../utils/cookie'
 
 const props = defineProps<{
-  defaultTheme?: string
+  defaultTheme?: ThemeText
 }>()
 
 const emit = defineEmits<{
-  themeChanged: [theme: string]
+  themeChanged: [theme: ThemeText]
 }>()
 
 // Create a ref from incoming prop or cookie/default
 const initial = props.defaultTheme ?? getCookie('theme') ?? THEME_TEXT.LIGHT
-const themeRef = ref<string>(initial)
+const themeRef = ref<ThemeText>(
+  initial === THEME_TEXT.DARK ? THEME_TEXT.DARK : THEME_TEXT.LIGHT,
+)
 
 const currentTheme = computed(() => themeRef.value)
 
-function applyThemeToDOM(themeText: string): void {
+function applyThemeToDOM(themeText: ThemeText): void {
   if (themeText === THEME_TEXT.DARK) {
     document.documentElement.classList.add('dark')
   } else {

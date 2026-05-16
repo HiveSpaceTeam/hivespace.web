@@ -29,43 +29,40 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
 import HeroBanner from '@/components/home/HeroBanner.vue'
 import CategoryBar from '@/components/home/CategoryBar.vue'
 import FlashSale from '@/components/home/FlashSale.vue'
 import ProductGrid from '@/components/home/ProductGrid.vue'
 import { Button } from '@hivespace/shared'
-import type { PagedResponse, PagingRequest, ProductSummary } from '@/types'
-import { productService } from '@/services/product.service'
+import { useProductStore } from '@/stores'
 
-const products = ref<ProductSummary[]>([])
+const productStore = useProductStore()
+const { homeProducts: products } = storeToRefs(productStore)
 const pageIndex = ref(1)
 const pageSize = ref(12)
-const totalCount = ref(0)
 
 
 onMounted(async () => {
+  productStore.resetHomeProducts()
   await fetchProducts()
 })
 
 
 const handleSeeMore = () => {
   pageIndex.value += 1
-  fetchProducts()
+  void fetchProducts()
 }
 
 const fetchProducts = async () => {
   try {
-    const params: PagingRequest = {
+    await productStore.fetchHomeProducts({
       page: pageIndex.value,
       pageSize: pageSize.value,
-    }
-    const result: PagedResponse<ProductSummary> = await productService.getProducts(params)
-    products.value = [...products.value, ...result.items]
-    totalCount.value = result.pagination.totalItems
+    }, pageIndex.value > 1)
   } catch (err) {
     // Errors are centrally handled in api service; keep console for dev context
     console.error('Failed to fetch products', err)
-  } finally {
   }
 }
 </script>

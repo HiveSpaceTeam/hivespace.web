@@ -74,6 +74,10 @@
     "statusUpdateFailed": {
       "title": "Update Failed",
       "message": "Unable to update admin status. Please try again."
+    },
+    "loadFailed": {
+      "title": "Load Failed",
+      "message": "Unable to load accounts. Please try again."
     }
   },
   "values": {

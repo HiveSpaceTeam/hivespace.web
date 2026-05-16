@@ -15,6 +15,7 @@ export interface ProductVariant {
 export interface ProductSkuImage {
   skuId: string
   fileId: string
+  imageUrl: string | null
 }
 
 export interface ProductImage {

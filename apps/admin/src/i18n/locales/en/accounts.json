@@ -1,0 +1,112 @@
+{
+  "title": "Admin accounts",
+  "description": "Review administrator access, monitor privileged users, and manage platform operators.",
+  "tableTitle": "Platform accounts",
+  "actions": {
+    "exportCsv": "Export CSV",
+    "inviteAdmin": "Invite admin"
+  },
+  "stats": {
+    "total": "Total accounts",
+    "active": "Active",
+    "pendingInvites": "Pending invites",
+    "needsAttention": "Needs attention",
+    "thisMonth": "this month",
+    "signedInLast30d": "Signed in last 30d",
+    "awaitingFirstLogin": "Awaiting first login",
+    "attentionSub": "2FA off · locked · suspended"
+  },
+  "filters": {
+    "searchPlaceholder": "Search by name, email, city or IP...",
+    "all": "All",
+    "active": "Active",
+    "invited": "Invited",
+    "suspended": "Suspended",
+    "locked": "Locked"
+  },
+  "table": {
+    "account": "Account",
+    "role": "Role",
+    "status": "Status",
+    "mfa": "2FA",
+    "lastSeen": "Last seen",
+    "ip": "IP",
+    "sortedByLastSeen": "Sorted by last seen",
+    "accountsLabel": "accounts",
+    "mfaEnabled": "Enabled",
+    "mfaDisabled": "Disabled",
+    "noResults": "No accounts match these filters",
+    "noResultsSub": "Try clearing filters or inviting a new admin.",
+    "bulkSelected": "{count} selected",
+    "bulkAuditNote": "Bulk actions are audited and require an admin reason.",
+    "clear": "Clear",
+    "sendReset": "Send password reset",
+    "suspend": "Suspend"
+  },
+  "permissions": {
+    "read": "View accounts",
+    "write": "Create / edit accounts",
+    "merchantsSuspend": "Suspend merchants",
+    "paymentsRefund": "Issue refunds",
+    "configWrite": "Edit platform configuration",
+    "auditExport": "Export audit log",
+    "kybApprove": "Approve KYB submissions",
+    "riskRules": "Edit risk rules"
+  },
+  "expiry": {
+    "h24": "24 hours",
+    "d3": "3 days",
+    "d7": "7 days"
+  },
+  "drawer": {
+    "overview": "Overview",
+    "permissions": "Permissions",
+    "activity": "Activity",
+    "accountId": "Account ID",
+    "email": "Email",
+    "mfa": "2FA",
+    "mfaEnabled": "Enabled · TOTP authenticator",
+    "mfaDisabled": "Disabled — login not protected",
+    "lastSeen": "Last seen",
+    "lastIp": "Last IP",
+    "memberSince": "Member since",
+    "permissionsNote": "Permissions are inherited from {role}. Toggling individual permissions creates a per-account override.",
+    "impersonate": "Impersonate",
+    "reactivate": "Reactivate",
+    "statusGood": "Account in good standing",
+    "statusInvited": "Invitation sent · awaiting acceptance",
+    "statusLocked": "Locked after failed sign-ins",
+    "statusSuspended": "Suspended by admin action"
+  },
+  "roles": {
+    "title": "Roles",
+    "definedCount": "{count} defined",
+    "all": "All accounts",
+    "allDesc": "Every admin user",
+    "managePermissions": "Manage role permissions",
+    "superadmin": "Super Admin",
+    "superadminDesc": "Full platform access · break-glass only",
+    "admin": "Platform Admin",
+    "adminDesc": "Manage merchants, configuration, audit",
+    "finance": "Finance",
+    "financeDesc": "Payouts, fees, reconciliation, refunds",
+    "compliance": "Compliance",
+    "complianceDesc": "KYC / KYB review, document approval",
+    "risk": "Risk",
+    "riskDesc": "Fraud rules, blocks, dispute review",
+    "support": "Customer Support",
+    "supportDesc": "Read-only, customer issue handling"
+  },
+  "inviteModal": {
+    "title": "Invite admin to HiveSpace",
+    "description": "They will receive a magic-link email and must enable 2FA on first sign-in.",
+    "fullName": "Full name",
+    "workEmail": "Work email",
+    "role": "Role",
+    "inviteExpires": "Invite expires",
+    "cancel": "Cancel",
+    "sendInvitation": "Send invitation",
+    "newUserDefault": "New user",
+    "newUserEmailDefault": "newuser@hivespace.vn"
+  }
+}

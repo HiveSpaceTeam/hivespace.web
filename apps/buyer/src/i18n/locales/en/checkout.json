@@ -61,5 +61,6 @@
     "changeAddressTitle": "Select Delivery Address",
     "confirmAddress": "Confirm",
     "noAddresses": "No addresses found",
-    "addNewAddress": "Add New Address"
+    "addNewAddress": "Add New Address",
+    "couponUnavailableTitle": "Coupon unavailable"
 }

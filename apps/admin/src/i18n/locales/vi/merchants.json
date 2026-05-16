@@ -1,0 +1,80 @@
+{
+  "title": "Thương nhân",
+  "actions": {
+    "exportCsv": "Xuất CSV",
+    "sendAnnouncement": "Gửi thông báo",
+    "inviteMerchant": "Mời thương nhân"
+  },
+  "kpi": {
+    "activeMerchants": "Thương nhân đang hoạt động",
+    "gmv7d": "GMV 7 ngày",
+    "pendingKyb": "KYB chờ xử lý",
+    "suspended": "Đã đình chỉ",
+    "avgActivation": "Thời gian kích hoạt TB",
+    "timeToFirstSale": "đến lần bán đầu tiên",
+    "vsPrior": "↑ {value}% so với kỳ trước"
+  },
+  "tabs": {
+    "all": "Tất cả",
+    "active": "Đang hoạt động",
+    "review": "Đang xét duyệt",
+    "pendingKyb": "Chờ KYB",
+    "suspended": "Đã đình chỉ"
+  },
+  "filters": {
+    "searchPlaceholder": "Tìm kiếm thương nhân...",
+    "allCategories": "Tất cả danh mục",
+    "allTiers": "Tất cả hạng",
+    "tier1": "Hạng 1",
+    "tier2": "Hạng 2",
+    "tier3": "Hạng 3",
+    "tier4": "Hạng 4",
+    "allRegions": "Tất cả khu vực",
+    "hcm": "Hồ Chí Minh",
+    "hanoi": "Hà Nội",
+    "danang": "Đà Nẵng"
+  },
+  "bulk": {
+    "selected": "{count} đã chọn",
+    "approveKyb": "Phê duyệt KYB",
+    "suspend": "Đình chỉ",
+    "archive": "Lưu trữ",
+    "clear": "Xóa chọn"
+  },
+  "table": {
+    "merchant": "Thương nhân",
+    "status": "Trạng thái",
+    "tier": "Hạng",
+    "gmv30d": "GMV 30 ngày",
+    "orders": "Đơn hàng",
+    "joined": "Ngày tham gia"
+  },
+  "status": {
+    "active": "Đang hoạt động",
+    "review": "Đang xét duyệt",
+    "pendingKyb": "Chờ KYB",
+    "suspended": "Đã đình chỉ"
+  },
+  "pagination": {
+    "showing": "Hiển thị {count} trong tổng số {total} thương nhân"
+  },
+  "kyc": {
+    "title": "KYC chờ xử lý",
+    "reviewAll": "Xem tất cả",
+    "urgent": "Khẩn cấp",
+    "types": {
+      "identity": "CCCD / Hộ chiếu",
+      "business": "ĐKKD",
+      "bank": "Sao kê ngân hàng"
+    }
+  },
+  "categories": {
+    "fb": "Ẩm thực",
+    "fashion": "Thời trang",
+    "electronics": "Điện tử",
+    "home": "Nhà cửa",
+    "beauty": "Làm đẹp",
+    "sports": "Thể thao"
+  },
+  "gmvByCategory": "GMV theo danh mục"
+}
