@@ -124,14 +124,21 @@
             <!-- Right: avatar upload -->
             <div class="flex flex-col items-center pt-2 border-l border-gray-100 dark:border-gray-700 pl-10">
               <FileInput
+                :key="avatarInputKey"
                 v-model="avatarFile"
                 :buttonText="$t('storefront.profilePage.choosePhoto')"
                 :helpText="photoHelpText"
-                accept="image/jpeg,image/png"
-                :maxSize="1048576"
+                accept="image/jpeg,image/png,image/webp"
+                :maxSize="5242880"
                 previewDirection="top"
                 previewShape="circle"
                 previewSize="lg"
+                :previewSrc="profile?.avatarUrl"
+                :avatarFallback="true"
+                :showFileName="false"
+                :error="avatarError"
+                @change="handleAvatarChange"
+                @error="handleAvatarError"
               />
             </div>
 
@@ -153,10 +160,11 @@ import ProfileSidebar from '@/components/profile/ProfileSidebar.vue'
 
 const { currentUser } = useAuth()
 const profileStore = useProfileStore()
-const { profile, form, isLoading } = storeToRefs(profileStore)
+const { profile, form, isLoading, avatarError } = storeToRefs(profileStore)
 const { t } = useI18n()
 
 const avatarFile = ref<File | null>(null)
+const avatarInputKey = ref(0)
 
 const displayUsername = computed(() =>
   currentUser.value?.profile?.preferred_username
@@ -201,6 +209,20 @@ const photoHelpText = computed(() =>
 onMounted(() => profileStore.fetchProfile())
 
 const handleSave = async () => {
-  await profileStore.saveProfile()
+  const saved = await profileStore.saveProfile(avatarFile.value)
+
+  if (saved) {
+    avatarFile.value = null
+    avatarInputKey.value += 1
+  }
+}
+
+const handleAvatarChange = (file: File | null) => {
+  avatarFile.value = file
+  profileStore.clearAvatarError()
+}
+
+const handleAvatarError = (message: string) => {
+  profileStore.setAvatarError(message, true)
 }
 </script>

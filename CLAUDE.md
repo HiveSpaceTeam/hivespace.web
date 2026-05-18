@@ -6,6 +6,15 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `AGENTS.md` and `CLAUDE.md` must stay in sync. Any change made to one file must be applied to the other file in the same update so both instruction files remain aligned.
 
+## Custom Story Commands
+
+| Command | Codex location | Claude Code location | Purpose |
+| --- | --- | --- | --- |
+| `/start-story` | `.agents/skills/start-story/SKILL.md` | `.claude/commands/start-story.md` | Start a frontend story from `../hivespace.spec/specs/[feature-name]` |
+| `/done-story` | `.agents/skills/done-story/SKILL.md` | `.claude/commands/done-story.md` | Verify a completed frontend story |
+
+Keep paired Codex and Claude command content semantically equivalent.
+
 ## Behavioral Guidelines
 
 Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.

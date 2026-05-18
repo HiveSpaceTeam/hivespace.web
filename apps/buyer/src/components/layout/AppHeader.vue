@@ -36,17 +36,18 @@
       <div :class="[isApplicationMenuOpen ? 'flex' : 'hidden']"
         class="items-center justify-between w-full gap-4 px-5 py-4 shadow-theme-md lg:flex lg:justify-end lg:px-0 lg:shadow-none">
         <div class="flex items-center gap-2 2xsm:gap-3">
-          <ThemeToggler @theme-changed="handleThemeChange" />
-          <LanguageSwitcher @language-changed="handleCultureChange" />
+          <ThemeToggler @theme-changed="themeChange" />
+          <LanguageSwitcher @language-changed="cultureChange" />
           <NotificationMenu v-if="currentUser" :notifications="notifications" :unread-count="unreadCount"
             :is-loading="notificationLoading" :has-more="hasMore" view-all-to="/notifications"
-            @notification-read="notificationStore.markAsRead" @notification-clicked="notificationStore.markAsRead"
-            @open="(unreadOnly: boolean) => notificationStore.fetchNotifications(unreadOnly)"
-            @filter-change="(unreadOnly: boolean) => notificationStore.fetchNotifications(unreadOnly)"
-            @load-more="notificationStore.loadMore" @view-all="() => router.push('/notifications')" />
+            @notification-read="markAsRead" @notification-clicked="markAsRead"
+            @open="(unreadOnly: boolean) => fetchNotifications(unreadOnly)"
+            @filter-change="(unreadOnly: boolean) => fetchNotifications(unreadOnly)"
+            @load-more="loadMore" @view-all="() => router.push('/notifications')" />
         </div>
-        <UserMenu v-if="currentUser" :user="currentUser" :menu-items="menuItems" :show-sign-out="true"
-          @sign-out="logout" @navigate="handleNavigate" />
+        <UserMenu v-if="currentUser" :user="currentUser" :menu-items="menuItems ?? []"
+          :display-name="resolvedDisplayName" :full-name="resolvedFullName" :email="resolvedEmail"
+          :avatar-src="resolvedAvatarSrc" :show-sign-out="true" @sign-out="logout" @navigate="handleNavigate" />
         <div v-else class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 ml-4 h-10">
           <button @click="register()" class="px-2 py-1 hover:text-primary transition-colors cursor-pointer">{{
             $t('common.auth.signUp') }}</button>
@@ -62,23 +63,18 @@
 
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import {
   useAuth,
-  type MenuItem,
-  type ThemeText,
-  type CultureText,
+  useAppShell,
   HeaderLogo,
   ThemeToggler,
   LanguageSwitcher,
   NotificationMenu,
   UserMenu
 } from '@hivespace/shared'
-import { MoreVertical, UserCircle, ShoppingBag } from 'lucide-vue-next'
+import { MoreVertical } from 'lucide-vue-next'
 import { SearchIcon } from '@hivespace/shared'
-import { useUserSettingsStore } from '@/stores/user-settings.store'
-import { useNotificationStore } from '@/stores'
 
 interface Props {
   headerClass?: string
@@ -92,32 +88,54 @@ withDefaults(defineProps<Props>(), {
 
 const { currentUser: user, getCurrentUser, logout, login, register } = useAuth()
 const currentUser = computed(() => user.value)
-const userStore = useUserSettingsStore()
 const router = useRouter()
-const notificationStore = useNotificationStore()
-const { notifications, unreadCount, isLoading: notificationLoading, hasMore } = storeToRefs(notificationStore)
+const {
+  notifications,
+  unreadCount,
+  notificationLoading,
+  hasMore,
+  menuItems,
+  markAsRead,
+  fetchNotifications,
+  loadMore,
+  currentUserDisplayName,
+  currentUserFullName,
+  currentUserEmail,
+  currentUserAvatarSrc,
+  themeChange,
+  cultureChange,
+} = useAppShell()
+
+const tokenUserName = computed(() => (
+  typeof user.value?.profile?.username === 'string' ? user.value.profile.username : ''
+))
+const tokenFullName = computed(() => (
+  typeof user.value?.profile?.name === 'string' ? user.value.profile.name : ''
+))
+const tokenEmail = computed(() => (
+  typeof user.value?.profile?.email === 'string' ? user.value.profile.email : ''
+))
+const tokenAvatarSrc = computed(() => (
+  typeof user.value?.profile?.picture === 'string' ? user.value.profile.picture : ''
+))
+
+const resolvedDisplayName = computed(() => (
+  currentUserDisplayName?.value || tokenUserName.value || tokenFullName.value || ''
+))
+const resolvedFullName = computed(() => (
+  currentUserFullName?.value || tokenFullName.value || resolvedDisplayName.value
+))
+const resolvedEmail = computed(() => currentUserEmail?.value || tokenEmail.value || '')
+const resolvedAvatarSrc = computed(() => currentUserAvatarSrc?.value || tokenAvatarSrc.value || '')
 
 const handleNavigate = (path: string) => {
   router.push(path)
 }
 
-const menuItems: MenuItem[] = [
-  { href: '/profile', icon: UserCircle, textKey: 'storefront.profile.myAccount' },
-  { href: '/orders', icon: ShoppingBag, textKey: 'storefront.profile.myOrders' },
-]
-
 const isApplicationMenuOpen = ref(false)
 
 const toggleApplicationMenu = () => {
   isApplicationMenuOpen.value = !isApplicationMenuOpen.value
-}
-
-const handleThemeChange = async (theme: ThemeText) => {
-  await userStore.updateTheme(theme)
-}
-
-const handleCultureChange = async (culture: CultureText) => {
-  await userStore.updateCulture(culture)
 }
 
 onMounted(async () => {

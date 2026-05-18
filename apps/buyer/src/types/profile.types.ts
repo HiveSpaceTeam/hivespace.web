@@ -21,6 +21,7 @@ export interface UserProfileResponse {
   email: string
   gender: number
   dateOfBirth: string | null
+  avatarUrl: string | null
 }
 
 export interface UpdateProfileRequest {
@@ -30,6 +31,7 @@ export interface UpdateProfileRequest {
   email: string
   gender: number
   dateOfBirth: string | null
+  avatarFileId?: string
 }
 
 export interface ProfileFormData {

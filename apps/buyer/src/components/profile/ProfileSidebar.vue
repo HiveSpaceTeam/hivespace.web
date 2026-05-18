@@ -2,7 +2,7 @@
   <aside class="w-52 shrink-0">
     <div class="bg-white dark:bg-card-dark rounded shadow-sm overflow-hidden">
       <div class="flex items-center gap-3 px-4 py-5 border-b border-gray-100 dark:border-gray-700">
-        <Avatar size="medium" />
+        <Avatar :src="avatarSrc" size="medium" />
         <div class="min-w-0">
           <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 truncate">
             {{ displayUsername }}
@@ -77,20 +77,28 @@
 import { ref, computed } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { useAuth, Avatar } from '@hivespace/shared'
+import { storeToRefs } from 'pinia'
 import { Bell, User, ShoppingBag, ChevronDown, Pencil } from 'lucide-vue-next'
+import { useProfileStore } from '@/stores'
 
 const route = useRoute()
 const { currentUser } = useAuth()
+const profileStore = useProfileStore()
+const { profile } = storeToRefs(profileStore)
 
 const accountOpen = ref(true)
 
 const displayUsername = computed(
   () =>
+    profile.value?.userName ??
+    profile.value?.fullName ??
     currentUser.value?.profile?.preferred_username ??
     currentUser.value?.profile?.name ??
     currentUser.value?.profile?.sub ??
     '',
 )
+
+const avatarSrc = computed(() => profile.value?.avatarUrl?.trim() || undefined)
 
 const activeClass = (path: string) =>
   route.path === path

@@ -12,7 +12,10 @@
         ]"
         @click="triggerFileInput"
       >
-        <div v-if="!imagePreview" class="flex flex-col items-center gap-1.5">
+        <div
+          v-if="!displayPreviewSrc && !avatarFallback"
+          class="flex flex-col items-center gap-1.5"
+        >
           <!-- Plus icon -->
           <div
             :class="[
@@ -34,14 +37,22 @@
               />
             </svg>
           </div>
-          <p class="text-xs text-gray-400 dark:text-gray-500 leading-tight">Add Photo</p>
+          <p class="text-xs text-gray-400 dark:text-gray-500 leading-tight">
+            {{ t('component.fileInput.addPhoto') }}
+          </p>
         </div>
-        <img v-else :src="imagePreview" :alt="label" class="w-full h-full object-cover" />
+        <div
+          v-else-if="!displayPreviewSrc"
+          class="flex h-full w-full items-center justify-center bg-gray-100 dark:bg-gray-800"
+        >
+          <UserCircleIcon class="h-20 w-20 text-gray-400 dark:text-gray-500" />
+        </div>
+        <img v-else :src="displayPreviewSrc" :alt="label" class="w-full h-full object-cover" />
       </div>
 
       <!-- Remove button when image is selected -->
       <button
-        v-if="imagePreview"
+        v-if="selectedFile"
         type="button"
         @click.stop="removeImage"
         :class="removeButtonClasses"
@@ -73,7 +84,10 @@
       </button>
 
       <!-- File info -->
-      <div v-if="selectedFile" class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+      <div
+        v-if="selectedFile && showFileName"
+        class="mt-2 text-xs text-gray-500 dark:text-gray-400"
+      >
         {{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})
       </div>
 
@@ -123,7 +137,7 @@
           ]"
           @click="triggerFileInput"
         >
-          <div v-if="!imagePreview" class="text-center">
+          <div v-if="!displayPreviewSrc && !avatarFallback" class="text-center">
             <svg
               :class="
                 props.previewSize === 'sm'
@@ -145,12 +159,27 @@
               />
             </svg>
           </div>
-          <img v-else :src="imagePreview" :alt="label" :class="previewImageClasses" />
+          <div
+            v-else-if="!displayPreviewSrc"
+            class="flex h-full w-full items-center justify-center bg-gray-100 dark:bg-gray-800"
+          >
+            <UserCircleIcon
+              :class="
+                props.previewSize === 'sm'
+                  ? 'w-7 h-7'
+                  : props.previewSize === 'lg'
+                    ? 'w-14 h-14'
+                    : 'w-10 h-10'
+              "
+              class="text-gray-400 dark:text-gray-500"
+            />
+          </div>
+          <img v-else :src="displayPreviewSrc" :alt="label" :class="previewImageClasses" />
         </div>
 
         <!-- Remove button when image is selected -->
         <button
-          v-if="imagePreview"
+          v-if="selectedFile"
           type="button"
           @click.stop="removeImage"
           :class="removeButtonClasses"
@@ -161,7 +190,10 @@
     </div>
 
     <!-- File info -->
-    <div v-if="selectedFile" class="mt-2 text-xs text-gray-500 dark:text-gray-400">
+    <div
+      v-if="selectedFile && showFileName"
+      class="mt-2 text-xs text-gray-500 dark:text-gray-400"
+    >
       {{ selectedFile.name }} ({{ formatFileSize(selectedFile.size) }})
     </div>
 
@@ -178,8 +210,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useI18n } from 'vue-i18n'
+import UserCircleIcon from '../../icons/UserCircleIcon.vue'
 
 interface Props {
   label?: string
@@ -193,6 +226,9 @@ interface Props {
   previewSize?: 'sm' | 'md' | 'lg'
   previewShape?: 'circle' | 'square' | 'rectangle'
   error?: string
+  previewSrc?: string | null
+  avatarFallback?: boolean
+  showFileName?: boolean
 }
 
 interface Emits {
@@ -211,6 +247,9 @@ const props = withDefaults(defineProps<Props>(), {
   required: false,
   previewSize: 'md',
   previewShape: 'circle',
+  previewSrc: null,
+  avatarFallback: false,
+  showFileName: true,
 })
 
 const defaultButtonText = computed(() => props.buttonText || t('component.fileInput.chooseFile'))
@@ -221,6 +260,17 @@ const fileInput = ref<HTMLInputElement>()
 const selectedFile = ref<File | null>(props.modelValue || null)
 const imagePreview = ref<string | null>(null)
 const errorMessage = ref<string>('')
+
+const displayPreviewSrc = computed(() => imagePreview.value || props.previewSrc || null)
+
+const acceptedTypes = computed(() =>
+  props.accept
+    .split(',')
+    .map((type) => type.trim().toLowerCase())
+    .filter(Boolean),
+)
+
+const showFileName = computed(() => props.showFileName)
 
 // Upload zone size for the 'top' layout (large circle)
 const uploadZoneSizeClasses = computed(() => {
@@ -321,9 +371,36 @@ const displayError = computed(() => {
   // Return internal error if exists
   if (errorMessage.value) return errorMessage.value
   // Return required error if field is required and no file is selected
-  if (props.required && !selectedFile.value) return 'This field is required'
+  if (props.required && !selectedFile.value) return t('component.fileInput.validation.required')
   return ''
 })
+
+const createPreview = (file: File) => {
+  const reader = new FileReader()
+  reader.onload = (e) => {
+    imagePreview.value = e.target?.result as string
+  }
+  reader.readAsDataURL(file)
+}
+
+const isAcceptedFile = (file: File) => {
+  if (acceptedTypes.value.length === 0) return true
+
+  const fileType = file.type.toLowerCase()
+  const fileName = file.name.toLowerCase()
+
+  return acceptedTypes.value.some((acceptedType) => {
+    if (acceptedType.endsWith('/*')) {
+      return fileType.startsWith(acceptedType.slice(0, -1))
+    }
+
+    if (acceptedType.startsWith('.')) {
+      return fileName.endsWith(acceptedType)
+    }
+
+    return fileType === acceptedType
+  })
+}
 
 const triggerFileInput = () => {
   fileInput.value?.click()
@@ -335,8 +412,9 @@ const handleFileChange = (event: Event) => {
 
   if (file) {
     // Validate file type
-    if (!file.type.startsWith('image/')) {
-      const error = 'Please select an image file'
+    if (!isAcceptedFile(file)) {
+      const error = t('component.fileInput.validation.imageOnly')
+      clearSelection(false)
       errorMessage.value = error
       emit('error', error)
       return
@@ -344,7 +422,10 @@ const handleFileChange = (event: Event) => {
 
     // Validate file size
     if (file.size > props.maxSize) {
-      const error = `File size must be less than ${formatFileSize(props.maxSize)}`
+      const error = t('component.fileInput.validation.maxSize', {
+        size: formatFileSize(props.maxSize),
+      })
+      clearSelection(false)
       errorMessage.value = error
       emit('error', error)
       return
@@ -354,11 +435,7 @@ const handleFileChange = (event: Event) => {
     errorMessage.value = ''
 
     // Create preview
-    const reader = new FileReader()
-    reader.onload = (e) => {
-      imagePreview.value = e.target?.result as string
-    }
-    reader.readAsDataURL(file)
+    createPreview(file)
 
     emit('update:modelValue', file)
     emit('change', file)
@@ -368,9 +445,16 @@ const handleFileChange = (event: Event) => {
 }
 
 const removeImage = () => {
+  clearSelection()
+}
+
+const clearSelection = (clearError = true) => {
   selectedFile.value = null
   imagePreview.value = null
-  errorMessage.value = ''
+
+  if (clearError) {
+    errorMessage.value = ''
+  }
 
   if (fileInput.value) {
     fileInput.value.value = ''
@@ -379,6 +463,24 @@ const removeImage = () => {
   emit('update:modelValue', null)
   emit('change', null)
 }
+
+watch(
+  () => props.modelValue,
+  (file) => {
+    selectedFile.value = file || null
+
+    if (file) {
+      createPreview(file)
+      return
+    }
+
+    imagePreview.value = null
+
+    if (fileInput.value) {
+      fileInput.value.value = ''
+    }
+  },
+)
 
 const formatFileSize = (bytes: number): string => {
   if (bytes === 0) return '0 B'
