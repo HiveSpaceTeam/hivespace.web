@@ -8,8 +8,10 @@ import { createApp } from 'vue'
 import App from '@/App.vue'
 import router from '@/router'
 import { createPinia } from 'pinia'
+import { useProfileStore } from '@/stores/profile.store'
 import { useUserSettingsStore } from '@/stores/user-settings.store'
 import {
+  useAuth,
   CULTURE_TEXT,
   THEME_TEXT,
   initializeAuth,
@@ -34,18 +36,32 @@ const initializeApp = async () => {
   app.use(router)
 
   // 4. Use logic that depends on plugins/auth
+  const { isAuthenticated } = useAuth()
+  const profileStore = useProfileStore()
   const userSettingsStore = useUserSettingsStore()
 
-  const cookieCulture = getCookie('culture')
-  const culture = cookieCulture === CULTURE_TEXT.ENGLISH
-    ? CULTURE_TEXT.ENGLISH
-    : CULTURE_TEXT.VIETNAMESE
-  i18n.global.locale.value = culture
+  if (await isAuthenticated.value) {
+    const [settingsResult] = await Promise.allSettled([
+      userSettingsStore.fetchUserSettings(),
+      profileStore.fetchMyProfile(),
+    ])
 
-  const cookieTheme = getCookie('theme')
-  const theme = cookieTheme === THEME_TEXT.DARK ? THEME_TEXT.DARK : THEME_TEXT.LIGHT
+    if (settingsResult.status === 'fulfilled') {
+      i18n.global.locale.value = settingsResult.value.culture
+    }
+  } else {
+    const cookieCulture = getCookie('culture')
+    const culture = cookieCulture === CULTURE_TEXT.ENGLISH
+      ? CULTURE_TEXT.ENGLISH
+      : CULTURE_TEXT.VIETNAMESE
+    i18n.global.locale.value = culture
 
-  userSettingsStore.setUserSettings({ culture, theme })
+    const cookieTheme = getCookie('theme')
+    const theme = cookieTheme === THEME_TEXT.DARK ? THEME_TEXT.DARK : THEME_TEXT.LIGHT
+
+    userSettingsStore.setUserSettings({ culture, theme })
+    profileStore.clearMyProfile()
+  }
 
   return app
 }

@@ -7,12 +7,16 @@ import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuth } from '@hivespace/shared'
 import type { SignoutResponse } from 'oidc-client-ts'
+import { useProfileStore } from '@/stores/profile.store'
 
 type SignoutUserState = { redirectTo?: string } | undefined
 
 const router = useRouter()
+const profileStore = useProfileStore()
 
 onMounted(async () => {
+  profileStore.clearMyProfile()
+
   try {
     const { userManager } = useAuth()
     if (!userManager) throw new Error('Auth not initialized')
