@@ -10,3 +10,4 @@ apps/*/src/**/*.js
 apps/*/src/**/*.vue.js
 .gitnexus
 .playwright-mcp
+.claude/settings.local.json
