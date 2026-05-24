@@ -2,7 +2,8 @@ Run this verification checklist after completing a frontend story. Check every a
 
 Context:
 - Read local `AGENTS.md` and `CLAUDE.md` if present.
-- Read the feature `spec.md`, `plan.md`, and `tasks.md` under `../hivespace.spec/specs/[feature-name]/`.
+- Read the feature `spec.md`, `plan.md`, `tasks.md`, and `tasks/frontend.md` under `../hivespace.spec/specs/[feature-name]/`.
+- Read relevant `tasks/config.md` and `tasks/verification.md` entries when they apply to the completed story.
 
 Frontend checks:
 - Shared-first reuse was checked under `packages/shared/src`.
@@ -24,5 +25,5 @@ Verification:
 Report:
 - List files created and modified.
 - List verification commands and results.
-- If more stories remain, show the next story scope from `tasks.md`.
+- If more stories remain, show the next frontend story/task group from `tasks/frontend.md`, using `tasks.md` for dependency order.
 - Remind the user to run `/wrap-up` in `hivespace.spec` when the full feature is shipped.

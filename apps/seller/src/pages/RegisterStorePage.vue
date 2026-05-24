@@ -127,7 +127,6 @@ import {
   type ErrorResponse,
 } from '@hivespace/shared'
 import { useStoreStore, useMediaStore } from '@/stores'
-import refreshToken from '@/services/refresh.service'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -241,15 +240,21 @@ const handleSubmit = async () => {
       await mediaStore.confirmUpload(logoFileId, response.storeId)
     }
 
-    appStore.notifySuccess(
-      t('registerStore.messages.success'),
-      t('registerStore.messages.registrationSuccess'),
-    )
-    // Refresh token after successful registration
     const { getCurrentUser } = useAuth()
     const currentUser = await getCurrentUser()
-    await refreshToken(currentUser, true)
-    await router.push('/product/list')
+    if (currentUser?.isSeller()) {
+      appStore.notifySuccess(
+        t('registerStore.messages.success'),
+        t('registerStore.messages.registrationSuccess'),
+      )
+      await router.push('/product/list')
+      return
+    }
+
+    appStore.notifyInfo(
+      t('registerStore.messages.success'),
+      t('registerStore.messages.registrationPendingAccess'),
+    )
   } catch (error) {
     console.error('Failed to register seller:', error)
 

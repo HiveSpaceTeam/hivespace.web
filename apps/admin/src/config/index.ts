@@ -94,7 +94,7 @@ const createConfig = (): AppConfig => {
         authority: validateUrl(
           getEnvVar('VITE_AUTH_AUTHORITY_URL') ||
           getEnvVar('VITE_IDENTITY_SERVER_URL') ||
-          `${apiBaseUrl}/identity`,
+          'http://localhost:5001',
           'Authority URL',
         ),
         prompt: 'login',

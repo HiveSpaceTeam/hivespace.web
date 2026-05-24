@@ -30,6 +30,7 @@
     "success": "Thành công!",
     "error": "Lỗi!",
     "registrationSuccess": "Đăng ký người bán hoàn thành thành công!",
+    "registrationPendingAccess": "Cửa hàng của bạn đã được tạo. Quyền truy cập người bán có thể cần thêm ít phút để làm mới trạng thái xác thực.",
     "registrationFailed": "Đăng ký thất bại. Vui lòng kiểm tra thông tin và thử lại.",
     "validationFailed": "Vui lòng điền đầy đủ các trường bắt buộc."
   },

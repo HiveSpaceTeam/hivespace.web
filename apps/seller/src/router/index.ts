@@ -220,7 +220,6 @@ router.beforeEach(async (to, _from, next) => {
   }
   // Check if user is not a seller
   if (!user.isSeller()) {
-    debugger
     // Priority 1: If not seller and email is not verified, redirect to verify-email
     if (!user.profile.email_verified && !to.path.startsWith('/verify-email')) {
       next('/verify-email')

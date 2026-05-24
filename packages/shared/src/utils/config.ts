@@ -44,3 +44,7 @@ export const joinUrl = (base: string, path: string): string => {
     const suffix = path.startsWith('/') ? path.slice(1) : path
     return `${prefix}/${suffix}`
 }
+
+export const getGatewayOrigin = (url: string): string => {
+    return new URL(url).origin
+}
