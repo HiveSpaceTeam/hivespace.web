@@ -36,5 +36,9 @@
   "USR0023": "Định dạng địa chỉ không hợp lệ",
   "USR0024": "Không đủ quyền hạn",
   "USR0027": "Mật khẩu không khớp",
-  "USR0028": "Tạo người dùng thất bại"
+  "USR0028": "Tạo người dùng thất bại",
+  "IDN6001": "Không tìm thấy tài khoản định danh",
+  "IDN6002": "Cấu hình dịch vụ định danh không hợp lệ",
+  "IDN6003": "Tài khoản này đang bị đình chỉ hoặc không hoạt động",
+  "IDN6004": "Tài khoản này tạm thời bị khóa. Vui lòng thử lại sau."
 }

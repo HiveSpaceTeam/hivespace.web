@@ -10,7 +10,7 @@ This file provides guidance to Codex (Codex.ai/code) when working with code in t
 
 | Command | Codex location | Claude Code location | Purpose |
 | --- | --- | --- | --- |
-| `/start-story` | `.agents/skills/start-story/SKILL.md` | `.claude/commands/start-story.md` | Start a frontend story from `../hivespace.spec/specs/[feature-name]` |
+| `/start-story` | `.agents/skills/start-story/SKILL.md` | `.claude/commands/start-story.md` | Start a frontend story from `../hivespace.spec/specs/[feature-name]/tasks/frontend.md` |
 | `/done-story` | `.agents/skills/done-story/SKILL.md` | `.claude/commands/done-story.md` | Verify a completed frontend story |
 
 Keep paired Codex and Claude command content semantically equivalent.

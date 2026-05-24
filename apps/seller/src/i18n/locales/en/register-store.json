@@ -30,6 +30,7 @@
     "error": "Error!",
     "registrationInProgress": "Registering your store...",
     "registrationSuccess": "Seller registration completed successfully!",
+    "registrationPendingAccess": "Your store was created. Seller access may take a moment while your authorization state refreshes.",
     "registrationFailed": "Registration failed. Please check your information and try again.",
     "validationFailed": "Please fill in all required fields correctly."
   },

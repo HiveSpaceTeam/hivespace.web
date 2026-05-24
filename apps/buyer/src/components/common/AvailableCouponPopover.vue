@@ -236,8 +236,30 @@ const listStyle = computed(() => {
   }
 })
 
+const prioritizedCoupons = computed(() => {
+  const selectedCode = props.selectedCouponCode
+
+  if (!selectedCode) {
+    return resolvedCoupons.value
+  }
+
+  const selectedCouponIndex = resolvedCoupons.value.findIndex((coupon) => coupon.code === selectedCode)
+
+  if (selectedCouponIndex <= 0) {
+    return resolvedCoupons.value
+  }
+
+  const selectedCoupon = resolvedCoupons.value[selectedCouponIndex]
+
+  return [
+    selectedCoupon,
+    ...resolvedCoupons.value.slice(0, selectedCouponIndex),
+    ...resolvedCoupons.value.slice(selectedCouponIndex + 1),
+  ]
+})
+
 const couponOptions = computed(() =>
-  resolvedCoupons.value.map((coupon) => ({
+  prioritizedCoupons.value.map((coupon) => ({
     label: coupon.code,
     value: coupon.code,
     disabled: isCouponUnavailable(coupon),
@@ -251,12 +273,24 @@ const isCouponUnavailable = (coupon: AvailableCoupon) =>
 const isDraftCouponSelected = (coupon: AvailableCoupon) =>
   !isCouponUnavailable(coupon) && draftSelectedCouponCode.value === coupon.code
 
-const resetDraftState = () => {
+const getSelectableSelectedCouponCode = () => {
   const selectedCode = props.selectedCouponCode || null
   const selectedCoupon = resolvedCoupons.value.find((coupon) => coupon.code === selectedCode)
-  draftSelectedCouponCode.value =
-    selectedCoupon && !isCouponUnavailable(selectedCoupon) ? selectedCode : null
+
+  return selectedCoupon && !isCouponUnavailable(selectedCoupon) ? selectedCode : null
+}
+
+const resetDraftState = () => {
+  draftSelectedCouponCode.value = getSelectableSelectedCouponCode()
   inputCode.value = ''
+}
+
+const syncDraftSelectionFromSelectedCoupon = () => {
+  if (draftSelectedCouponCode.value || inputCode.value.trim()) {
+    return
+  }
+
+  draftSelectedCouponCode.value = getSelectableSelectedCouponCode()
 }
 
 const getCouponOptionClass = (coupon: AvailableCoupon) => [
@@ -364,6 +398,28 @@ watch(
     couponStore.fetchAvailableCoupons(storeId, productIds, true).catch((error) => {
       console.error('Failed to reload available coupons', error)
     })
+  },
+)
+
+watch(
+  resolvedCoupons,
+  () => {
+    if (!props.modelValue) {
+      return
+    }
+
+    syncDraftSelectionFromSelectedCoupon()
+  },
+)
+
+watch(
+  () => props.selectedCouponCode,
+  () => {
+    if (!props.modelValue) {
+      return
+    }
+
+    resetDraftState()
   },
 )
 

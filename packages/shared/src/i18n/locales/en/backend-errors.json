@@ -36,5 +36,9 @@
   "USR0023": "Invalid address format",
   "USR0024": "Insufficient privileges",
   "USR0027": "Passwords do not match",
-  "USR0028": "User creation failed"
+  "USR0028": "User creation failed",
+  "IDN6001": "Identity account not found",
+  "IDN6002": "Identity service configuration is invalid",
+  "IDN6003": "This account is suspended or inactive",
+  "IDN6004": "This account is temporarily locked. Please try again later."
 }
