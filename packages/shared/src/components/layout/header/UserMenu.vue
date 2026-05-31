@@ -37,7 +37,7 @@
       </ul>
       <button v-if="showSignOut" type="button" @click="signOut"
         class="flex w-full items-center cursor-pointer gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
-        aria-label="Sign out">
+        :aria-label="$t('common.profile.signOut')">
         <LogoutIcon class="text-gray-500 group-hover:text-gray-700 dark:group-hover:text-gray-300" />
         {{ $t('common.profile.signOut') }}
       </button>
@@ -51,14 +51,13 @@ import { UserCircleIcon, ChevronDownIcon, LogoutIcon, SettingsIcon, SupportIcon 
 import Link from '../../common/Link.vue'
 import { ref, onMounted, onUnmounted, computed } from 'vue'
 import { useAuth } from '../../../composables'
-import type { User } from 'oidc-client-ts'
 import type { MenuItem } from '../../../types/component.common'
 import type { AppUser } from '../../../types'
 
 // Props: make this component generic so callers can provide a user and menu items
 
 const props = defineProps<{
-  user?: User | AppUser | null
+  user?: AppUser | null
   menuItems?: MenuItem[]
   displayName?: string
   fullName?: string
@@ -72,13 +71,13 @@ const emit = defineEmits<{
   navigate: [path: string]
 }>()
 
-const { userManager } = useAuth()
-const internalUser = ref<User | null>(null)
+const { getCurrentUser } = useAuth()
+const internalUser = ref<AppUser | null>(null)
 
 onMounted(async () => {
   if (!props.user) {
     try {
-      internalUser.value = userManager ? await userManager.getUser() : null
+      internalUser.value = await getCurrentUser()
     } catch {
       internalUser.value = null
     }
@@ -143,7 +142,6 @@ const handleClickOutside = (event: MouseEvent) => {
 
 onMounted(() => {
   document.addEventListener('click', handleClickOutside)
-  console.log(showSignOut.value)
 })
 
 onUnmounted(() => {

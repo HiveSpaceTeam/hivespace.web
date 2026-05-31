@@ -1,6 +1,7 @@
 import { ref, onUnmounted, watch } from 'vue'
 import * as signalR from '@microsoft/signalr'
 import { useAuth } from './useAuth'
+import { getCookie } from '../utils/cookie'
 import type { NotificationHubEvent } from '../features/notifications/notifications.types'
 
 /**
@@ -16,7 +17,7 @@ export function useNotificationHub(
 ) {
   const hubUrl = `${hubBaseUrl.replace(/\/api(\/.*)?$/, '').replace(/\/+$/, '')}/hubs/notifications`
 
-  const { currentUser } = useAuth()
+  const { currentUser, csrfToken } = useAuth()
   const connectionStatus = ref<'disconnected' | 'connecting' | 'connected' | 'error'>(
     'disconnected',
   )
@@ -26,20 +27,17 @@ export function useNotificationHub(
   const connect = async () => {
     if (connection) return
 
-    if (!currentUser.value?.access_token) {
+    if (!currentUser.value) {
       connectionStatus.value = 'disconnected'
       return
     }
 
+    const currentCsrfToken = csrfToken.value ?? getCookie('HiveSpace.Csrf')
+
     connection = new signalR.HubConnectionBuilder()
       .withUrl(hubUrl, {
-        accessTokenFactory: () => {
-          const token = currentUser.value?.access_token
-          if (!token) {
-            throw new Error('Missing access token')
-          }
-          return token
-        },
+        withCredentials: true,
+        ...(currentCsrfToken ? { headers: { 'X-HiveSpace-CSRF': currentCsrfToken } } : {}),
       })
       .withAutomaticReconnect([0, 5000, 20000])
       .configureLogging(signalR.LogLevel.Warning)
@@ -83,9 +81,9 @@ export function useNotificationHub(
   }
 
   watch(
-    () => currentUser.value?.access_token,
-    (token) => {
-      if (!token && connection) {
+    () => currentUser.value,
+    (user) => {
+      if (!user && connection) {
         void disconnect()
       }
     },

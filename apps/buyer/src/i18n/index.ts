@@ -15,6 +15,7 @@ import enProductDetail from './locales/en/productDetail.json'
 import enPayment from './locales/en/payment.json'
 import enNotification from './locales/en/notification.json'
 import enOrders from './locales/en/orders.json'
+import enAuth from './locales/en/auth.json'
 
 // Import Vietnamese storefront files
 import viCommon from './locales/vi/common.json'
@@ -29,6 +30,7 @@ import viPayment from './locales/vi/payment.json'
 import viProductDetail from './locales/vi/productDetail.json'
 import viNotification from './locales/vi/notification.json'
 import viOrders from './locales/vi/orders.json'
+import viAuth from './locales/vi/auth.json'
 
 
 const en = {
@@ -37,6 +39,7 @@ const en = {
   checkout: enCheckout,
   payment: enPayment,
   orders: enOrders,
+  auth: enAuth,
   storefront: {
     ...enCommon,
     address: enAddress,
@@ -55,6 +58,7 @@ const vi = {
   checkout: viCheckout,
   payment: viPayment,
   orders: viOrders,
+  auth: viAuth,
   storefront: {
     ...viCommon,
     address: viAddress,

@@ -60,6 +60,11 @@ const currentUserEmail = computed(() => myProfile.value?.email?.trim() || '')
 
 const currentUserAvatarSrc = computed(() => myProfile.value?.avatarUrl?.trim() || '')
 
+const loadCurrentUserProfile = async (force = false) => {
+  if (!force && myProfile.value) return
+  await profileStore.fetchMyProfile()
+}
+
 const menuGroups = computed<SidebarMenuGroup[]>(() => [])
 
 const menuItems: MenuItem[] = [
@@ -95,6 +100,7 @@ provideAppShell({
   currentUserFullName,
   currentUserEmail,
   currentUserAvatarSrc,
+  loadCurrentUserProfile,
   notifications,
   unreadCount,
   notificationLoading,

@@ -37,11 +37,7 @@ Create `apps/seller/.env` for local overrides. `apps/seller/.env.development` is
 Common required values:
 
 ```env
-VITE_APP_CLIENT_ID=your-oidc-client-id
-VITE_GATEWAY_BASE_URL=https://localhost:7001
-VITE_APP_REDIRECT_URI=http://localhost:5174/callback/login
-VITE_APP_POST_LOGOUT_REDIRECT_URI=http://localhost:5174/callback/logout
-VITE_APP_SCOPE=openid profile email offline_access
+VITE_GATEWAY_BASE_URL=http://localhost:5000
 VITE_APP_ENVIRONMENT=development
 VITE_ENABLE_LOGGING=true
 VITE_ENABLE_DEBUG=true

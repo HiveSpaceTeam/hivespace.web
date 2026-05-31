@@ -11,10 +11,10 @@
     <div :class="['pb-4', isExpanded || isHovered || isMobileOpen ? 'px-3' : 'flex justify-center']">
       <router-link to="/" class="block">
         <template v-if="isExpanded || isHovered || isMobileOpen">
-          <img class="dark:hidden h-7 w-auto" src="/images/logo/logo-light.svg" alt="Logo" />
-          <img class="hidden dark:block h-7 w-auto" src="/images/logo/logo-dark.svg" alt="Logo" />
+          <img class="dark:hidden h-7 w-auto" :src="LogoLight" alt="Logo" />
+          <img class="hidden dark:block h-7 w-auto" :src="LogoDark" alt="Logo" />
         </template>
-        <img v-else class="h-7 w-auto" src="/images/logo/logo-icon.svg" alt="Logo" />
+        <img v-else class="h-7 w-auto" :src="LogoIcon" alt="Logo" />
       </router-link>
     </div>
 
@@ -109,6 +109,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
+import LogoDark from '../../assets/logo/logo-dark.svg'
+import LogoIcon from '../../assets/logo/logo-icon.svg'
+import LogoLight from '../../assets/logo/logo-light.svg'
 import ChevronDownIcon from '../../icons/ChevronDownIcon.vue'
 import HorizontalDots from '../../icons/HorizontalDots.vue'
 import { useSidebar } from '../../composables/useSidebar'

@@ -41,14 +41,14 @@ export const useNotificationRealtime = (options: NotificationRealtimeOptions) =>
   })
 
   watch(
-    () => currentUser.value?.access_token,
-    async (token, previousToken) => {
-      if (token) {
-        if (previousToken && previousToken !== token) {
+    () => currentUser.value,
+    async (user, previousUser) => {
+      if (user) {
+        if (previousUser && previousUser !== user) {
           await disconnectRealtime()
         }
         await connectRealtime()
-      } else if (previousToken) {
+      } else if (previousUser) {
         await disconnectRealtime()
       }
     },

@@ -2,7 +2,6 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import { useAuth } from '@hivespace/shared'
 import { accountService } from '@/services/account.service'
-import refreshToken from '@/services/refresh.service'
 
 export const useAccountStore = defineStore('account', () => {
   const isSendingVerification = ref(false)
@@ -22,11 +21,8 @@ export const useAccountStore = defineStore('account', () => {
       isVerifyingEmail.value = true
       await accountService.verifyEmail(userId, token)
 
-      const { getCurrentUser } = useAuth()
-      const currentUser = await getCurrentUser()
-      if (currentUser) {
-        await refreshToken(currentUser, true)
-      }
+      const { refreshSession } = useAuth()
+      await refreshSession('seller')
     } finally {
       isVerifyingEmail.value = false
     }

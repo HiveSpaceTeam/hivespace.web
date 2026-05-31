@@ -6,7 +6,7 @@
 import { config } from './index'
 
 // Validate required environment variables
-const requiredEnvVars = ['VITE_APP_CLIENT_ID', 'VITE_API_BASE_URL'] as const
+const requiredEnvVars = ['VITE_GATEWAY_BASE_URL'] as const
 
 // Check for missing required environment variables
 export const validateEnvironment = (): void => {
@@ -64,11 +64,10 @@ export const API_CONSTANTS = {
 
 // Auth configuration constants
 export const AUTH_CONSTANTS = {
-  tokenStorageKey: 'hivespace_admin_token',
-  refreshTokenStorageKey: 'hivespace_admin_refresh_token',
-  userStorageKey: 'hivespace_admin_user',
+  csrfCookieName: 'HiveSpace.Csrf',
+  sessionCookieName: '__Host-HiveSpace.Auth',
+  csrfHeaderName: 'X-HiveSpace-CSRF',
   sessionTimeout: 24 * 60 * 60 * 1000, // 24 hours
-  refreshTokenTimeout: 7 * 24 * 60 * 60 * 1000, // 7 days
 } as const
 
 // Feature flag constants

@@ -1,54 +1,75 @@
-import type { User } from 'oidc-client-ts'
+import type { SessionUser } from './auth-session'
 
-export interface AppUser extends User {
+export interface AppUserProfile {
+  sub?: string
+  email?: string
+  name?: string
+  username?: string
+  preferred_username?: string
+  role?: string | string[]
+  email_verified?: boolean
+  picture?: string
+  [key: string]: unknown
+}
+
+export interface AppUser {
+  id?: string
+  profile: AppUserProfile
+  expires_at?: number
+  expiresAt?: string
+  refreshExpiresAt?: string
   isSystemAdmin: () => boolean
   isAdmin: () => boolean
   isSeller: () => boolean
 }
 
-export function toAppUser(user: User | null): AppUser | null {
+const hasRole = (role: unknown, targetRole: string): boolean => {
+  if (!role) return false
+  if (typeof role === 'string') return role === targetRole
+  if (Array.isArray(role)) return role.flat().includes(targetRole)
+  return false
+}
+
+const withRoleHelpers = <TUser extends AppUser>(user: TUser): TUser => {
+  user.isSystemAdmin = () => hasRole(user.profile?.role, 'SystemAdmin')
+  user.isAdmin = () => hasRole(user.profile?.role, 'Admin')
+  user.isSeller = () =>
+    hasRole(user.profile?.role, 'StoreOwner') || hasRole(user.profile?.role, 'Seller')
+
+  return user
+}
+
+export const toAppUser = (user: AppUser | null): AppUser | null => {
   if (!user) return null
-  const u = user as AppUser
+  return withRoleHelpers(user)
+}
 
-  // Helper function to check if role matches
-  /**
-   * Determines whether a given role value matches a target role.
-   *
-   * The function accepts a role value of unknown shape and checks:
-   * - If role is a string, returns true when it strictly equals the targetRole.
-   * - If role is an array, flattens one level and returns true when targetRole is included.
-   * - If role is falsy or any other type, returns false.
-   *
-   * @param role - The role value from a user profile (can be a string, an array of strings or nested arrays, or undefined/other).
-   * @param targetRole - The target role name to check against.
-   * @returns True if the role matches or contains the targetRole; otherwise false.
-   */
-  const hasRole = (role: unknown, targetRole: string): boolean => {
-    if (!role) return false
-    if (typeof role === 'string') return role === targetRole
-    if (Array.isArray(role)) return role.flat().includes(targetRole)
-    return false
+export const toAppUserFromSession = (
+  sessionUser: SessionUser,
+  expiresAt?: string,
+  refreshExpiresAt?: string,
+): AppUser => {
+  const roles = sessionUser.roles ?? []
+
+  const appUser: AppUser = {
+    id: sessionUser.userId,
+    profile: {
+      sub: sessionUser.userId,
+      email: sessionUser.email,
+      name: sessionUser.displayName || sessionUser.email,
+      username: sessionUser.displayName || sessionUser.email,
+      role: roles,
+      email_verified: sessionUser.emailVerified,
+      picture: sessionUser.avatarUrl,
+      accountStatus: sessionUser.accountStatus,
+    },
+    expiresAt,
+    refreshExpiresAt,
+    expires_at: expiresAt ? Math.floor(new Date(expiresAt).getTime() / 1000) : undefined,
+    isSystemAdmin: () => false,
+    isAdmin: () => false,
+    isSeller: () => false,
   }
 
-  if (!u.isSystemAdmin) {
-    u.isSystemAdmin = () => {
-      return hasRole(u.profile?.role, 'SystemAdmin')
-    }
-  }
-
-  if (!u.isAdmin) {
-    u.isAdmin = () => {
-      return hasRole(u.profile?.role, 'Admin')
-    }
-  }
-
-  if (!u.isSeller) {
-    u.isSeller = () => {
-      // CustomProfileService emits 'StoreOwner' for users with a registered store.
-      // 'Seller' covers users whose RoleName is explicitly set to Seller in the DB.
-      return hasRole(u.profile?.role, 'StoreOwner') || hasRole(u.profile?.role, 'Seller')
-    }
-  }
-
-  return u
+  return withRoleHelpers(appUser)
 }

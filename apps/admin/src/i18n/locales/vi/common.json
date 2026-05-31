@@ -25,14 +25,9 @@
     "title": "LỖI",
     "message": "Đã xảy ra sự cố từ phía chúng tôi. Vui lòng thử lại sau hoặc liên hệ hỗ trợ nếu vấn đề vẫn tiếp diễn."
   },
-  "default": {
-    "title": "HiveSpace - Admin Portal",
-    "welcome": "Chào mừng đến HiveSpace Admin Portal.",
-    "signIn": "Đăng nhập",
-    "signUp": "Đăng ký"
-  },
   "auth": {
-    "signingOut": "Đang đăng xuất..."
+    "signingOut": "Đang đăng xuất...",
+    "rememberMe": "Ghi nhớ đăng nhập"
   },
   "header": {
     "openApplicationMenu": "Mở menu ứng dụng",

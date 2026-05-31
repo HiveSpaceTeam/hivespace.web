@@ -25,14 +25,9 @@
     "title": "ERROR",
     "message": "Something went wrong on our end. Please try again in a moment or contact support if the issue persists."
   },
-  "default": {
-    "title": "HiveSpace - Admin Portal",
-    "welcome": "Welcome to HiveSpace Admin Portal.",
-    "signIn": "Sign in",
-    "signUp": "Sign up"
-  },
   "auth": {
-    "signingOut": "Signing out..."
+    "signingOut": "Signing out...",
+    "rememberMe": "Remember me"
   },
   "header": {
     "openApplicationMenu": "Open application menu",

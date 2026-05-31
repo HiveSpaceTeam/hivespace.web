@@ -6,13 +6,8 @@
     "next": "Next"
   },
   "auth": {
-    "signingOut": "Signing out..."
-  },
-  "default": {
-    "title": "HiveSpace - Seller Center",
-    "welcome": "Welcome to HiveSpace Seller Center.",
-    "signIn": "Sign in",
-    "signUp": "Sign up"
+    "signingOut": "Signing out...",
+    "rememberMe": "Remember me"
   },
   "maintenance": {
     "title": "MAINTENANCE",

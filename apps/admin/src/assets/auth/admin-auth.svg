@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 400" width="100%" height="100%">
+  <circle cx="200" cy="200" r="140" fill="#10B981" opacity="0.1" />
+
+  <g transform="translate(30, 50)">
+    <rect x="70" y="30" width="200" height="180" rx="15" fill="#1E293B" stroke="#475569" stroke-width="3" />
+    <rect x="70" y="30" width="200" height="40" rx="15" fill="#334155" />
+    <line x1="70" y1="70" x2="270" y2="70" stroke="#475569" stroke-width="3" />
+
+    <circle cx="250" cy="50" r="15" fill="#1E293B" stroke="#64748B" stroke-width="2"/>
+    <circle cx="250" cy="50" r="8" fill="#0066FF" />
+
+    <rect x="85" y="85" width="70" height="50" rx="5" fill="#334155" stroke="#64748B" stroke-width="1.5"/>
+    <path d="M95 110l10-10 10 15 10-10 10 10" fill="none" stroke="#10B981" stroke-width="2" stroke-linecap="round"/>
+
+    <rect x="180" y="85" width="70" height="50" rx="5" fill="#334155" stroke="#64748B" stroke-width="1.5"/>
+    <rect x="188" y="100" width="8" height="25" rx="2" fill="#0066FF" /> <rect x="202" y="90" width="8" height="35" rx="2" fill="#F59E0B" /> <rect x="216" y="95" width="8" height="30" rx="2" fill="#10B981" /> <rect x="230" y="105" width="8" height="20" rx="2" fill="#64748B" />
+
+    <rect x="85" y="150" width="165" height="50" rx="5" fill="#334155" stroke="#64748B" stroke-width="1.5"/>
+    <circle cx="100" cy="175" r="10" fill="none" stroke="#F59E0B" stroke-width="1.5"/>
+    <circle cx="100" cy="175" r="5" fill="#F59E0B" />
+    <line x1="120" y1="170" x2="230" y2="170" stroke="#94A3B8" stroke-width="1.5"/>
+    <line x1="120" y1="180" x2="210" y2="180" stroke="#94A3B8" stroke-width="1.5"/>
+
+    <g transform="translate(260, 80)">
+       <rect x="0" y="0" width="40" height="150" rx="5" fill="#1E293B" stroke="#64748B" stroke-width="2" stroke-dasharray="4 4" />
+       <circle cx="20" cy="20" r="4" fill="#10B981" /> <circle cx="20" cy="50" r="4" fill="#0066FF" /> <circle cx="20" cy="80" r="4" fill="#F59E0B" /> <circle cx="20" cy="110" r="4" fill="#10B981" /> </g>
+  </g>
+
+  <g transform="translate(250, 250) scale(0.9)">
+    <circle cx="35" cy="35" r="28" fill="#1E293B" />
+    <path d="M35 15 A20 20 0 1 0 35 55 A20 20 0 1 0 35 15 Z M35 25 A10 10 0 1 1 35 45 A10 10 0 1 1 35 25 Z" fill="#0066FF"/>
+    <path d="M31 5 L39 5 L41 15 L29 15 Z M31 65 L39 65 L41 55 L29 55 Z M5 31 L15 29 L15 41 L5 39 Z M65 31 L55 29 L55 41 L65 39 Z" fill="#0066FF"/>
+    <path d="M12 12 L19 6 L25 13 L18 19 Z M58 58 L51 64 L45 57 L52 51 Z M58 12 L52 19 L45 13 L51 6 Z M12 58 L18 51 L25 57 L19 64 Z" fill="#0066FF"/>
+  </g>
+</svg>

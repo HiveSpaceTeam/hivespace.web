@@ -12,6 +12,7 @@ import enProduct from './locales/en/product.json'
 import enCoupon from './locales/en/coupon.json'
 import enOrder from './locales/en/order.json'
 import enNotification from './locales/en/notification.json'
+import enAuth from './locales/en/auth.json'
 
 // Import Vietnamese translation files
 import viCommon from './locales/vi/common.json'
@@ -24,6 +25,7 @@ import viProduct from './locales/vi/product.json'
 import viCoupon from './locales/vi/coupon.json'
 import viOrder from './locales/vi/order.json'
 import viNotification from './locales/vi/notification.json'
+import viAuth from './locales/vi/auth.json'
 
 // Merge translations for each language
 const en = {
@@ -41,6 +43,7 @@ const en = {
   coupon: enCoupon,
   order: enOrder,
   notification: enNotification,
+  auth: enAuth,
 }
 
 const vi = {
@@ -58,6 +61,7 @@ const vi = {
   coupon: viCoupon,
   order: viOrder,
   notification: viNotification,
+  auth: viAuth,
 }
 
 const i18n = createI18n({

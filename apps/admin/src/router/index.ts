@@ -1,4 +1,4 @@
-import { useAuth, ServerError, Maintenance, NotFound, Default } from '@hivespace/shared'
+import { useAuth, ServerError, Maintenance, NotFound } from '@hivespace/shared'
 import { createRouter, createWebHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import i18n from '@/i18n'
@@ -48,18 +48,11 @@ const devDemoRoutes = import.meta.env.DEV
   : []
 
 const mainRoutes = [
-  // Determine post logout redirect path from config (use only the path portion)
   {
-    path: '/callback/logout',
-    name: 'LogoutCallback',
-    component: () => import('@/pages/Callback/LogoutCallbackPage.vue'),
-    meta: { allowAnonymous: true },
-  },
-  {
-    path: '/callback/login',
-    name: 'Callback',
-    component: () => import('@/pages/Callback/LoginCallbackPage.vue'),
-    meta: { allowAnonymous: true },
+    path: '/signin',
+    name: 'SignIn',
+    component: () => import('@/pages/Auth/SignInPage.vue'),
+    meta: { titleKey: 'auth.signIn.title', allowAnonymous: true },
   },
   {
     path: '/server-error',
@@ -75,10 +68,12 @@ const mainRoutes = [
   },
   {
     path: '/',
-    name: 'Default',
-    component: Default,
-    props: { redirectPath: '/dashboard', showSignUp: false },
-    meta: { titleKey: 'common.default.title', allowAnonymous: true },
+    name: 'RootRedirect',
+    redirect: {
+      path: '/signin',
+      query: { returnUrl: '/dashboard' },
+    },
+    meta: { titleKey: 'auth.signIn.title', allowAnonymous: true },
   },
   ...devDemoRoutes,
   {
@@ -175,18 +170,25 @@ router.beforeEach(async (to, _from, next) => {
   }
 
   // Use the composable for auth operations
-  const { getCurrentUser, login, logout } = useAuth()
+  const { getCurrentUser, logout } = useAuth()
 
   const user = await getCurrentUser()
   if (!user) {
-    login()
+    next({
+      path: '/signin',
+      query: { returnUrl: to.fullPath },
+    })
     return
   }
   // Allow access if the user is an admin OR a system admin.
   // Redirect to login when the user is neither.
   if (!user.isAdmin() && !user.isSystemAdmin()) {
     await logout()
-    return next(false)
+    next({
+      path: '/signin',
+      query: { error: 'accessDenied' },
+    })
+    return
   }
 
   next()

@@ -14,6 +14,7 @@ export interface AppShellContext {
   currentUserFullName?: Ref<string>
   currentUserEmail?: Ref<string>
   currentUserAvatarSrc?: Ref<string>
+  loadCurrentUserProfile?: (force?: boolean) => Promise<void>
   notifications: Ref<InAppNotification[]>
   unreadCount: Ref<number>
   notificationLoading: Ref<boolean>
