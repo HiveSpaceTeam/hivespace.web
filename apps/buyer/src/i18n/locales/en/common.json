@@ -23,7 +23,8 @@
   "auth": {
     "signIn": "Sign In",
     "signUp": "Sign Up",
-    "signingOut": "Signing out..."
+    "signingOut": "Signing out...",
+    "rememberMe": "Remember me"
   },
   "profile": {
     "myAccount": "My Account",

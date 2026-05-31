@@ -1,5 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import { useAuth, Maintenance, NotFound, ServerError, Default } from '@hivespace/shared'
+import { useAuth, Maintenance, NotFound, ServerError } from '@hivespace/shared'
 import type { RouteRecordRaw } from 'vue-router'
 import i18n from '@/i18n'
 
@@ -47,27 +47,26 @@ const devDemoRoutes = import.meta.env.DEV
   ? buildDemoRoutes((await import('@hivespace/demo')).demoRoutes)
   : []
 
-// Single grouped collection for several related routes (callbacks, error pages,
-// maintenance, default and 404). We keep the same order and meta fields so
+// Single grouped collection for several related routes (compat redirects, error pages,
+// maintenance and 404). We keep the same order and meta fields so
 // runtime behavior is unchanged. This makes the router easier to scan.
 const mainRoutes = [
-  // Determine post logout redirect path from config (use only the path portion)
   {
-    path: '/callback/logout',
-    name: 'LogoutCallback',
-    component: () => import('@/pages/Callback/LogoutCallbackPage.vue'),
-    meta: { allowAnonymous: true },
+    path: '/signin',
+    name: 'SignIn',
+    component: () => import('@/pages/Auth/SignInPage.vue'),
+    meta: { titleKey: 'auth.signIn.title', allowAnonymous: true },
   },
   {
-    path: '/callback/login',
-    name: 'Callback',
-    component: () => import('@/pages/Callback/LoginCallbackPage.vue'),
-    meta: { allowAnonymous: true },
+    path: '/signup',
+    name: 'SignUp',
+    component: () => import('@/pages/Auth/SignUpPage.vue'),
+    meta: { titleKey: 'auth.register.title', allowAnonymous: true },
   },
   {
     path: '/verify-email-callback',
     name: 'Verify Email Callback',
-    component: () => import('@/pages/Callback/VerifyEmailCallbackPage.vue'),
+    component: () => import('@/pages/VerifyEmailCallbackPage.vue'),
     meta: { titleKey: 'verifyEmailCallback.title', allowAnonymous: true },
   },
   {
@@ -84,10 +83,12 @@ const mainRoutes = [
   },
   {
     path: '/',
-    name: 'Default',
-    component: Default,
-    props: { redirectPath: '/product/list', showSignUp: true },
-    meta: { titleKey: 'common.default.title', allowAnonymous: true },
+    name: 'RootRedirect',
+    redirect: {
+      path: '/signin',
+      query: { returnUrl: '/product/list' },
+    },
+    meta: { titleKey: 'auth.signIn.title', allowAnonymous: true },
   },
   ...devDemoRoutes,
   {
@@ -191,7 +192,7 @@ const router = createRouter({
       component: () => import('@/pages/VerifyEmailPage.vue'),
       meta: { titleKey: 'verifyEmail.title' },
     },
-    // Grouped block (callbacks, pages, default, demo, notFound)
+    // Grouped block (compat redirects, pages, demo, notFound)
     ...mainRoutes,
   ],
 })
@@ -206,16 +207,22 @@ router.beforeEach(async (to, _from, next) => {
     return
   }
   // For other routes, enforce presence of a local user; if missing, route to '/'
-  const { getCurrentUser, login, logout } = useAuth()
+  const { getCurrentUser, logout } = useAuth()
   const user = await getCurrentUser()
   if (!user) {
-    await login()
+    next({
+      path: '/signin',
+      query: { returnUrl: to.fullPath },
+    })
     return
   }
 
   if (user.isAdmin() || user.isSystemAdmin()) {
     await logout()
-    next(false)
+    next({
+      path: '/signin',
+      query: { error: 'accessDenied' },
+    })
     return
   }
   // Check if user is not a seller

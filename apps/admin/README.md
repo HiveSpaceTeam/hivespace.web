@@ -37,11 +37,7 @@ Create `apps/admin/.env` for local overrides. `apps/admin/.env.development` is a
 Common required values:
 
 ```env
-VITE_APP_CLIENT_ID=your-oidc-client-id
-VITE_GATEWAY_BASE_URL=https://localhost:7001
-VITE_APP_REDIRECT_URI=http://localhost:5173/callback/login
-VITE_APP_POST_LOGOUT_REDIRECT_URI=http://localhost:5173/callback/logout
-VITE_APP_SCOPE=openid profile email offline_access
+VITE_GATEWAY_BASE_URL=http://localhost:5000
 VITE_APP_ENVIRONMENT=development
 VITE_ENABLE_LOGGING=true
 VITE_ENABLE_DEBUG=true
@@ -54,7 +50,7 @@ In admin, versioned API routes should be built with `buildApiUrl(path)` from `@/
 The admin router only allows admin and system-admin users through protected routes:
 
 1. `meta.allowAnonymous: true` skips auth.
-2. Unauthenticated users are redirected to OIDC login.
+2. Unauthenticated users are redirected to `/signin`.
 3. Authenticated users without admin/system-admin roles are logged out.
 4. Admin/system-admin users continue.
 

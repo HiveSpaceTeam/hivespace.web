@@ -86,9 +86,6 @@ importers:
       lucide-vue-next:
         specifier: ^0.474.0
         version: 0.474.0(vue@3.5.33(typescript@5.7.3))
-      oidc-client-ts:
-        specifier: ^3.3.0
-        version: 3.5.0
       pinia:
         specifier: ^3.0.3
         version: 3.0.4(typescript@5.7.3)(vue@3.5.33(typescript@5.7.3))
@@ -201,9 +198,6 @@ importers:
       lucide-vue-next:
         specifier: ^0.474.0
         version: 0.474.0(vue@3.5.33(typescript@5.7.3))
-      oidc-client-ts:
-        specifier: ^3.3.0
-        version: 3.5.0
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.7.3)(vue@3.5.33(typescript@5.7.3))
@@ -337,9 +331,6 @@ importers:
       lucide-vue-next:
         specifier: ^0.474.0
         version: 0.474.0(vue@3.5.33(typescript@5.7.3))
-      oidc-client-ts:
-        specifier: ^3.3.0
-        version: 3.5.0
       pinia:
         specifier: ^3.0.3
         version: 3.0.4(typescript@5.7.3)(vue@3.5.33(typescript@5.7.3))
@@ -580,9 +571,6 @@ importers:
       jsvectormap:
         specifier: ^1.7.0
         version: 1.7.0
-      oidc-client-ts:
-        specifier: ^3.3.0
-        version: 3.5.0
       pinia:
         specifier: ^3.0.4
         version: 3.0.4(typescript@5.7.3)(vue@3.5.33(typescript@5.7.3))
@@ -2822,10 +2810,6 @@ packages:
   object-keys@1.1.1:
     resolution: {integrity: sha512-NuAESUOUMrlIXOfHKzD6bpPu3tYt3xvjNdRIQ+FeT0lNb4K8WR70CaDxhuNguS2XG+GjkyMwOzsN5ZktImfhLA==}
     engines: {node: '>= 0.4'}
-
-  oidc-client-ts@3.5.0:
-    resolution: {integrity: sha512-l2q8l9CTCTOlbX+AnK4p3M+4CEpKpyQhle6blQkdFhm0IsBqsxm15bYaSa11G7pWdsYr6epdsRZxJpCyCRbT8A==}
-    engines: {node: '>=18'}
 
   open@10.2.0:
     resolution: {integrity: sha512-YgBpdJHPyQ2UE5x+hlSXcnejzAvD0b22U2OuAP+8OnlJT+PjWPxtgmGqKKc+RgTM63U9gN0YzrYc71R2WT/hTA==}
@@ -5821,7 +5805,8 @@ snapshots:
 
   just-extend@5.1.1: {}
 
-  jwt-decode@4.0.0: {}
+  jwt-decode@4.0.0:
+    optional: true
 
   keyv@4.5.4:
     dependencies:
@@ -6020,10 +6005,6 @@ snapshots:
       define-properties: 1.2.1
 
   object-keys@1.1.1: {}
-
-  oidc-client-ts@3.5.0:
-    dependencies:
-      jwt-decode: 4.0.0
 
   open@10.2.0:
     dependencies:

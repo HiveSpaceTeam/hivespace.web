@@ -15,6 +15,7 @@ import enDashboard from './locales/en/dashboard.json'
 import enMerchants from './locales/en/merchants.json'
 import enConfiguration from './locales/en/configuration.json'
 import enIcons from './locales/en/icons.json'
+import enAuth from './locales/en/auth.json'
 
 // Import Vietnamese translation files
 import viAdmins from './locales/vi/admins.json'
@@ -30,6 +31,7 @@ import viDashboard from './locales/vi/dashboard.json'
 import viMerchants from './locales/vi/merchants.json'
 import viConfiguration from './locales/vi/configuration.json'
 import viIcons from './locales/vi/icons.json'
+import viAuth from './locales/vi/auth.json'
 
 // Merge translations for each language
 const en = {
@@ -50,6 +52,7 @@ const en = {
   merchants: enMerchants,
   configuration: enConfiguration,
   icons: enIcons,
+  auth: enAuth,
 }
 
 const vi = {
@@ -70,6 +73,7 @@ const vi = {
   merchants: viMerchants,
   configuration: viConfiguration,
   icons: viIcons,
+  auth: viAuth,
 }
 
 const i18n = createI18n({

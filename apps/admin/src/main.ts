@@ -39,16 +39,16 @@ const initializeApp = async () => {
   app.use(i18n)
   app.use(VueApexCharts)
   // 3. Initialize Business Logic (Auth)
-  initializeAuth(config.auth.oidc)
+  initializeAuth(config.auth)
 
   app.use(router)
 
   // 4. Use logic that depends on plugins/auth
-  const { isAuthenticated } = useAuth()
+  const { getCurrentUser } = useAuth()
   const profileStore = useProfileStore()
   const userSettingsStore = useUserSettingsStore()
 
-  if (await isAuthenticated.value) {
+  if (await getCurrentUser()) {
     const [settingsResult] = await Promise.allSettled([
       userSettingsStore.fetchUserSettings(),
       profileStore.fetchMyProfile(),

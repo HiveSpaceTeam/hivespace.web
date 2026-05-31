@@ -1,176 +1,107 @@
 ---
 name: create-pr
-description: "Use when the user asks to create a PR, submit changes, open a pull request, push and PR their work, or ship a feature branch. Trigger this skill whenever the user says anything like 'create a PR', 'open a pull request', 'submit my changes', 'push and PR', 'ship this', or 'PR this'. Also trigger when the user finishes a feature and asks what to do next — this skill handles the full lint → branch → commit → push → reindex → PR flow for the hivespace.web repo."
+description: "Create a pull request for hivespace.web. Use when the user asks to create a PR, open a pull request, submit changes, push and PR, ship a branch, or finish a frontend change with a PR."
 ---
 
-# /create-pr — Lint, Branch, Commit, Push, Reindex, and Open a PR
+# /create-pr - Verify, Commit, Push, and Open a PR
 
-This skill handles the full workflow from finishing a feature to opening a pull request in the hivespace.web monorepo.
+Use this skill from the hivespace.web repo root after implementation is complete.
 
-**Flow:** lint/type-check → branch → detect changes → commit → rebase → push → gitnexus analyze → gh pr create → tell user to run /review in a new session
+## Workflow
 
----
+1. Read local guidance:
+   - `AGENTS.md`
+   - `CLAUDE.md`
 
-## Step 1 — Verify lint and type-check pass
-
-Determine which apps have changed files and run checks only for those:
+2. Inspect branch and changed scope:
 
 ```bash
-git diff --name-only HEAD
+rtk git branch --show-current
+rtk git status --short
+rtk git diff --name-only HEAD
 ```
 
-For each app with changes, run the corresponding check:
+- If already on a non-`master` branch, keep using it.
+- If on `master`, create a feature branch after deriving or asking for a name.
+- Prefer branch names such as `feature/<short-description>`, `bugfix/<short-description>`, or `frontend-<scope>-<description>`.
+
+3. Verify affected workspaces only:
+
+- For changes under `apps/admin/`, run from `apps/admin`: `rtk pnpm lint` and `rtk pnpm type-check`.
+- For changes under `apps/seller/`, run from `apps/seller`: `rtk pnpm lint` and `rtk pnpm type-check`.
+- For changes under `apps/buyer/`, run from `apps/buyer`: `rtk pnpm lint` and `rtk pnpm type-check`.
+- For changes under `packages/shared/`, run from `packages/shared`: `rtk pnpm build`.
+- For broad package, lockfile, or config changes, run the smallest root-level command that proves the affected surface.
+
+Treat documented admin/seller baseline failures as baseline only. Fix all newly introduced errors before continuing. Because app lint scripts use `eslint . --fix`, inspect the diff after lint.
+
+4. Audit changed scope:
+
+- Run `gitnexus_detect_changes({ scope: "all", repo: "hivespace.web" })`.
+- Report the risk level and any unexpected affected flows before committing.
+- If the worktree includes unrelated user changes, identify the intended files and do not stage unrelated files.
+
+5. Stage and commit:
 
 ```bash
-# Apps with changes under apps/admin/
-cd apps/admin && pnpm lint && pnpm type-check
-
-# Apps with changes under apps/seller/
-cd apps/seller && pnpm lint && pnpm type-check
-
-# Apps with changes under apps/buyer/
-cd apps/buyer && pnpm lint && pnpm type-check
-
-# Changes under packages/shared/
-cd packages/shared && pnpm build
+rtk git status --short
+rtk git add <intended-files...>
+rtk git diff --cached --name-only
+rtk git log --oneline -5
+rtk git commit -m "<type>: <summary>"
 ```
 
-**Known baseline failures — not blockers:**
-- `apps/admin` and `apps/seller`: ~11 pre-existing type-check errors and ~15 lint errors in demo files
-- These are documented in CLAUDE.md under `Verification`
+Use the repo's existing conventional style, for example `feat:`, `fix:`, `refactor:`, or `chore:`. Commit messages should explain the change, not the file list.
 
-If you find errors **not** in the baseline, stop here and report them to the user. Do not continue until they are fixed.
-
----
-
-## Step 2 — Determine the branch
-
-Check the current branch:
+6. Rebase on latest `master`:
 
 ```bash
-git branch --show-current
+rtk git fetch origin
+rtk git rebase origin/master
 ```
 
-- If already on a feature/bugfix branch (not `master`), use it — no need to create a new one.
-- If on `master`, ask the user for a branch name or derive one from the change context.
+If conflicts occur, stop and report the conflicted files. Do not resolve conflicts silently.
 
-**Branch naming convention** for this repo:
-- `feature/<short-description>` — new features (e.g. `feature/buyer-coupon-cart`)
-- `bugfix/<short-description>` — bug fixes (e.g. `bugfix/sidebar-collapse`)
-- `frontend-<scope>-<description>` — frontend-scoped work (e.g. `frontend-page-i18n-cleanup`)
-
-Create and switch to the new branch if needed:
+7. Push the branch:
 
 ```bash
-git checkout -b feature/<branch-name>
+rtk git push -u origin HEAD
 ```
 
----
+8. Refresh the GitNexus index after commit/push:
 
-## Step 3 — Check what changed
+- Check `.gitnexus/meta.json`.
+- If `stats.embeddings > 0`, run `rtk npx gitnexus analyze --embeddings`.
+- Otherwise run `rtk npx gitnexus analyze`.
 
-Run `gitnexus_detect_changes()` to get a clear picture of what symbols and execution flows were affected. Report this to the user so they know what scope is going into the commit.
-
-Then run `git status` to see the full file list.
-
----
-
-## Step 4 — Stage and commit
-
-Stage all changed files and commit in one step:
+9. Create the PR:
 
 ```bash
-git add <files...>
+rtk gh pr create --title "<concise title>" --body "<summary and test plan>" --base master --head <branch>
 ```
 
-Write a commit message that explains **why** the change exists, not just what files changed. Look at recent commit messages for style:
+Use a PR body with:
 
-```bash
-git log --oneline -5
-```
-
-Commit:
-
-```bash
-git commit -m "$(cat <<'EOF'
-<summary of change>
-
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>
-EOF
-)"
-```
-
----
-
-## Step 5 — Pull latest from master before pushing
-
-Fetch and rebase to avoid push conflicts:
-
-```bash
-git fetch origin
-git rebase origin/master
-```
-
-If the rebase has conflicts, resolve them with the user before continuing.
-
----
-
-## Step 6 — Push the branch
-
-```bash
-git push -u origin HEAD
-```
-
----
-
-## Step 7 — Refresh the GitNexus index
-
-The index must reflect the committed changes before the PR is opened, so that `/review` in the next session sees fresh symbol data.
-
-Check whether embeddings exist to preserve them:
-
-```bash
-npx gitnexus analyze
-```
-
----
-
-## Step 8 — Open the PR
-
-Create the PR with a summary body:
-
-```bash
-gh pr create --title "<concise title>" --body "$(cat <<'EOF'
+```text
 ## Summary
-- <bullet 1>
-- <bullet 2>
+- <main change>
+- <secondary change>
 
 ## Test plan
-- [ ] Run pnpm lint + pnpm type-check in affected apps
-- [ ] Verify feature works end-to-end in the browser
-
-🤖 Generated with [Claude Code](https://claude.com/claude-code)
-EOF
-)"
+- [x] <verification command>
+- [x] <verification command>
 ```
 
-Use `--draft` only if the user explicitly asked for a draft PR.
+Use `--draft` only if the user explicitly asks for a draft PR.
 
----
+10. Hand off:
 
-## Step 9 — Hand off to review
+- Report the PR link.
+- Tell the user to run `/review` in a new session if they want a fresh post-PR review.
 
-After the PR link is printed, tell the user:
+## Safety Rules
 
-> "PR is open. To review: **start a new Claude Code session** in this repository and run `/review` — it will inspect all changes on this branch and surface any issues before merging."
-
----
-
-## Quick reference — what each step guards against
-
-| Step | Why it matters |
-|------|----------------|
-| lint + type-check | Catches introduced errors before they reach the PR |
-| `gitnexus_detect_changes` | Confirms the diff scope matches intent |
-| `npx gitnexus analyze` | Ensures `/review` in the new session sees fresh symbol data |
-| new session + `/review` | Clean context for an unbiased review of all branch changes |
+- Prefix shell commands with `rtk`.
+- Do not stage unrelated dirty-worktree changes.
+- Do not run microservice-only steps such as `scripts/sync-config.sh`.
+- Do not treat known baseline failures as introduced failures.

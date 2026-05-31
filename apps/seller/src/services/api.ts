@@ -1,5 +1,4 @@
-import { useAuth, ApiService, type ApiConfig, type AppUser } from '@hivespace/shared'
-import refreshToken from '@/services/refresh.service'
+import { ApiService, type ApiConfig } from '@hivespace/shared'
 import { config } from '@/config'
 import i18n from '@/i18n'
 
@@ -16,31 +15,6 @@ const apiConfig: ApiConfig = {
     enableDebug: config.features.enableDebug
   }
 }
-
-const ensureFreshUser = async (user: AppUser | null): Promise<AppUser | null> => {
-  try {
-    const refreshed = await refreshToken(user)
-    if (refreshed) return refreshed
-
-    // refreshTokenIfNeeded returned null. If we had a refresh_token, this likely
-    // indicates the refresh grant was rejected (invalid_grant). Force logout.
-    if (user?.refresh_token) {
-      try {
-        const { logout } = useAuth()
-        await logout()
-      } catch {
-        // best-effort
-      }
-      return null
-    }
-
-    return user
-  } catch (err) {
-    console.error('Error during token refresh check', err)
-    return user
-  }
-}
-
 
 // Since we can't easily rely on `require` in Vite, let's just use the static import `useAppStore` 
 // but wrap access in a function to ensure Pinia is active when called.
@@ -82,7 +56,7 @@ const getTranslations = () => ({
   },
 })
 
-export const apiService = new ApiService(apiConfig, ensureFreshUser, notifyCallback, getTranslations)
+export const apiService = new ApiService(apiConfig, undefined, notifyCallback, getTranslations)
 export const apiClient = apiService.getClient()
 
 

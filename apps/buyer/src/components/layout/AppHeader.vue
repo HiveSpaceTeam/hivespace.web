@@ -38,12 +38,12 @@
         </div>
         <UserMenu v-if="currentUser" :user="currentUser" :menu-items="menuItems ?? []"
           :display-name="resolvedDisplayName" :full-name="resolvedFullName" :email="resolvedEmail"
-          :avatar-src="resolvedAvatarSrc" :show-sign-out="true" @sign-out="logout" @navigate="handleNavigate" />
+          :avatar-src="resolvedAvatarSrc" :show-sign-out="true" @sign-out="handleSignOut" @navigate="handleNavigate" />
         <div v-else class="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 ml-4 h-10">
-          <button @click="register()" class="px-2 py-1 hover:text-primary transition-colors cursor-pointer">{{
+          <button @click="goToSignUp" class="px-2 py-1 hover:text-primary transition-colors cursor-pointer">{{
             $t('common.auth.signUp') }}</button>
           <span class="text-gray-300 dark:text-gray-700">|</span>
-          <button @click="login()" class="px-2 py-1 hover:text-primary transition-colors cursor-pointer">{{
+          <button @click="goToSignIn" class="px-2 py-1 hover:text-primary transition-colors cursor-pointer">{{
             $t('common.auth.signIn') }}</button>
         </div>
       </div>
@@ -53,7 +53,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import {
   useAuth,
@@ -76,7 +76,7 @@ withDefaults(defineProps<Props>(), {
   containerClass: 'container mx-auto',
 })
 
-const { currentUser: user, getCurrentUser, logout, login, register } = useAuth()
+const { currentUser: user, getCurrentUser, logout } = useAuth()
 const currentUser = computed(() => user.value)
 const router = useRouter()
 const {
@@ -92,6 +92,7 @@ const {
   currentUserFullName,
   currentUserEmail,
   currentUserAvatarSrc,
+  loadCurrentUserProfile,
   themeChange,
   cultureChange,
 } = useAppShell()
@@ -117,9 +118,41 @@ const resolvedFullName = computed(() => (
 ))
 const resolvedEmail = computed(() => currentUserEmail?.value || tokenEmail.value || '')
 const resolvedAvatarSrc = computed(() => currentUserAvatarSrc?.value || tokenAvatarSrc.value || '')
+const isProfileLoading = ref(false)
+
+const loadProfileForCurrentUser = async (force = false) => {
+  if (!loadCurrentUserProfile || !user.value || isProfileLoading.value) return
+
+  try {
+    isProfileLoading.value = true
+    await loadCurrentUserProfile(force)
+  } catch (error) {
+    console.error('Failed to load current user profile:', error)
+  } finally {
+    isProfileLoading.value = false
+  }
+}
 
 const handleNavigate = (path: string) => {
   router.push(path)
+}
+
+const authReturnUrl = () => {
+  const currentPath = router.currentRoute.value.fullPath
+  return currentPath === '/signin' || currentPath === '/signup' ? '/' : currentPath
+}
+
+const goToSignIn = () => {
+  router.push({ path: '/signin', query: { returnUrl: authReturnUrl() } })
+}
+
+const goToSignUp = () => {
+  router.push({ path: '/signup', query: { returnUrl: authReturnUrl() } })
+}
+
+const handleSignOut = async () => {
+  await logout()
+  await router.push('/')
 }
 
 const isApplicationMenuOpen = ref(false)
@@ -130,5 +163,12 @@ const toggleApplicationMenu = () => {
 
 onMounted(async () => {
   await getCurrentUser()
+  await loadProfileForCurrentUser()
+})
+
+watch(user, async (nextUser, previousUser) => {
+  if (nextUser && !previousUser) {
+    await loadProfileForCurrentUser(true)
+  }
 })
 </script>

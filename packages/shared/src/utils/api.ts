@@ -1,6 +1,7 @@
-import { useAuth } from '../composables/useAuth'
 import type { AppUser } from '../types/app-user'
 import type { ApiConfig } from '../types/api.types'
+import { useAuth } from '../composables/useAuth'
+import { getCookie } from './cookie'
 import axios from 'axios'
 import type {
     AxiosInstance,
@@ -14,6 +15,7 @@ import type {
 interface ExtendedAxiosRequestConfig extends InternalAxiosRequestConfig {
     _retry?: boolean
     _retryCount?: number
+    _sessionLogoutAttempted?: boolean
 }
 
 // Simple correlation ID generator
@@ -26,7 +28,6 @@ export const sleep = (ms: number): Promise<void> => new Promise((resolve) => set
 export class ApiService {
     private client: AxiosInstance
     private config: ApiConfig
-    private refreshTokenCallback?: (user: AppUser | null) => Promise<AppUser | null>
     private notifyErrorCallback?: (title: string, message: string) => void
     private getTranslationsCallback?: () => {
         unauthorized: { title: string; message: string }
@@ -53,7 +54,7 @@ export class ApiService {
         }
     ) {
         this.config = config
-        this.refreshTokenCallback = refreshTokenCallback
+        void refreshTokenCallback
         this.notifyErrorCallback = notifyErrorCallback
         this.getTranslationsCallback = getTranslationsCallback
 
@@ -61,6 +62,7 @@ export class ApiService {
             baseURL: config.baseURL,
             timeout: config.timeout,
             headers: config.headers,
+            withCredentials: true,
             validateStatus: (status) => status >= 200 && status < 300,
         })
 
@@ -72,24 +74,20 @@ export class ApiService {
         this.client.interceptors.request.use(
             async (requestConfig) => {
                 try {
-                    const { getCurrentUser } = useAuth()
-                    let currentUser: AppUser | null = await getCurrentUser()
-
-                    // Ensure fresh user if refresh callback is provided
-                    if (this.refreshTokenCallback) {
-                        currentUser = await this.refreshTokenCallback(currentUser)
-                    }
-
-                    // Add authorization if available
                     requestConfig.headers = requestConfig.headers ?? {}
-                    if (currentUser?.access_token) {
-                        ; (requestConfig.headers as Record<string, string>).Authorization =
-                            `Bearer ${currentUser.access_token}`
-                    }
 
                     // Add tracing headers
                     requestConfig.headers['X-Correlation-ID'] = generateCorrelationId()
                     requestConfig.headers['X-Request-Timestamp'] = new Date().toISOString()
+
+                    const method = requestConfig.method?.toUpperCase()
+                    if (method && ['POST', 'PUT', 'PATCH', 'DELETE'].includes(method)) {
+                        const { csrfToken } = useAuth()
+                        const token = csrfToken.value ?? getCookie('HiveSpace.Csrf')
+                        if (token) {
+                            requestConfig.headers['X-HiveSpace-CSRF'] = token
+                        }
+                    }
 
                     if (this.config.features?.enableDebug) {
                         console.log(`API Request: ${requestConfig.method?.toUpperCase()} ${requestConfig.url}`)
@@ -118,6 +116,24 @@ export class ApiService {
             async (error: AxiosError) => {
                 const originalRequest = error.config as ExtendedAxiosRequestConfig
 
+                if (
+                    error.response?.status === 401 &&
+                    originalRequest &&
+                    !originalRequest._retry
+                ) {
+                    originalRequest._retry = true
+                    const { csrfToken, refreshSession, logout } = useAuth()
+                    const csrfTokenBeforeRefresh = csrfToken.value ?? getCookie('HiveSpace.Csrf')
+                    const refreshedUser = await refreshSession()
+
+                    if (refreshedUser) {
+                        return this.client(originalRequest)
+                    }
+
+                    originalRequest._sessionLogoutAttempted = true
+                    await logout({ csrfToken: csrfTokenBeforeRefresh })
+                }
+
                 // Retry logic
                 if (originalRequest && this.shouldRetry(error)) {
                     const retryCount = (originalRequest._retryCount || 0) + 1
@@ -140,7 +156,11 @@ export class ApiService {
 
                 // Handle specific HTTP errors
                 if (error.response) {
-                    await this.handleHttpError(error.response.status, translations)
+                    await this.handleHttpError(
+                        error.response.status,
+                        translations,
+                        originalRequest?._sessionLogoutAttempted,
+                    )
                     return Promise.reject(error.response.data)
                 } else if (error.request) {
                     if (translations && this.notifyErrorCallback) {
@@ -165,7 +185,11 @@ export class ApiService {
         return status >= 500 || status === 408 || status === 429
     }
 
-    private async handleHttpError(status: number, translations?: any): Promise<void> {
+    private async handleHttpError(
+        status: number,
+        translations?: any,
+        sessionLogoutAttempted = false,
+    ): Promise<void> {
         const { logout } = useAuth()
 
         switch (status) {
@@ -173,8 +197,9 @@ export class ApiService {
                 if (translations && this.notifyErrorCallback) {
                     this.notifyErrorCallback(translations.unauthorized.title, translations.unauthorized.message)
                 }
-                await sleep(2000)
-                logout()
+                if (!sessionLogoutAttempted) {
+                    await logout()
+                }
                 break
             case 403:
                 if (translations && this.notifyErrorCallback) {

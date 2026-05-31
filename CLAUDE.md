@@ -6,11 +6,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 `AGENTS.md` and `CLAUDE.md` must stay in sync. Any change made to one file must be applied to the other file in the same update so both instruction files remain aligned.
 
-## Custom Story Commands
+## Custom Commands
 
 | Command | Codex location | Claude Code location | Purpose |
 | --- | --- | --- | --- |
+| `/create-pr` | `.agents/skills/create-pr/SKILL.md` | `.claude/commands/create-pr.md` | Verify affected frontend workspaces, commit intended changes, push the branch, refresh GitNexus, and open a PR |
+| `/refresh-master` | `.agents/skills/refresh-master/SKILL.md` | `.claude/commands/refresh-master.md` | Stash local work, update `master` with a fast-forward pull, and reapply the workflow-created stash |
 | `/start-story` | `.agents/skills/start-story/SKILL.md` | `.claude/commands/start-story.md` | Start a frontend story from `../hivespace.spec/specs/[feature-name]/tasks/frontend.md` |
+| `/verify-story` | `.agents/skills/verify-story/SKILL.md` | `.claude/commands/verify-story.md` | Audit current frontend changes against the feature task definitions |
 | `/done-story` | `.agents/skills/done-story/SKILL.md` | `.claude/commands/done-story.md` | Verify a completed frontend story |
 
 Keep paired Codex and Claude command content semantically equivalent.
@@ -139,11 +142,7 @@ For known lint/type-check baseline failures, see `Verification`.
 Create `.env` in each app root. Key variables (ports differ per app):
 
 ```env
-VITE_APP_CLIENT_ID=your-oidc-client-id
-VITE_GATEWAY_BASE_URL=https://localhost:7001
-VITE_APP_REDIRECT_URI=http://localhost:{PORT}/callback/login
-VITE_APP_POST_LOGOUT_REDIRECT_URI=http://localhost:{PORT}/callback/logout
-VITE_APP_SCOPE=openid profile email offline_access   # buyer also adds: catalog order
+VITE_GATEWAY_BASE_URL=http://localhost:5000
 VITE_APP_ENVIRONMENT=development
 VITE_ENABLE_LOGGING=true
 VITE_ENABLE_DEBUG=true
@@ -311,7 +310,7 @@ Never construct `ApiService` directly inside a feature service.
 - Use `buildApiUrl(path)` from `@/config` for versioned API routes; it auto-prefixes `/api/v1/`.
 - Auth flow in `src/router/index.ts`:
   1. `meta.allowAnonymous: true` -> skip auth
-  2. Unauthenticated -> redirect to OIDC login
+  2. Unauthenticated -> redirect to frontend `/signin`
   3. Authenticated but not admin/system-admin -> logout
   4. Admin/system-admin -> pass through
 
@@ -329,7 +328,7 @@ Never construct `ApiService` directly inside a feature service.
 - Apply these rules in `apps/buyer/`.
 - Auth flow in `src/router/index.ts`:
   1. `meta.allowAnonymous: true` -> skip auth
-  2. Unauthenticated on protected route -> redirect to OIDC login
+  2. Unauthenticated on protected route -> redirect to frontend `/signin`
   3. Authenticated -> pass through
 - Storefront i18n key prefixes should follow `storefront.module.key` or `checkout.key`.
 - `App.vue` should conditionally wrap routes in `StorefrontLayout` based on `route.meta.layout`.

@@ -3,7 +3,6 @@
  * Centralized configuration for API endpoints, authentication, and application settings
  */
 import {
-  type AuthConfig,
   type Environment,
   validateUrl,
   validateEnvironment,
@@ -29,8 +28,8 @@ export interface AppConfig {
     readonly version: string
   }
   readonly auth: {
-    readonly oidc: AuthConfig
-    readonly callbackUrl: string
+    readonly app: 'seller'
+    readonly gatewayBaseUrl: string
   }
   readonly features: {
     readonly enableLogging: boolean
@@ -48,13 +47,14 @@ let configCache: AppConfig | null = null
 
 const createConfig = (): AppConfig => {
   // Base API URL with validation
-  const apiBaseUrl = validateUrl(
+  const gatewayBaseUrl = validateUrl(
     getEnvVar('VITE_GATEWAY_BASE_URL') ||
     getEnvVar('VITE_API_BASE_URL') ||
     getEnvVar('VITE_API_URL') ||
-    'https://localhost:7001/api',
-    'API Base URL',
+    'https://localhost:7001',
+    'Gateway Base URL',
   )
+  const apiBaseUrl = gatewayBaseUrl.replace(/\/api(\/.*)?$/, '')
 
   return {
     // Application settings
@@ -75,37 +75,8 @@ const createConfig = (): AppConfig => {
 
     // Authentication Configuration
     auth: {
-      oidc: {
-        clientId: getEnvVar('VITE_APP_CLIENT_ID'),
-        redirectUri: validateUrl(
-          getEnvVar('VITE_APP_REDIRECT_URI', 'http://localhost:5174/callback/login'),
-          'Redirect URI',
-        ),
-        postLogoutRedirectUri: validateUrl(
-          getEnvVar('VITE_APP_POST_LOGOUT_REDIRECT_URI', 'http://localhost:5174/callback/logout'),
-          'Post Logout Redirect URI',
-        ),
-        responseType: getEnvVar('VITE_APP_RESPONSE_TYPE', 'code'),
-        responseMode: getEnvVar('VITE_APP_RESPONSE_MODE', 'query') as
-          | 'query'
-          | 'fragment'
-          | undefined,
-        // Request refresh tokens for the SPA using offline_access
-        scope: getEnvVar('VITE_APP_SCOPE', 'openid profile email offline_access'),
-        authority: validateUrl(
-          getEnvVar('VITE_AUTH_AUTHORITY_URL') ||
-          getEnvVar('VITE_IDENTITY_SERVER_URL') ||
-          'http://localhost:5001',
-          'Authority URL',
-        ),
-        // Use localStorage so the session persists across tabs (e.g. email verification links
-        // opened in a new tab can still reach the user session via getCurrentUser())
-        storageType: 'local' as const,
-      },
-      callbackUrl: validateUrl(
-        getEnvVar('VITE_AUTH_CALLBACK_URL', 'http://localhost:5174/auth/callback'),
-        'Auth Callback URL',
-      ),
+      app: 'seller',
+      gatewayBaseUrl: apiBaseUrl,
     },
 
     // Feature Flags

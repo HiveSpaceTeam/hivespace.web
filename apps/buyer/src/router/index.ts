@@ -20,16 +20,16 @@ const devDemoRoutes =
 
 const routes = [
   {
-    path: '/callback/logout',
-    name: 'LogoutCallback',
-    component: () => import('@/pages/Callback/LogoutCallbackPage.vue'),
-    meta: { allowAnonymous: true },
+    path: '/signin',
+    name: 'SignIn',
+    component: () => import('@/pages/Auth/SignInPage.vue'),
+    meta: { titleKey: 'auth.signIn.title', allowAnonymous: true, layout: 'none' },
   },
   {
-    path: '/callback/login',
-    name: 'Callback',
-    component: () => import('@/pages/Callback/LoginCallbackPage.vue'),
-    meta: { allowAnonymous: true },
+    path: '/signup',
+    name: 'SignUp',
+    component: () => import('@/pages/Auth/SignUpPage.vue'),
+    meta: { titleKey: 'auth.register.title', allowAnonymous: true, layout: 'none' },
   },
   {
     path: '/',
@@ -126,11 +126,13 @@ router.beforeEach(async (to, _from, next) => {
     next()
     return
   }
-  const { getCurrentUser, login } = useAuth()
+  const { getCurrentUser } = useAuth()
   const user = await getCurrentUser()
   if (!user) {
-    next(false)
-    await login()
+    next({
+      path: '/signin',
+      query: { returnUrl: to.fullPath },
+    })
     return
   }
   next()

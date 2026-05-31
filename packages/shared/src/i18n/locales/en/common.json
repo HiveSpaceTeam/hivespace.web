@@ -19,6 +19,9 @@
     "open": "Open sidebar",
     "close": "Close sidebar"
   },
+  "header": {
+    "searchPlaceholder": "Search workspace..."
+  },
   "profile": {
     "editProfile": "Edit profile",
     "accountSettings": "Account settings",
@@ -29,10 +32,6 @@
     "signIn": "Sign In",
     "signUp": "Sign Up",
     "signingOut": "Signing out..."
-  },
-  "default": {
-    "signIn": "Sign In",
-    "signUp": "Sign Up"
   },
   "maintenance": {
     "title": "Under maintenance",

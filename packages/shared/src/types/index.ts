@@ -14,8 +14,10 @@ export * from './component.common'
 
 // App-specific types
 export type { AppUser } from './app-user'
-export { toAppUser } from './app-user'
+export { toAppUser, toAppUserFromSession } from './app-user'
 export * from './api.types'
+export * from './auth-session'
+export * from './auth-branding'
 
 // Notification types
 export * from '../features/notifications/notifications.types'

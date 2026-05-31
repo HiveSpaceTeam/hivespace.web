@@ -23,7 +23,8 @@
   "auth": {
     "signIn": "Đăng nhập",
     "signUp": "Đăng ký",
-    "signingOut": "Đang đăng xuất..."
+    "signingOut": "Đang đăng xuất...",
+    "rememberMe": "Ghi nhớ đăng nhập"
   },
   "profile": {
     "myAccount": "Tài khoản của tôi",

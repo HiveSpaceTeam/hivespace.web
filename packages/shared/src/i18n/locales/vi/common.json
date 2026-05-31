@@ -19,6 +19,9 @@
     "open": "Mở thanh bên",
     "close": "Đóng thanh bên"
   },
+  "header": {
+    "searchPlaceholder": "Tìm kiếm trong không gian làm việc..."
+  },
   "profile": {
     "editProfile": "Chỉnh sửa hồ sơ",
     "accountSettings": "Cài đặt tài khoản",
@@ -29,10 +32,6 @@
     "signIn": "Đăng nhập",
     "signUp": "Đăng ký",
     "signingOut": "Đang đăng xuất..."
-  },
-  "default": {
-    "signIn": "Đăng nhập",
-    "signUp": "Đăng ký"
   },
   "maintenance": {
     "title": "Đang bảo trì",

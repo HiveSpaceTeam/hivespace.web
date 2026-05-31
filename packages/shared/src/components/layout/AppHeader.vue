@@ -12,7 +12,7 @@
 
         <div class="relative hidden max-w-[480px] flex-1 lg:block">
           <SearchIcon class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-          <input type="search" placeholder="Search admin workspace..."
+          <input type="search" :placeholder="$t('common.header.searchPlaceholder')"
             class="h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-10 text-sm text-gray-700 outline-none placeholder:text-gray-400 focus:border-brand-300 dark:border-gray-800 dark:bg-gray-950 dark:text-gray-200" />
         </div>
       </div>
@@ -27,14 +27,14 @@
           @view-all="() => router.push('/notifications')" />
         <UserMenu :user="user" :menu-items="menuItems ?? []" :display-name="resolvedDisplayName"
           :full-name="resolvedFullName" :email="resolvedEmail" :avatar-src="resolvedAvatarSrc" :show-sign-out="true"
-          @sign-out="logout" />
+          @sign-out="handleSignOut" />
       </div>
     </div>
   </header>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import CloseMenuIcon from '../../icons/CloseMenuIcon.vue'
 import MenuIcon from '../../icons/MenuIcon.vue'
@@ -62,6 +62,7 @@ const {
   currentUserFullName,
   currentUserEmail,
   currentUserAvatarSrc,
+  loadCurrentUserProfile,
   themeChange,
   cultureChange,
 } = useAppShell()
@@ -79,12 +80,38 @@ const resolvedDisplayName = computed(() => currentUserDisplayName?.value || toke
 const resolvedFullName = computed(() => currentUserFullName?.value || tokenFullName.value || resolvedDisplayName.value)
 const resolvedEmail = computed(() => currentUserEmail?.value || tokenEmail.value || '')
 const resolvedAvatarSrc = computed(() => currentUserAvatarSrc?.value || tokenAvatarSrc.value || '')
+const isProfileLoading = ref(false)
+
+const loadProfileForCurrentUser = async (force = false) => {
+  if (!loadCurrentUserProfile || !user.value || isProfileLoading.value) return
+
+  try {
+    isProfileLoading.value = true
+    await loadCurrentUserProfile(force)
+  } catch (error) {
+    console.error('Failed to load current user profile:', error)
+  } finally {
+    isProfileLoading.value = false
+  }
+}
 
 const handleToggle = () => {
   toggleMobileSidebar()
 }
 
+const handleSignOut = async () => {
+  await logout()
+  await router.push('/signin')
+}
+
 onMounted(async () => {
   await getCurrentUser()
+  await loadProfileForCurrentUser()
+})
+
+watch(user, async (nextUser, previousUser) => {
+  if (nextUser && !previousUser) {
+    await loadProfileForCurrentUser(true)
+  }
 })
 </script>

@@ -61,6 +61,11 @@ const currentUserEmail = computed(() => myProfile.value?.email?.trim() || '')
 
 const currentUserAvatarSrc = computed(() => myProfile.value?.avatarUrl?.trim() || '')
 
+const loadCurrentUserProfile = async (force = false) => {
+  if (!force && myProfile.value) return
+  await profileStore.fetchMyProfile()
+}
+
 useNotificationRealtime({
   hubBaseUrl: config.api.baseUrl,
   onReceive: (event) => notificationStore.prependFromHub(event),
@@ -114,6 +119,7 @@ provideAppShell({
   currentUserFullName,
   currentUserEmail,
   currentUserAvatarSrc,
+  loadCurrentUserProfile,
   notifications,
   unreadCount,
   notificationLoading,
