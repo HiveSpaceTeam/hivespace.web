@@ -1,8 +1,10 @@
 import type {
+  ConfirmGoogleLinkRequest,
   RefreshSessionRequest,
   RegisterAccountRequest,
   SessionResponse,
   SignInRequest,
+  StartGoogleAuthRequest,
 } from '../../types'
 import { getCookie } from '../../utils/cookie'
 
@@ -48,6 +50,9 @@ export interface AccountSessionService {
   login: (request: SignInRequest) => Promise<SessionResponse>
   register: (request: RegisterAccountRequest) => Promise<SessionResponse>
   refreshSession: (request: RefreshSessionRequest) => Promise<SessionResponse>
+  startGoogleAuth: (request: StartGoogleAuthRequest) => void
+  confirmGoogleLink: (request: ConfirmGoogleLinkRequest) => Promise<SessionResponse>
+  cancelGoogleLink: (linkToken: string) => Promise<void>
   logout: (csrfTokenOverride?: string | null) => Promise<void>
 }
 
@@ -76,6 +81,35 @@ export const createAccountSessionService = (gatewayBaseUrl: string): AccountSess
         headers: csrfHeaders(),
         body: JSON.stringify(request),
       }),
+
+    startGoogleAuth: (request: StartGoogleAuthRequest) => {
+      const url = new URL(buildAccountUrl(gatewayBaseUrl, '/external/google/challenge'))
+      url.searchParams.set('app', request.app)
+
+      if (request.returnUrl) {
+        url.searchParams.set('returnUrl', request.returnUrl)
+      }
+
+      if (request.culture) {
+        url.searchParams.set('culture', String(request.culture))
+      }
+
+      window.location.assign(url.toString())
+    },
+
+    confirmGoogleLink: (request: ConfirmGoogleLinkRequest) =>
+      requestJson<SessionResponse>(gatewayBaseUrl, '/external/google/link', {
+        method: 'POST',
+        headers: csrfHeaders(request.linkToken),
+        body: JSON.stringify(request),
+      }),
+
+    cancelGoogleLink: async (linkToken: string) => {
+      await requestJson<void>(gatewayBaseUrl, '/external/google/link', {
+        method: 'DELETE',
+        headers: csrfHeaders(linkToken),
+      })
+    },
 
     logout: async (csrfTokenOverride?: string | null) => {
       await requestJson<void>(gatewayBaseUrl, '/logout', {

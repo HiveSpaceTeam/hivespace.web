@@ -3,10 +3,13 @@ import { useI18n } from 'vue-i18n'
 import type {
   AppUser,
   AuthApp,
+  ConfirmGoogleLinkRequest,
   CultureText,
+  GoogleAuthApp,
   RegisterAccountRequest,
   SessionResponse,
   SignInRequest,
+  StartGoogleAuthRequest,
 } from '../types'
 import { CULTURE_TEXT } from '../types'
 import { toAppUserFromSession } from '../types'
@@ -76,6 +79,9 @@ const currentCulture = (i18nLocale: { value?: unknown } | null): CultureText => 
   const cookieCulture = getCookie('culture')
   return cookieCulture === CULTURE_TEXT.ENGLISH ? CULTURE_TEXT.ENGLISH : CULTURE_TEXT.VIETNAMESE
 }
+
+const isGoogleAuthApp = (app: AuthApp | undefined): app is GoogleAuthApp =>
+  app === 'buyer' || app === 'seller'
 
 export const initializeAuth = (config: AuthConfig): void => {
   currentConfig = config
@@ -212,6 +218,65 @@ export const useAuth = () => {
     }
   }
 
+  const startGoogleAuth = (request?: Partial<StartGoogleAuthRequest>): void => {
+    const service = assertConfigured()
+    const targetApp = request?.app ?? currentConfig?.app
+
+    if (!isGoogleAuthApp(targetApp)) {
+      error.value = 'Google sign-in is only available for buyer and seller apps'
+      throw new Error('Google sign-in is only available for buyer and seller apps')
+    }
+
+    const defaultReturnUrl =
+      typeof window === 'undefined'
+        ? '/'
+        : normalizeFrontendRedirect(`${window.location.pathname}${window.location.search}`, '/')
+
+    service.startGoogleAuth({
+      app: targetApp,
+      returnUrl: normalizeFrontendRedirect(request?.returnUrl, defaultReturnUrl),
+      culture: request?.culture ?? currentCulture(i18nLocale),
+    })
+  }
+
+  const confirmGoogleLink = async (
+    request: ConfirmGoogleLinkRequest,
+  ): Promise<SessionResponse> => {
+    const service = assertConfigured()
+
+    try {
+      isLoading.value = true
+      error.value = null
+      const session = await service.confirmGoogleLink({
+        ...request,
+        returnUrl: normalizeFrontendRedirect(request.returnUrl, '/'),
+        culture: request.culture ?? currentCulture(i18nLocale),
+      })
+      applySession(session)
+      return session
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Google account linking failed'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
+  const cancelGoogleLink = async (linkToken: string): Promise<void> => {
+    const service = assertConfigured()
+
+    try {
+      isLoading.value = true
+      error.value = null
+      await service.cancelGoogleLink(linkToken)
+    } catch (err) {
+      error.value = err instanceof Error ? err.message : 'Google account linking cancellation failed'
+      throw err
+    } finally {
+      isLoading.value = false
+    }
+  }
+
   const logout = async (options?: LogoutOptions): Promise<void> => {
     const service = assertConfigured()
 
@@ -246,6 +311,9 @@ export const useAuth = () => {
     isConfigured,
     ensureAuthenticated,
     login,
+    startGoogleAuth,
+    confirmGoogleLink,
+    cancelGoogleLink,
     logout,
     register,
     refreshSession,

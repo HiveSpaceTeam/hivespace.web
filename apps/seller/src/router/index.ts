@@ -64,6 +64,12 @@ const mainRoutes = [
     meta: { titleKey: 'auth.register.title', allowAnonymous: true },
   },
   {
+    path: '/auth/google/link',
+    name: 'GoogleLink',
+    component: () => import('@/pages/Auth/GoogleLinkPage.vue'),
+    meta: { titleKey: 'auth.googleLink.title', allowAnonymous: true },
+  },
+  {
     path: '/verify-email-callback',
     name: 'Verify Email Callback',
     component: () => import('@/pages/VerifyEmailCallbackPage.vue'),
