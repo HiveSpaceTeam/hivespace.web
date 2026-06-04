@@ -40,4 +40,5 @@ export { default as Spinner } from './Spinner.vue';
 export { default as NotificationPreviewToast } from './NotificationPreviewToast.vue';
 export { default as Link } from './Link.vue';
 export { default as OrderTimeline } from './OrderTimeline.vue';
+export { default as GoogleAuthButton } from './GoogleAuthButton.vue';
 export type { TimelineStep } from './OrderTimeline.types';

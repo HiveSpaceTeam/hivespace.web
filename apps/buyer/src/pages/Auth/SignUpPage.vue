@@ -102,6 +102,19 @@
       </Button>
     </form>
 
+    <div class="my-5 flex items-center gap-3 text-xs text-gray-400">
+      <span class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></span>
+      <span>{{ t('auth.google.or') }}</span>
+      <span class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></span>
+    </div>
+
+    <GoogleAuthButton
+      class-name="w-full"
+      :label="t('auth.google.continue')"
+      :loading="isLoading"
+      :on-click="handleGoogleAuth"
+    />
+
     <p class="mt-5 text-sm text-gray-600 dark:text-gray-400">
       {{ t('auth.register.hasAccount') }}
       <RouterLink class="font-medium text-brand-500 hover:text-brand-600" :to="{ path: '/signin', query: authLinkQuery }">
@@ -119,6 +132,7 @@ import {
   AuthLayout,
   Button,
   Checkbox,
+  GoogleAuthButton,
   HidePasswordIcon,
   Input,
   ShowPasswordIcon,
@@ -135,7 +149,7 @@ const route = useRoute()
 const router = useRouter()
 const { t, locale } = useI18n()
 const appStore = useAppStore()
-const { register, isLoading } = useAuth()
+const { register, startGoogleAuth, isLoading } = useAuth()
 
 const showPassword = ref(false)
 const showConfirmPassword = ref(false)
@@ -223,5 +237,13 @@ const handleSubmit = async () => {
     formErrors.common = [message]
     appStore.notifyError(t('auth.errors.registrationFailed'), message)
   }
+}
+
+const handleGoogleAuth = () => {
+  startGoogleAuth({
+    app: 'buyer',
+    returnUrl: returnUrl(),
+    culture: String(locale.value),
+  })
 }
 </script>

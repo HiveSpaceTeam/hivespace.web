@@ -57,6 +57,19 @@
       </Button>
     </form>
 
+    <div class="my-5 flex items-center gap-3 text-xs text-gray-400">
+      <span class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></span>
+      <span>{{ t('auth.google.or') }}</span>
+      <span class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></span>
+    </div>
+
+    <GoogleAuthButton
+      class-name="w-full"
+      :label="t('auth.google.continue')"
+      :loading="isLoading"
+      :on-click="handleGoogleAuth"
+    />
+
     <p class="mt-5 text-sm text-gray-600 dark:text-gray-400">
       {{ t('auth.signIn.noAccount') }}
       <RouterLink class="font-medium text-brand-500 hover:text-brand-600" :to="{ path: '/signup', query: authLinkQuery }">
@@ -73,6 +86,7 @@ import { useI18n } from 'vue-i18n'
 import {
   AuthLayout,
   Button,
+  GoogleAuthButton,
   HidePasswordIcon,
   Input,
   ShowPasswordIcon,
@@ -89,7 +103,7 @@ const route = useRoute()
 const router = useRouter()
 const { t, locale } = useI18n()
 const appStore = useAppStore()
-const { login, isLoading } = useAuth()
+const { login, startGoogleAuth, isLoading } = useAuth()
 
 const showPassword = ref(false)
 const form = reactive({
@@ -114,6 +128,15 @@ const clearErrors = () => {
   formErrors.common = []
   formErrors.email = ''
   formErrors.password = ''
+}
+
+const routeOutcomeMessage = (): string | null => {
+  const code = typeof route.query.error === 'string' ? route.query.error : route.query.outcome
+  if (typeof code !== 'string') return null
+
+  const key = `auth.errors.${code}`
+  const translated = t(key)
+  return translated === key ? null : translated
 }
 
 const validateForm = (): boolean => {
@@ -154,5 +177,18 @@ const handleSubmit = async () => {
     formErrors.common = [message]
     appStore.notifyError(t('auth.errors.signInFailed'), message)
   }
+}
+
+const handleGoogleAuth = () => {
+  startGoogleAuth({
+    app: 'buyer',
+    returnUrl: returnUrl(),
+    culture: String(locale.value),
+  })
+}
+
+const initialOutcome = routeOutcomeMessage()
+if (initialOutcome) {
+  formErrors.common = [initialOutcome]
 }
 </script>

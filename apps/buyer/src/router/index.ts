@@ -32,6 +32,12 @@ const routes = [
     meta: { titleKey: 'auth.register.title', allowAnonymous: true, layout: 'none' },
   },
   {
+    path: '/auth/google/link',
+    name: 'GoogleLink',
+    component: () => import('@/pages/Auth/GoogleLinkPage.vue'),
+    meta: { titleKey: 'auth.googleLink.title', allowAnonymous: true, layout: 'none' },
+  },
+  {
     path: '/',
     name: 'Home',
     component: () => import('@/pages/Home/HomePage.vue'),
