@@ -41,5 +41,14 @@
   "help": {
     "troubleshooting": "If you continue to experience issues, please contact our support team.",
     "newVerification": "You can request a new verification email from the verification page."
+  },
+  "errors": {
+    "missingToken": "This verification link is incomplete. Open the latest email and try again.",
+    "InvalidToken": "This verification link is invalid. Request a new verification email and try again.",
+    "ExpiredToken": "This verification link has expired. Request a new verification email and try again.",
+    "AlreadyVerified": "This email has already been verified. Sign in to continue.",
+    "EmailVerificationFailed": "This verification link is invalid or has expired. Request a new verification email and try again.",
+    "EmailAlreadyVerified": "This email address has already been verified. Sign in to continue.",
+    "generalError": "We could not verify your email. Request a new verification email and try again."
   }
 }

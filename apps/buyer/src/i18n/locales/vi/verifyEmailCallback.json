@@ -1,0 +1,25 @@
+{
+  "title": "Xác minh email",
+  "loading": {
+    "subtitle": "Chúng tôi đang xác nhận liên kết xác minh email của bạn."
+  },
+  "success": {
+    "title": "Đã xác minh email",
+    "subtitle": "Tài khoản của bạn đã sẵn sàng. Hãy đăng nhập để tiếp tục."
+  },
+  "error": {
+    "title": "Xác minh thất bại",
+    "subtitle": "Chúng tôi không thể xác minh liên kết này."
+  },
+  "errors": {
+    "missingToken": "Liên kết xác minh này chưa đầy đủ. Hãy mở email mới nhất và thử lại.",
+    "InvalidToken": "Liên kết xác minh này không hợp lệ. Hãy yêu cầu email xác minh mới và thử lại.",
+    "ExpiredToken": "Liên kết xác minh này đã hết hạn. Hãy yêu cầu email xác minh mới và thử lại.",
+    "AlreadyVerified": "Email này đã được xác minh. Hãy đăng nhập để tiếp tục.",
+    "generalError": "Chúng tôi không thể xác minh email của bạn. Hãy yêu cầu email xác minh mới và thử lại."
+  },
+  "actions": {
+    "goToSignIn": "Đi đến đăng nhập",
+    "requestNewVerification": "Yêu cầu email xác minh mới"
+  }
+}

@@ -18,17 +18,22 @@
     "error": "Gửi Email Xác Thực Thất Bại",
     "validationFailed": "Vui lòng sửa các lỗi dưới đây và thử lại.",
     "cooldownActive": "Vui lòng đợi trước khi yêu cầu gửi email xác thực khác.",
+    "pendingVerificationRequired": "Tài khoản của bạn vẫn đang chờ xác minh email. Hãy yêu cầu email xác minh mới và hoàn tất liên kết trong hộp thư trước khi đăng nhập.",
+    "verificationRecovery": "Liên kết xác minh đó không thể hoàn tất. Hãy yêu cầu email xác minh mới để tiếp tục.",
+    "duplicatePendingAccount": "Email này đã có tài khoản đang chờ xác minh. Hãy yêu cầu gửi lại email xác minh để tiếp tục.",
     "emailUpdated": "Email Đã Được Cập Nhật",
     "emailUpdatedSuccess": "Địa chỉ email đã được cập nhật thành công."
   },
   "errors": {
     "emailRequired": "Địa chỉ email là bắt buộc",
-    "emailInvalid": "Vui lòng nhập một địa chỉ email hợp lệ"
+    "emailInvalid": "Vui lòng nhập một địa chỉ email hợp lệ",
+    "validationFailed": "Vui lòng kiểm tra lại thông tin và thử lại."
   },
   "help": {
     "checkInbox": "Kiểm tra hộp thư đến và thư mục spam để tìm email xác thực.",
     "clickLink": "Nhấp vào liên kết trong email để xác thực tài khoản của bạn.",
     "resendInfo": "Không nhận được email? Bạn có thể yêu cầu gửi lại sau {seconds} giây.",
+    "backToSignInPrompt": "Bạn đã xác minh email xong?",
     "contactSupport": "Vẫn gặp vấn đề? Liên hệ với đội ngũ hỗ trợ để được trợ giúp."
   }
 }

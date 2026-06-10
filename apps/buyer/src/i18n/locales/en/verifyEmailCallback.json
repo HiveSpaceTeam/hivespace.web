@@ -1,0 +1,25 @@
+{
+  "title": "Verify your email",
+  "loading": {
+    "subtitle": "We are confirming your email verification link."
+  },
+  "success": {
+    "title": "Email verified",
+    "subtitle": "Your account is ready. Sign in to continue."
+  },
+  "error": {
+    "title": "Verification failed",
+    "subtitle": "We could not verify that link."
+  },
+  "errors": {
+    "missingToken": "This verification link is incomplete. Open the latest email and try again.",
+    "InvalidToken": "This verification link is invalid. Request a new verification email and try again.",
+    "ExpiredToken": "This verification link has expired. Request a new verification email and try again.",
+    "AlreadyVerified": "This email has already been verified. Sign in to continue.",
+    "generalError": "We could not verify your email. Request a new verification email and try again."
+  },
+  "actions": {
+    "goToSignIn": "Go to sign in",
+    "requestNewVerification": "Request a new verification email"
+  }
+}

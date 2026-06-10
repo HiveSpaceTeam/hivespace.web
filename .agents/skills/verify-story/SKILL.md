@@ -10,7 +10,8 @@ Step 1 - Load context
 - Read `../hivespace.spec/.specify/memory/constitution.md`, especially frontend principles.
 - Identify the feature from the user request. If not provided, read `../hivespace.spec/.specify/feature.json`; if still unclear, ask for the feature name.
 - Read `../hivespace.spec/specs/[feature-name]/spec.md`, `plan.md`, `tasks.md`, and `tasks/frontend.md`.
-- Read `tasks/config.md` and `tasks/verification.md` entries that apply to frontend config and frontend verification.
+- Read only the frontend-owned entries from `tasks/verification.md` that apply to the selected frontend story or task group.
+- Read `tasks/config.md` only when the feature contains explicit frontend-owned config work that applies to the selected frontend story or task group.
 - Read `../hivespace.spec/shared/api-catalog.md` for endpoint ownership and route expectations.
 
 Step 2 - Inspect current changes
@@ -21,7 +22,7 @@ Step 2 - Inspect current changes
 - Treat untracked source files as part of the implementation surface, but call out temporary files, generated artifacts, logs, or unrelated config churn.
 
 Step 3 - Verify task coverage
-- Produce a table for every relevant frontend, config, and verification task with status `Covered`, `Partial`, `Missing`, or `Not Applicable`.
+- Produce a table for every relevant frontend task from `tasks/frontend.md`, plus only explicitly applicable frontend-owned verification/config tasks, with status `Covered`, `Partial`, `Missing`, or `Not Applicable`.
 - Include concrete evidence for every `Covered` or `Partial` status: file path, component/service/store/type/route/i18n key, search result, diff evidence, or verification command.
 - Do not mark a task `Covered` only because an expected file exists; verify behavior, constraints, forbidden behavior, and acceptance criteria.
 - Confirm shared-first reuse was checked before app-local code was added.
@@ -43,5 +44,5 @@ Step 5 - Report
 - List critical gaps first, with task IDs and file references.
 - Include the task coverage table.
 - Include verification commands and results, including baseline/new-error distinction.
-- List unrelated or suspicious changed files separately from expected story files.
+- List unrelated or suspicious changed files separately from the expected frontend story files and selected frontend task scope.
 - If gaps remain, recommend running `/start-story` or manual fixes for the specific missing task IDs, then rerun `/verify-story`.

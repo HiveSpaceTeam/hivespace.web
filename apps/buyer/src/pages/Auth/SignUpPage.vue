@@ -138,6 +138,7 @@ import {
   ShowPasswordIcon,
   useAppStore,
   useAuth,
+  setPendingVerificationEmail,
   normalizeFrontendRedirect,
   validateEmail,
   validateRequired,
@@ -221,7 +222,7 @@ const handleSubmit = async () => {
   if (!validateForm()) return
 
   try {
-    const session = await register({
+    const result = await register({
       fullName: form.fullName.trim(),
       email: form.email.trim(),
       password: form.password,
@@ -230,8 +231,15 @@ const handleSubmit = async () => {
       returnUrl: returnUrl(),
       culture: String(locale.value),
     })
+    setPendingVerificationEmail('buyer', form.email.trim())
 
-    await router.push(normalizeFrontendRedirect(session?.redirectTo, returnUrl()))
+    await router.push({
+      path: '/verify-email',
+      query: {
+        ...(result?.maskedEmail ? { maskedEmail: result.maskedEmail } : {}),
+        returnUrl: returnUrl(),
+      },
+    })
   } catch (error) {
     const message = mapError(error)
     formErrors.common = [message]

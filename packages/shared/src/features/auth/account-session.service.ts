@@ -2,11 +2,18 @@ import type {
   ConfirmGoogleLinkRequest,
   RefreshSessionRequest,
   RegisterAccountRequest,
+  RegisterAccountResponse,
   SessionResponse,
   SignInRequest,
   StartGoogleAuthRequest,
 } from '../../types'
 import { getCookie } from '../../utils/cookie'
+
+interface RegisterAccountApiResponse {
+  email: string
+  app: RegisterAccountResponse['app']
+  canResendAt?: string
+}
 
 const csrfHeaderName = 'X-HiveSpace-CSRF'
 const csrfCookieName = 'HiveSpace.Csrf'
@@ -48,7 +55,7 @@ const requestJson = async <TResponse>(
 
 export interface AccountSessionService {
   login: (request: SignInRequest) => Promise<SessionResponse>
-  register: (request: RegisterAccountRequest) => Promise<SessionResponse>
+  register: (request: RegisterAccountRequest) => Promise<RegisterAccountResponse>
   refreshSession: (request: RefreshSessionRequest) => Promise<SessionResponse>
   startGoogleAuth: (request: StartGoogleAuthRequest) => void
   confirmGoogleLink: (request: ConfirmGoogleLinkRequest) => Promise<SessionResponse>
@@ -70,10 +77,14 @@ export const createAccountSessionService = (gatewayBaseUrl: string): AccountSess
       }),
 
     register: (request: RegisterAccountRequest) =>
-      requestJson<SessionResponse>(gatewayBaseUrl, '/register', {
+      requestJson<RegisterAccountApiResponse>(gatewayBaseUrl, '/register', {
         method: 'POST',
         body: JSON.stringify(request),
-      }),
+      }).then((response) => ({
+        maskedEmail: response.email,
+        app: response.app,
+        canResendAt: response.canResendAt,
+      })),
 
     refreshSession: (request: RefreshSessionRequest) =>
       requestJson<SessionResponse>(gatewayBaseUrl, '/session/refresh', {

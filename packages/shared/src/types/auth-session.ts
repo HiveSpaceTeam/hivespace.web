@@ -35,6 +35,12 @@ export interface RegisterAccountRequest {
   culture?: CultureText | string
 }
 
+export interface RegisterAccountResponse {
+  maskedEmail: string
+  app: GoogleAuthApp
+  canResendAt?: string
+}
+
 export interface RefreshSessionRequest {
   app: AuthApp
 }

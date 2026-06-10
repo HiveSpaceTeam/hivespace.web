@@ -1,6 +1,6 @@
 export interface ResendEmailVerificationRequest {
   email: string
-  app: 'seller'
+  app: 'buyer'
   returnUrl?: string | null
   culture?: string | null
 }

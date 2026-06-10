@@ -92,6 +92,7 @@ import {
   ShowPasswordIcon,
   useAppStore,
   useAuth,
+  setPendingVerificationEmail,
   normalizeFrontendRedirect,
   validateEmail,
   validateRequired,
@@ -159,6 +160,14 @@ const mapError = (error: unknown): string => {
   return translated === `auth.errors.${key}` ? t('auth.errors.validationFailed') : translated
 }
 
+const isPendingVerificationError = (error: unknown): boolean => {
+  const model = error as Partial<ExceptionModel>
+  const first = model.errors?.[0]
+  const key = first?.messageCode || first?.code
+
+  return key === 'EmailVerificationRequired' || key === 'IDN6018'
+}
+
 const handleSubmit = async () => {
   if (!validateForm()) return
 
@@ -173,6 +182,18 @@ const handleSubmit = async () => {
 
     await router.push(normalizeFrontendRedirect(session?.redirectTo, returnUrl()))
   } catch (error) {
+    if (isPendingVerificationError(error)) {
+      setPendingVerificationEmail('buyer', form.email.trim())
+      await router.push({
+        path: '/verify-email',
+        query: {
+          returnUrl: returnUrl(),
+          outcome: 'pendingVerification',
+        },
+      })
+      return
+    }
+
     const message = mapError(error)
     formErrors.common = [message]
     appStore.notifyError(t('auth.errors.signInFailed'), message)

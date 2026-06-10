@@ -1,0 +1,34 @@
+{
+  "title": "Kiểm tra email của bạn",
+  "subtitle": "Kích hoạt tài khoản HiveSpace trước lần đăng nhập đầu tiên.",
+  "fields": {
+    "emailAddress": "Email"
+  },
+  "placeholders": {
+    "emailAddress": "buyer{'@'}example.com"
+  },
+  "actions": {
+    "sendVerification": "Gửi email xác minh",
+    "resendVerification": "Gửi lại email xác minh"
+  },
+  "messages": {
+    "success": "Đã gửi email xác minh",
+    "verificationSent": "Chúng tôi đã gửi liên kết xác minh đến địa chỉ email của bạn.",
+    "error": "Không thể gửi email xác minh",
+    "cooldownActive": "Vui lòng chờ trước khi yêu cầu gửi lại email xác minh.",
+    "pendingVerificationRequired": "Tài khoản của bạn vẫn đang chờ xác minh email. Hãy yêu cầu email xác minh mới và hoàn tất liên kết trong hộp thư trước khi đăng nhập.",
+    "verificationRecovery": "Liên kết xác minh đó không thể hoàn tất. Hãy yêu cầu email xác minh mới để tiếp tục.",
+    "duplicatePendingAccount": "Email này đã có tài khoản đang chờ xác minh. Hãy yêu cầu gửi lại email xác minh để tiếp tục."
+  },
+  "errors": {
+    "emailRequired": "Vui lòng nhập email.",
+    "emailInvalid": "Vui lòng nhập địa chỉ email hợp lệ.",
+    "validationFailed": "Vui lòng kiểm tra lại thông tin và thử lại."
+  },
+  "help": {
+    "checkInbox": "Hãy kiểm tra hộp thư đến và thư rác để tìm email mới nhất.",
+    "clickLink": "Dùng liên kết trong email đó để kích hoạt tài khoản của bạn.",
+    "resendInfo": "Cần email khác? Bạn có thể yêu cầu gửi lại sau {seconds} giây.",
+    "backToSignInPrompt": "Bạn đã xác minh email xong?"
+  }
+}
