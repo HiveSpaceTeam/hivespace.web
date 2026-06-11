@@ -218,6 +218,12 @@ const mapError = (error: unknown): string => {
   return translated === `auth.errors.${key}` ? t('auth.errors.validationFailed') : translated
 }
 
+const isPendingEmailVerificationError = (error: unknown): boolean => {
+  const model = error as Partial<ExceptionModel>
+  const first = model.errors?.[0]
+  return first?.messageCode === 'PendingEmailVerification' || first?.code === 'IDN6019'
+}
+
 const handleSubmit = async () => {
   if (!validateForm()) return
 
@@ -241,6 +247,18 @@ const handleSubmit = async () => {
       },
     })
   } catch (error) {
+    if (isPendingEmailVerificationError(error)) {
+      setPendingVerificationEmail('buyer', form.email.trim())
+      await router.push({
+        path: '/verify-email',
+        query: {
+          outcome: 'duplicatePendingAccount',
+          returnUrl: returnUrl(),
+        },
+      })
+      return
+    }
+
     const message = mapError(error)
     formErrors.common = [message]
     appStore.notifyError(t('auth.errors.registrationFailed'), message)
