@@ -8,10 +8,7 @@
     :image-body="t('auth.image.body')"
     image-presentation="plain-wide"
   >
-    <div
-      v-if="state === 'loading'"
-      class="space-y-3 text-center text-sm text-gray-600 dark:text-gray-400"
-    >
+    <div v-if="state === 'loading'" class="space-y-3 text-center text-sm text-gray-600 dark:text-gray-400">
       <Spinner size="lg" />
       <p>{{ t('verifyEmailCallback.loading.subtitle') }}</p>
     </div>
@@ -23,7 +20,7 @@
       <p class="font-medium">{{ t('verifyEmailCallback.success.title') }}</p>
       <p class="mt-1">{{ t('verifyEmailCallback.success.subtitle') }}</p>
       <Button class="mt-4 w-full" @click="goToSignIn">
-        {{ t('verifyEmailCallback.actions.goToLogin') }}
+        {{ t('verifyEmailCallback.actions.goToSignIn') }}
       </Button>
     </div>
 
@@ -38,7 +35,7 @@
           {{ t('verifyEmailCallback.actions.requestNewVerification') }}
         </Button>
         <Button variant="outline" class="w-full" @click="goToSignIn">
-          {{ t('verifyEmailCallback.actions.goToLogin') }}
+          {{ t('verifyEmailCallback.actions.goToSignIn') }}
         </Button>
       </div>
     </div>
@@ -58,7 +55,7 @@ import {
   type ExceptionModel,
 } from '@hivespace/shared'
 import { useAccountStore } from '@/stores'
-import authImage from '@/assets/auth/seller-auth.svg'
+import authImage from '@/assets/auth/buyer-auth.svg'
 
 const route = useRoute()
 const router = useRouter()
@@ -117,7 +114,7 @@ onMounted(async () => {
 
   try {
     await accountStore.verifyEmail(userId, token)
-    clearPendingVerificationEmail('seller')
+    clearPendingVerificationEmail('buyer')
     state.value = 'success'
     appStore.notifySuccess(
       t('verifyEmailCallback.success.title'),

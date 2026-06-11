@@ -1,0 +1,34 @@
+{
+  "title": "Check your email",
+  "subtitle": "Activate your HiveSpace account before your first sign-in.",
+  "fields": {
+    "emailAddress": "Email"
+  },
+  "placeholders": {
+    "emailAddress": "buyer{'@'}example.com"
+  },
+  "actions": {
+    "sendVerification": "Send verification email",
+    "resendVerification": "Resend verification email"
+  },
+  "messages": {
+    "success": "Verification email sent",
+    "verificationSent": "We sent a verification link to your email address.",
+    "error": "Verification email could not be sent",
+    "cooldownActive": "Please wait before requesting another verification email.",
+    "pendingVerificationRequired": "Your account is still pending email verification. Request a fresh verification email and complete the link in your inbox before signing in.",
+    "verificationRecovery": "That verification link could not be completed. Request a new verification email to continue.",
+    "duplicatePendingAccount": "This email already has a pending account. Request another verification email to continue."
+  },
+  "errors": {
+    "emailRequired": "Email is required.",
+    "emailInvalid": "Enter a valid email address.",
+    "validationFailed": "Check your information and try again."
+  },
+  "help": {
+    "checkInbox": "Open your inbox and spam folder for the latest message.",
+    "clickLink": "Use the link in that email to activate your account.",
+    "resendInfo": "Need another email? You can request a new one after {seconds} seconds.",
+    "backToSignInPrompt": "Already verified your email?"
+  }
+}

@@ -41,5 +41,14 @@
   "help": {
     "troubleshooting": "Nếu bạn tiếp tục gặp sự cố, vui lòng liên hệ với đội ngũ hỗ trợ của chúng tôi.",
     "newVerification": "Bạn có thể yêu cầu email xác thực mới từ trang xác thực."
+  },
+  "errors": {
+    "missingToken": "Liên kết xác minh này chưa đầy đủ. Hãy mở email mới nhất và thử lại.",
+    "InvalidToken": "Liên kết xác minh này không hợp lệ. Hãy yêu cầu email xác minh mới và thử lại.",
+    "ExpiredToken": "Liên kết xác minh này đã hết hạn. Hãy yêu cầu email xác minh mới và thử lại.",
+    "AlreadyVerified": "Email này đã được xác minh. Hãy đăng nhập để tiếp tục.",
+    "EmailVerificationFailed": "Liên kết xác minh này không hợp lệ hoặc đã hết hạn. Hãy yêu cầu email xác minh mới và thử lại.",
+    "EmailAlreadyVerified": "Địa chỉ email này đã được xác minh. Hãy đăng nhập để tiếp tục.",
+    "generalError": "Chúng tôi không thể xác minh email của bạn. Hãy yêu cầu email xác minh mới và thử lại."
   }
 }

@@ -65,6 +65,7 @@ import {
   UserMenu
 } from '@hivespace/shared'
 import { MoreVertical } from 'lucide-vue-next'
+import { useProfileStore } from '@/stores'
 
 interface Props {
   headerClass?: string
@@ -79,6 +80,7 @@ withDefaults(defineProps<Props>(), {
 const { currentUser: user, getCurrentUser, logout } = useAuth()
 const currentUser = computed(() => user.value)
 const router = useRouter()
+const profileStore = useProfileStore()
 const {
   notifications,
   unreadCount,
@@ -152,6 +154,7 @@ const goToSignUp = () => {
 
 const handleSignOut = async () => {
   await logout()
+  profileStore.clearMyProfile()
   await router.push('/')
 }
 
@@ -163,7 +166,7 @@ const toggleApplicationMenu = () => {
 
 onMounted(async () => {
   await getCurrentUser()
-  await loadProfileForCurrentUser()
+  await loadProfileForCurrentUser(true)
 })
 
 watch(user, async (nextUser, previousUser) => {

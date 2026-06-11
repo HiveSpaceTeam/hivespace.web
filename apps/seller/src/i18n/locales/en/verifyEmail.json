@@ -18,17 +18,22 @@
     "error": "Email Verification Failed",
     "validationFailed": "Please correct the errors below and try again.",
     "cooldownActive": "Please wait before requesting another verification email.",
+    "pendingVerificationRequired": "Your account is still pending email verification. Request a fresh verification email and complete the link in your inbox before signing in.",
+    "verificationRecovery": "That verification link could not be completed. Request a new verification email to continue.",
+    "duplicatePendingAccount": "This email already has a pending account. Request another verification email to continue.",
     "emailUpdated": "Email Updated",
     "emailUpdatedSuccess": "Email address has been updated successfully."
   },
   "errors": {
     "emailRequired": "Email address is required",
-    "emailInvalid": "Please enter a valid email address"
+    "emailInvalid": "Please enter a valid email address",
+    "validationFailed": "Check your information and try again."
   },
   "help": {
     "checkInbox": "Check your inbox and spam folder for the verification email.",
     "clickLink": "Click the link in the email to verify your account.",
     "resendInfo": "Didn't receive the email? You can request a new one after {seconds} seconds.",
+    "backToSignInPrompt": "Already verified your email?",
     "contactSupport": "Still having issues? Contact our support team for assistance."
   }
 }

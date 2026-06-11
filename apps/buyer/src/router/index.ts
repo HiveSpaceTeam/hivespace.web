@@ -38,6 +38,18 @@ const routes = [
     meta: { titleKey: 'auth.googleLink.title', allowAnonymous: true, layout: 'none' },
   },
   {
+    path: '/verify-email',
+    name: 'VerifyEmail',
+    component: () => import('@/pages/VerifyEmailPage.vue'),
+    meta: { titleKey: 'verifyEmail.title', allowAnonymous: true, layout: 'none' },
+  },
+  {
+    path: '/verify-email-callback',
+    name: 'VerifyEmailCallback',
+    component: () => import('@/pages/VerifyEmailCallbackPage.vue'),
+    meta: { titleKey: 'verifyEmailCallback.title', allowAnonymous: true, layout: 'none' },
+  },
+  {
     path: '/',
     name: 'Home',
     component: () => import('@/pages/Home/HomePage.vue'),

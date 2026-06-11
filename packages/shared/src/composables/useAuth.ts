@@ -7,6 +7,7 @@ import type {
   CultureText,
   GoogleAuthApp,
   RegisterAccountRequest,
+  RegisterAccountResponse,
   SessionResponse,
   SignInRequest,
   StartGoogleAuthRequest,
@@ -193,7 +194,7 @@ export const useAuth = () => {
 
   const register = async (
     request?: RegisterAccountRequest,
-  ): Promise<SessionResponse | void> => {
+  ): Promise<RegisterAccountResponse | void> => {
     const service = assertConfigured()
 
     if (!request) {
@@ -204,12 +205,11 @@ export const useAuth = () => {
     try {
       isLoading.value = true
       error.value = null
-      const session = await service.register({
+      const result = await service.register({
         ...request,
         culture: request.culture ?? currentCulture(i18nLocale),
       })
-      applySession(session)
-      return session
+      return result
     } catch (err) {
       error.value = err instanceof Error ? err.message : 'Registration failed'
       throw err

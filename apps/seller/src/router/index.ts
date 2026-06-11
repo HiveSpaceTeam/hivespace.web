@@ -7,6 +7,7 @@ declare module 'vue-router' {
   interface RouteMeta {
     titleKey?: string
     allowAnonymous?: boolean
+    layout?: string
   }
 }
 
@@ -55,25 +56,25 @@ const mainRoutes = [
     path: '/signin',
     name: 'SignIn',
     component: () => import('@/pages/Auth/SignInPage.vue'),
-    meta: { titleKey: 'auth.signIn.title', allowAnonymous: true },
+    meta: { titleKey: 'auth.signIn.title', allowAnonymous: true, layout: 'none' },
   },
   {
     path: '/signup',
     name: 'SignUp',
     component: () => import('@/pages/Auth/SignUpPage.vue'),
-    meta: { titleKey: 'auth.register.title', allowAnonymous: true },
+    meta: { titleKey: 'auth.register.title', allowAnonymous: true, layout: 'none' },
   },
   {
     path: '/auth/google/link',
     name: 'GoogleLink',
     component: () => import('@/pages/Auth/GoogleLinkPage.vue'),
-    meta: { titleKey: 'auth.googleLink.title', allowAnonymous: true },
+    meta: { titleKey: 'auth.googleLink.title', allowAnonymous: true, layout: 'none' },
   },
   {
     path: '/verify-email-callback',
     name: 'Verify Email Callback',
     component: () => import('@/pages/VerifyEmailCallbackPage.vue'),
-    meta: { titleKey: 'verifyEmailCallback.title', allowAnonymous: true },
+    meta: { titleKey: 'verifyEmailCallback.title', allowAnonymous: true, layout: 'none' },
   },
   {
     path: '/server-error',
@@ -196,7 +197,7 @@ const router = createRouter({
       path: '/verify-email',
       name: 'Verify Email',
       component: () => import('@/pages/VerifyEmailPage.vue'),
-      meta: { titleKey: 'verifyEmail.title' },
+      meta: { titleKey: 'verifyEmail.title', allowAnonymous: true, layout: 'none' },
     },
     // Grouped block (compat redirects, pages, demo, notFound)
     ...mainRoutes,

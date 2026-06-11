@@ -96,7 +96,7 @@ import {
 } from '@hivespace/shared'
 import { storeToRefs } from 'pinia'
 import { useAccountStore } from '@/stores'
-import authImage from '@/assets/auth/seller-auth.svg'
+import authImage from '@/assets/auth/buyer-auth.svg'
 
 const route = useRoute()
 const { t, locale } = useI18n()
@@ -107,7 +107,7 @@ const signInQuery =
   typeof route.query.returnUrl === 'string' ? { returnUrl: route.query.returnUrl } : undefined
 const outcome = typeof route.query.outcome === 'string' ? route.query.outcome : null
 const resendReturnUrl =
-  typeof route.query.returnUrl === 'string' ? route.query.returnUrl : '/product/list'
+  typeof route.query.returnUrl === 'string' ? route.query.returnUrl : '/'
 
 const cooldownDuration = 60
 const { isActive: cooldownActive, secondsRemaining: cooldownSeconds, start: startCooldown } =
@@ -116,7 +116,7 @@ const maskedEmail =
   typeof route.query.maskedEmail === 'string' ? route.query.maskedEmail.trim() : ''
 
 const form = reactive({
-  email: getPendingVerificationEmail('seller'),
+  email: getPendingVerificationEmail('buyer'),
 })
 
 const formErrors = reactive({
@@ -173,10 +173,10 @@ const handleSubmit = async () => {
   if (!validateForm()) return
 
   try {
-    setPendingVerificationEmail('seller', trimmedEmail.value)
+    setPendingVerificationEmail('buyer', trimmedEmail.value)
     await accountStore.resendVerificationEmail({
       email: trimmedEmail.value,
-      app: 'seller',
+      app: 'buyer',
       returnUrl: resendReturnUrl,
       culture: String(locale.value),
     })
