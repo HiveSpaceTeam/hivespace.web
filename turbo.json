@@ -18,8 +18,8 @@
     },
     "test": {
       "dependsOn": ["^build"],
-      "outputs": ["coverage/**"],
-      "cache": true
+      "outputs": [],
+      "cache": false
     },
     "lint":   { "inputs": ["src/**", "eslint.config.*", "scripts/**"], "outputs": [] },
     "format": { "inputs": ["src/**"], "outputs": [] }

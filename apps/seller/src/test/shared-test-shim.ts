@@ -13,6 +13,12 @@ import type {
 } from '../../../../packages/shared/src/features/notifications/notifications.types'
 import type { AppUser } from '../../../../packages/shared/src/types/app-user'
 import type { PaginationMetadata } from '../../../../packages/shared/src/types/common.types'
+import {
+  validateRequired,
+  validatePositiveNumber,
+  validateEmail,
+  validateMinLength,
+} from '../../../../packages/shared/src/composables/useValidationRules'
 
 export type Environment = 'development' | 'staging' | 'production' | 'test'
 export interface MyProfile {
@@ -33,6 +39,7 @@ export interface ApiConfig {
 }
 
 export { createNotificationStore, createMediaUploadStore, createUserProfileStore, NotificationChannel, NotificationStatus }
+export { validateRequired, validatePositiveNumber, validateEmail, validateMinLength }
 export type {
   AppUser,
   INotificationService,
@@ -61,30 +68,6 @@ export const CULTURE_TEXT = {
 
 export const en = {}
 export const vi = {}
-
-export const validateRequired = (
-  value: string | number | boolean | null | undefined,
-  message: string,
-): string => {
-  if (typeof value === 'string') return value.trim() ? '' : message
-  return value === null || value === undefined ? message : ''
-}
-
-export const validatePositiveNumber = (
-  value: number | string | null | undefined,
-  message: string,
-): string => {
-  const parsed = typeof value === 'number' ? value : Number(value)
-  return Number.isFinite(parsed) && parsed > 0 ? '' : message
-}
-
-export const validateEmail = (value: string, message: string): string => {
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-  return emailRegex.test(value.trim()) ? '' : message
-}
-
-export const validateMinLength = (value: string, min: number, message: string): string =>
-  value.length >= min ? '' : message
 
 export const useCooldown = (_durationSeconds = 60) => ({
   isActive: ref(false),

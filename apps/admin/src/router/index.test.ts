@@ -67,4 +67,15 @@ describe('admin router', () => {
     expect(router.currentRoute.value.name).toBe('SignIn')
     expect(router.currentRoute.value.query.error).toBe('accessDenied')
   })
+
+  it('should redirect unauthenticated user to sign-in with returnUrl', async () => {
+    mockGetCurrentUser.mockResolvedValue(null)
+    const router = await importRouter()
+
+    await router.push('/dashboard')
+    await router.isReady()
+
+    expect(router.currentRoute.value.name).toBe('SignIn')
+    expect(router.currentRoute.value.query.returnUrl).toBe('/dashboard')
+  })
 })

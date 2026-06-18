@@ -7,6 +7,7 @@ dist-ssr/
 *.log
 coverage/
 coverage-report/
+apps/*/coverage-policy/
 apps/*/src/**/*.js
 apps/*/src/**/*.vue.js
 .gitnexus

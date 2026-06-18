@@ -3,7 +3,7 @@
   "version": "1.1.20",
   "description": "Shared UI, app utilities, and feature infrastructure for Hivespace projects",
   "type": "module",
-  "sideEffects": false,
+  "sideEffects": ["*.css", "src/styles/**"],
   "main": "./dist/index.js",
   "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
