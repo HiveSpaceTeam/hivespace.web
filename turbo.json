@@ -16,6 +16,11 @@
       "inputs": ["src/**", "tsconfig*.json", "env.d.ts"],
       "outputs": []
     },
+    "test": {
+      "dependsOn": ["^build"],
+      "outputs": ["coverage/**"],
+      "cache": true
+    },
     "lint":   { "inputs": ["src/**", "eslint.config.*", "scripts/**"], "outputs": [] },
     "format": { "inputs": ["src/**"], "outputs": [] }
   }

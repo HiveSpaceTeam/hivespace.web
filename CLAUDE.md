@@ -15,6 +15,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 | `/start-story` | `.agents/skills/start-story/SKILL.md` | `.claude/commands/start-story.md` | Start a frontend story from `../hivespace.spec/specs/[feature-name]/tasks/frontend.md` |
 | `/verify-story` | `.agents/skills/verify-story/SKILL.md` | `.claude/commands/verify-story.md` | Audit current frontend changes against the feature task definitions |
 | `/done-story` | `.agents/skills/done-story/SKILL.md` | `.claude/commands/done-story.md` | Verify a completed frontend story |
+| `/show-coverage` | `.agents/skills/show-coverage/SKILL.md` | `.claude/commands/show-coverage.md` | Run policy-scoped frontend coverage across the monorepo or one workspace, print the summary, and point to the native workspace HTML reports |
 
 Keep paired Codex and Claude command content semantically equivalent.
 
@@ -108,6 +109,7 @@ pnpm dev              # Start all apps concurrently
 pnpm dev:admin        # Admin app only
 pnpm dev:seller       # Seller app only
 pnpm build            # Build all apps (Turbo-cached)
+pnpm test             # Run all workspace Jest test suites
 pnpm type-check       # Type-check across the monorepo
 pnpm lint             # Lint all workspaces
 pnpm format           # Prettier format all workspaces
@@ -119,6 +121,7 @@ pnpm format           # Prettier format all workspaces
 pnpm dev              # Dev server
 pnpm build            # Build with type-check
 pnpm build-only       # Build without type-check
+pnpm test             # Run the workspace Jest suite
 pnpm type-check       # Vue-tsc validation
 pnpm lint             # ESLint with auto-fix (admin & seller only)
 pnpm format           # Prettier formatting (admin & seller only)
@@ -129,9 +132,11 @@ pnpm format           # Prettier formatting (admin & seller only)
 ```bash
 pnpm build            # Vite library build -> dist/
 pnpm dev              # Watch mode (vite build --watch)
+pnpm test             # Run the shared package Jest suite
 ```
 
-**No test framework is configured** - there are no test commands.
+Frontend tests use `Jest` with `jsdom`, `@testing-library/vue`, and `@pinia/testing`.
+Policy-scoped coverage is generated through `coverage.ps1` and native per-workspace Jest HTML reports.
 
 For known lint/type-check baseline failures, see `Verification`.
 
@@ -367,6 +372,12 @@ After completing any task in an app, always run lint and type-check for that app
 # From the affected app directory (apps/admin, apps/seller, or apps/buyer)
 pnpm lint
 pnpm type-check  # Vue-tsc validation
+```
+
+If you changed tests, Jest config, or the coverage flow, also run:
+
+```bash
+pnpm test
 ```
 
 If you introduced a new helper or composable, verify before finishing that an equivalent shared composable does not already exist in `packages/shared/src/composables/`.

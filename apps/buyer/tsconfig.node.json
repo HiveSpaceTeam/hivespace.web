@@ -2,7 +2,7 @@
   "extends": "@hivespace/tsconfig/node",
   "include": [
     "vite.config.*",
-    "vitest.config.*",
+    "jest.config.*",
     "cypress.config.*",
     "nightwatch.conf.*",
     "playwright.config.*",

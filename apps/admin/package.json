@@ -8,6 +8,7 @@
     "build": "run-p type-check \"build-only {@}\" --",
     "preview": "vite preview",
     "build-only": "vite build",
+    "test": "jest --config jest.config.cjs",
     "type-check": "vue-tsc --build",
     "lint": "eslint . --fix",
     "format": "prettier --write src/"
@@ -48,6 +49,9 @@
     "@hivespace/eslint-config": "workspace:*",
     "@hivespace/tsconfig": "workspace:*",
     "@hivespace/vite-config": "workspace:*",
+    "@pinia/testing": "*",
+    "@testing-library/vue": "*",
+    "@vue/test-utils": "*",
     "@tailwindcss/postcss": "^4.0.0",
     "@types/node": "^22.10.7",
     "@vitejs/plugin-vue": "^5.2.1",

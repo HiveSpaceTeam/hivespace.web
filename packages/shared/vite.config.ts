@@ -35,10 +35,11 @@ export default defineConfig({
   },
   build: {
     lib: {
-      // Entry point for your library
-      entry: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
+      entry: {
+        index: fileURLToPath(new URL('./src/index.ts', import.meta.url)),
+        'test-utils/index': fileURLToPath(new URL('./src/test-utils/index.ts', import.meta.url)),
+      },
       name: 'HivespaceShared',
-      fileName: 'index',
       formats: ['es'] // ES module format for modern bundlers
     },
     rollupOptions: {
