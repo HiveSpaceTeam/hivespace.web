@@ -41,4 +41,8 @@ const sharedRestrictions: Linter.Config = {
   },
 }
 
-export default [...crossAppRestrictions, sharedRestrictions]
+const ignoreCommonJs: Linter.Config = {
+  ignores: ['**/*.cjs'],
+}
+
+export default [ignoreCommonJs, ...crossAppRestrictions, sharedRestrictions]

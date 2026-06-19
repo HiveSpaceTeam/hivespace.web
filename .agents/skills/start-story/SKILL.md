@@ -31,6 +31,13 @@ Step 3 - Implement according to repo rules
 - Put all user-facing text in both English and Vietnamese i18n files.
 - Keep edits scoped to the selected frontend story/task group and only the explicitly relevant frontend-owned verification or config tasks.
 - Verify with app-level lint and type-check, accounting for documented baseline failures.
+- **TDD ordering**: When the selected frontend task group includes test-code tasks (F### tasks that create `*.test.ts` files), write those test files first. Run `pnpm --filter [app] test --testPathPattern=[file]` to confirm the new test is red before writing the implementation. Only then implement the production code to make the test green.
+- **Pre-existing test failure protocol**: When running `pnpm test` and a test that existed before this feature's changes fails:
+  1. **Identify**: Extract the test file path, `describe`/`it` block names, failure message, and the relevant diff from Jest output
+  2. **Explain**: State in plain language — which test failed, what user scenario or AC the test protects (read the `should …` description), what the expected result was vs. what actually happened
+  3. **Propose**: State whether the fix is in the new implementation code (test is correct) or in the test itself (behavior intentionally changed); provide the specific change needed
+  4. **STOP and confirm**: Ask the user — "Test `[describe > should …]` in `[file]` is now failing. It protects: [scenario]. Expected: [expected]. Actual: [actual]. Proposed fix: [change]. Apply? (yes / no / show more)" — do not apply the fix until the user approves
+  5. **Apply only after approval**: Re-run the affected test after applying; if the user declines, offer to revert the triggering change, skip the task, or mark the failure as accepted risk
 
 Step 4 - Report
 - List files changed.
