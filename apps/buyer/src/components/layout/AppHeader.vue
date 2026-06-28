@@ -121,13 +121,14 @@ const resolvedFullName = computed(() => (
 const resolvedEmail = computed(() => currentUserEmail?.value || tokenEmail.value || '')
 const resolvedAvatarSrc = computed(() => currentUserAvatarSrc?.value || tokenAvatarSrc.value || '')
 const isProfileLoading = ref(false)
+const shouldLoadProfile = computed(() => Boolean(user.value) && profileStore.myProfile === null)
 
-const loadProfileForCurrentUser = async (force = false) => {
-  if (!loadCurrentUserProfile || !user.value || isProfileLoading.value) return
+const loadProfileForCurrentUser = async () => {
+  if (!loadCurrentUserProfile || !shouldLoadProfile.value || isProfileLoading.value) return
 
   try {
     isProfileLoading.value = true
-    await loadCurrentUserProfile(force)
+    await loadCurrentUserProfile()
   } catch (error) {
     console.error('Failed to load current user profile:', error)
   } finally {
@@ -166,12 +167,12 @@ const toggleApplicationMenu = () => {
 
 onMounted(async () => {
   await getCurrentUser()
-  await loadProfileForCurrentUser(true)
+  await loadProfileForCurrentUser()
 })
 
 watch(user, async (nextUser, previousUser) => {
   if (nextUser && !previousUser) {
-    await loadProfileForCurrentUser(true)
+    await loadProfileForCurrentUser()
   }
 })
 </script>

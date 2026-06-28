@@ -36,14 +36,15 @@ const parseScope = () => {
 }
 
 const outputOf = result => [result.stdout, result.stderr].filter(Boolean).join('\n').trim()
+const coverageCommand = process.platform === 'win32' ? 'powershell' : 'pwsh'
 
 const summarize = output => {
   const lines = output.split(/\r?\n/).filter(Boolean)
   return lines.slice(-8).join('\n') || 'Command completed without output'
 }
 
-const runCommand = args => {
-  const result = spawnSync('pnpm', args, {
+const runCommand = (command, args) => {
+  const result = spawnSync(command, args, {
     cwd: process.cwd(),
     encoding: 'utf8',
     shell: process.platform === 'win32',
@@ -56,13 +57,13 @@ const runCommand = args => {
   }
 }
 
-const runWithRerun = args => {
-  const first = runCommand(args)
+const runWithRerun = (command, args) => {
+  const first = runCommand(command, args)
   if (first.code === 0) {
     return { status: 'pass', rerunCount: 0, summary: summarize(first.output) }
   }
 
-  const second = runCommand(args)
+  const second = runCommand(command, args)
   const firstOutput = first.error ?? first.output
   const secondOutput = second.error ?? second.output
 
@@ -101,6 +102,7 @@ const createCheck = ({
   journey,
   audience,
   ownerSurface,
+  command,
   commandArgs,
   notApplicableSummary,
 }) => {
@@ -119,7 +121,7 @@ const createCheck = ({
     }
   }
 
-  const result = runWithRerun(commandArgs)
+  const result = runWithRerun(command, commandArgs)
   return {
     checkId,
     name,
@@ -136,30 +138,33 @@ const createCheck = ({
 
 const sharedCheck = commandArgs => createCheck({
   checkId: 'frontend.shared.test-utilities',
-  name: 'Shared package - test utilities',
+  name: 'Shared package policy-scoped coverage',
   journey: 'frontend-shared-baseline',
   audience: 'contributor',
   ownerSurface: '@hivespace/shared',
+  command: coverageCommand,
   commandArgs,
   notApplicableSummary: 'Runtime frontend checks do not apply to docs-only scope',
 })
 
 const appCheck = (app, commandArgs) => createCheck({
   checkId: `frontend.${app}.critical-path`,
-  name: `${appPackages[app]} - critical path tests`,
+  name: `${appPackages[app]} - policy-scoped coverage`,
   journey: `${app}-critical-path`,
   audience: app === 'admin' ? 'admin' : app,
   ownerSurface: appPackages[app],
+  command: coverageCommand,
   commandArgs,
   notApplicableSummary: 'Runtime frontend checks do not apply to docs-only scope',
 })
 
 const releaseCheck = commandArgs => createCheck({
   checkId: 'frontend.release.all-workspaces',
-  name: 'Frontend release workspace tests',
+  name: 'Frontend release policy-scoped coverage',
   journey: 'frontend-release-readiness',
   audience: 'contributor',
   ownerSurface: 'hivespace.web',
+  command: coverageCommand,
   commandArgs,
   notApplicableSummary: 'Release checks do not apply to docs-only scope',
 })
@@ -190,15 +195,15 @@ if (error) {
 } else if (scope === 'docs-only') {
   checkResults.push(sharedCheck(null), appCheck('buyer', null), appCheck('seller', null), appCheck('admin', null))
 } else if (scope === 'shared') {
-  checkResults.push(sharedCheck(['--filter', '@hivespace/shared', 'test']))
+  checkResults.push(sharedCheck(['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', '.\\coverage.ps1', '-Workspace', 'shared']))
 } else if (scope.startsWith('frontend:')) {
   const app = scope.split(':')[1]
   checkResults.push(
-    sharedCheck(['--filter', '@hivespace/shared', 'test']),
-    appCheck(app, ['--filter', appPackages[app], 'test']),
+    sharedCheck(['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', '.\\coverage.ps1', '-Workspace', 'shared']),
+    appCheck(app, ['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', '.\\coverage.ps1', '-Workspace', app]),
   )
 } else if (scope === 'release') {
-  checkResults.push(releaseCheck(['test']))
+  checkResults.push(releaseCheck(['-NoProfile', '-ExecutionPolicy', 'Bypass', '-File', '.\\coverage.ps1']))
 }
 
 const completedAtMs = Date.now()

@@ -57,6 +57,16 @@
       </Button>
     </form>
 
+    <p class="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
+      {{ t('auth.otpEntry.prompt') }}
+      <RouterLink
+        class="font-medium text-brand-500 hover:text-brand-600"
+        :to="{ path: '/auth/otp', query: authLinkQuery }"
+      >
+        {{ t('auth.otpEntry.action') }}
+      </RouterLink>
+    </p>
+
     <div class="my-5 flex items-center gap-3 text-xs text-gray-400">
       <span class="h-px flex-1 bg-gray-200 dark:bg-gray-700"></span>
       <span>{{ t('auth.google.or') }}</span>

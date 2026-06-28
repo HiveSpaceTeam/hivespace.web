@@ -8,11 +8,19 @@ Step 1 - Load context
 - Read `tasks/verification.md` only for frontend-owned verification entries that apply to the selected frontend story.
 - Read `tasks/config.md` only when the feature contains explicit frontend-owned config work for the selected story.
 - Read `../hivespace.spec/shared/api-catalog.md`.
+- Extract the planned test tasks and scenario coverage expectations for the
+  selected frontend story before editing code.
+- Identify any `tasks/verification.md` item with a detail bullet that starts
+  with `User-owned E2E:` and treat it as explicit user-run validation, not
+  implementation scope for this command.
 
 Step 2 - Confirm scope
 - State the app surface: Admin, Seller, or Buyer.
 - State the story and exact frontend implementation task IDs from `tasks/frontend.md` for this session, using `tasks.md` only as the high-level task index and dependency guide.
 - State only frontend-owned verification task IDs from `tasks/verification.md` and only explicitly frontend-owned config task IDs when they apply.
+- State any `User-owned E2E` verification task IDs separately as skipped,
+  user-run follow-up items.
+- State the test task IDs and the concrete scenarios they protect.
 - State API endpoints used by the story.
 - State what will not be implemented in this session, explicitly excluding backend, docs/catalog, and non-frontend verification work.
 - Surface ambiguity in routes, auth guards, shared component reuse, DTO shape, i18n namespace, or app ownership before editing.
@@ -24,8 +32,12 @@ Step 3 - Implement according to repo rules
 - Use shared UI primitives and `@hivespace/shared` helpers where available.
 - Put all user-facing text in both English and Vietnamese i18n files.
 - Keep edits scoped to the selected frontend story/task group and only the explicitly relevant frontend-owned verification or config tasks.
+- Do not execute or mark complete any task marked `User-owned E2E:`.
 - Verify with app-level lint and type-check, accounting for documented baseline failures.
 - **TDD ordering**: When the selected frontend task group includes test-code tasks (F### tasks that create `*.test.ts` files), write those test files first. Run `pnpm --filter [app] test --testPathPattern=[file]` to confirm the new test is red before writing the implementation. Only then implement the production code to make the test green.
+- After implementation, run `.\coverage.ps1 -Workspace <admin|seller|buyer|shared>`
+  for the affected scope when runtime-owned code changed. If coverage is below
+  80%, add tests and rerun before treating the story as complete.
 - **Pre-existing test failure protocol**: When running `pnpm test` and a test that existed before this feature's changes fails:
   1. **Identify**: Extract the test file path, `describe`/`it` block names, failure message, and the relevant diff from Jest output
   2. **Explain**: State in plain language — which test failed, what user scenario or AC the test protects (read the `should …` description), what the expected result was vs. what actually happened
@@ -36,5 +48,6 @@ Step 3 - Implement according to repo rules
 Step 4 - Report
 - List files changed.
 - Summarize verification.
+- List any skipped `User-owned E2E` tasks as pending user validation.
 - If more tasks remain, identify the next frontend story/task group from `tasks/frontend.md`, using `tasks.md` only for dependency order.
 - Remind the user to run `/done-story`, then `/wrap-up` in `hivespace.spec` after the full feature ships.

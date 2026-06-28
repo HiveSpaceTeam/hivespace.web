@@ -109,6 +109,7 @@ const renderSignIn = async (url = '/signin') => {
     history: createMemoryHistory(),
     routes: [
       { path: '/signin', component: SignInPage, meta: { allowAnonymous: true } },
+      { path: '/auth/otp', component: { template: '<div>otp</div>' }, meta: { allowAnonymous: true } },
       { path: '/verify-email', component: { template: '<div>verify-email</div>' } },
       { path: '/product/list', component: { template: '<div>products</div>' } },
       { path: '/orders/all', component: { template: '<div>orders</div>' } },
@@ -223,5 +224,24 @@ describe('SignInPage (seller)', () => {
       returnUrl: '/cart',
       culture: 'vi',
     })
+  })
+
+  it('renders otp entry action and preserves returnUrl', async () => {
+    const { router } = await renderSignIn('/signin?returnUrl=%2Forders%2Fall')
+
+    const otpLink = screen.getByRole('link', {
+      name: i18n.global.t('auth.otpEntry.action'),
+    })
+
+    expect(screen.getByText(i18n.global.t('auth.otpEntry.prompt'))).toBeTruthy()
+    expect(otpLink.getAttribute('href')).toContain('/auth/otp')
+    expect(otpLink.getAttribute('href')).toContain('returnUrl=/orders/all')
+
+    await fireEvent.click(otpLink)
+
+    await waitFor(() => {
+      expect(router.currentRoute.value.path).toBe('/auth/otp')
+    })
+    expect(router.currentRoute.value.query.returnUrl).toBe('/orders/all')
   })
 })

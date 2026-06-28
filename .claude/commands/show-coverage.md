@@ -1,6 +1,8 @@
 # /show-coverage - Run Policy-Scoped Frontend Coverage and Display the Report
 
 Use this command from the `hivespace.web` repo root.
+Treat 80% policy-scoped line coverage as the current target for each affected
+workspace or shared scope.
 
 ## Workflow
 

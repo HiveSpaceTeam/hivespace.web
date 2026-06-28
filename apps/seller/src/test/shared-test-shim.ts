@@ -19,6 +19,7 @@ import {
   validateEmail,
   validateMinLength,
 } from '../../../../packages/shared/src/composables/useValidationRules'
+export { useOtpTimer } from '../../../../packages/shared/src/composables/useOtpTimer'
 
 export type Environment = 'development' | 'staging' | 'production' | 'test'
 export interface MyProfile {
@@ -75,6 +76,9 @@ export const useCooldown = (_durationSeconds = 60) => ({
   start: () => undefined,
   stop: () => undefined,
 })
+
+export const normalizeFrontendRedirect = (returnUrl: unknown, fallback: string): string =>
+  typeof returnUrl === 'string' && returnUrl.startsWith('/') ? returnUrl : fallback
 
 export const validateUrl = (value: string | undefined, fallback = 'http://localhost:5000') =>
   value || fallback
@@ -217,6 +221,19 @@ export const createUserProfileService = () => ({
 export const createUserSettingsService = () => ({
   fetchUserSettings: async () => null,
   updateUserSettings: async () => null,
+})
+
+export const createOtpAuthService = () => ({
+  requestOtp: async () => ({
+    challengeToken: 'test-challenge',
+    expiresAt: '2026-12-01T00:10:00Z',
+    canResendAt: '2026-12-01T00:01:00Z',
+  }),
+  verifyOtp: async () => ({
+    redirectUrl: '/product/list',
+    expiresAt: '2026-12-01T00:10:00Z',
+    refreshExpiresAt: '2026-12-07T00:00:00Z',
+  }),
 })
 
 export const createUserSettingsStore = (opts?: { service?: { getUserSetting?: () => Promise<unknown>; setUserSetting?: (s: unknown) => Promise<void> } }) =>

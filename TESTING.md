@@ -143,6 +143,11 @@ Follow a bottom-up loop that mirrors the feature implementation order:
 
 This keeps each layer independently testable before the next layer is built.
 
+After implementation, run coverage for the affected workspace or `shared`. If
+policy-scoped line coverage is below 80%, add tests for the missing store,
+page, composable, router, or shared feature behavior and rerun coverage before
+closing the story.
+
 ---
 
 ## Naming conventions
