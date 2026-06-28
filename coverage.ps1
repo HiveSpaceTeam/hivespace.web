@@ -39,6 +39,8 @@ function Get-CoveragePolicy {
                 '!**/index.ts',
                 '!src/assets/**',
                 '!src/components/**',
+                '!src/features/**/*.service.ts',
+                '!src/features/**/*.types.ts',
                 '!src/icons/**',
                 '!src/i18n/**',
                 '!src/pages/**',
