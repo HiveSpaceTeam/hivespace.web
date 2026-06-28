@@ -1,6 +1,7 @@
 import { createRouter, createWebHistory } from 'vue-router'
 import { ServerError, Maintenance, NotFound, useAuth } from '@hivespace/shared'
 import i18n from '@/i18n'
+import { useOtpAuthStore } from '@/stores'
 
 declare module 'vue-router' {
   interface RouteMeta {
@@ -24,6 +25,18 @@ const routes = [
     name: 'SignIn',
     component: () => import('@/pages/Auth/SignInPage.vue'),
     meta: { titleKey: 'auth.signIn.title', allowAnonymous: true, layout: 'none' },
+  },
+  {
+    path: '/auth/otp',
+    name: 'OtpSignIn',
+    component: () => import('@/pages/Auth/OtpSignInPage.vue'),
+    meta: { titleKey: 'auth.otpRequest.title', allowAnonymous: true, layout: 'none' },
+  },
+  {
+    path: '/auth/otp/code',
+    name: 'OtpCodeEntry',
+    component: () => import('@/pages/Auth/OtpCodeEntryPage.vue'),
+    meta: { titleKey: 'auth.otpCode.title', allowAnonymous: true, layout: 'none' },
   },
   {
     path: '/signup',
@@ -140,6 +153,13 @@ const router = createRouter({
 
 router.beforeEach(async (to, _from, next) => {
   document.title = to.meta.titleKey ? i18n.global.t(to.meta.titleKey) : 'HiveSpace'
+  if (to.name === 'OtpCodeEntry' && !useOtpAuthStore().hasActiveChallenge) {
+    next({
+      path: '/auth/otp',
+      query: typeof to.query.returnUrl === 'string' ? { returnUrl: to.query.returnUrl } : {},
+    })
+    return
+  }
   if (to.meta.allowAnonymous) {
     next()
     return

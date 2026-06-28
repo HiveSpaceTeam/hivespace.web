@@ -6,6 +6,8 @@ description: "Run frontend test coverage for hivespace.web. Use when the user wa
 # /show-coverage
 
 Run the policy-scoped frontend coverage script and display the results inline.
+Treat 80% policy-scoped line coverage as the current target for each affected
+workspace or shared scope.
 
 Steps:
 1. Read local `AGENTS.md` and `CLAUDE.md`.

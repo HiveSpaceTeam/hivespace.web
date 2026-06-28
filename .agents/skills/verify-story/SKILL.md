@@ -13,6 +13,9 @@ Step 1 - Load context
 - Read only the frontend-owned entries from `tasks/verification.md` that apply to the selected frontend story or task group.
 - Read `tasks/config.md` only when the feature contains explicit frontend-owned config work that applies to the selected frontend story or task group.
 - Read `../hivespace.spec/shared/api-catalog.md` for endpoint ownership and route expectations.
+- Identify any `tasks/verification.md` item with a detail bullet that starts
+  with `User-owned E2E:` and treat it as explicit user-run validation outside
+  this command's executable scope.
 
 Step 2 - Inspect current changes
 - Run `git status --short` and `git diff --name-only` to identify changed, deleted, and untracked files.
@@ -23,8 +26,12 @@ Step 2 - Inspect current changes
 
 Step 3 - Verify task coverage
 - Produce a table for every relevant frontend task from `tasks/frontend.md`, plus only explicitly applicable frontend-owned verification/config tasks, with status `Covered`, `Partial`, `Missing`, or `Not Applicable`.
+- Mark `User-owned E2E` tasks as `User-owned` or `Pending user` rather than
+  `Missing` when implementation is otherwise complete.
 - Include concrete evidence for every `Covered` or `Partial` status: file path, component/service/store/type/route/i18n key, search result, diff evidence, or verification command.
 - Do not mark a task `Covered` only because an expected file exists; verify behavior, constraints, forbidden behavior, and acceptance criteria.
+- Verify that each planned frontend scenario has a matching test or clearly
+  explain the missing coverage.
 - Confirm shared-first reuse was checked before app-local code was added.
 - Confirm HTTP calls stay in services, state stays in Pinia stores, and apps import shared runtime only from `@hivespace/shared`.
 - Confirm user-facing text uses i18n and English/Vietnamese locale files stay structurally aligned.
@@ -35,14 +42,20 @@ Step 4 - Run verification commands
   - `pnpm build` in `packages/shared` when shared runtime changed.
   - `pnpm lint` and `pnpm type-check` in affected apps when app code changed.
   - A targeted root command only when changes span several workspaces and local baselines are understood.
+- Run `.\coverage.ps1 -Workspace <admin|seller|buyer|shared>` for each affected
+  measured scope when runtime-owned code changed.
 - Treat documented baseline failures as baseline only; report any newly introduced errors from changed files.
 - If a command cannot run because of dependency, environment, or baseline issues, report the exact blocker and whether the failure appears related to changed files.
 - Do not run commands that intentionally mutate tracked files, such as auto-fix format/lint commands.
 
 Step 5 - Report
 - Start with the overall judgment: `Ready`, `Not ready`, or `Blocked`.
+- If only `User-owned E2E` tasks remain, the overall judgment may still be
+  `Ready`, but the pending user validation must be called out explicitly.
 - List critical gaps first, with task IDs and file references.
 - Include the task coverage table.
 - Include verification commands and results, including baseline/new-error distinction.
+- Call out any affected measured scope that is below 80% policy-scoped line
+  coverage and identify where additional tests are needed.
 - List unrelated or suspicious changed files separately from the expected frontend story files and selected frontend task scope.
 - If gaps remain, recommend running `/start-story` or manual fixes for the specific missing task IDs, then rerun `/verify-story`.

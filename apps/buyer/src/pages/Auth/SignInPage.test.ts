@@ -47,6 +47,7 @@ const renderSignIn = async (url = '/signin') => {
     history: createMemoryHistory(),
     routes: [
       { path: '/signin', component: SignInPage, meta: { allowAnonymous: true } },
+      { path: '/auth/otp', component: { template: '<div />' }, meta: { allowAnonymous: true } },
       { path: '/signup', component: { template: '<div />' } },
       { path: '/verify-email', component: { template: '<div />' } },
       { path: '/', component: { template: '<div />' } },
@@ -184,6 +185,25 @@ describe('SignInPage (buyer)', () => {
     expect(mockStartGoogleAuth).toHaveBeenCalledWith(
       expect.objectContaining({ app: 'buyer' }),
     )
+  })
+
+  it('renders otp entry action and preserves returnUrl', async () => {
+    const { router } = await renderSignIn('/signin?returnUrl=%2Fcheckout')
+
+    const otpLink = screen.getByRole('link', {
+      name: i18n.global.t('auth.otpEntry.action'),
+    })
+
+    expect(screen.getByText(i18n.global.t('auth.otpEntry.prompt'))).toBeTruthy()
+    expect(otpLink.getAttribute('href')).toContain('/auth/otp')
+    expect(otpLink.getAttribute('href')).toContain('returnUrl=/checkout')
+
+    await fireEvent.click(otpLink)
+
+    await waitFor(() => {
+      expect(router.currentRoute.value.path).toBe('/auth/otp')
+    })
+    expect(router.currentRoute.value.query.returnUrl).toBe('/checkout')
   })
 
   it('routeOutcomeMessage_WhenOutcomeQueryParam_ShowsAlert', async () => {

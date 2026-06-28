@@ -23,11 +23,13 @@ describe('buyer router auth guard', () => {
     mockGetCurrentUser.mockReset()
   })
 
-  const loadRouter = async () => {
+  const loadRouter = async (hasActiveChallenge = false) => {
     const router = createRouter({
       history: createMemoryHistory(),
       routes: [
         { path: '/signin', name: 'SignIn', component: { template: '<div />' }, meta: { allowAnonymous: true } },
+        { path: '/auth/otp', name: 'OtpSignIn', component: { template: '<div />' }, meta: { allowAnonymous: true } },
+        { path: '/auth/otp/code', name: 'OtpCodeEntry', component: { template: '<div />' }, meta: { allowAnonymous: true } },
         { path: '/', name: 'Home', component: { template: '<div />' }, meta: { allowAnonymous: true } },
         { path: '/cart', name: 'Cart', component: { template: '<div />' } },
         { path: '/notifications', name: 'Notifications', component: { template: '<div />' } },
@@ -35,6 +37,13 @@ describe('buyer router auth guard', () => {
     })
 
     router.beforeEach(async (to) => {
+      if (to.name === 'OtpCodeEntry' && !hasActiveChallenge) {
+        return {
+          path: '/auth/otp',
+          query: typeof to.query.returnUrl === 'string' ? { returnUrl: to.query.returnUrl } : {},
+        }
+      }
+
       if (to.meta.allowAnonymous) {
         return true
       }
@@ -80,5 +89,25 @@ describe('buyer router auth guard', () => {
     await router.isReady()
 
     expect(router.currentRoute.value.name).toBe('Notifications')
+  })
+
+  it('should redirect otp code entry to the request step when no challenge exists', async () => {
+    const router = await loadRouter()
+
+    await router.push('/auth/otp/code?returnUrl=%2Fcheckout')
+    await router.isReady()
+
+    expect(router.currentRoute.value.name).toBe('OtpSignIn')
+    expect(router.currentRoute.value.query.returnUrl).toBe('/checkout')
+  })
+
+  it('should allow otp code entry when an active challenge exists', async () => {
+    const router = await loadRouter(true)
+
+    await router.push('/auth/otp/code?returnUrl=%2Fcheckout')
+    await router.isReady()
+
+    expect(router.currentRoute.value.name).toBe('OtpCodeEntry')
+    expect(router.currentRoute.value.query.returnUrl).toBe('/checkout')
   })
 })

@@ -19,6 +19,19 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Keep paired Codex and Claude command content semantically equivalent.
 
+Story work is TDD-first and coverage-aware:
+
+- Write the planned test tasks before their paired implementation tasks.
+- After implementation, run frontend coverage for the affected workspace or
+  shared package.
+- If the affected measured scope is below 80% policy-scoped line coverage, add
+  tests and rerun coverage before treating the story as complete.
+- Treat any task in `../hivespace.spec/specs/[feature-name]/tasks/verification.md`
+  with a detail bullet that starts with `User-owned E2E:` as explicit but
+  non-executable user work. `/start-story`, `/verify-story`, and `/done-story`
+  must skip those tasks, keep them pending for the user, and never mark them
+  complete automatically.
+
 ## Behavioral Guidelines
 
 Behavioral guidelines to reduce common LLM coding mistakes. Merge with project-specific instructions as needed.
@@ -257,6 +270,9 @@ For every feature implementation, follow this order:
 6. **Route** - register route entries in `src/router/index.ts` where needed.
 7. **i18n** - before adding keys, classify each new user-facing string as either `common` or module-owned. Put app-shell/reusable copy in `src/i18n/locales/{en,vi}/common.json`; put feature-owned copy in `src/i18n/locales/{en,vi}/{module}.json`; then import the affected files in `src/i18n/index.ts`.
 8. **Verify** - run the required checks from `Verification` and ensure no equivalent shared helper was introduced locally.
+9. **Coverage** - run `coverage.ps1` for the affected workspace or `shared`
+   after implementation; if the reported policy-scoped line coverage is below
+   80%, add tests and rerun coverage before closing the story.
 
 ### Feature Consistency Checklist
 
@@ -380,6 +396,11 @@ If you changed tests, Jest config, or the coverage flow, also run:
 pnpm test
 ```
 
+After implementation, run `.\coverage.ps1 -Workspace <admin|seller|buyer|shared>`
+for the affected scope whenever runtime-owned code changed. The target is **80%**
+policy-scoped line coverage. If coverage is below 80%, add tests and rerun
+coverage before treating the story as complete.
+
 If you introduced a new helper or composable, verify before finishing that an equivalent shared composable does not already exist in `packages/shared/src/composables/`.
 
 If you renamed files, moved components, or changed i18n namespaces, also verify before finishing that:
@@ -406,7 +427,7 @@ GitHub Actions pipeline (`.github/workflows/ci-pipeline.yml` inside each app):
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **hivespace.web** (1669 symbols, 3445 relationships, 99 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **hivespace.web** (2136 symbols, 4621 relationships, 129 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 
