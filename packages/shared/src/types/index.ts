@@ -18,6 +18,7 @@ export { toAppUser, toAppUserFromSession } from './app-user'
 export * from './api.types'
 export * from './auth-session'
 export * from './auth-branding'
+export * from './money.types'
 
 // Notification types
 export * from '../features/notifications/notifications.types'

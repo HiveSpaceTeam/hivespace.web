@@ -60,36 +60,6 @@
             <span class="price">{{ formatPrice(getCurrentPrice()) }}</span>
           </div>
 
-          <!-- Variants -->
-          <div v-if="productDetail.variants.length > 0" class="variants">
-            <div class="variant-group">
-              <p class="variant-label">{{ productDetail.variants[0]?.name }}</p>
-              <div class="variant-options">
-                <div v-for="(option, index) in productDetail.variants[0]?.options" :key="index"
-                  :class="{ active: selectedOptions.option1 === option.value }" @click="selectOption1(option)">
-                  <div class="color-option">
-                    <img :src="getOptionImage(option)" width="42" height="42" alt="option" />
-                    <span>{{ option.value }}</span>
-                  </div>
-                  <img v-if="selectedOptions.option1 === option.value" class="selected-indicator"
-                    src="https://salt.tikicdn.com/ts/upload/6d/62/b9/ac9f3bebb724a308d710c0a605fe057d.png"
-                    alt="Selected" width="13" height="13" />
-                </div>
-              </div>
-            </div>
-            <div v-if="productDetail.variants[1]" class="variant-group">
-              <p class="variant-label">{{ productDetail.variants[1]?.name }}</p>
-              <div class="variant-options">
-                <div v-for="(option, index) in productDetail.variants[1]?.options" :key="index"
-                  :class="{ active: selectedOptions.option2 === option.value }" @click="selectSize(option)">
-                  <span>{{ option.value }}</span>
-                  <img v-if="selectedOptions.option2 === option.value" class="selected-indicator"
-                    src="https://salt.tikicdn.com/ts/upload/6d/62/b9/ac9f3bebb724a308d710c0a605fe057d.png"
-                    alt="Selected" width="13" height="13" />
-                </div>
-              </div>
-            </div>
-          </div>
         </div>
 
         <!-- Shipping Info -->
@@ -104,18 +74,22 @@
               <div class="shipping-header">
                 <img src="https://salt.tikicdn.com/ts/upload/14/11/46/13b71dceb805fb57ce37d57585bc3762.png" alt=""
                   height="16" width="32" />
-                <span class="highlight">Giao Thứ Sáu</span>
+                <span class="highlight">{{ $t('storefront.productDetail.deliveryDayLabel') }}</span>
               </div>
               <div class="shipping-fee">
-                <span>{{ $t('storefront.productDetail.date') }} 20/03: <span class="free">{{
-                  $t('storefront.productDetail.free') }}</span><del>38.000₫</del></span>
+                <span>
+                  {{ $t('storefront.productDetail.date') }}
+                  {{ $t('storefront.productDetail.deliveryDateExample') }}:
+                  <span class="free">{{ $t('storefront.productDetail.free') }}</span>
+                  <del>{{ $t('storefront.productDetail.deliveryStrikePrice') }}</del>
+                </span>
               </div>
             </div>
           </div>
           <div class="freeship-info">
             <img src="https://salt.tikicdn.com/ts/upload/f7/85/80/51da5722c3cfa1d6d93644188d07c51a.png" width="79"
               height="16" alt="freeship-icon" />
-            <span>Freeship 15k đơn từ 45k, Freeship 30k đơn từ 100k</span>
+            <span>{{ $t('storefront.productDetail.freeshipPromotion') }}</span>
           </div>
         </div>
 
@@ -124,10 +98,14 @@
           <h3>{{ $t('storefront.productDetail.discounts') }}</h3>
           <div class="discounts">
             <div class="discount-header">
-              <span>3 {{ $t('storefront.productDetail.discountCodes') }}</span>
+              <span>{{ $t('storefront.productDetail.discountCount') }} {{ $t('storefront.productDetail.discountCodes') }}</span>
               <div class="discount-codes">
-                <span class="code">{{ $t('storefront.productDetail.decrease') }} 20%</span>
-                <span class="code">{{ $t('storefront.productDetail.decrease') }} 8K</span>
+                <span class="code">
+                  {{ $t('storefront.productDetail.decrease') }} {{ $t('storefront.productDetail.discountPercentValue') }}
+                </span>
+                <span class="code">
+                  {{ $t('storefront.productDetail.decrease') }} {{ $t('storefront.productDetail.discountFixedValue') }}
+                </span>
               </div>
             </div>
             <img src="https://salt.tikicdn.com/ts/upload/16/42/c1/23a144e53aadf0357f6cd2c98b525902.png" width="24"
@@ -297,14 +275,10 @@
             </button>
           </div>
 
-          <!-- Selected Variant / Current Image -->
+          <!-- Selected Product / Current Image -->
           <div class="selected-variant">
             <img class="variant-image" :src="getImageSrc(currentImage)" width="40" height="40" alt="variant" />
-            <span v-if="hasVariants">
-              {{ getSelectedOption1Value()
-              }}<span v-if="getSelectedOption2Value()">, {{ getSelectedOption2Value() }}</span>
-            </span>
-            <span v-else class="variant-name-short">{{
+            <span class="variant-name-short">{{
               productDetail.name
               }}</span>
           </div>
@@ -341,34 +315,31 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { storeToRefs } from 'pinia'
 import { useRoute } from "vue-router";
+import { createMoneyDisplay, useMoneyFormatter } from '@hivespace/shared'
 import type {
   ProductImage,
   ProductSkuImage,
-  ProductVariantOption,
 } from "@/types";
 import { useI18n } from 'vue-i18n'
 import { useAddressStore, useCartStore, useProductStore } from '@/stores'
 
 const activeImageIndex = ref(0);
-const selectedOptions = ref<Record<string, string | null>>({
-  option1: null,
-  option2: null,
-});
 const quantity = ref(1);
 const descriptionExpanded = ref(false);
 const route = useRoute();
 const pageIndex = ref(1)
 const pageSize = ref(8)
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const { formatMoney } = useMoneyFormatter({ t })
 const productStore = useProductStore()
 const cartStore = useCartStore()
 const addressStore = useAddressStore()
 const { productDetail, similarProducts, similarTotalCount: totalCount } = storeToRefs(productStore)
 const { defaultAddress } = storeToRefs(addressStore)
-const hasVariants = computed(() => productDetail.value.variants.length > 0);
+const primarySku = computed(() => productDetail.value.skus[0] ?? null)
 const store = computed(() => ({
   name: productDetail.value.currentSeller?.storeName || t('storefront.productDetail.fallbackStoreName'),
   logo: productDetail.value.currentSeller?.logoUrl || '',
@@ -387,27 +358,21 @@ const defaultAddressText = computed(() => {
 })
 
 const getImageSrc = (image?: ProductImage | ProductSkuImage | null) =>
-  image?.imageUrl || image?.fileId || ''
+  image?.imageUrl || ''
 
 const displayedProductImages = computed(() => {
-  // Match SKU by variant value strings (SkuVariant.value maps to ProductVariantOption.value)
-  const skuImages = productDetail.value.skus.find(
-    (sku) =>
-      sku.skuVariants.some(
-        (v) => v.value === selectedOptions.value.option1,
-      ) &&
-      (!selectedOptions.value.option2 ||
-        sku.skuVariants.some(
-          (v) => v.value === selectedOptions.value.option2,
-        )),
-  )?.images;
+  const skuImages = primarySku.value?.images
+  if (skuImages && skuImages.length > 0) return skuImages
 
-  if (skuImages && skuImages.length > 0) return skuImages;
+  if (productDetail.value.images && productDetail.value.images.length > 0) {
+    return productDetail.value.images
+  }
 
-  const firstSkuImages = productDetail.value.skus[0]?.images;
-  if (firstSkuImages && firstSkuImages.length > 0) return firstSkuImages;
+  if (productDetail.value.thumbnailUrl) {
+    return [{ fileId: 'thumbnail', imageUrl: productDetail.value.thumbnailUrl }]
+  }
 
-  return productDetail.value.images || [];
+  return []
 });
 
 const warrantyAttributes = computed(() =>
@@ -421,8 +386,19 @@ const specAttributes = computed(() =>
 );
 
 const currentImage = computed(
-  () => displayedProductImages.value[activeImageIndex.value],
+  () => displayedProductImages.value[activeImageIndex.value] ?? displayedProductImages.value[0] ?? null,
 );
+
+watch(displayedProductImages, (images) => {
+  if (images.length === 0) {
+    activeImageIndex.value = 0
+    return
+  }
+
+  if (activeImageIndex.value >= images.length) {
+    activeImageIndex.value = images.length - 1
+  }
+})
 
 const setActiveImage = (index: number) => {
   activeImageIndex.value = index;
@@ -454,39 +430,13 @@ const handleNextSimilarProducts = () => {
   }
 };
 
-const selectOption1 = (option: ProductVariantOption) => {
-  selectedOptions.value.option1 = option.value;
-};
-const selectSize = (option: ProductVariantOption) => {
-  selectedOptions.value.option2 = option.value;
-};
-
-const getSelectedOption1Value = () => selectedOptions.value.option1 ?? "";
-const getSelectedOption2Value = () => selectedOptions.value.option2 ?? "";
-
 const getCurrentPrice = () => {
-  if (hasVariants.value) {
-    const sku = productDetail.value.skus.find(
-      (sku) =>
-        sku.skuVariants.some(
-          (v) => v.value === selectedOptions.value.option1,
-        ) &&
-        (!selectedOptions.value.option2 ||
-          sku.skuVariants.some(
-            (v) => v.value === selectedOptions.value.option2,
-          )),
-    );
-    if (sku) return sku.price.amount;
-  }
-  return productDetail.value.skus[0]?.price.amount ?? 0;
+  return primarySku.value?.price.amount ?? 0;
 };
 
-const getOptionImage = (option: ProductVariantOption) => {
-  const sku = productDetail.value.skus.find((x) =>
-    x.skuVariants.some((s) => s.value === option.value),
-  );
-  return getImageSrc(sku?.images?.[0]);
-};
+const getCurrentCurrency = () => {
+  return primarySku.value?.price.currencyCode ?? primarySku.value?.price.currency
+}
 
 const increaseQuantity = () => {
   quantity.value++;
@@ -515,18 +465,16 @@ const fetchSimilarProducts = async () => {
 const toggleDescription = () => {
   descriptionExpanded.value = !descriptionExpanded.value;
 };
-const formatPrice = (price: number) =>
-  new Intl.NumberFormat("vi-VN").format(price) + "₫";
+const formatPrice = (price: number, currencyCode: string | number | null | undefined = getCurrentCurrency()) =>
+  formatMoney(
+    createMoneyDisplay(price, currencyCode),
+    { locale: locale.value },
+  )
 
 onMounted(async () => {
   productStore.resetProductDetail()
   const id = route.query.pid as string;
   await productStore.fetchProductDetail(id);
-
-  selectedOptions.value.option1 =
-    productDetail.value.variants[0]?.options[0]?.value ?? null;
-  selectedOptions.value.option2 =
-    productDetail.value.variants[1]?.options[0]?.value ?? null;
   await fetchSimilarProducts();
   await fetchDefaultAddress();
 });

@@ -1,4 +1,8 @@
-import type { PaginationMetadata } from '@hivespace/shared'
+import type {
+  MoneyIssue,
+  PaginationMetadata,
+  SupportedCurrencyCode,
+} from '@hivespace/shared'
 
 // Product-related types
 export interface ProductVariantOption {
@@ -32,7 +36,12 @@ export interface ProductSku {
     value: string
     optionId: string
   }[]
-  price: { amount: number; currency: number }
+  price: {
+    amount: number | null
+    currencyCode: SupportedCurrencyCode | null
+    issue?: MoneyIssue | null
+    currency?: number | string | null
+  }
   quantity?: number | string
   skuNo?: string
   imageFileName?: string

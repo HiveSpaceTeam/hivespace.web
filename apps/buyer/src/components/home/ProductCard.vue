@@ -40,7 +40,6 @@
 
         <div class="flex items-center justify-between">
           <div class="text-primary font-medium flex items-baseline">
-            <span class="text-[10px] mr-0.5">₫</span>
             <span class="text-base">{{ formatPrice(product.price) }}</span>
           </div>
           <div class="text-[10px] text-gray-500 dark:text-gray-400">
@@ -53,14 +52,22 @@
 </template>
 
 <script setup lang="ts">
-import type { ProductSummary } from '@/types';
+import { useI18n } from 'vue-i18n'
+import { createMoneyDisplay, useMoneyFormatter } from '@hivespace/shared'
+import type { ProductSummary } from '@/types'
 
-defineProps<{
+const props = defineProps<{
   product: ProductSummary
 }>()
 
+const { t, locale } = useI18n()
+const { formatMoney } = useMoneyFormatter({ t })
+
 const formatPrice = (price: number) => {
-  return price?.toLocaleString('vi-VN')
+  return formatMoney(
+    createMoneyDisplay(price, props.product.priceCurrencyCode ?? null),
+    { locale: locale.value },
+  )
 }
 
 

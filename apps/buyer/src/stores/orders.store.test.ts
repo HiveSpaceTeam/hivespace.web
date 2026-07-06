@@ -94,6 +94,9 @@ describe('useOrdersStore', () => {
 
     expect(orderService.getOrders).toHaveBeenCalledWith({ page: 1, pageSize: 5 })
     expect(store.orders[0]?.shortId).toBe('HS-001')
+    expect(store.orders[0]?.currencyCode).toBe('VND')
+    expect(store.orders[0]?.moneyIssue).toBeNull()
+    expect(store.orders[0]?.items[0]?.currencyCode).toBe('VND')
   })
 
   it('should pass search filters to the orders API', async () => {
@@ -120,6 +123,49 @@ describe('useOrdersStore', () => {
     expect(orderService.getOrderById).toHaveBeenCalledWith('order-001')
     expect(store.currentOrder?.status).toBe('Confirmed')
     expect(store.currentOrder?.items[0]?.productName).toBe('Honey Jar')
+    expect(store.currentOrder?.currencyCode).toBe('VND')
+    expect(store.currentOrder?.moneyIssue).toBeNull()
+  })
+
+  it('should mark missing currencies with invalid-money metadata', async () => {
+    jest.mocked(orderService.getOrders).mockResolvedValueOnce({
+      ...ordersResponse,
+      orders: [
+        {
+          ...ordersResponse.orders[0]!,
+          currency: null,
+          currencyCode: null,
+          items: [
+            {
+              ...ordersResponse.orders[0]!.items[0]!,
+              currency: null,
+              currencyCode: null,
+            },
+          ],
+        },
+      ],
+    })
+    jest.mocked(orderService.getOrderById).mockResolvedValueOnce({
+      ...orderDetail,
+      currency: null,
+      currencyCode: null,
+      items: [
+        {
+          ...orderDetail.items[0]!,
+          currency: null,
+          currencyCode: null,
+        },
+      ],
+    })
+    const store = useOrdersStore()
+
+    await store.fetchOrders()
+    await store.fetchOrderById('order-001')
+
+    expect(store.orders[0]?.moneyIssue?.code).toBe('missing_currency')
+    expect(store.orders[0]?.items[0]?.moneyIssue?.code).toBe('missing_currency')
+    expect(store.currentOrder?.moneyIssue?.code).toBe('missing_currency')
+    expect(store.currentOrder?.items[0]?.moneyIssue?.code).toBe('missing_currency')
   })
 
   it('loadMore_WhenHasNextPage_AppendsOrders', async () => {

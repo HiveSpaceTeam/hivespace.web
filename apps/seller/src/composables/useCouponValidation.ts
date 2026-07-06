@@ -1,5 +1,10 @@
 import type { Ref } from 'vue'
-import { validatePositiveNumber, validateRequired } from '@hivespace/shared'
+import {
+  formatMoney,
+  validatePositiveNumber,
+  validateRequired,
+  type SupportedCurrencyCode,
+} from '@hivespace/shared'
 import { CouponType, DiscountType, RewardType } from '@/types'
 
 export interface CouponFormData {
@@ -211,8 +216,11 @@ export function useCouponValidation(
 
       if (maxDiscount > 0 && percentage > 0 && value > 0) {
         if (maxDiscount < (value * percentage) / 100) {
-          const currencySymbol = form.value.currency || 'đ'
-          const formatCurrency = (amt: number) => `${currencySymbol}${amt.toLocaleString('vi-VN')}`
+          const formatCurrency = (amount: number) =>
+            formatMoney({
+              amount,
+              currencyCode: form.value.currency as SupportedCurrencyCode,
+            })
 
           const suggestedMinOrder = formatCurrency(Math.floor((maxDiscount * 100) / percentage))
           const suggestedPercentage = Math.floor((maxDiscount / value) * 100)

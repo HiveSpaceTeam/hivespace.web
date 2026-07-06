@@ -34,7 +34,6 @@
             </div>
             
             <div class="flex justify-center text-primary font-medium flex items-baseline mb-2">
-              <span class="text-xs mr-0.5">₫</span>
               <span class="text-lg">{{ formatPrice(product.price) }}</span>
             </div>
             
@@ -57,11 +56,14 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import { CountDown } from '@hivespace/shared'
+import { CountDown, createMoneyDisplay, useMoneyFormatter } from '@hivespace/shared'
 import { Zap, ChevronRight } from 'lucide-vue-next'
+import { useI18n } from 'vue-i18n'
 
 // Mock Data
 const targetDate = ref(new Date(Date.now() + 2 * 60 * 60 * 1000).toISOString()) // 2 hours from now
+const { t, locale } = useI18n()
+const { formatMoney } = useMoneyFormatter({ t })
 
 const products = [
   { id: '1', name: 'Product 1', price: 99000, image: 'https://picsum.photos/200?random=11', discountPercentage: 50, soldCount: 120, soldPercentage: 80 },
@@ -73,6 +75,9 @@ const products = [
 ]
 
 const formatPrice = (price: number) => {
-  return price.toLocaleString('vi-VN')
+  return formatMoney(
+    createMoneyDisplay(price, 'VND'),
+    { locale: locale.value },
+  )
 }
 </script>

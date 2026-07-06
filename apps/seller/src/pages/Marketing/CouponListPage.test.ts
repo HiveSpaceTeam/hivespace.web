@@ -25,6 +25,15 @@ jest.mock('@hivespace/shared', () => {
     Spinner: { template: '<div data-testid="spinner" />' },
     useAppStore: () => ({ isLoading: false }),
     useFormatDate: () => ({ formatDateTime: (value: string) => value }),
+    useMoneyFormatter: () => ({
+      formatMoney: ({ amount, currencyCode, issue }: { amount: number | null; currencyCode: string | null; issue?: { placeholder?: string } | null }) => {
+        if (issue) return issue.placeholder || 'Invalid money'
+        if (amount === null || !currencyCode) return 'Invalid money'
+        if (currencyCode === 'USD') return `$${(amount / 100).toFixed(2)}`
+        if (currencyCode === 'EUR') return `€${(amount / 100).toFixed(2)}`
+        return `₫${amount.toLocaleString('en-US')}`
+      },
+    }),
     useConfirmModal: () => ({
       confirm: async () => false,
       deleteConfirm: async () => false,
@@ -40,7 +49,7 @@ const ongoingCoupon: CouponSummaryDto = {
   endDateTime: '2026-12-31T23:59:59Z',
   discountType: DiscountType.Percentage,
   discountAmount: null,
-  discountCurrency: 'VND',
+  currencyCode: 'VND',
   discountPercentage: 15,
   maxDiscountAmount: 40_000,
   minOrderAmount: 50_000,

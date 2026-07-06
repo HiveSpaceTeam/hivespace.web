@@ -69,7 +69,7 @@
                       {{ option.coupon.name || t('storefront.cart.limitedQuantity') }}
                     </div>
                     <div class="mt-1.5 text-[10px] text-gray-400 dark:text-gray-500">
-                      {{ t('storefront.cart.minOrder', { amount: formatPrice(option.coupon.minOrderAmount) }) }}
+                      {{ t('storefront.cart.minOrder', { amount: formatPrice(option.coupon.minOrderAmount, option.coupon.discountCurrency) }) }}
                     </div>
                     <div v-if="option.coupon.endDateTime" class="mt-1 text-[10px] text-gray-400 dark:text-gray-500">
                       {{ t('storefront.cart.expires', { date: formatDate(option.coupon.endDateTime) }) }}
@@ -120,7 +120,14 @@
 
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
-import { Button, Radio, Spinner, useFormatDate } from '@hivespace/shared'
+import {
+  Button,
+  Radio,
+  Spinner,
+  useFormatDate,
+  useMoneyFormatter,
+  createMoneyDisplay,
+} from '@hivespace/shared'
 import { storeToRefs } from 'pinia'
 import { X, Ticket, Store } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
@@ -157,8 +164,9 @@ const emit = defineEmits<{
   'apply-coupon': [code: string | null]
 }>()
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { formatDate } = useFormatDate()
+const { formatMoney } = useMoneyFormatter({ t })
 const couponStore = useCouponStore()
 const { availableCouponStoresByKey, loadingByKey } = storeToRefs(couponStore)
 const inputCode = ref('')
@@ -310,12 +318,8 @@ const getCouponBrandClass = (coupon: AvailableCoupon) =>
 const getCouponContentClass = (coupon: AvailableCoupon) =>
   isCouponUnavailable(coupon) ? 'blur-[0.5px]' : ''
 
-const formatPrice = (price: number) => {
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(price)
-}
+const formatPrice = (price: number, currencyCode?: string | null) =>
+  formatMoney(createMoneyDisplay(price, currencyCode), { locale: locale.value })
 
 const getCouponDiscountLabel = (coupon: AvailableCoupon) => {
   if (
@@ -323,7 +327,7 @@ const getCouponDiscountLabel = (coupon: AvailableCoupon) => {
     coupon.discountAmount != null
   ) {
     return t('storefront.cart.discountFixedLabel', {
-      amount: formatPrice(coupon.discountAmount),
+      amount: formatPrice(coupon.discountAmount, coupon.discountCurrency),
     })
   }
 

@@ -67,8 +67,13 @@
     "title": "Địa phương hóa",
     "currencies": "Đồng tiền được hỗ trợ",
     "default": "(mặc định)",
+    "defaultCurrency": "Đồng tiền mặc định",
+    "defaultCurrencyRequired": "Hãy chọn một đồng tiền mặc định khác đang được bật trước khi tắt đồng tiền hiện tại.",
+    "enabled": "Đang bật",
+    "disabled": "Đang tắt",
     "language": "Ngôn ngữ",
     "timezone": "Múi giờ",
+    "version": "Phiên bản {version}",
     "languages": {
       "vi": "Tiếng Việt",
       "en": "Tiếng Anh"

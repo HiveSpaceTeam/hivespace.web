@@ -67,8 +67,13 @@
     "title": "Localization",
     "currencies": "Supported currencies",
     "default": "(default)",
+    "defaultCurrency": "Default currency",
+    "defaultCurrencyRequired": "Select another enabled default currency before disabling the current default.",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
     "language": "Language",
     "timezone": "Timezone",
+    "version": "Version {version}",
     "languages": {
       "vi": "Vietnamese",
       "en": "English"

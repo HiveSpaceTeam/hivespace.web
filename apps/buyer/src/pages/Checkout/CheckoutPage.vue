@@ -29,14 +29,20 @@
                     :class="pkg.shippingType === 'economy'
                       ? 'bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400'
                       : 'bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-400'">
-                    {{ pkg.shippingType === 'economy' ? t('checkout.economyShipping') : t('checkout.fastShipping') }}
+                      {{ pkg.shippingType === 'economy' ? t('checkout.economyShipping') : t('checkout.fastShipping') }}
                   </span>
                   <div class="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 shrink-0">
-                    <span v-if="pkg.originalShippingFee" class="line-through">{{ formatPrice(pkg.originalShippingFee) }}</span>
+                    <span v-if="pkg.originalShippingFee" class="line-through">
+                      {{ formatPackagePrice(pkg.originalShippingFee, pkg.currencyCode ?? pkg.currency, pkg.moneyIssue) }}
+                    </span>
                     <span
                       class="font-semibold"
                       :class="pkg.shippingFee === 0 ? 'text-green-600 dark:text-green-400' : 'text-gray-700 dark:text-gray-300'">
-                      {{ pkg.shippingFee === 0 ? t('checkout.shippingFree') : formatPrice(pkg.shippingFee) }}
+                      {{
+                        pkg.shippingFee === 0
+                          ? t('checkout.shippingFree')
+                          : formatPackagePrice(pkg.shippingFee, pkg.currencyCode ?? pkg.currency, pkg.moneyIssue)
+                      }}
                     </span>
                   </div>
                   <div class="grow"></div>
@@ -61,14 +67,18 @@
                     </div>
                   </div>
                   <div class="shrink-0 w-28 text-right">
-                    <p class="text-base font-medium text-primary">{{ formatPrice(item.price) }}</p>
+                    <p class="text-base font-medium text-primary">
+                      {{ formatPackagePrice(item.price, item.currencyCode ?? item.currency, item.moneyIssue) }}
+                    </p>
                     <p v-if="item.originalPrice && item.originalPrice > item.price" class="text-sm text-gray-400 line-through">
-                      {{ formatPrice(item.originalPrice) }}
+                      {{ formatPackagePrice(item.originalPrice, item.currencyCode ?? item.currency, item.moneyIssue) }}
                     </p>
                   </div>
                   <div class="shrink-0 w-16 text-center text-base text-gray-600 dark:text-gray-400">{{ item.quantity }}</div>
                   <div class="shrink-0 w-28 text-right">
-                    <p class="text-base font-medium text-primary">{{ formatPrice(item.lineTotal) }}</p>
+                    <p class="text-base font-medium text-primary">
+                      {{ formatPackagePrice(item.lineTotal, item.currencyCode ?? item.currency, item.moneyIssue) }}
+                    </p>
                   </div>
                 </div>
 
@@ -211,25 +221,27 @@
                 <div class="space-y-2 text-base">
                   <div class="flex justify-between">
                     <span class="text-gray-500 dark:text-gray-400">{{ t('checkout.itemsSubtotal') }}</span>
-                    <span class="text-gray-800 dark:text-gray-200">{{ formatPrice(subtotal) }}</span>
+                    <span class="text-gray-800 dark:text-gray-200">{{ formatPreviewPrice(subtotal) }}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-gray-500 dark:text-gray-400">{{ t('checkout.shippingFeeTotal') }}</span>
-                    <span class="text-gray-800 dark:text-gray-200">{{ formatPrice(totalShippingFee) }}</span>
+                    <span class="text-gray-800 dark:text-gray-200">{{ formatPreviewPrice(totalShippingFee) }}</span>
                   </div>
                   <div class="flex justify-between">
                     <span class="text-gray-500 dark:text-gray-400">{{ t('checkout.shippingDiscount') }}</span>
-                    <span class="text-green-600">-{{ formatPrice(shippingDiscount) }}</span>
+                    <span class="text-green-600">-{{ formatPreviewPrice(shippingDiscount) }}</span>
                   </div>
                 </div>
 
                 <div class="border-t border-gray-100 dark:border-gray-700 mt-3 pt-3">
                   <div class="flex items-center justify-between mb-1">
                     <span class="text-base font-medium text-gray-700 dark:text-gray-300">{{ t('checkout.totalPayment') }}</span>
-                    <span class="text-2xl font-bold text-primary">{{ formatPrice(grandTotal) }}</span>
+                    <span class="text-2xl font-bold text-primary">{{ formatPreviewPrice(grandTotal) }}</span>
                   </div>
                   <div class="text-right">
-                    <span class="text-sm text-green-600 dark:text-green-400">({{ t('checkout.savedAmount') }} {{ formatPrice(totalSaved) }})</span>
+                    <span class="text-sm text-green-600 dark:text-green-400">
+                      ({{ t('checkout.savedAmount') }} {{ formatPreviewPrice(totalSaved) }})
+                    </span>
                   </div>
                   <p class="text-xs text-gray-400 dark:text-gray-500 mt-2 leading-relaxed">{{ t('checkout.vatNote') }}</p>
                 </div>
@@ -260,18 +272,31 @@ import { useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useCheckoutStore } from '@/stores'
 import { useAddressStore } from '@/stores'
-import { RadioGroup, useAppStore, FullscreenLoader, Button, Badge, Spinner, useModal } from '@hivespace/shared'
+import {
+  RadioGroup,
+  useAppStore,
+  FullscreenLoader,
+  Button,
+  Badge,
+  Spinner,
+  useModal,
+  createMoneyDisplay,
+  useMoneyFormatter,
+} from '@hivespace/shared'
 import { PaymentMethod } from '@/types'
 import type { DeliveryPackage, InvalidAppliedCoupon, UserAddress } from '@/types'
+import type { MoneyIssue } from '@hivespace/shared'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const router = useRouter()
 const appStore = useAppStore()
+const { formatMoney } = useMoneyFormatter({ t })
 
 const checkoutStore = useCheckoutStore()
 const {
   isLoading,
   isRefreshing,
+  preview,
   packages,
   totalItems,
   subtotal,
@@ -423,11 +448,19 @@ const parseSkuAttributes = (raw: string): string => {
   }
 }
 
-const formatPrice = (price: number) =>
-  new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(price)
+const formatPackagePrice = (
+  price: number,
+  currencyCode: string | number | null | undefined,
+  issue?: MoneyIssue | null,
+) => formatMoney(createMoneyDisplay(price, currencyCode, { issue }), { locale: locale.value })
+
+const formatPreviewPrice = (price: number) =>
+  formatMoney(
+    createMoneyDisplay(price, preview.value?.currencyCode ?? preview.value?.currency, {
+      issue: preview.value?.moneyIssue,
+    }),
+    { locale: locale.value },
+  )
 
 onMounted(async () => {
   resetPreview()

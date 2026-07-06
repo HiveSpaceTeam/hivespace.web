@@ -174,9 +174,16 @@
                     <div class="flex flex-col">
                       <span class="text-sm font-medium text-gray-900 dark:text-white">{{ formatDiscount(coupon)
                         }}</span>
-                      <span v-if="coupon.minOrderAmount > 0" class="text-xs text-gray-500">{{ $t('coupon.list.minSpend')
-                      }} {{
-                          formatMoney(coupon.minOrderAmount, coupon.discountCurrency) }}</span>
+                      <span v-if="coupon.minOrderAmount !== null && coupon.minOrderAmount > 0" class="text-xs text-gray-500">
+                        {{ $t('coupon.list.minSpend') }}
+                        {{
+                          formatMoney({
+                            amount: coupon.minOrderAmount,
+                            currencyCode: resolveCurrencyCode(coupon),
+                            issue: coupon.minOrderAmountIssue,
+                          })
+                        }}
+                      </span>
                     </div>
                   </td>
                   <td class="px-5 py-4 sm:px-6 text-center">
@@ -263,6 +270,7 @@ import {
   Input,
   Tabs,
   useFormatDate,
+  useMoneyFormatter,
   Badge,
   DropdownMenu,
   useConfirmModal,
@@ -291,6 +299,7 @@ const { t } = useI18n()
 const couponStore = useCouponStore()
 const appStore = useAppStore()
 const { formatDateTime } = useFormatDate()
+const { formatMoney } = useMoneyFormatter()
 const { deleteConfirm, confirm } = useConfirmModal()
 
 const tabs = computed(() => [
@@ -309,20 +318,26 @@ const searchQuery = ref('')
 const coupons = computed(() => couponStore.coupons)
 
 // Helper functions
-const formatMoney = (amount: number, currency: string | null | undefined) => {
-  const symbol = currency === 'VND' ? '₫' : (currency === 'USD' ? '$' : (currency || ''));
-  return `${symbol}${amount.toLocaleString()}`;
-}
+const resolveCurrencyCode = (coupon: CouponSummaryDto) =>
+  coupon.currencyCode ?? coupon.discountCurrency ?? null
 
 const formatDiscount = (coupon: CouponSummaryDto) => {
   if (coupon.discountType === DiscountType.FixedAmount) {
-    return formatMoney(coupon.discountAmount || 0, coupon.discountCurrency);
+    return formatMoney({
+      amount: coupon.discountAmount ?? 0,
+      currencyCode: resolveCurrencyCode(coupon),
+      issue: coupon.discountAmountIssue,
+    })
   } else {
-    let result = `${coupon.discountPercentage}${t('coupon.list.discountOff')}`;
+    let result = `${coupon.discountPercentage}${t('coupon.list.discountOff')}`
     if (coupon.maxDiscountAmount) {
-      result += ` (${t('coupon.list.discountMax')} ${formatMoney(coupon.maxDiscountAmount, coupon.discountCurrency)})`;
+      result += ` (${t('coupon.list.discountMax')} ${formatMoney({
+        amount: coupon.maxDiscountAmount,
+        currencyCode: resolveCurrencyCode(coupon),
+        issue: coupon.maxDiscountAmountIssue,
+      })})`
     }
-    return result;
+    return result
   }
 }
 

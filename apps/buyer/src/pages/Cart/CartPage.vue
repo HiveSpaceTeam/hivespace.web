@@ -73,10 +73,10 @@
                 <div class="hidden md:flex items-center gap-0 shrink-0">
                   <div class="w-28 text-center">
                     <div v-if="item.originalPrice && item.originalPrice > item.price" class="text-sm text-gray-400 line-through">
-                      {{ formatPrice(item.originalPrice) }}
+                      {{ formatItemPrice(item.originalPrice, item.currencyCode) }}
                     </div>
                     <div class="text-base font-medium text-primary">
-                      {{ formatPrice(item.price) }}
+                      {{ formatItemPrice(item.price, item.currencyCode) }}
                     </div>
                   </div>
 
@@ -85,7 +85,9 @@
                   </div>
 
                   <div class="w-28 text-center">
-                    <span class="text-base font-medium text-primary">{{ formatPrice(item.price * item.quantity) }}</span>
+                    <span class="text-base font-medium text-primary">
+                      {{ formatItemPrice(item.price * item.quantity, item.currencyCode) }}
+                    </span>
                   </div>
 
                   <div class="w-16 text-center">
@@ -96,7 +98,9 @@
                 </div>
 
                 <div class="md:hidden flex flex-col items-end gap-2 shrink-0">
-                  <span class="text-base font-medium text-primary">{{ formatPrice(item.price) }}</span>
+                  <span class="text-base font-medium text-primary">
+                    {{ formatItemPrice(item.price, item.currencyCode) }}
+                  </span>
                   <QuantityControl :model-value="item.quantity" @update:model-value="(val: number) => handleQuantityChange(item, val)" :min="1" size="sm" />
                 </div>
               </div>
@@ -173,11 +177,11 @@
               <div class="border-t border-gray-100 dark:border-gray-700 pt-4 space-y-3">
                 <div class="flex items-center justify-between text-base">
                   <span class="text-gray-500 dark:text-gray-400">{{ t('storefront.cart.provisional') }}</span>
-                  <span class="text-gray-800 dark:text-gray-200">{{ formatPrice(subtotal) }}</span>
+                  <span class="text-gray-800 dark:text-gray-200">{{ formatSummaryPrice(subtotal) }}</span>
                 </div>
                 <div class="flex items-center justify-between text-base">
                   <span class="text-gray-500 dark:text-gray-400">{{ t('storefront.cart.discountAmount') }}</span>
-                  <span class="text-green-600">-{{ formatPrice(discount) }}</span>
+                  <span class="text-green-600">-{{ formatSummaryPrice(discount) }}</span>
                 </div>
               </div>
 
@@ -185,7 +189,7 @@
                 <div class="flex items-center justify-between mb-4">
                   <span class="text-base text-gray-600 dark:text-gray-400">{{ t('storefront.cart.totalAmount') }}</span>
                   <div class="text-right">
-                    <span class="text-2xl font-bold text-primary">{{ formatPrice(total) }}</span>
+                    <span class="text-2xl font-bold text-primary">{{ formatSummaryPrice(total) }}</span>
                     <div class="text-sm text-gray-400">{{ t('storefront.cart.vatIncluded') }}</div>
                   </div>
                 </div>
@@ -213,7 +217,9 @@
                 <div class="p-2">
                   <p class="text-sm text-gray-700 dark:text-gray-300 line-clamp-2 leading-snug mb-1">{{ product.name }}</p>
                   <div class="flex items-center gap-1">
-                    <span class="text-base font-medium text-primary">{{ formatPrice(product.price) }}</span>
+                    <span class="text-base font-medium text-primary">
+                      {{ formatLegacyProductPrice(product.price, product.priceCurrencyCode) }}
+                    </span>
                   </div>
                 </div>
               </div>
@@ -230,7 +236,16 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { Truck, Trash2, Store, Ticket, ChevronRight, X } from 'lucide-vue-next'
-import { QuantityControl, Button, Checkbox, Spinner, useAppStore } from '@hivespace/shared'
+import {
+  QuantityControl,
+  Button,
+  Checkbox,
+  Spinner,
+  useAppStore,
+  createAggregateMoneyDisplay,
+  createMoneyDisplay,
+  useMoneyFormatter,
+} from '@hivespace/shared'
 import CartHeader from '@/components/layout/CartHeader.vue'
 import StorefrontFooter from '@/components/layout/StorefrontFooter.vue'
 import AvailableCouponPopover from '@/components/common/AvailableCouponPopover.vue'
@@ -240,9 +255,10 @@ import { useRouter } from 'vue-router'
 import { useCartStore, useProductStore } from '@/stores'
 import type { CartGroup, CartItem, InvalidAppliedCoupon } from '@/types'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const router = useRouter()
 const appStore = useAppStore()
+const { formatMoney } = useMoneyFormatter({ t })
 
 const cartStore = useCartStore()
 const { cartGroups, hasMore, isLoading, platformCoupons, summary } = storeToRefs(cartStore)
@@ -262,12 +278,18 @@ const getSelectedProductIds = (group: CartGroup) =>
 const subtotal = computed(() => summary.value.subTotal)
 const discount = computed(() => summary.value.discountAmount)
 const total = computed(() => summary.value.total)
+const allCartCurrencies = computed(() =>
+  cartGroups.value.flatMap(group => group.items.map(item => item.currencyCode)),
+)
 
-const formatPrice = (price: number) =>
-  new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: 'VND',
-  }).format(price)
+const formatItemPrice = (price: number, currencyCode: string | null) =>
+  formatMoney(createMoneyDisplay(price, currencyCode), { locale: locale.value })
+
+const formatSummaryPrice = (price: number) =>
+  formatMoney(createAggregateMoneyDisplay(price, allCartCurrencies.value), { locale: locale.value })
+
+const formatLegacyProductPrice = (price: number, currencyCode?: string | null) =>
+  formatMoney(createMoneyDisplay(price, currencyCode), { locale: locale.value })
 
 const notifyInvalidCoupons = (coupons: InvalidAppliedCoupon[] = []) => {
   coupons.forEach(coupon => {

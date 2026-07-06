@@ -39,6 +39,19 @@ export interface ApiConfig {
   }
 }
 
+export type SupportedCurrencyCode = 'VND' | 'USD' | 'EUR'
+
+export type MoneyIssue = {
+  code: 'missing_currency' | 'unsupported_currency' | 'invalid_amount' | 'invalid_money'
+  placeholder?: string
+}
+
+const NUMERIC_CURRENCY_CODES: Record<number, SupportedCurrencyCode> = {
+  704: 'VND',
+  840: 'USD',
+  978: 'EUR',
+}
+
 export { createNotificationStore, createMediaUploadStore, createUserProfileStore, NotificationChannel, NotificationStatus }
 export { validateRequired, validatePositiveNumber, validateEmail, validateMinLength }
 export type {
@@ -96,6 +109,62 @@ export const parseBoolean = (value: string | undefined, fallback = false) => {
 export const parseNumber = (value: string | undefined, fallback: number) => {
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : fallback
+}
+
+export const normalizeCurrencyCode = (
+  currencyCode: string | number | null | undefined,
+  fallbackCurrencyCode: SupportedCurrencyCode | null = null,
+): SupportedCurrencyCode | null => {
+  if (currencyCode === 'VND' || currencyCode === 'USD' || currencyCode === 'EUR') {
+    return currencyCode
+  }
+
+  if (typeof currencyCode === 'number') {
+    return NUMERIC_CURRENCY_CODES[currencyCode] ?? fallbackCurrencyCode
+  }
+
+  return fallbackCurrencyCode
+}
+
+export const createMoneyDisplay = (
+  amount: number | null,
+  currencyCode: string | null | undefined,
+  options?: {
+    issue?: MoneyIssue | null
+    fallbackCurrencyCode?: SupportedCurrencyCode | null
+  },
+) => ({
+  amount,
+  currencyCode: normalizeCurrencyCode(currencyCode, options?.fallbackCurrencyCode),
+  issue: options?.issue ?? null,
+})
+
+export const createAggregateMoneyDisplay = (
+  amount: number | null,
+  currencies: Array<string | null | undefined>,
+  options?: {
+    mismatchIssue?: MoneyIssue | null
+    missingIssue?: MoneyIssue | null
+    fallbackCurrencyCode?: SupportedCurrencyCode | null
+  },
+) => {
+  const normalizedCurrencies = Array.from(
+    new Set(
+      currencies
+        .map(currency => normalizeCurrencyCode(currency, options?.fallbackCurrencyCode ?? null))
+        .filter((currency): currency is SupportedCurrencyCode => currency !== null),
+    ),
+  )
+
+  if (normalizedCurrencies.length === 0) {
+    return createMoneyDisplay(amount, null, { issue: options?.missingIssue ?? null })
+  }
+
+  if (normalizedCurrencies.length > 1) {
+    return createMoneyDisplay(amount, normalizedCurrencies[0], { issue: options?.mismatchIssue ?? { code: 'invalid_money' } })
+  }
+
+  return createMoneyDisplay(amount, normalizedCurrencies[0])
 }
 
 export const joinUrl = (...parts: string[]) =>
@@ -261,6 +330,59 @@ export const useNumberInputFormatter = (_value: Ref, _locale?: string) => ({
   handleBlur: () => undefined,
   handleFocus: () => undefined,
   formatNumber: (_val: string | number | null | undefined) => '',
+})
+
+export const formatMoney = ({
+  amount,
+  currencyCode,
+  issue,
+}: {
+  amount: number | null
+  currencyCode: string | null
+  issue?: { placeholder?: string } | null
+}) => {
+  if (issue) {
+    return issue.placeholder || 'Invalid money'
+  }
+
+  if (amount === null || !currencyCode) {
+    return 'Invalid money'
+  }
+
+  if (currencyCode === 'USD') {
+    return `$${(amount / 100).toFixed(2)}`
+  }
+
+  if (currencyCode === 'EUR') {
+    return `€${(amount / 100).toFixed(2)}`
+  }
+
+  return `₫${amount.toLocaleString('en-US')}`
+}
+
+export const useMoneyFormatter = () => ({
+  formatMoney,
+})
+
+export const useMoneyInput = () => ({
+  displayValue: ref(''),
+  handleInput: (_event: Event) => undefined,
+  formatInputValue: (value: number | null | undefined, currencyCode: string) => {
+    if (value == null) return ''
+    if (currencyCode === 'USD' || currencyCode === 'EUR') {
+      return (value / 100).toFixed(2)
+    }
+
+    return String(value)
+  },
+  parseInputValue: (value: string, currencyCode: string) => {
+    if (!value) return null
+    if (currencyCode === 'USD' || currencyCode === 'EUR') {
+      return Math.round(Number.parseFloat(value) * 100)
+    }
+
+    return Number(value)
+  },
 })
 
 export const useFormatDate = () => ({

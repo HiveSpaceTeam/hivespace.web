@@ -1,3 +1,5 @@
+import type { MoneyIssue, SupportedCurrencyCode } from '@hivespace/shared'
+
 export type PaymentStatus = 'Pending' | 'Processing' | 'Succeeded' | 'Failed' | 'Cancelled' | 'Expired'
 
 export interface PaymentDto {
@@ -5,7 +7,9 @@ export interface PaymentDto {
   orderId: string
   buyerId: string
   amount: number
-  currency: string
+  currency: string | null
+  currencyCode?: SupportedCurrencyCode | null
+  moneyIssue?: MoneyIssue | null
   status: PaymentStatus
   gateway: string
   gatewayTransactionId: string | null

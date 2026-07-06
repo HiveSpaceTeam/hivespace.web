@@ -23,6 +23,7 @@ export interface CartItem {
   name: string
   image: string
   price: number
+  currencyCode: string | null
   originalPrice?: number
   quantity: number
   variant?: string

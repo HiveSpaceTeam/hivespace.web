@@ -36,15 +36,18 @@ describe('useProductStore', () => {
     jest.mocked(productService.getProductById).mockResolvedValue({
       id: 10,
       name: 'Honey Jar',
-      category: 'Food',
       description: 'Pure honey',
-      variants: [{ id: 'variant-001', name: 'Size', options: [{ value: 'M' }] }],
+      variants: [],
       skus: [
         {
           id: 100,
-          skuVariants: [{ variantName: 'Size', value: 'M' }],
+          skuNo: 'SKU-001',
+          skuName: 'Honey Jar',
           price: { amount: 100_000, currency: 704 },
           quantity: 10,
+          isActive: true,
+          images: [],
+          attributes: '',
         },
       ],
       images: [],
@@ -63,7 +66,7 @@ describe('useProductStore', () => {
     expect(store.homeProducts[0]?.name).toBe('Honey Jar')
   })
 
-  it('should load product detail with title price and variants', async () => {
+  it('should load product detail with title and price', async () => {
     const store = useProductStore()
 
     await store.fetchProductDetail('10')
@@ -71,6 +74,6 @@ describe('useProductStore', () => {
     expect(productService.getProductById).toHaveBeenCalledWith('10')
     expect(store.productDetail.name).toBe('Honey Jar')
     expect(store.productDetail.skus[0]?.price.amount).toBe(100_000)
-    expect(store.productDetail.variants[0]?.name).toBe('Size')
+    expect(store.productDetail.skus[0]?.skuNo).toBe('SKU-001')
   })
 })

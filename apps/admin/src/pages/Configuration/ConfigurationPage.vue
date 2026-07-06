@@ -142,28 +142,59 @@
         <section v-show="activeSection === 'localization'" class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
           <h2 class="mb-4 text-base font-semibold text-gray-900 dark:text-white">{{ $t('configuration.localization.title') }}</h2>
 
-          <!-- Currency chips -->
-          <div class="mb-4">
-            <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{{ $t('configuration.localization.currencies') }}</p>
-            <div class="flex flex-wrap gap-2">
-              <button
-                v-for="cur in currencies"
-                :key="cur.code"
-                @click="() => { cur.active = !cur.active; markChanged() }"
-                :class="[
-                  'rounded-full border px-3 py-1 text-sm font-medium transition-colors',
-                  cur.active
-                    ? 'border-brand-500 bg-brand-50 text-brand-600 dark:border-brand-600 dark:bg-brand-500/15 dark:text-brand-400'
-                    : 'border-gray-200 text-gray-500 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400',
-                ]"
-              >
-                {{ cur.code }}
-                <span v-if="cur.default" class="ml-1 text-xs text-gray-400 dark:text-gray-500">{{ $t('configuration.localization.default') }}</span>
-              </button>
+          <div class="mb-6">
+            <div class="mb-3 flex items-center justify-between">
+              <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {{ $t('configuration.localization.currencies') }}
+              </p>
+              <p v-if="editableCurrencyConfig" class="text-xs text-gray-500 dark:text-gray-400">
+                {{ $t('configuration.localization.version', { version: editableCurrencyConfig.version }) }}
+              </p>
             </div>
+
+            <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+              <div
+                v-for="currency in currencyRows"
+                :key="currency.currencyCode"
+                class="flex items-center justify-between border-b border-gray-100 px-4 py-3 last:border-b-0 dark:border-gray-800"
+              >
+                <div>
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    {{ currency.currencyCode }}
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    {{
+                      currency.enabled
+                        ? $t('configuration.localization.enabled')
+                        : $t('configuration.localization.disabled')
+                    }}
+                    <span
+                      v-if="editableCurrencyConfig?.defaultCurrencyCode === currency.currencyCode"
+                      class="ml-1"
+                    >
+                      {{ $t('configuration.localization.default') }}
+                    </span>
+                  </p>
+                </div>
+                <ToggleSwitch
+                  :modelValue="currency.enabled"
+                  @update:modelValue="updateCurrencyEnabled(currency.currencyCode, $event)"
+                />
+              </div>
+            </div>
+
+            <p v-if="validationError" class="mt-3 text-sm text-error-600 dark:text-error-400">
+              {{ $t(validationError) }}
+            </p>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
+            <Select
+              :modelValue="editableCurrencyConfig?.defaultCurrencyCode ?? null"
+              :options="defaultCurrencyOptions"
+              :label="$t('configuration.localization.defaultCurrency')"
+              @update:modelValue="updateDefaultCurrency"
+            />
             <Select
               v-model="language"
               :options="languageOptions"
@@ -250,21 +281,30 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import {
   AppShell, PageBreadcrumb, ToggleSwitch, useAppStore,
   PaymentIcon, SettingsIcon, PlugInIcon, ListIcon,
   Tabs, Button, Input, Select,
 } from '@hivespace/shared'
+import type { SupportedCurrencyCode } from '@/types'
+import { useConfigurationStore } from '@/stores/configuration.store'
 
 const { t } = useI18n()
 const appStore = useAppStore()
+const configurationStore = useConfigurationStore()
+const {
+  editableCurrencyConfig,
+  validationError,
+  hasChanges,
+  changeCount,
+  enabledCurrencyOptions,
+} = storeToRefs(configurationStore)
 
 const railSearch = ref('')
-const activeSection = ref('payments')
-const hasChanges = ref(false)
-const changeCount = ref(0)
+const activeSection = ref('localization')
 
 const railGroups = computed(() => [
   {
@@ -295,10 +335,7 @@ const setSection = (id: string) => {
   activeSection.value = id
 }
 
-const markChanged = () => {
-  hasChanges.value = true
-  changeCount.value++
-}
+const markChanged = () => undefined
 
 // Provider state separated from display data
 const providerEnabled = ref<Record<string, boolean>>({
@@ -348,13 +385,6 @@ const paymentToggles = computed(() => [
 const taxId = ref('0312345678')
 const vatRate = ref('10')
 
-const currencies = ref([
-  { code: 'VND', active: true, default: true },
-  { code: 'USD', active: true, default: false },
-  { code: 'EUR', active: false, default: false },
-  { code: 'SGD', active: false, default: false },
-])
-
 const language = ref('vi')
 const timezone = ref('Asia/Ho_Chi_Minh')
 
@@ -385,14 +415,38 @@ const webhookToggles = computed(() => [
   { key: 'async', label: t('configuration.api.toggles.asyncDelivery'), sub: t('configuration.api.toggles.asyncDeliveryDesc') },
 ])
 
-const discard = () => {
-  hasChanges.value = false
-  changeCount.value = 0
+const currencyRows = computed(() => editableCurrencyConfig.value?.items ?? [])
+
+const defaultCurrencyOptions = computed(() =>
+  enabledCurrencyOptions.value.map((currencyCode: SupportedCurrencyCode) => ({
+    value: currencyCode,
+    label: currencyCode,
+  })),
+)
+
+const updateDefaultCurrency = (currencyCode: string) => {
+  configurationStore.setDefaultCurrency(currencyCode as SupportedCurrencyCode)
 }
 
-const save = () => {
-  hasChanges.value = false
-  changeCount.value = 0
+const updateCurrencyEnabled = (currencyCode: SupportedCurrencyCode, enabled: boolean) => {
+  configurationStore.setCurrencyEnabled(currencyCode, enabled)
+}
+
+const discard = () => {
+  configurationStore.discardChanges()
+}
+
+const save = async () => {
+  const response = await configurationStore.saveCurrencyConfig()
+
+  if (!response) {
+    return
+  }
+
   appStore.notifySuccess(t('configuration.notifications.saved'), t('configuration.notifications.version'))
 }
+
+onMounted(() => {
+  void configurationStore.fetchCurrencyConfig()
+})
 </script>

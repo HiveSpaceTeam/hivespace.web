@@ -234,6 +234,20 @@ describe('useCouponValidation', () => {
     expect(errors.minOrderAmount).toContain('coupon.detail.validation.maxDiscountAmountTooSmall')
   })
 
+  it('formats max-discount guidance with the selected currency', () => {
+    const { errors, validateMinOrderAmount } = createValidation({
+      discountType: DiscountType.Percentage,
+      discountAmount: '50',
+      hasMaxDiscount: true,
+      maxDiscountAmount: '1000',
+      minOrderValue: '10000',
+      currency: 'USD',
+    })
+
+    expect(validateMinOrderAmount()).toBe(false)
+    expect(errors.minOrderAmount).toContain('$')
+  })
+
   it.each([
     ['missing', ''],
     ['non-positive', '0'],

@@ -113,7 +113,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Spinner } from '@hivespace/shared'
+import { Spinner, createMoneyDisplay, useMoneyFormatter } from '@hivespace/shared'
 import { useRoute } from 'vue-router'
 import StorefrontHeader from '@/components/layout/StorefrontHeader.vue'
 import { useI18n } from 'vue-i18n'
@@ -124,7 +124,8 @@ import { isTerminalStatus } from '@/types'
 import type { PaymentStatus } from '@/types'
 
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
+const { formatMoney } = useMoneyFormatter({ t })
 
 type PageState = 'loading' | 'success' | 'failed' | 'timeout'
 
@@ -143,10 +144,9 @@ const displayOrderId = computed(() => payment.value?.orderId ?? orderId ?? null)
 
 const formattedAmount = computed(() => {
   if (!payment.value) return ''
-  return new Intl.NumberFormat('vi-VN', {
-    style: 'currency',
-    currency: payment.value.currency || 'VND',
-  }).format(payment.value.amount)
+  return formatMoney(createMoneyDisplay(payment.value.amount, payment.value.currencyCode ?? payment.value.currency, {
+    issue: payment.value.moneyIssue,
+  }), { locale: locale.value })
 })
 
 const formattedPaidAt = computed(() => {

@@ -7,6 +7,19 @@ import HomePage from './HomePage.vue'
 import { categoryService } from '@/services/category.service'
 import { productService } from '@/services/product.service'
 
+const formatMoneyMock = jest.fn()
+
+jest.mock('@hivespace/shared', () => {
+  const actual = jest.requireActual<typeof import('@hivespace/shared')>('@hivespace/shared')
+
+  return {
+    ...actual,
+    useMoneyFormatter: () => ({
+      formatMoney: formatMoneyMock,
+    }),
+  }
+})
+
 jest.mock('@/components/home/HeroBanner.vue', () => ({
   default: { template: '<section data-testid="hero-banner" />' },
 }))
@@ -73,6 +86,14 @@ const renderHome = async () => {
 
 describe('HomePage', () => {
   beforeEach(() => {
+    formatMoneyMock.mockReset()
+    formatMoneyMock.mockImplementation((value: unknown) => {
+      const { amount } = value as {
+        amount: number | null
+      }
+
+      return `${amount?.toLocaleString('vi-VN') ?? '0'}₫`
+    })
     jest.mocked(categoryService.getHomepageCategories).mockResolvedValue([
       {
         id: 1,

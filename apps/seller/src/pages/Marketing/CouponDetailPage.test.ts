@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { createTestingPinia } from '@pinia/testing'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
+import { ref } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import { CouponScope, DiscountType } from '@hivespace/shared'
 import i18n from '@/i18n'
@@ -88,6 +89,19 @@ jest.mock('@hivespace/shared', () => {
       clearFieldErrors: mockClearFieldErrors,
     }),
     useModal: () => ({ openModal: mockOpenModal }),
+    useMoneyFormatter: () => ({
+      formatMoney: ({ amount, currencyCode, issue }: { amount: number | null; currencyCode: string | null; issue?: { placeholder?: string } | null }) => {
+        if (issue) return issue.placeholder || 'Invalid money'
+        if (amount === null || !currencyCode) return 'Invalid money'
+        if (currencyCode === 'USD') return `$${(amount / 100).toFixed(2)}`
+        if (currencyCode === 'EUR') return `€${(amount / 100).toFixed(2)}`
+        return `₫${amount.toLocaleString('en-US')}`
+      },
+    }),
+    useMoneyInput: () => ({
+      displayValue: ref(''),
+      handleInput: jest.fn(),
+    }),
   }
 })
 
@@ -121,7 +135,7 @@ const makeCouponDto = (status: CouponStatus, overrides: Partial<CouponDto> = {})
   earlySaveDateTime: null,
   discountType: DiscountType.FixedAmount,
   discountAmount: 25_000,
-  discountCurrency: 'VND',
+  currencyCode: 'VND',
   discountPercentage: null,
   maxDiscountAmount: null,
   minOrderAmount: 100_000,
@@ -173,6 +187,13 @@ const renderCouponDetail = async (
   const couponStore = useCouponStore(pinia)
   const productStore = useProductStore(pinia)
 
+  jest.mocked(couponStore.fetchCurrencyConfig).mockResolvedValue({
+    defaultCurrencyCode: 'VND',
+    items: [
+      { currencyCode: 'VND', enabled: true, decimalPlaces: 0 },
+      { currencyCode: 'USD', enabled: true, decimalPlaces: 2 },
+    ],
+  } as never)
   jest.mocked(couponStore.createCoupon).mockResolvedValue(makeCouponDto(CouponStatus.Upcoming))
   jest.mocked(couponStore.updateCoupon).mockResolvedValue(makeCouponDto(CouponStatus.Upcoming))
   if (options?.fetchCouponByIdError) {
@@ -280,14 +301,19 @@ describe('CouponDetailPage (seller)', () => {
     })
 
     await screen.findByText(i18n.global.t('coupon.detail.titleEdit'))
+    await waitFor(() => {
+      expect(screen.getByText(/SHOP1/)).toBeTruthy()
+    })
 
     const datePickers = screen.getAllByTestId('datetime-picker')
     const selects = screen.getAllByTestId('select-input')
 
-    expect((datePickers[0] as HTMLInputElement).disabled).toBe(true)
-    expect((datePickers[1] as HTMLInputElement).disabled).toBe(false)
-    expect((selects[0] as HTMLSelectElement).disabled).toBe(true)
-    expect((selects[1] as HTMLSelectElement).disabled).toBe(true)
+    await waitFor(() => {
+      expect((datePickers[0] as HTMLInputElement).disabled).toBe(true)
+      expect((datePickers[1] as HTMLInputElement).disabled).toBe(false)
+      expect((selects[0] as HTMLSelectElement).disabled).toBe(true)
+      expect((selects[1] as HTMLSelectElement).disabled).toBe(true)
+    })
     expect(screen.getByRole('button', { name: i18n.global.t('coupon.detail.actions.confirm') }))
       .toBeTruthy()
   })
@@ -331,6 +357,7 @@ describe('CouponDetailPage (seller)', () => {
     expect(payload).toMatchObject({
       isHidden: true,
       maxUsagePerUser: 1,
+      currencyCode: 'VND',
       applicableCategoryIds: [],
     })
     await waitFor(() => {
@@ -346,6 +373,10 @@ describe('CouponDetailPage (seller)', () => {
       }),
     })
 
+    await waitFor(() => {
+      expect(screen.getByText(/SHOPX/)).toBeTruthy()
+    })
+
     await fireEvent.click(
       await screen.findByRole('button', { name: i18n.global.t('coupon.detail.actions.confirm') }),
     )
@@ -358,6 +389,7 @@ describe('CouponDetailPage (seller)', () => {
     expect(payload).toMatchObject({
       id: 'coupon-001',
       code: 'SHOPX',
+      currencyCode: 'VND',
       applicableProductIds: [101],
     })
     expect(payload).not.toHaveProperty('isHidden')

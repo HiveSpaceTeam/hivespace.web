@@ -33,6 +33,9 @@
     "signUp": "Đăng ký",
     "signingOut": "Đang đăng xuất..."
   },
+  "money": {
+    "invalid": "Tien khong hop le"
+  },
   "maintenance": {
     "title": "Đang bảo trì",
     "message": "Chúng tôi đang nâng cấp hệ thống. Vui lòng quay lại sau."

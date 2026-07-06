@@ -2,5 +2,6 @@
 export { useUserStore } from './user.store'
 export { useUserSettingsStore } from './user-settings.store'
 export { useAdminStore } from './admin.store'
+export { useConfigurationStore } from './configuration.store'
 export { useNotificationStore } from './notification.store'
 export { useProfileStore } from './profile.store'

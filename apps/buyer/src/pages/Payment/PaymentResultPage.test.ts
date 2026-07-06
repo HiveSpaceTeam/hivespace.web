@@ -6,6 +6,19 @@ import i18n from '@/i18n'
 import PaymentResultPage from './PaymentResultPage.vue'
 import { paymentService } from '@/services/payment.service'
 
+const formatMoneyMock = jest.fn()
+
+jest.mock('@hivespace/shared', () => {
+  const actual = jest.requireActual<typeof import('@hivespace/shared')>('@hivespace/shared')
+
+  return {
+    ...actual,
+    useMoneyFormatter: () => ({
+      formatMoney: formatMoneyMock,
+    }),
+  }
+})
+
 jest.mock('@/components/layout/StorefrontHeader.vue', () => ({
   default: { template: '<header data-testid="storefront-header" />' },
 }))
@@ -39,6 +52,14 @@ const renderPaymentResult = async (url: string) => {
 
 describe('PaymentResultPage', () => {
   beforeEach(() => {
+    formatMoneyMock.mockReset()
+    formatMoneyMock.mockImplementation((value: unknown) => {
+      const { amount } = value as {
+        amount: number | null
+      }
+
+      return `${amount?.toLocaleString('vi-VN') ?? '0'}₫`
+    })
     jest.mocked(paymentService.getPaymentByOrder).mockResolvedValue({
       paymentId: 'payment-001',
       orderId: 'order-001',

@@ -33,6 +33,9 @@
     "signUp": "Sign Up",
     "signingOut": "Signing out..."
   },
+  "money": {
+    "invalid": "Invalid money"
+  },
   "maintenance": {
     "title": "Under maintenance",
     "message": "We are working on improvements. Please check back soon."

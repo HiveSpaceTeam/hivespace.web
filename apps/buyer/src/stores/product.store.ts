@@ -1,12 +1,38 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useAppStore } from '@hivespace/shared'
+import {
+  normalizeCurrencyCode,
+  type MoneyIssue,
+  useAppStore,
+} from '@hivespace/shared'
 import { productService } from '@/services/product.service'
 import type {
   GetProductDetailResponse,
   GetProductListQuery,
   ProductSummary,
 } from '@/types'
+
+const resolveMoneyIssue = (
+  currencyCode: string | number | null | undefined,
+): MoneyIssue | null => (normalizeCurrencyCode(currencyCode) ? null : { code: 'missing_currency' })
+
+const normalizeProductSummary = (product: ProductSummary): ProductSummary => ({
+  ...product,
+  priceCurrencyCode: normalizeCurrencyCode(product.priceCurrencyCode ?? null),
+  priceIssue: product.priceIssue ?? resolveMoneyIssue(product.priceCurrencyCode ?? null),
+})
+
+const normalizeProductDetail = (product: GetProductDetailResponse): GetProductDetailResponse => ({
+  ...product,
+  skus: product.skus.map((sku) => ({
+    ...sku,
+    price: {
+      ...sku.price,
+      currencyCode: normalizeCurrencyCode(sku.price.currencyCode ?? sku.price.currency),
+      issue: sku.price.issue ?? resolveMoneyIssue(sku.price.currencyCode ?? sku.price.currency),
+    },
+  })),
+})
 
 const createEmptyProductDetail = (): GetProductDetailResponse => ({
   id: 0,
@@ -51,7 +77,8 @@ export const useProductStore = defineStore('product', () => {
   const fetchHomeProducts = async (query: GetProductListQuery, append = false) =>
     runWithLoading(isLoadingHomeProducts, async () => {
       const response = await productService.getProducts(query)
-      homeProducts.value = append ? [...homeProducts.value, ...response.items] : response.items
+      const items = response.items.map(normalizeProductSummary)
+      homeProducts.value = append ? [...homeProducts.value, ...items] : items
       homeTotalCount.value = response.pagination.totalItems
       return response
     })
@@ -59,21 +86,21 @@ export const useProductStore = defineStore('product', () => {
   const fetchRecommendedProducts = async (query: GetProductListQuery) =>
     runWithLoading(isLoadingRecommendedProducts, async () => {
       const response = await productService.getProducts(query)
-      recommendedProducts.value = response.items
+      recommendedProducts.value = response.items.map(normalizeProductSummary)
       return response
     })
 
   const fetchProductDetail = async (id: string) =>
     runWithLoading(isLoadingProductDetail, async () => {
       const response = await productService.getProductById(id)
-      productDetail.value = response
+      productDetail.value = normalizeProductDetail(response)
       return response
     })
 
   const fetchSimilarProducts = async (query: GetProductListQuery) =>
     runWithLoading(isLoadingSimilarProducts, async () => {
       const response = await productService.getProducts(query)
-      similarProducts.value = response.items
+      similarProducts.value = response.items.map(normalizeProductSummary)
       similarTotalCount.value = response.pagination.totalItems
       return response
     })

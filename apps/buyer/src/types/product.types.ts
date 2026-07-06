@@ -1,3 +1,4 @@
+import type { MoneyIssue, SupportedCurrencyCode } from '@hivespace/shared'
 import type { PaginationMetadata } from '@hivespace/shared'
 
 export interface ProductVariantOption {
@@ -11,7 +12,7 @@ export interface ProductVariant {
 }
 
 export interface ProductSkuImage {
-  skuId: string
+  skuId?: string
   fileId: string
   imageUrl: string | null
 }
@@ -25,13 +26,17 @@ export interface ProductImage {
 export interface ProductSku {
   id?: number
   key?: string
-  skuVariants: {
-    variantName: string
-    value: string
-  }[]
-  price: { amount: number; currency: number }
+  skuName?: string
+  price: {
+    amount: number
+    currency?: number | string
+    currencyCode?: SupportedCurrencyCode | null
+    issue?: MoneyIssue | null
+  }
   quantity?: number | string
   skuNo?: string
+  isActive?: boolean
+  attributes?: string | null
   imageFileName?: string
   images?: ProductSkuImage[]
 }
@@ -56,6 +61,8 @@ export interface ProductSummary {
   id: string
   name: string
   price: number
+  priceCurrencyCode?: SupportedCurrencyCode | null
+  priceIssue?: MoneyIssue | null
   originalPrice?: number
   productImage: string | null
   soldCount: number
@@ -80,8 +87,12 @@ export interface GetProductListResponse {
 
 export interface GetProductDetailResponse {
   id?: number
+  sellerId?: string
   name: string
-  category: string
+  category?: string
+  categories?: {
+    categoryId: number
+  }[]
   description?: string
   variants: ProductVariant[]
   skus: ProductSku[]

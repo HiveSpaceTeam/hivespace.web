@@ -9,6 +9,19 @@ import { cartService } from '@/services/cart.service'
 import { productService } from '@/services/product.service'
 import type { GetProductDetailResponse } from '@/types'
 
+const formatMoneyMock = jest.fn()
+
+jest.mock('@hivespace/shared', () => {
+  const actual = jest.requireActual<typeof import('@hivespace/shared')>('@hivespace/shared')
+
+  return {
+    ...actual,
+    useMoneyFormatter: () => ({
+      formatMoney: formatMoneyMock,
+    }),
+  }
+})
+
 jest.mock('@/services/address.service', () => ({
   addressService: {
     getDefaultAddress: jest.fn(),
@@ -34,41 +47,20 @@ const productDetail: GetProductDetailResponse = {
   name: 'Honey Jar',
   category: 'Food',
   description: 'Pure honey',
-  variants: [
-    {
-      id: 'variant-size',
-      name: 'Size',
-      options: [{ value: 'M' }, { value: 'L' }],
-    },
-    {
-      id: 'variant-color',
-      name: 'Color',
-      options: [{ value: 'Amber' }, { value: 'Dark' }],
-    },
-  ],
+  variants: [],
   skus: [
     {
       id: 100,
-      skuVariants: [
-        { variantName: 'Size', value: 'M' },
-        { variantName: 'Color', value: 'Amber' },
-      ],
+      skuNo: 'SKU-001',
+      skuName: 'Honey Jar',
       price: { amount: 100_000, currency: 704 },
       quantity: 10,
+      isActive: true,
       images: [
-        { skuId: '100', fileId: 'file-001', imageUrl: '/honey-m.png' },
-        { skuId: '100', fileId: 'file-002', imageUrl: '/honey-m-2.png' },
+        { fileId: 'file-001', imageUrl: '/honey-1.png' },
+        { fileId: 'file-002', imageUrl: '/honey-2.png' },
       ],
-    },
-    {
-      id: 101,
-      skuVariants: [
-        { variantName: 'Size', value: 'L' },
-        { variantName: 'Color', value: 'Dark' },
-      ],
-      price: { amount: 150_000, currency: 704 },
-      quantity: 10,
-      images: [{ skuId: '101', fileId: 'file-003', imageUrl: '/honey-l.png' }],
+      attributes: '',
     },
   ],
   images: [{ fileId: 'file-001', imageUrl: '/honey.png' }],
@@ -131,6 +123,19 @@ const renderProductDetail = async () => {
 
 describe('ProductDetailPage', () => {
   beforeEach(() => {
+    formatMoneyMock.mockReset()
+    formatMoneyMock.mockImplementation((value: unknown) => {
+      const { amount, currencyCode } = value as {
+        amount: number | null
+        currencyCode: string | null
+      }
+
+      if (currencyCode === 'VND') {
+        return `${amount?.toLocaleString('vi-VN') ?? '0'}₫`
+      }
+
+      return '$0.00'
+    })
     jest.mocked(productService.getProductById).mockResolvedValue(productDetail)
     jest.mocked(productService.getProducts).mockResolvedValue(productListResponse)
     jest.mocked(addressService.getDefaultAddress).mockResolvedValue({
@@ -148,13 +153,19 @@ describe('ProductDetailPage', () => {
     jest.mocked(cartService.getSelectedItemsCount).mockResolvedValue({ count: 1 })
   })
 
-  it('should render title price and variants from stubbed product detail', async () => {
+  it('should render title price from stubbed product detail', async () => {
     await renderProductDetail()
 
     expect(await screen.findByRole('heading', { name: 'Honey Jar' })).toBeTruthy()
-    expect(screen.getAllByText('100.000₫').length).toBeGreaterThan(0)
-    expect(screen.getByText('Size')).toBeTruthy()
-    expect(screen.getAllByText('M').length).toBeGreaterThan(0)
+    await waitFor(() => {
+      expect(
+        formatMoneyMock.mock.calls.some(([value]) => {
+          const money = value as { amount?: number; currencyCode?: string | null } | undefined
+          return money?.amount === 100_000 && money.currencyCode === 'VND'
+        }),
+      ).toBe(true)
+    })
+    expect(screen.getAllByText('Honey Jar').length).toBeGreaterThan(0)
   })
 
   it('should add the selected product SKU to the cart', async () => {
@@ -217,25 +228,19 @@ describe('ProductDetailPage', () => {
     const mainImage = screen.getByAltText('product') as HTMLImageElement
 
     await fireEvent.click(nextButton)
-    expect(mainImage.src).toContain('/honey-m-2.png')
+    expect(mainImage.src).toContain('/honey-2.png')
 
     await fireEvent.click(prevButton)
-    expect(mainImage.src).toContain('/honey-m.png')
+    expect(mainImage.src).toContain('/honey-1.png')
   })
 
-  it('should switch variant options and render the fallback address copy', async () => {
+  it('should render the fallback address copy', async () => {
     jest.mocked(addressService.getDefaultAddress).mockRejectedValueOnce(new Error('missing address'))
     await renderProductDetail()
 
     expect(await screen.findByText(
       new RegExp(i18n.global.t('storefront.productDetail.noDefaultAddress')),
     )).toBeTruthy()
-
-    await fireEvent.click(screen.getByText('L'))
-    await fireEvent.click(screen.getByText('Dark'))
-
-    expect(screen.getAllByText('L').length).toBeGreaterThan(0)
-    expect(screen.getAllByText('Dark').length).toBeGreaterThan(0)
   })
 
   it('should skip adding to cart when the product has no primary sku id', async () => {
@@ -255,5 +260,40 @@ describe('ProductDetailPage', () => {
     }))
 
     expect(cartService.addCartItem).not.toHaveBeenCalled()
+  })
+
+  it('should fall back to product images when sku images are missing', async () => {
+    jest.mocked(productService.getProductById).mockResolvedValue({
+      ...productDetail,
+      skus: [
+        {
+          ...productDetail.skus[0]!,
+          images: [],
+        },
+      ],
+      images: [{ fileId: 'file-010', imageUrl: '/fallback-product.png' }],
+    })
+
+    await renderProductDetail()
+
+    expect((await screen.findByAltText('product') as HTMLImageElement).src).toContain('/fallback-product.png')
+  })
+
+  it('should fall back to thumbnail when no gallery images are returned', async () => {
+    jest.mocked(productService.getProductById).mockResolvedValue({
+      ...productDetail,
+      skus: [
+        {
+          ...productDetail.skus[0]!,
+          images: [],
+        },
+      ],
+      images: [],
+      thumbnailUrl: '/thumbnail-only.png',
+    })
+
+    await renderProductDetail()
+
+    expect((await screen.findByAltText('product') as HTMLImageElement).src).toContain('/thumbnail-only.png')
   })
 })
