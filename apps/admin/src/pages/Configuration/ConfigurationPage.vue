@@ -88,7 +88,9 @@
                         <Input v-model="row.fee" @update:modelValue="markChanged" type="text" />
                       </div>
                     </td>
-                    <td class="px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400">{{ row.threshold }}</td>
+                    <td class="px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400">
+                      {{ $t(`configuration.payments.thresholds.${row.thresholdKey}`) }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -142,28 +144,59 @@
         <section v-show="activeSection === 'localization'" class="rounded-xl border border-gray-200 bg-white p-6 dark:border-gray-800 dark:bg-white/[0.03]">
           <h2 class="mb-4 text-base font-semibold text-gray-900 dark:text-white">{{ $t('configuration.localization.title') }}</h2>
 
-          <!-- Currency chips -->
-          <div class="mb-4">
-            <p class="mb-2 text-sm font-medium text-gray-700 dark:text-gray-300">{{ $t('configuration.localization.currencies') }}</p>
-            <div class="flex flex-wrap gap-2">
-              <button
-                v-for="cur in currencies"
-                :key="cur.code"
-                @click="() => { cur.active = !cur.active; markChanged() }"
-                :class="[
-                  'rounded-full border px-3 py-1 text-sm font-medium transition-colors',
-                  cur.active
-                    ? 'border-brand-500 bg-brand-50 text-brand-600 dark:border-brand-600 dark:bg-brand-500/15 dark:text-brand-400'
-                    : 'border-gray-200 text-gray-500 hover:border-gray-300 dark:border-gray-700 dark:text-gray-400',
-                ]"
-              >
-                {{ cur.code }}
-                <span v-if="cur.default" class="ml-1 text-xs text-gray-400 dark:text-gray-500">{{ $t('configuration.localization.default') }}</span>
-              </button>
+          <div class="mb-6">
+            <div class="mb-3 flex items-center justify-between">
+              <p class="text-sm font-medium text-gray-700 dark:text-gray-300">
+                {{ $t('configuration.localization.currencies') }}
+              </p>
+              <p v-if="editableCurrencyConfig" class="text-xs text-gray-500 dark:text-gray-400">
+                {{ $t('configuration.localization.version', { version: editableCurrencyConfig.version }) }}
+              </p>
             </div>
+
+            <div class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
+              <div
+                v-for="currency in currencyRows"
+                :key="currency.currencyCode"
+                class="flex items-center justify-between border-b border-gray-100 px-4 py-3 last:border-b-0 dark:border-gray-800"
+              >
+                <div>
+                  <p class="text-sm font-medium text-gray-900 dark:text-white">
+                    {{ currency.currencyCode }}
+                  </p>
+                  <p class="text-xs text-gray-500 dark:text-gray-400">
+                    {{
+                      currency.enabled
+                        ? $t('configuration.localization.enabled')
+                        : $t('configuration.localization.disabled')
+                    }}
+                    <span
+                      v-if="editableCurrencyConfig?.defaultCurrencyCode === currency.currencyCode"
+                      class="ml-1"
+                    >
+                      {{ $t('configuration.localization.default') }}
+                    </span>
+                  </p>
+                </div>
+                <ToggleSwitch
+                  :modelValue="currency.enabled"
+                  @update:modelValue="updateCurrencyEnabled(currency.currencyCode, $event)"
+                />
+              </div>
+            </div>
+
+            <p v-if="validationError" class="mt-3 text-sm text-error-600 dark:text-error-400">
+              {{ $t(validationError) }}
+            </p>
           </div>
 
           <div class="grid grid-cols-2 gap-4">
+            <Select
+              :modelValue="editableCurrencyConfig?.defaultCurrencyCode ?? null"
+              :options="defaultCurrencyOptions"
+              :label="$t('configuration.localization.defaultCurrency')"
+              @update:modelValue="updateDefaultCurrency"
+            />
             <Select
               v-model="language"
               :options="languageOptions"
@@ -250,21 +283,28 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
 import {
   AppShell, PageBreadcrumb, ToggleSwitch, useAppStore,
   PaymentIcon, SettingsIcon, PlugInIcon, ListIcon,
   Tabs, Button, Input, Select,
 } from '@hivespace/shared'
+import type { SupportedCurrencyCode } from '@/types'
+import { useConfigurationStore } from '@/stores/configuration.store'
 
 const { t } = useI18n()
 const appStore = useAppStore()
+const configurationStore = useConfigurationStore()
+const {
+  editableCurrencyConfig,
+  validationError,
+  enabledCurrencyOptions,
+} = storeToRefs(configurationStore)
 
 const railSearch = ref('')
-const activeSection = ref('payments')
-const hasChanges = ref(false)
-const changeCount = ref(0)
+const activeSection = ref('localization')
 
 const railGroups = computed(() => [
   {
@@ -295,10 +335,28 @@ const setSection = (id: string) => {
   activeSection.value = id
 }
 
-const markChanged = () => {
-  hasChanges.value = true
-  changeCount.value++
+interface FeeTableRow {
+  fee: string
+  thresholdKey: string
+  tier: number
 }
+
+interface NonCurrencyConfigurationDraft {
+  apiEndpoint: string
+  apiKey: string
+  feeTable: FeeTableRow[]
+  language: string
+  paymentToggleValues: Record<string, boolean>
+  payoutSchedule: string
+  providerEnabled: Record<string, boolean>
+  taxId: string
+  timezone: string
+  vatRate: string
+  webhookToggleValues: Record<string, boolean>
+  webhookUrl: string
+}
+
+const markChanged = () => undefined
 
 // Provider state separated from display data
 const providerEnabled = ref<Record<string, boolean>>({
@@ -315,11 +373,11 @@ const paymentProviders = computed(() => [
   { id: 'zalopay', name: t('configuration.payments.providers.zalopay'), sub: t('configuration.payments.providers.zalopayDesc'), abbr: 'ZP', color: '#0369a1' },
 ])
 
-const feeTable = computed(() => [
-  { tier: 1, fee: '2.5%', threshold: t('configuration.payments.thresholds.t1') },
-  { tier: 2, fee: '3.0%', threshold: t('configuration.payments.thresholds.t2') },
-  { tier: 3, fee: '3.5%', threshold: t('configuration.payments.thresholds.t3') },
-  { tier: 4, fee: '4.0%', threshold: t('configuration.payments.thresholds.t4') },
+const feeTable = ref<FeeTableRow[]>([
+  { tier: 1, fee: '2.5%', thresholdKey: 't1' },
+  { tier: 2, fee: '3.0%', thresholdKey: 't2' },
+  { tier: 3, fee: '3.5%', thresholdKey: 't3' },
+  { tier: 4, fee: '4.0%', thresholdKey: 't4' },
 ])
 
 const payoutSchedule = ref('Weekly')
@@ -347,13 +405,6 @@ const paymentToggles = computed(() => [
 
 const taxId = ref('0312345678')
 const vatRate = ref('10')
-
-const currencies = ref([
-  { code: 'VND', active: true, default: true },
-  { code: 'USD', active: true, default: false },
-  { code: 'EUR', active: false, default: false },
-  { code: 'SGD', active: false, default: false },
-])
 
 const language = ref('vi')
 const timezone = ref('Asia/Ho_Chi_Minh')
@@ -385,14 +436,152 @@ const webhookToggles = computed(() => [
   { key: 'async', label: t('configuration.api.toggles.asyncDelivery'), sub: t('configuration.api.toggles.asyncDeliveryDesc') },
 ])
 
-const discard = () => {
-  hasChanges.value = false
-  changeCount.value = 0
+const currencyRows = computed(() => editableCurrencyConfig.value?.items ?? [])
+
+const cloneDraft = (draft: NonCurrencyConfigurationDraft): NonCurrencyConfigurationDraft => ({
+  apiEndpoint: draft.apiEndpoint,
+  apiKey: draft.apiKey,
+  feeTable: draft.feeTable.map((row: FeeTableRow) => ({ ...row })),
+  language: draft.language,
+  paymentToggleValues: { ...draft.paymentToggleValues },
+  payoutSchedule: draft.payoutSchedule,
+  providerEnabled: { ...draft.providerEnabled },
+  taxId: draft.taxId,
+  timezone: draft.timezone,
+  vatRate: draft.vatRate,
+  webhookToggleValues: { ...draft.webhookToggleValues },
+  webhookUrl: draft.webhookUrl,
+})
+
+const getCurrentDraft = (): NonCurrencyConfigurationDraft => ({
+  apiEndpoint: apiEndpoint.value,
+  apiKey: apiKey.value,
+  feeTable: feeTable.value.map((row: FeeTableRow) => ({ ...row })),
+  language: language.value,
+  paymentToggleValues: { ...paymentToggleValues.value },
+  payoutSchedule: payoutSchedule.value,
+  providerEnabled: { ...providerEnabled.value },
+  taxId: taxId.value,
+  timezone: timezone.value,
+  vatRate: vatRate.value,
+  webhookToggleValues: { ...webhookToggleValues.value },
+  webhookUrl: webhookUrl.value,
+})
+
+const initialDraft = ref<NonCurrencyConfigurationDraft>(cloneDraft(getCurrentDraft()))
+
+const restoreDraft = (draft: NonCurrencyConfigurationDraft) => {
+  apiEndpoint.value = draft.apiEndpoint
+  apiKey.value = draft.apiKey
+  feeTable.value = draft.feeTable.map((row: FeeTableRow) => ({ ...row }))
+  language.value = draft.language
+  paymentToggleValues.value = { ...draft.paymentToggleValues }
+  payoutSchedule.value = draft.payoutSchedule
+  providerEnabled.value = { ...draft.providerEnabled }
+  taxId.value = draft.taxId
+  timezone.value = draft.timezone
+  vatRate.value = draft.vatRate
+  webhookToggleValues.value = { ...draft.webhookToggleValues }
+  webhookUrl.value = draft.webhookUrl
 }
 
-const save = () => {
-  hasChanges.value = false
-  changeCount.value = 0
-  appStore.notifySuccess(t('configuration.notifications.saved'), t('configuration.notifications.version'))
+const countBooleanRecordDifferences = (
+  left: Record<string, boolean>,
+  right: Record<string, boolean>,
+) => {
+  const keys = new Set([...Object.keys(left), ...Object.keys(right)])
+  let count = 0
+
+  keys.forEach((key) => {
+    if (left[key] !== right[key]) {
+      count += 1
+    }
+  })
+
+  return count
 }
+
+const nonCurrencyChangeCount = computed(() => {
+  const currentDraft = getCurrentDraft()
+  const persistedDraft = initialDraft.value
+  let count = 0
+
+  count += countBooleanRecordDifferences(currentDraft.providerEnabled, persistedDraft.providerEnabled)
+  count += countBooleanRecordDifferences(
+    currentDraft.paymentToggleValues,
+    persistedDraft.paymentToggleValues,
+  )
+  count += countBooleanRecordDifferences(
+    currentDraft.webhookToggleValues,
+    persistedDraft.webhookToggleValues,
+  )
+
+  currentDraft.feeTable.forEach((row: FeeTableRow, index: number) => {
+    if (
+      row.fee !== persistedDraft.feeTable[index]?.fee ||
+      row.thresholdKey !== persistedDraft.feeTable[index]?.thresholdKey ||
+      row.tier !== persistedDraft.feeTable[index]?.tier
+    ) {
+      count += 1
+    }
+  })
+
+  if (currentDraft.payoutSchedule !== persistedDraft.payoutSchedule) count += 1
+  if (currentDraft.taxId !== persistedDraft.taxId) count += 1
+  if (currentDraft.vatRate !== persistedDraft.vatRate) count += 1
+  if (currentDraft.language !== persistedDraft.language) count += 1
+  if (currentDraft.timezone !== persistedDraft.timezone) count += 1
+  if (currentDraft.apiEndpoint !== persistedDraft.apiEndpoint) count += 1
+  if (currentDraft.apiKey !== persistedDraft.apiKey) count += 1
+  if (currentDraft.webhookUrl !== persistedDraft.webhookUrl) count += 1
+
+  return count
+})
+
+const hasUnsupportedChanges = computed(() => nonCurrencyChangeCount.value > 0)
+const hasChanges = computed(() => configurationStore.hasChanges || hasUnsupportedChanges.value)
+const changeCount = computed(() => configurationStore.changeCount + nonCurrencyChangeCount.value)
+
+const defaultCurrencyOptions = computed(() =>
+  enabledCurrencyOptions.value.map((currencyCode: SupportedCurrencyCode) => ({
+    value: currencyCode,
+    label: currencyCode,
+  })),
+)
+
+const updateDefaultCurrency = (currencyCode: string) => {
+  configurationStore.setDefaultCurrency(currencyCode as SupportedCurrencyCode)
+}
+
+const updateCurrencyEnabled = (currencyCode: SupportedCurrencyCode, enabled: boolean) => {
+  configurationStore.setCurrencyEnabled(currencyCode, enabled)
+}
+
+const discard = () => {
+  configurationStore.discardChanges()
+  restoreDraft(initialDraft.value)
+}
+
+const save = async () => {
+  if (configurationStore.hasChanges) {
+    const response = await configurationStore.saveCurrencyConfig()
+
+    if (!response) {
+      return
+    }
+
+    appStore.notifySuccess(t('configuration.notifications.saved'), t('configuration.notifications.version'))
+  }
+
+  if (hasUnsupportedChanges.value) {
+    appStore.notifyInfo(
+      t('configuration.notifications.pendingSettings'),
+      t('configuration.notifications.pendingSettingsDescription'),
+    )
+  }
+}
+
+onMounted(() => {
+  void configurationStore.fetchCurrencyConfig()
+})
 </script>

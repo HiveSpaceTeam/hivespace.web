@@ -7,6 +7,19 @@ import OrderDetailPage from './OrderDetailPage.vue'
 import { orderService } from '@/services/order.service'
 import type { OrderDetail } from '@/types'
 
+const formatMoneyMock = jest.fn()
+
+jest.mock('@hivespace/shared', () => {
+  const actual = jest.requireActual<typeof import('@hivespace/shared')>('@hivespace/shared')
+
+  return {
+    ...actual,
+    useMoneyFormatter: () => ({
+      formatMoney: formatMoneyMock,
+    }),
+  }
+})
+
 jest.mock('@/services/order.service', () => ({
   orderService: {
     getOrderById: jest.fn(),
@@ -74,6 +87,14 @@ const renderOrderDetail = async () => {
 
 describe('OrderDetailPage', () => {
   beforeEach(() => {
+    formatMoneyMock.mockReset()
+    formatMoneyMock.mockImplementation((value: unknown) => {
+      const { amount } = value as {
+        amount: number | null
+      }
+
+      return `${amount?.toLocaleString('vi-VN') ?? '0'}₫`
+    })
     jest.mocked(orderService.getOrderById).mockResolvedValue(orderDetail)
   })
 

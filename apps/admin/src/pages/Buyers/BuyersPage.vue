@@ -97,7 +97,7 @@
                 </td>
                 <td class="px-5 py-4 text-sm text-gray-700 dark:text-gray-300">{{ formatInteger(buyer.orders) }}</td>
                 <td class="px-5 py-4 text-sm font-medium text-gray-900 dark:text-white">
-                  {{ formatCurrency(buyer.totalSpend) }}
+                  {{ formatCurrency(buyer.totalSpend, buyer.currencyCode) }}
                 </td>
                 <td class="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">{{ buyer.lastActive }}</td>
                 <td class="px-5 py-4 text-sm text-gray-500 dark:text-gray-400">{{ formatJoinDate(buyer.joinDate) }}</td>
@@ -157,9 +157,10 @@ import {
   Tabs,
   useAppStore,
   useConfirmModal,
+  useMoneyFormatter,
 } from '@hivespace/shared'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 type BuyerStatus = 'Active' | 'Unverified' | 'Suspended' | 'Dormant'
 type BuyerBadgeColor = 'success' | 'warning' | 'error' | 'light'
@@ -175,12 +176,14 @@ interface BuyerRow {
   status: BuyerStatus
   orders: number
   totalSpend: number
+  currencyCode: 'VND' | 'USD' | 'EUR' | null
   lastActive: string
   joinDate: string
 }
 
 const appStore = useAppStore()
 const { openConfirmModal } = useConfirmModal()
+const { formatMoney } = useMoneyFormatter({ t })
 
 const STATUS_STYLES: Record<BuyerStatus, { badgeColor: BuyerBadgeColor; dotClass: string }> = {
   Active: { badgeColor: 'success', dotClass: 'bg-success-500' },
@@ -193,7 +196,7 @@ const BASE_TOTAL_BUYERS = 842184
 const BASE_ACTIVE_BUYERS = 612877
 const BASE_SUSPENDED_BUYERS = 90
 const BASE_NEW_TODAY = 212
-const AVG_LTV = 1200000
+const AVG_LTV = { amount: 1200000, currencyCode: 'USD' as const }
 const TODAY = '2026-05-10'
 
 const buyers = ref<BuyerRow[]>([
@@ -208,6 +211,7 @@ const buyers = ref<BuyerRow[]>([
     status: 'Active',
     orders: 48,
     totalSpend: 18450000,
+    currencyCode: 'VND',
     lastActive: '5m ago',
     joinDate: '2023-08-14',
   },
@@ -222,6 +226,7 @@ const buyers = ref<BuyerRow[]>([
     status: 'Unverified',
     orders: 2,
     totalSpend: 580000,
+    currencyCode: 'VND',
     lastActive: '2h ago',
     joinDate: '2026-05-09',
   },
@@ -236,6 +241,7 @@ const buyers = ref<BuyerRow[]>([
     status: 'Dormant',
     orders: 11,
     totalSpend: 4250000,
+    currencyCode: 'VND',
     lastActive: '29d ago',
     joinDate: '2024-02-03',
   },
@@ -250,6 +256,7 @@ const buyers = ref<BuyerRow[]>([
     status: 'Active',
     orders: 73,
     totalSpend: 26750000,
+    currencyCode: 'VND',
     lastActive: '14m ago',
     joinDate: '2022-11-26',
   },
@@ -264,6 +271,7 @@ const buyers = ref<BuyerRow[]>([
     status: 'Suspended',
     orders: 19,
     totalSpend: 6910000,
+    currencyCode: 'VND',
     lastActive: '3d ago',
     joinDate: '2023-12-09',
   },
@@ -278,6 +286,7 @@ const buyers = ref<BuyerRow[]>([
     status: 'Active',
     orders: 32,
     totalSpend: 12990000,
+    currencyCode: 'USD',
     lastActive: '31m ago',
     joinDate: '2024-07-18',
   },
@@ -292,6 +301,7 @@ const buyers = ref<BuyerRow[]>([
     status: 'Dormant',
     orders: 7,
     totalSpend: 2130000,
+    currencyCode: null,
     lastActive: '41d ago',
     joinDate: '2023-05-30',
   },
@@ -306,6 +316,7 @@ const buyers = ref<BuyerRow[]>([
     status: 'Active',
     orders: 28,
     totalSpend: 9400000,
+    currencyCode: 'VND',
     lastActive: '9m ago',
     joinDate: TODAY,
   },
@@ -320,6 +331,7 @@ const buyers = ref<BuyerRow[]>([
     status: 'Unverified',
     orders: 1,
     totalSpend: 145000,
+    currencyCode: 'VND',
     lastActive: '6h ago',
     joinDate: '2026-05-08',
   },
@@ -334,6 +346,7 @@ const buyers = ref<BuyerRow[]>([
     status: 'Suspended',
     orders: 15,
     totalSpend: 5020000,
+    currencyCode: 'VND',
     lastActive: '8d ago',
     joinDate: '2024-09-04',
   },
@@ -353,11 +366,6 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 const integerFormatter = new Intl.NumberFormat('en-US')
-const currencyFormatter = new Intl.NumberFormat('vi-VN', {
-  style: 'currency',
-  currency: 'VND',
-  maximumFractionDigits: 0,
-})
 const monthFormatter = new Intl.DateTimeFormat('en-US', {
   month: 'short',
   year: 'numeric',
@@ -440,7 +448,7 @@ const statCards = computed(() => [
   },
   {
     label: t('buyers.stats.avgLtv'),
-    value: formatCurrency(AVG_LTV),
+    value: formatCurrency(AVG_LTV.amount, AVG_LTV.currencyCode),
     sub: t('buyers.stats.avgLtvSub'),
     subClass: '',
     delta: '',
@@ -457,7 +465,15 @@ watch([searchQuery, statusFilter, pageSize], () => {
 
 const formatInteger = (value: number) => integerFormatter.format(value)
 
-const formatCurrency = (value: number) => currencyFormatter.format(value)
+const formatCurrency = (amount: number, currencyCode: BuyerRow['currencyCode']) =>
+  formatMoney(
+    {
+      amount,
+      currencyCode,
+      issue: currencyCode ? undefined : { code: 'missing_currency' },
+    },
+    { locale: locale.value },
+  )
 
 const formatJoinDate = (value: string) => {
   const date = new Date(value)

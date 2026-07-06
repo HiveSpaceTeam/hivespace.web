@@ -7,6 +7,19 @@ import OrdersPage from './OrdersPage.vue'
 import { orderService } from '@/services/order.service'
 import type { GetOrdersResponse } from '@/types'
 
+const formatMoneyMock = jest.fn()
+
+jest.mock('@hivespace/shared', () => {
+  const actual = jest.requireActual<typeof import('@hivespace/shared')>('@hivespace/shared')
+
+  return {
+    ...actual,
+    useMoneyFormatter: () => ({
+      formatMoney: formatMoneyMock,
+    }),
+  }
+})
+
 jest.mock('@/components/profile/ProfileSidebar.vue', () => ({
   default: { template: '<aside data-testid="profile-sidebar" />' },
 }))
@@ -76,6 +89,14 @@ const renderOrders = async () => {
 
 describe('OrdersPage', () => {
   beforeEach(() => {
+    formatMoneyMock.mockReset()
+    formatMoneyMock.mockImplementation((value: unknown) => {
+      const { amount } = value as {
+        amount: number | null
+      }
+
+      return `${amount?.toLocaleString('vi-VN') ?? '0'}₫`
+    })
     jest.mocked(orderService.getOrders).mockResolvedValue(ordersResponse([order]))
   })
 

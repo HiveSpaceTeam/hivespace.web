@@ -135,10 +135,12 @@
                     </p>
                   </div>
                   <div class="text-right shrink-0">
-                    <p class="text-sm font-medium text-primary">{{ formatPrice(item.lineTotal) }}</p>
+                    <p class="text-sm font-medium text-primary">
+                      {{ formatPrice(item.lineTotal, item.currencyCode ?? item.currency, item.moneyIssue) }}
+                    </p>
                     <p v-if="item.unitPrice * item.quantity !== item.lineTotal"
                       class="text-xs text-gray-400 line-through mt-0.5">
-                      {{ formatPrice(item.unitPrice * item.quantity) }}
+                      {{ formatPrice(item.unitPrice * item.quantity, item.currencyCode ?? item.currency, item.moneyIssue) }}
                     </p>
                   </div>
                 </div>
@@ -148,17 +150,29 @@
               <div class="mt-4 pt-4 border-t border-gray-100 dark:border-gray-700 space-y-2">
                 <div class="flex justify-between text-sm">
                   <span class="text-gray-500 dark:text-gray-400">{{ $t('orders.detail.subTotal') }}</span>
-                  <span class="text-gray-800 dark:text-gray-100">{{ formatPrice(currentOrder.subTotal) }}</span>
+                  <span class="text-gray-800 dark:text-gray-100">
+                    {{ formatPrice(currentOrder.subTotal, currentOrder.currencyCode ?? currentOrder.currency, currentOrder.moneyIssue) }}
+                  </span>
                 </div>
                 <div class="flex justify-between text-sm">
                   <span class="text-gray-500 dark:text-gray-400">{{ $t('orders.detail.shippingFee') }}</span>
                   <span class="text-gray-800 dark:text-gray-100">
-                    {{ currentOrder.shippingFee === 0 ? $t('orders.detail.free') : formatPrice(currentOrder.shippingFee) }}
+                    {{
+                      currentOrder.shippingFee === 0
+                        ? $t('orders.detail.free')
+                        : formatPrice(
+                            currentOrder.shippingFee,
+                            currentOrder.currencyCode ?? currentOrder.currency,
+                            currentOrder.moneyIssue,
+                          )
+                    }}
                   </span>
                 </div>
                 <div class="flex justify-between items-center pt-2 border-t border-gray-100 dark:border-gray-700">
                   <span class="text-sm font-semibold text-gray-700 dark:text-gray-200">{{ $t('orders.detail.total') }}</span>
-                  <span class="text-base font-bold text-primary">{{ formatPrice(currentOrder.totalAmount) }}</span>
+                  <span class="text-base font-bold text-primary">
+                    {{ formatPrice(currentOrder.totalAmount, currentOrder.currencyCode ?? currentOrder.currency, currentOrder.moneyIssue) }}
+                  </span>
                 </div>
               </div>
             </div>
@@ -183,17 +197,26 @@ import { ref, computed, onMounted, onUnmounted } from 'vue'
 import { RouterLink, useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { useI18n } from 'vue-i18n'
-import { useAuth, Avatar, Spinner, OrderTimeline } from '@hivespace/shared'
+import {
+  useAuth,
+  Avatar,
+  Spinner,
+  OrderTimeline,
+  createMoneyDisplay,
+  useMoneyFormatter,
+} from '@hivespace/shared'
 import type { TimelineStep } from '@hivespace/shared'
+import type { MoneyIssue } from '@hivespace/shared'
 import { Bell, ShoppingBag, Pencil, ChevronLeft, User, ChevronDown } from 'lucide-vue-next'
 import { useOrdersStore } from '@/stores'
 import type { OrderDetail, OrderStatus } from '@/types'
 
 const route = useRoute()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const { currentUser } = useAuth()
 const ordersStore = useOrdersStore()
 const { currentOrder, isLoadingDetail } = storeToRefs(ordersStore)
+const { formatMoney } = useMoneyFormatter({ t })
 
 const accountOpen = ref(false)
 
@@ -207,7 +230,11 @@ const displayUsername = computed(() =>
 onMounted(() => ordersStore.fetchOrderById(route.params.id as string))
 onUnmounted(() => ordersStore.clearCurrentOrder())
 
-const formatPrice = (amount: number) => amount.toLocaleString('vi-VN') + 'đ'
+const formatPrice = (
+  amount: number,
+  currencyCode: string | number | null | undefined,
+  issue?: MoneyIssue | null,
+) => formatMoney(createMoneyDisplay(amount, currencyCode, { issue }), { locale: locale.value })
 
 // ── Status helpers ────────────────────────────────────────────────────────────
 

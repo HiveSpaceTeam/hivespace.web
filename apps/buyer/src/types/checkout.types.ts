@@ -1,3 +1,4 @@
+import type { MoneyIssue, SupportedCurrencyCode } from '@hivespace/shared'
 import type { AppliedPlatformCoupon, AppliedStoreCoupon, InvalidAppliedCoupon } from './cart.types'
 
 export interface CheckoutItem {
@@ -9,7 +10,9 @@ export interface CheckoutItem {
   skuAttributes?: string
   originalPrice?: number
   price: number
-  currency: string
+  currency: string | null
+  currencyCode: SupportedCurrencyCode | null
+  moneyIssue?: MoneyIssue | null
   quantity: number
   lineTotal: number
 }
@@ -20,7 +23,9 @@ export interface DeliveryPackage {
   shippingType: 'economy' | 'fast'
   originalShippingFee?: number
   shippingFee: number
-  currency: string
+  currency: string | null
+  currencyCode: SupportedCurrencyCode | null
+  moneyIssue?: MoneyIssue | null
   originalSubtotal: number
   subtotal: number
   packageTotal: number
@@ -32,7 +37,9 @@ export interface CheckoutPreview {
   packages: DeliveryPackage[]
   originalSubtotal: number
   subtotal: number
-  currency: string
+  currency: string | null
+  currencyCode: SupportedCurrencyCode | null
+  moneyIssue?: MoneyIssue | null
   totalShippingFee: number
   grandTotal: number
   totalItems: number

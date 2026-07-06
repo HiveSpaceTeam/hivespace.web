@@ -136,7 +136,7 @@
                   </td>
                   <td :rowspan="order.items.length" class="px-4 py-3 align-top text-right">
                     <p class="whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
-                      đ{{ formatMoney(order.totalAmount) }}
+                      {{ formatOrderTotal(order.totalAmount, order.currencyCode) }}
                     </p>
                     <p class="mt-0.5 text-xs text-gray-500">{{ order.paymentMethod }}</p>
                   </td>
@@ -216,6 +216,7 @@ import {
   Avatar,
   Spinner,
   useFormatDate,
+  useMoneyFormatter,
   ArrowDownRedIcon,
   ListIcon,
   MailIcon,
@@ -225,10 +226,11 @@ import { OrderProcessStatus, OrderStatus } from '@/types'
 import { useOrderStore } from '@/stores/order.store'
 import ProductCell from '@/components/orders/ProductCell.vue'
 
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const orderStore = useOrderStore()
 const { confirm, deleteConfirm } = useConfirmModal()
 const { formatDateTime } = useFormatDate()
+const { formatMoney } = useMoneyFormatter({ t })
 
 const activeTab = computed({
   get: () => orderStore.activeTab,
@@ -343,7 +345,22 @@ const canPrepareOrder = (status: OrderStatus) => {
   return status === OrderStatus.Confirmed || status === OrderStatus.ReadyToShip
 }
 
-const formatMoney = (amount: number) => amount.toLocaleString('vi-VN')
+const formatOrderTotal = (amount: number, currencyCode?: string | null) =>
+  formatMoney(
+    {
+      amount,
+      currencyCode: currencyCode === 'VND' || currencyCode === 'USD' || currencyCode === 'EUR'
+        ? currencyCode
+        : null,
+      issue:
+        currencyCode === 'VND' || currencyCode === 'USD' || currencyCode === 'EUR'
+          ? undefined
+          : currencyCode
+            ? { code: 'unsupported_currency' }
+            : { code: 'missing_currency' },
+    },
+    { locale: locale.value },
+  )
 
 const formatActionDateTime = (value: string) => {
   return formatDateTime(value)

@@ -38,6 +38,7 @@ const mapApiItem = (item: CartItemResponse): CartItem => ({
   name: item.productName ?? '',
   image: item.skuImageUrl || item.productThumbnailUrl || '',
   price: item.price ?? 0,
+  currencyCode: item.currency,
   originalPrice: item.originalPrice ?? undefined,
   quantity: item.quantity,
   variant: item.skuAttributes ? parseSkuAttributes(item.skuAttributes) : undefined,
@@ -62,6 +63,7 @@ const areCartItemsEqual = (left: CartItem, right: CartItem) =>
   left.name === right.name &&
   left.image === right.image &&
   left.price === right.price &&
+  left.currencyCode === right.currencyCode &&
   left.originalPrice === right.originalPrice &&
   left.quantity === right.quantity &&
   left.variant === right.variant &&
@@ -90,6 +92,7 @@ const patchItem = (target: CartItem, source: CartItem) => {
   target.name = source.name
   target.image = source.image
   target.price = source.price
+  target.currencyCode = source.currencyCode
   target.originalPrice = source.originalPrice
   target.quantity = source.quantity
   target.variant = source.variant

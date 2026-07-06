@@ -3,7 +3,9 @@
   "searchPlaceholder": "Tìm kiếm cài đặt...",
   "notifications": {
     "saved": "Đã lưu cấu hình",
-    "version": "v2.185"
+    "version": "v2.185",
+    "pendingSettings": "Má»™t sá»‘ cÃ i Ä‘áº·t váº«n chá»‰ lÃ  thay Ä‘á»•i cá»¥c bá»™",
+    "pendingSettingsDescription": "Hiá»‡n chá»‰ cÃ¡c thay Ä‘á»•i vá» Ä‘á»“ng tiá»n Ä‘Æ°á»£c lÆ°u. CÃ¡c chá»‰nh sá»­a thanh toÃ¡n, thuáº¿, Ä‘á»‹a phÆ°Æ¡ng hÃ³a vÃ  webhook váº«n chÆ°a Ä‘Æ°á»£c lÆ°u."
   },
   "nav": {
     "workspace": "Không gian làm việc",
@@ -67,8 +69,13 @@
     "title": "Địa phương hóa",
     "currencies": "Đồng tiền được hỗ trợ",
     "default": "(mặc định)",
+    "defaultCurrency": "Đồng tiền mặc định",
+    "defaultCurrencyRequired": "Hãy chọn một đồng tiền mặc định khác đang được bật trước khi tắt đồng tiền hiện tại.",
+    "enabled": "Đang bật",
+    "disabled": "Đang tắt",
     "language": "Ngôn ngữ",
     "timezone": "Múi giờ",
+    "version": "Phiên bản {version}",
     "languages": {
       "vi": "Tiếng Việt",
       "en": "Tiếng Anh"

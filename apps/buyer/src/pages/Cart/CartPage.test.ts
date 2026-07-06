@@ -9,6 +9,7 @@ import { productService } from '@/services/product.service'
 import type { GetCartSummaryResponse } from '@/types'
 
 const mockNotifyError = jest.fn()
+const formatMoneyMock = jest.fn()
 
 jest.mock('@hivespace/shared', () => {
   const actual = jest.requireActual<typeof import('@hivespace/shared')>('@hivespace/shared')
@@ -17,6 +18,9 @@ jest.mock('@hivespace/shared', () => {
     useAppStore: () => ({
       ...actual.useAppStore(),
       notifyError: mockNotifyError,
+    }),
+    useMoneyFormatter: () => ({
+      formatMoney: formatMoneyMock,
     }),
   }
 })
@@ -164,6 +168,14 @@ const renderCart = async () => {
 describe('CartPage', () => {
   beforeEach(() => {
     mockNotifyError.mockReset()
+    formatMoneyMock.mockReset()
+    formatMoneyMock.mockImplementation((value: unknown) => {
+      const { amount } = value as {
+        amount: number | null
+      }
+
+      return `${amount?.toLocaleString('vi-VN') ?? '0'}₫`
+    })
     jest.mocked(cartService.getCartSummary).mockResolvedValue(cartSummary())
     jest.mocked(cartService.getSelectedItemsCount).mockResolvedValue({ count: 1 })
     jest.mocked(cartService.updateCartItems).mockResolvedValue(undefined)

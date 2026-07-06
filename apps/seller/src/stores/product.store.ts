@@ -1,5 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
+import {
+  normalizeCurrencyCode,
+  type PlatformCurrencyConfig,
+  type PlatformCurrencyConfigItem,
+  type SupportedCurrencyCode,
+} from '@hivespace/shared'
 import type {
   Category,
   CategoryAttribute,
@@ -12,7 +18,32 @@ import type {
 } from '@/types'
 import type { PaginationMetadata } from '@hivespace/shared'
 import { categoryService } from '@/services/category.service'
+import { configurationService } from '@/services/configuration.service'
 import { productService } from '@/services/product.service'
+
+const toSupportedCurrencyCode = (
+  currencyCode: string | number | null | undefined,
+): SupportedCurrencyCode | undefined => {
+  if (currencyCode === 'VND' || currencyCode === 'USD' || currencyCode === 'EUR') {
+    return currencyCode
+  }
+
+  return undefined
+}
+
+const normalizeProduct = (product: Product): Product => ({
+  ...product,
+  skus: product.skus.map((sku) => ({
+    ...sku,
+    price: {
+      ...sku.price,
+      currencyCode: normalizeCurrencyCode(
+        sku.price?.currencyCode,
+        toSupportedCurrencyCode(sku.price?.currency),
+      ),
+    },
+  })),
+})
 
 export const useProductStore = defineStore('product', () => {
   const products = ref<Product[]>([])
@@ -24,12 +55,26 @@ export const useProductStore = defineStore('product', () => {
   const isMutatingProduct = ref(false)
   const isLoadingCategories = ref(false)
   const isLoadingAttributes = ref(false)
+  const currencyConfig = ref<PlatformCurrencyConfig | null>(null)
+  const currencyOptions = ref<Array<{ label: SupportedCurrencyCode; value: SupportedCurrencyCode }>>([])
+
+  const setCurrencyConfig = (config: PlatformCurrencyConfig | null) => {
+    currencyConfig.value = config
+    currencyOptions.value = config
+      ? config.items
+          .filter((item: PlatformCurrencyConfigItem) => item.enabled)
+          .map((item: PlatformCurrencyConfigItem) => ({
+            label: item.currencyCode,
+            value: item.currencyCode,
+          }))
+      : []
+  }
 
   const fetchProducts = async (params: GetProductListQuery): Promise<GetProductListResponse> => {
     try {
       isFetchingProducts.value = true
       const result = await productService.getProducts(params)
-      products.value = result.items
+      products.value = result.items.map(normalizeProduct)
       pagination.value = result.pagination
       return result
     } finally {
@@ -82,7 +127,7 @@ export const useProductStore = defineStore('product', () => {
   const fetchProductById = async (id: string): Promise<Product> => {
     try {
       isMutatingProduct.value = true
-      const result = await productService.getProductById(id)
+      const result = normalizeProduct(await productService.getProductById(id))
       currentProduct.value = result
       return result
     } finally {
@@ -110,6 +155,12 @@ export const useProductStore = defineStore('product', () => {
     }
   }
 
+  const fetchCurrencyConfig = async () => {
+    const config = await configurationService.getCurrencyConfig()
+    setCurrencyConfig(config)
+    return config
+  }
+
   return {
     products,
     pagination,
@@ -120,6 +171,8 @@ export const useProductStore = defineStore('product', () => {
     isMutatingProduct,
     isLoadingCategories,
     isLoadingAttributes,
+    currencyConfig,
+    currencyOptions,
     fetchProducts,
     deleteProduct,
     fetchCategories,
@@ -128,5 +181,6 @@ export const useProductStore = defineStore('product', () => {
     fetchProductById,
     createProduct,
     updateProduct,
+    fetchCurrencyConfig,
   }
 })

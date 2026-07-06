@@ -147,6 +147,7 @@ import {
   Spinner,
   useConfirmModal,
   useAppStore,
+  useMoneyFormatter,
   BigPlusIcon,
   EditIcon,
   RefreshIcon,
@@ -154,11 +155,13 @@ import {
 } from '@hivespace/shared'
 import { useProductStore } from '@/stores'
 import type { GetProductListQuery, Product } from '@/types'
+import type { SupportedCurrencyCode } from '@hivespace/shared'
 
 const { t } = useI18n()
 const router = useRouter()
 const appStore = useAppStore()
 const productStore = useProductStore()
+const { formatMoney } = useMoneyFormatter()
 const { products, pagination, isFetchingProducts, isMutatingProduct } = storeToRefs(productStore)
 const { deleteConfirm } = useConfirmModal()
 
@@ -191,6 +194,14 @@ const totalQuantity = (product: Product): number => {
   }, 0)
 }
 
+const resolveCurrencyCode = (product: Product): SupportedCurrencyCode | null => {
+  const currencyCodes = Array.from(
+    new Set(product.skus.map((sku) => sku.price?.currencyCode).filter(Boolean)),
+  ) as SupportedCurrencyCode[]
+
+  return currencyCodes.length === 1 ? currencyCodes[0] : null
+}
+
 const formatPriceRange = (product: Product): string => {
   if (!product?.skus?.length) return '-'
 
@@ -210,14 +221,21 @@ const formatPriceRange = (product: Product): string => {
 
   if (!prices.length) return '-'
 
+  const currencyCode = resolveCurrencyCode(product)
+  const hasInvalidPrice = product.skus.some((sku) => sku.price?.issue) || !currencyCode
   const min = Math.min(...prices)
   const max = Math.max(...prices)
-  if (min === max) return formatCurrency(min)
-  return `${formatCurrency(min)} - ${formatCurrency(max)}`
-}
+  const minPrice = formatMoney({
+    amount: min,
+    currencyCode,
+    issue: hasInvalidPrice ? { code: 'invalid_money' } : null,
+  })
 
-const formatCurrency = (value: number): string => {
-  return new Intl.NumberFormat(undefined, { style: 'currency', currency: 'USD' }).format(value)
+  if (min === max || hasInvalidPrice) {
+    return minPrice
+  }
+
+  return `${minPrice} - ${formatMoney({ amount: max, currencyCode })}`
 }
 
 const fetchProducts = async () => {

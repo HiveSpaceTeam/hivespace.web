@@ -145,11 +145,10 @@
                   isLocked ? 'opacity-70 bg-gray-50/50 dark:bg-gray-800/10 cursor-not-allowed' : '']">
                   <span v-if="form.discountType === DiscountType.FixedAmount"
                     class="bg-gray-50 dark:bg-gray-800/50 text-gray-500 px-3 py-2.5 border-r border-gray-300 dark:border-gray-700 block font-medium h-full">
-                    {{ currencySymbol }}
+                    {{ currencyLabel }}
                   </span>
                   <Input v-model="discountAmountDisplay" @input="discountAmountHandleInput"
-                    @blur="(e) => { discountAmountHandleBlur(e); validateDiscountAmount() }"
-                    @focus="discountAmountHandleFocus" class="flex-1" :disabled="isViewOnly || isOngoing"
+                    @blur="validateDiscountAmount" class="flex-1" :disabled="isViewOnly || isOngoing"
                     inputClass="border-transparent shadow-none rounded-none bg-transparent focus:ring-0 focus:border-transparent" />
                   <span class="px-3 py-2.5 text-brand-600 border-l border-gray-300 dark:border-gray-700 font-medium"
                     v-if="form.discountType === DiscountType.Percentage">{{
@@ -174,10 +173,9 @@
                 isLocked ? 'opacity-70 bg-gray-50/50 dark:bg-gray-800/10 cursor-not-allowed' : '']">
                 <span
                   class="bg-gray-50 dark:bg-gray-800/50 text-gray-500 px-3 py-2.5 border-r border-gray-300 dark:border-gray-700 block font-medium h-full">{{
-                    currencySymbol }}</span>
+                    currencyLabel }}</span>
                 <Input v-model="maxDiscountAmountDisplay" @input="maxDiscountAmountHandleInput"
-                  @blur="(e) => { maxDiscountAmountHandleBlur(e); validateMaxDiscountAmount() }"
-                  @focus="maxDiscountAmountHandleFocus" class="flex-1" :disabled="isViewOnly || isOngoing"
+                  @blur="validateMaxDiscountAmount" class="flex-1" :disabled="isViewOnly || isOngoing"
                   inputClass="border-transparent shadow-none rounded-none bg-transparent focus:ring-0 focus:border-transparent" />
               </div>
               <p v-if="errors.maxDiscountAmount && form.hasMaxDiscount" class="text-xs text-red-600 mt-1">{{
@@ -196,10 +194,9 @@
                 isLocked ? 'opacity-70 bg-gray-50/50 dark:bg-gray-800/10 cursor-not-allowed' : '']">
                 <span
                   class="bg-gray-50 dark:bg-gray-800/50 text-gray-500 px-3 py-2.5 border-r border-gray-300 dark:border-gray-700 block font-medium h-full">{{
-                    currencySymbol }}</span>
+                    currencyLabel }}</span>
                 <Input v-model="minOrderValueDisplay" @input="minOrderValueHandleInput"
-                  @blur="(e) => { minOrderValueHandleBlur(e); validateMinOrderAmount() }"
-                  @focus="minOrderValueHandleFocus" class="flex-1" :disabled="isViewOnly || isOngoing"
+                  @blur="validateMinOrderAmount" class="flex-1" :disabled="isViewOnly || isOngoing"
                   inputClass="border-transparent shadow-none rounded-none bg-transparent focus:ring-0 focus:border-transparent" />
               </div>
               <p v-if="errors.minOrderAmount" class="text-xs text-red-600 mt-1">{{ errors.minOrderAmount }}</p>
@@ -314,7 +311,7 @@
                           </div>
                         </td>
                         <td class="px-4 py-4 align-middle text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">
-                          {{ formatPrice(product.priceMin, product.priceMax) }}
+                          {{ formatPrice(product) }}
                         </td>
                         <td class="px-4 py-4 align-middle text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">
                           {{ product.stock }}
@@ -405,6 +402,8 @@ import {
   RadioGroup,
   DateTimePicker,
   Pagination,
+  useMoneyFormatter,
+  useMoneyInput,
   useNumberInputFormatter,
   Checkbox,
   useModal,
@@ -415,6 +414,8 @@ import {
   CheckIcon,
   TrashIcon,
   type ErrorResponse,
+  type MoneyIssue,
+  type SupportedCurrencyCode,
 } from '@hivespace/shared'
 import { CouponType, DiscountType, CouponScope, RewardType, CouponStatus } from '@/types'
 import type { CreateCouponRequest, UpdateCouponRequest, CouponDto, Product } from '@/types'
@@ -429,6 +430,7 @@ const router = useRouter()
 const appStore = useAppStore()
 const couponStore = useCouponStore()
 const productStore = useProductStore()
+const { formatMoney } = useMoneyFormatter()
 const { products: storeProducts } = storeToRefs(productStore)
 const { handleFieldValidationErrors, clearFieldErrors } = useFieldValidation()
 
@@ -530,20 +532,47 @@ const isSpecificProducts = computed(() => {
   return form.value.type === CouponType.SPECIFIC_PRODUCTS || (form.value.type === CouponType.PRIVATE && form.value.applicableProductsType === CouponType.SPECIFIC_PRODUCTS)
 })
 
-const discountAmountRef = toRef(form.value, 'discountAmount')
-const discountFormatter = useNumberInputFormatter(discountAmountRef, locale.value)
-const { displayValue: discountAmountDisplay, handleInput: discountAmountHandleInput, handleBlur: discountAmountHandleBlur, handleFocus: discountAmountHandleFocus } = discountFormatter
+const currencyCodeRef = computed<SupportedCurrencyCode | null>(() => {
+  if (form.value.currency === 'VND' || form.value.currency === 'USD' || form.value.currency === 'EUR') {
+    return form.value.currency
+  }
 
-// re-init string formatter when i18n locale changes
-watch(locale, () => {
-  discountAmountDisplay.value = discountFormatter.formatNumber(form.value.discountAmount)
+  return null
 })
 
-const maxDiscountAmountRef = toRef(form.value, 'maxDiscountAmount')
-const { displayValue: maxDiscountAmountDisplay, handleInput: maxDiscountAmountHandleInput, handleBlur: maxDiscountAmountHandleBlur, handleFocus: maxDiscountAmountHandleFocus } = useNumberInputFormatter(maxDiscountAmountRef, locale.value)
+const createMoneyFieldRef = (field: 'discountAmount' | 'maxDiscountAmount' | 'minOrderValue') =>
+  computed<number | null>({
+    get: () => {
+      const value = form.value[field]
+      if (value === '') {
+        return null
+      }
 
-const minOrderValueRef = toRef(form.value, 'minOrderValue')
-const { displayValue: minOrderValueDisplay, handleInput: minOrderValueHandleInput, handleBlur: minOrderValueHandleBlur, handleFocus: minOrderValueHandleFocus } = useNumberInputFormatter(minOrderValueRef, locale.value)
+      const parsedValue = Number(value)
+      return Number.isFinite(parsedValue) ? parsedValue : null
+    },
+    set: (value) => {
+      form.value[field] = value === null ? '' : String(value)
+    },
+  })
+
+const discountAmountRef = createMoneyFieldRef('discountAmount')
+const {
+  displayValue: discountAmountDisplay,
+  handleInput: discountAmountHandleInput,
+} = useMoneyInput(discountAmountRef, currencyCodeRef, { locale: locale.value })
+
+const maxDiscountAmountRef = createMoneyFieldRef('maxDiscountAmount')
+const {
+  displayValue: maxDiscountAmountDisplay,
+  handleInput: maxDiscountAmountHandleInput,
+} = useMoneyInput(maxDiscountAmountRef, currencyCodeRef, { locale: locale.value })
+
+const minOrderValueRef = createMoneyFieldRef('minOrderValue')
+const {
+  displayValue: minOrderValueDisplay,
+  handleInput: minOrderValueHandleInput,
+} = useMoneyInput(minOrderValueRef, currencyCodeRef, { locale: locale.value })
 
 const totalUsagesRef = toRef(form.value, 'totalUsages')
 const { displayValue: totalUsagesDisplay, handleInput: totalUsagesHandleInput, handleBlur: totalUsagesHandleBlur, handleFocus: totalUsagesHandleFocus } = useNumberInputFormatter(totalUsagesRef, locale.value)
@@ -551,18 +580,19 @@ const { displayValue: totalUsagesDisplay, handleInput: totalUsagesHandleInput, h
 const maxUsagesPerBuyerRef = toRef(form.value, 'maxUsagesPerBuyer')
 const { displayValue: maxUsagesPerBuyerDisplay, handleInput: maxUsagesPerBuyerHandleInput, handleBlur: maxUsagesPerBuyerHandleBlur, handleFocus: maxUsagesPerBuyerHandleFocus } = useNumberInputFormatter(maxUsagesPerBuyerRef, locale.value)
 
-const currencySymbol = computed(() => {
-  if (form.value.currency === 'VND') return 'đ'
-  if (form.value.currency === 'USD') return '$'
-  if (form.value.currency === 'EUR') return '€'
-  return form.value.currency
-})
+const currencyLabel = computed(() => form.value.currency || 'VND')
 
-const currencyOptions = computed(() => [
-  { label: 'VND', value: 'VND' },
-  { label: 'USD', value: 'USD' },
-  { label: 'EUR', value: 'EUR' },
-])
+const currencyOptions = computed(() => {
+  if (couponStore.currencyOptions.length > 0) {
+    return couponStore.currencyOptions
+  }
+
+  if (currencyCodeRef.value) {
+    return [{ label: currencyCodeRef.value, value: currencyCodeRef.value }]
+  }
+
+  return [{ label: 'VND', value: 'VND' as SupportedCurrencyCode }]
+})
 
 const displaySettingsOptions = computed(() => {
   const locked = isEditMode.value
@@ -624,6 +654,8 @@ type CouponProductRow = {
   image: string | null
   priceMin: number
   priceMax: number
+  currencyCode: SupportedCurrencyCode | null
+  priceIssue?: MoneyIssue | null
   stock: number
 }
 
@@ -643,8 +675,12 @@ const mapProductRow = (product: Product): CouponProductRow | null => {
   const prices = product.skus
     .map((sku) => Number(sku.price?.amount ?? 0))
     .filter((price) => Number.isFinite(price))
+  const productCurrencyCodes = Array.from(
+    new Set(product.skus.map((sku) => sku.price?.currencyCode).filter(Boolean)),
+  ) as SupportedCurrencyCode[]
   const priceMin = prices.length > 0 ? Math.min(...prices) : 0
   const priceMax = prices.length > 0 ? Math.max(...prices) : 0
+  const priceIssue = productCurrencyCodes.length === 1 ? null : { code: 'invalid_money' as const }
 
   return {
     id: product.id,
@@ -652,6 +688,8 @@ const mapProductRow = (product: Product): CouponProductRow | null => {
     image: product.thumbnailUrl,
     priceMin,
     priceMax,
+    currencyCode: productCurrencyCodes[0] ?? null,
+    priceIssue,
     stock: product.skus.reduce((sum, sku) => sum + toNumber(sku.quantity), 0),
   }
 }
@@ -728,9 +766,23 @@ const paginatedSelectedProducts = computed(() => {
   return selectedProductsDetailed.value.slice(start, end)
 })
 
-const formatPrice = (min: number, max: number) => {
-  if (min === max) return `₫${min.toLocaleString('vi-VN')}`
-  return `₫${min.toLocaleString('vi-VN')}-₫${max.toLocaleString('vi-VN')}`
+const formatPrice = (product: CouponProductRow) => {
+  const minPrice = formatMoney({
+    amount: product.priceMin,
+    currencyCode: product.currencyCode,
+    issue: product.priceIssue,
+  })
+
+  if (product.priceMin === product.priceMax || product.priceIssue) {
+    return minPrice
+  }
+
+  const maxPrice = formatMoney({
+    amount: product.priceMax,
+    currencyCode: product.currencyCode,
+  })
+
+  return `${minPrice} - ${maxPrice}`
 }
 
 const handleSelectedProductsPageChange = (page: number) => {
@@ -864,7 +916,7 @@ const populateFormFromDto = (dto: CouponDto) => {
     form.value.initialEarlySavePassed = false
   }
   form.value.discountType = dto.discountType
-  form.value.currency = dto.discountCurrency || 'VND'
+  form.value.currency = dto.currencyCode ?? dto.discountCurrency ?? 'VND'
   form.value.discountAmount = dto.discountType === DiscountType.FixedAmount
     ? String(dto.discountAmount ?? '')
     : String(dto.discountPercentage ?? '')
@@ -879,6 +931,11 @@ const populateFormFromDto = (dto: CouponDto) => {
 
 // ── On mount: load coupon in edit or duplicate mode ───────────
 onMounted(async () => {
+  const currencyConfig = await couponStore.fetchCurrencyConfig().catch(() => null)
+  if (!couponId.value && !copyId.value && currencyConfig) {
+    form.value.currency = currencyConfig.defaultCurrencyCode
+  }
+
   const id = couponId.value || copyId.value
   if (!id) return
   try {
@@ -940,7 +997,7 @@ const submitForm = async () => {
         endDateTime: form.value.endDate,
         earlySaveDateTime: form.value.allowEarlySave ? form.value.earlySaveDate : null,
 
-        discountCurrency: form.value.currency,
+        currencyCode: form.value.currency as SupportedCurrencyCode,
         discountAmount: discountType === DiscountType.FixedAmount ? (discountAmountNum || null) : null,
         discountPercentage: discountPercentageNum ?? null,
         maxDiscountAmount: maxDiscountAmountNum ?? null,
@@ -968,7 +1025,7 @@ const submitForm = async () => {
 
         discountType,
         discountAmount: discountType === DiscountType.FixedAmount ? (discountAmountNum || null) : null,
-        discountCurrency: form.value.currency,
+        currencyCode: form.value.currency as SupportedCurrencyCode,
         discountPercentage: discountPercentageNum ?? null,
         maxDiscountAmount: maxDiscountAmountNum ?? null,
         minOrderAmount: minOrderAmountNum,

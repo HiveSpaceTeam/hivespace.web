@@ -29,6 +29,7 @@ const preview = (lineTotal = 200_000): CheckoutPreview => ({
       shippingType: 'economy',
       shippingFee: 0,
       currency: 'VND',
+      currencyCode: 'VND',
       originalSubtotal: lineTotal,
       subtotal: lineTotal,
       packageTotal: lineTotal,
@@ -42,6 +43,7 @@ const preview = (lineTotal = 200_000): CheckoutPreview => ({
           skuAttributes: '{"Size":"M"}',
           price: 100_000,
           currency: 'VND',
+          currencyCode: 'VND',
           quantity: lineTotal / 100_000,
           lineTotal,
         },
@@ -51,6 +53,7 @@ const preview = (lineTotal = 200_000): CheckoutPreview => ({
   originalSubtotal: lineTotal,
   subtotal: lineTotal,
   currency: 'VND',
+  currencyCode: 'VND',
   totalShippingFee: 0,
   grandTotal: lineTotal,
   totalItems: lineTotal / 100_000,
@@ -292,6 +295,7 @@ describe('useCheckoutStore', () => {
           shippingType: 'economy',
           shippingFee: 30_000,
           currency: 'VND',
+          currencyCode: 'VND',
           originalSubtotal: 50_000,
           subtotal: 50_000,
           packageTotal: 80_000,
@@ -305,6 +309,7 @@ describe('useCheckoutStore', () => {
               skuAttributes: '{}',
               price: 50_000,
               currency: 'VND',
+              currencyCode: 'VND',
               quantity: 1,
               lineTotal: 50_000,
             },
@@ -367,7 +372,7 @@ describe('useCheckoutStore', () => {
 
   it('syncPackageItems_WhenNewItemAdded_InsertsNewItem', async () => {
     const initialPv = preview()
-    const updatedPv = {
+    const updatedPv: CheckoutPreview = {
       ...preview(250_000),
       packages: [
         {
@@ -383,6 +388,7 @@ describe('useCheckoutStore', () => {
               skuAttributes: '{}',
               price: 50_000,
               currency: 'VND',
+              currencyCode: 'VND',
               quantity: 1,
               lineTotal: 50_000,
             },

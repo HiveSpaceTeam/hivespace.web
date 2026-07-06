@@ -3,8 +3,9 @@ import { createPinia, setActivePinia } from 'pinia'
 import { DiscountType, CouponScope } from '@hivespace/shared'
 import { useCouponStore } from './coupon.store'
 import { couponService } from '@/services/coupon.service'
+import { configurationService } from '@/services/configuration.service'
 import { CouponStatus } from '@/types'
-import type { CouponSummaryDto } from '@/types'
+import type { CouponDto, CouponSummaryDto } from '@/types'
 
 jest.mock('@/services/coupon.service', () => ({
   couponService: {
@@ -14,6 +15,12 @@ jest.mock('@/services/coupon.service', () => ({
     getCouponById: jest.fn(),
     deleteCoupon: jest.fn(),
     endCoupon: jest.fn(),
+  },
+}))
+
+jest.mock('@/services/configuration.service', () => ({
+  configurationService: {
+    getCurrencyConfig: jest.fn(),
   },
 }))
 
@@ -35,7 +42,7 @@ const fakeCouponSummary = (overrides: Partial<CouponSummaryDto> = {}): CouponSum
   code: 'SUMMER10',
   discountType: DiscountType.FixedAmount,
   discountAmount: 10,
-  discountCurrency: 'VND',
+  currencyCode: 'VND',
   minOrderAmount: 0,
   maxUsageCount: 100,
   currentUsageCount: 0,
@@ -68,6 +75,7 @@ describe('useCouponStore (seller)', () => {
       code: 'NEW10',
       discountType: DiscountType.FixedAmount,
       discountAmount: 10,
+      currencyCode: 'VND',
       minOrderAmount: 50_000,
       maxUsageCount: 100,
       currentUsageCount: 0,
@@ -90,6 +98,7 @@ describe('useCouponStore (seller)', () => {
       name: 'Summer Sale',
       discountType: DiscountType.FixedAmount,
       discountAmount: 10,
+      currencyCode: 'VND',
       minOrderAmount: 0,
       maxUsageCount: 100,
       currentUsageCount: 0,
@@ -106,6 +115,15 @@ describe('useCouponStore (seller)', () => {
       applicableProductIds: [],
       applicableCategoryIds: [],
     })
+    jest.mocked(configurationService.getCurrencyConfig).mockResolvedValue({
+      defaultCurrencyCode: 'USD',
+      version: 2,
+      items: [
+        { currencyCode: 'VND', enabled: true },
+        { currencyCode: 'USD', enabled: true },
+        { currencyCode: 'EUR', enabled: false },
+      ],
+    })
   })
 
   it('should load coupons from the API', async () => {
@@ -118,6 +136,79 @@ describe('useCouponStore (seller)', () => {
     expect(store.coupons[0]?.code).toBe('SUMMER10')
   })
 
+  it('should normalize legacy discount currency into currencyCode', async () => {
+    jest.mocked(couponService.getCoupons).mockResolvedValueOnce({
+      coupons: [
+        fakeCouponSummary({
+          currencyCode: null,
+          discountCurrency: 'USD',
+          discountAmount: 1_050,
+        }),
+      ],
+      pagination: {
+        currentPage: 1,
+        pageSize: 20,
+        totalItems: 1,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      },
+    })
+    const store = useCouponStore()
+
+    await store.fetchCoupons({ page: 1, pageSize: 20, couponStatus: CouponStatus.All })
+
+    expect(store.coupons[0]?.currencyCode).toBe('USD')
+  })
+
+  it('should preserve invalid-money metadata from the API', async () => {
+    jest.mocked(couponService.getCouponById).mockResolvedValueOnce({
+      id: 'coupon-issue',
+      name: 'Broken Coupon',
+      code: 'BROKEN',
+      discountType: DiscountType.FixedAmount,
+      currencyCode: null,
+      discountCurrency: null,
+      discountAmount: 500,
+      discountAmountIssue: { code: 'missing_currency' },
+      minOrderAmount: 1_000,
+      minOrderAmountIssue: { code: 'missing_currency' },
+      maxUsageCount: 10,
+      currentUsageCount: 0,
+      maxUsagePerUser: 1,
+      isHidden: false,
+      isActive: true,
+      ownerType: 1,
+      createdBy: 'seller-001',
+      status: CouponStatus.Ongoing,
+      scope: CouponScope.ItemPrice,
+      startDateTime: '2026-06-01T00:00:00Z',
+      endDateTime: '2026-12-31T00:00:00Z',
+      createdAt: '2026-06-01T00:00:00Z',
+      applicableProductIds: [],
+      applicableCategoryIds: [],
+    })
+    const store = useCouponStore()
+
+    await store.fetchCouponById('coupon-issue')
+
+    expect(store.currentCoupon?.discountAmountIssue?.code).toBe('missing_currency')
+    expect(store.currentCoupon?.minOrderAmountIssue?.code).toBe('missing_currency')
+  })
+
+  it('should load enabled currency options from configuration', async () => {
+    const store = useCouponStore()
+
+    const config = await store.fetchCurrencyConfig()
+
+    expect(configurationService.getCurrencyConfig).toHaveBeenCalled()
+    expect(config.defaultCurrencyCode).toBe('USD')
+    expect(store.currencyOptions).toEqual([
+      { label: 'VND', value: 'VND' },
+      { label: 'USD', value: 'USD' },
+    ])
+  })
+
   it('should append new coupon to list', async () => {
     const store = useCouponStore()
 
@@ -128,7 +219,7 @@ describe('useCouponStore (seller)', () => {
       endDateTime: '2026-12-31T00:00:00Z',
       discountType: DiscountType.FixedAmount,
       discountAmount: 10,
-      discountCurrency: 'VND',
+      currencyCode: 'VND',
       minOrderAmount: 50_000,
       scope: CouponScope.ItemPrice,
       maxUsageCount: 100,
@@ -151,12 +242,13 @@ describe('useCouponStore (seller)', () => {
   })
 
   it('should update current coupon', async () => {
-    const updatedDto = {
+    const updatedDto: CouponDto = {
       id: 'coupon-001',
       name: 'Updated Summer Sale',
       code: 'SHOP1234',
       discountType: DiscountType.FixedAmount,
       discountAmount: 20,
+      currencyCode: 'VND',
       minOrderAmount: 100_000,
       maxUsageCount: 200,
       currentUsageCount: 0,
@@ -183,7 +275,7 @@ describe('useCouponStore (seller)', () => {
       startDateTime: '2026-06-01T00:00:00Z',
       endDateTime: '2026-12-31T00:00:00Z',
       discountAmount: 20,
-      discountCurrency: 'VND',
+      currencyCode: 'VND',
       discountPercentage: null,
       maxDiscountAmount: null,
       minOrderAmount: 100_000,
@@ -208,12 +300,13 @@ describe('useCouponStore (seller)', () => {
   })
 
   it('should cache current coupon when fetched by id', async () => {
-    const dto = {
+    const dto: CouponDto = {
       id: 'coupon-001',
       name: 'Summer Sale',
       code: 'SHOPSUM1',
       discountType: DiscountType.FixedAmount,
       discountAmount: 10,
+      currencyCode: 'VND',
       minOrderAmount: 50_000,
       maxUsageCount: 100,
       currentUsageCount: 5,
@@ -259,7 +352,7 @@ describe('useCouponStore (seller)', () => {
       endDateTime: '2026-12-31T00:00:00Z',
       discountType: DiscountType.FixedAmount,
       discountAmount: 10,
-      discountCurrency: 'VND',
+      currencyCode: 'VND',
       minOrderAmount: 50_000,
       scope: CouponScope.ItemPrice,
       maxUsageCount: 100,

@@ -1,5 +1,9 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
+import {
+  normalizeCurrencyCode,
+  type MoneyIssue,
+} from '@hivespace/shared'
 import { checkoutService } from '@/services/checkout.service'
 import { cartService } from '@/services/cart.service'
 import { useAsyncAction } from '@/composables/useAsyncAction'
@@ -14,6 +18,30 @@ import type {
   InvalidAppliedCoupon,
 } from '@/types'
 
+const resolveMoneyIssue = (
+  currencyCode: string | null | undefined,
+): MoneyIssue | null => (normalizeCurrencyCode(currencyCode) ? null : { code: 'missing_currency' })
+
+const normalizeCheckoutItem = (item: CheckoutItem): CheckoutItem => ({
+  ...item,
+  currencyCode: normalizeCurrencyCode(item.currencyCode ?? item.currency),
+  moneyIssue: item.moneyIssue ?? resolveMoneyIssue(item.currencyCode ?? item.currency),
+})
+
+const normalizeDeliveryPackage = (pkg: DeliveryPackage): DeliveryPackage => ({
+  ...pkg,
+  currencyCode: normalizeCurrencyCode(pkg.currencyCode ?? pkg.currency),
+  moneyIssue: pkg.moneyIssue ?? resolveMoneyIssue(pkg.currencyCode ?? pkg.currency),
+  items: pkg.items.map(normalizeCheckoutItem),
+})
+
+const normalizePreview = (response: CheckoutPreview): CheckoutPreview => ({
+  ...response,
+  currencyCode: normalizeCurrencyCode(response.currencyCode ?? response.currency),
+  moneyIssue: response.moneyIssue ?? resolveMoneyIssue(response.currencyCode ?? response.currency),
+  packages: response.packages.map(normalizeDeliveryPackage),
+})
+
 const areCheckoutItemsEqual = (left: CheckoutItem, right: CheckoutItem) =>
   left.cartItemId === right.cartItemId &&
   left.productId === right.productId &&
@@ -24,8 +52,10 @@ const areCheckoutItemsEqual = (left: CheckoutItem, right: CheckoutItem) =>
   left.originalPrice === right.originalPrice &&
   left.price === right.price &&
   left.currency === right.currency &&
+  left.currencyCode === right.currencyCode &&
   left.quantity === right.quantity &&
-  left.lineTotal === right.lineTotal
+  left.lineTotal === right.lineTotal &&
+  left.moneyIssue?.code === right.moneyIssue?.code
 
 const areDeliveryPackagesEqual = (left: DeliveryPackage, right: DeliveryPackage) =>
   left.storeId === right.storeId &&
@@ -34,18 +64,22 @@ const areDeliveryPackagesEqual = (left: DeliveryPackage, right: DeliveryPackage)
   left.originalShippingFee === right.originalShippingFee &&
   left.shippingFee === right.shippingFee &&
   left.currency === right.currency &&
+  left.currencyCode === right.currencyCode &&
   left.originalSubtotal === right.originalSubtotal &&
   left.subtotal === right.subtotal &&
   left.packageTotal === right.packageTotal &&
+  left.moneyIssue?.code === right.moneyIssue?.code &&
   isStoreCouponEqual(left.appliedStoreCoupon, right.appliedStoreCoupon)
 
 const isPreviewMetaEqual = (left: CheckoutPreview, right: CheckoutPreview) =>
   left.originalSubtotal === right.originalSubtotal &&
   left.subtotal === right.subtotal &&
   left.currency === right.currency &&
+  left.currencyCode === right.currencyCode &&
   left.totalShippingFee === right.totalShippingFee &&
   left.grandTotal === right.grandTotal &&
-  left.totalItems === right.totalItems
+  left.totalItems === right.totalItems &&
+  left.moneyIssue?.code === right.moneyIssue?.code
 
 const patchCheckoutItem = (target: CheckoutItem, source: CheckoutItem) => {
   target.cartItemId = source.cartItemId
@@ -57,8 +91,10 @@ const patchCheckoutItem = (target: CheckoutItem, source: CheckoutItem) => {
   target.originalPrice = source.originalPrice
   target.price = source.price
   target.currency = source.currency
+  target.currencyCode = source.currencyCode
   target.quantity = source.quantity
   target.lineTotal = source.lineTotal
+  target.moneyIssue = source.moneyIssue
 }
 
 const patchDeliveryPackage = (target: DeliveryPackage, source: DeliveryPackage) => {
@@ -68,10 +104,12 @@ const patchDeliveryPackage = (target: DeliveryPackage, source: DeliveryPackage) 
   target.originalShippingFee = source.originalShippingFee
   target.shippingFee = source.shippingFee
   target.currency = source.currency
+  target.currencyCode = source.currencyCode
   target.originalSubtotal = source.originalSubtotal
   target.subtotal = source.subtotal
   target.packageTotal = source.packageTotal
   target.appliedStoreCoupon = source.appliedStoreCoupon
+  target.moneyIssue = source.moneyIssue
 }
 
 export const useCheckoutStore = defineStore('checkout', () => {
@@ -182,9 +220,11 @@ export const useCheckoutStore = defineStore('checkout', () => {
     preview.value.originalSubtotal = nextPreview.originalSubtotal
     preview.value.subtotal = nextPreview.subtotal
     preview.value.currency = nextPreview.currency
+    preview.value.currencyCode = nextPreview.currencyCode
     preview.value.totalShippingFee = nextPreview.totalShippingFee
     preview.value.grandTotal = nextPreview.grandTotal
     preview.value.totalItems = nextPreview.totalItems
+    preview.value.moneyIssue = nextPreview.moneyIssue
   }
 
   const syncPlatformCoupons = (nextCoupons: AppliedPlatformCoupon[]) => {
@@ -223,7 +263,7 @@ export const useCheckoutStore = defineStore('checkout', () => {
     syncInvalidatedCoupons(response.invalidatedCoupons)
   }
 
-  const fetchPreviewInternal = () => checkoutService.getPreview({})
+  const fetchPreviewInternal = async () => normalizePreview(await checkoutService.getPreview({}))
 
   const loadInitialPreview = async () => {
     const response = await runInitialLoad(fetchPreviewInternal)

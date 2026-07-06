@@ -2,7 +2,15 @@
 // Marketing Domain - Coupon Types
 // Mirrors the backend HiveSpace.OrderService domain contracts
 // ============================================================
-import { type PaginationMetadata, CouponScope, DiscountType } from '@hivespace/shared'
+import type {
+  MoneyIssue,
+  PaginationMetadata,
+  PlatformCurrencyConfig,
+  SupportedCurrencyCode,
+} from '@hivespace/shared'
+import { CouponScope, DiscountType } from '@hivespace/shared'
+
+export type { PlatformCurrencyConfig, SupportedCurrencyCode }
 
 /** Front-end coupon category selection enum */
 export enum CouponType {
@@ -38,8 +46,8 @@ export interface CreateCouponRequest {
     earlySaveDateTime?: string | null // ISO 8601
 
     discountType: DiscountType
+    currencyCode: SupportedCurrencyCode
     discountAmount?: number | null
-    discountCurrency: string
     discountPercentage?: number | null
     maxDiscountAmount?: number | null
     minOrderAmount: number
@@ -67,7 +75,7 @@ export interface UpdateCouponRequest {
     endDateTime: string
     earlySaveDateTime?: string | null
 
-    discountCurrency: string
+    currencyCode: SupportedCurrencyCode
     discountAmount?: number | null
     discountPercentage?: number | null
     maxDiscountAmount?: number | null
@@ -106,11 +114,15 @@ export interface CouponDto {
     earlySaveDateTime?: string | null
 
     discountType: DiscountType
+    currencyCode: SupportedCurrencyCode | null
+    discountCurrency?: SupportedCurrencyCode | null
     discountAmount?: number | null
-    discountCurrency?: string | null
+    discountAmountIssue?: MoneyIssue | null
     discountPercentage?: number | null
     maxDiscountAmount?: number | null
-    minOrderAmount: number
+    maxDiscountAmountIssue?: MoneyIssue | null
+    minOrderAmount: number | null
+    minOrderAmountIssue?: MoneyIssue | null
 
     scope: CouponScope
 
@@ -144,11 +156,15 @@ export interface CouponSummaryDto {
     endDateTime: string
 
     discountType: DiscountType
+    currencyCode: SupportedCurrencyCode | null
+    discountCurrency?: SupportedCurrencyCode | null
     discountAmount?: number | null
-    discountCurrency: string
+    discountAmountIssue?: MoneyIssue | null
     discountPercentage?: number | null
     maxDiscountAmount?: number | null
-    minOrderAmount: number
+    maxDiscountAmountIssue?: MoneyIssue | null
+    minOrderAmount: number | null
+    minOrderAmountIssue?: MoneyIssue | null
 
     maxUsageCount: number
     currentUsageCount: number

@@ -12,6 +12,7 @@ import { PaymentMethod, type CheckoutPreview, type UserAddress } from '@/types'
 const mockNotifyError = jest.fn()
 const mockNotifySuccess = jest.fn()
 const mockOpenModal = jest.fn()
+const formatMoneyMock = jest.fn()
 
 jest.mock('@hivespace/shared', () => {
   const actual = jest.requireActual<typeof import('@hivespace/shared')>('@hivespace/shared')
@@ -55,6 +56,9 @@ jest.mock('@hivespace/shared', () => {
     }),
     useModal: () => ({
       openModal: mockOpenModal,
+    }),
+    useMoneyFormatter: () => ({
+      formatMoney: formatMoneyMock,
     }),
   }
 })
@@ -114,6 +118,7 @@ const checkoutPreview: CheckoutPreview = {
       shippingType: 'economy',
       shippingFee: 0,
       currency: 'VND',
+      currencyCode: 'VND',
       originalSubtotal: 200_000,
       subtotal: 200_000,
       packageTotal: 200_000,
@@ -127,6 +132,7 @@ const checkoutPreview: CheckoutPreview = {
           skuAttributes: '{"Size":"M"}',
           price: 100_000,
           currency: 'VND',
+          currencyCode: 'VND',
           quantity: 2,
           lineTotal: 200_000,
         },
@@ -136,6 +142,7 @@ const checkoutPreview: CheckoutPreview = {
   originalSubtotal: 200_000,
   subtotal: 200_000,
   currency: 'VND',
+  currencyCode: 'VND',
   totalShippingFee: 0,
   grandTotal: 200_000,
   totalItems: 2,
@@ -191,6 +198,14 @@ describe('CheckoutPage', () => {
     mockNotifyError.mockReset()
     mockNotifySuccess.mockReset()
     mockOpenModal.mockReset()
+    formatMoneyMock.mockReset()
+    formatMoneyMock.mockImplementation((value: unknown) => {
+      const { amount } = value as {
+        amount: number | null
+      }
+
+      return `${amount?.toLocaleString('vi-VN') ?? '0'}₫`
+    })
     jest.mocked(checkoutService.getPreview).mockResolvedValue(checkoutPreview)
     jest.mocked(checkoutService.initiateCheckout).mockResolvedValue({
       orderIds: ['order-001'],

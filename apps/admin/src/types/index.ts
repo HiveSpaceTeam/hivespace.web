@@ -15,3 +15,6 @@ export * from './user.types'
 
 // Merchant types
 export * from './merchant.types'
+
+// Configuration types
+export * from './configuration.types'

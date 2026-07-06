@@ -104,9 +104,11 @@
                   <div class="text-right shrink-0">
                     <p v-if="item.originalPrice && item.originalPrice !== item.unitPrice"
                       class="text-xs text-gray-400 line-through">
-                      {{ formatPrice(item.originalPrice) }}
+                      {{ formatPrice(item.originalPrice, item.currencyCode ?? item.currency, item.moneyIssue) }}
                     </p>
-                    <p class="text-sm text-gray-800 dark:text-gray-100">{{ formatPrice(item.unitPrice) }}</p>
+                    <p class="text-sm text-gray-800 dark:text-gray-100">
+                      {{ formatPrice(item.unitPrice, item.currencyCode ?? item.currency, item.moneyIssue) }}
+                    </p>
                   </div>
                 </div>
               </div>
@@ -114,7 +116,9 @@
               <!-- Total row -->
               <div class="px-5 py-3 border-t border-gray-100 dark:border-gray-700 flex justify-end items-center gap-2">
                 <span class="text-sm text-gray-500 dark:text-gray-400">{{ $t('storefront.ordersPage.total') }}</span>
-                <span class="text-base font-semibold text-primary">{{ formatPrice(order.totalAmount) }}</span>
+                <span class="text-base font-semibold text-primary">
+                  {{ formatPrice(order.totalAmount, order.currencyCode ?? order.currency, order.moneyIssue) }}
+                </span>
               </div>
 
               <!-- Action buttons -->
@@ -177,18 +181,20 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { Button, Spinner } from '@hivespace/shared'
+import { Button, Spinner, createMoneyDisplay, useMoneyFormatter } from '@hivespace/shared'
 import { storeToRefs } from 'pinia'
 import { ShoppingBag, Search } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
 import { useOrdersStore } from '@/stores'
 import ProfileSidebar from '@/components/profile/ProfileSidebar.vue'
 import type { CustomerOrderProcessStatus, OrderStatus } from '@/types'
+import type { MoneyIssue } from '@hivespace/shared'
 
 const router = useRouter()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 const ordersStore = useOrdersStore()
 const { orders, activeTab, searchQuery, isLoading, isLoadingMore, hasNextPage } = storeToRefs(ordersStore)
+const { formatMoney } = useMoneyFormatter({ t })
 
 const sentinel = ref<HTMLDivElement | null>(null)
 
@@ -224,8 +230,11 @@ const deliveredStatuses: OrderStatus[] = ['Delivered', 'Completed']
 const cancelledStatuses: OrderStatus[] = ['Cancelled', 'Rejected', 'Expired']
 const refundStatuses: OrderStatus[] = ['Refunding', 'Refunded', 'Solved', 'Claimed']
 
-const formatPrice = (price: number) =>
-  price.toLocaleString('vi-VN') + 'đ'
+const formatPrice = (
+  price: number,
+  currencyCode: string | number | null | undefined,
+  issue?: MoneyIssue | null,
+) => formatMoney(createMoneyDisplay(price, currencyCode, { issue }), { locale: locale.value })
 
 let observer: IntersectionObserver | null = null
 

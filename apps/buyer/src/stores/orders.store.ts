@@ -1,9 +1,39 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useAppStore } from '@hivespace/shared'
+import {
+  normalizeCurrencyCode,
+  type MoneyIssue,
+  useAppStore,
+} from '@hivespace/shared'
 import { orderService } from '@/services/order.service'
 import { useAsyncAction } from '@/composables/useAsyncAction'
 import type { Order, OrderDetail, CustomerOrderProcessStatus, GetOrdersQuery } from '@/types'
+
+const resolveMoneyIssue = (
+  currencyCode: string | null | undefined,
+): MoneyIssue | null => (normalizeCurrencyCode(currencyCode) ? null : { code: 'missing_currency' })
+
+const normalizeOrder = (order: Order): Order => ({
+  ...order,
+  currencyCode: normalizeCurrencyCode(order.currencyCode ?? order.currency),
+  moneyIssue: order.moneyIssue ?? resolveMoneyIssue(order.currencyCode ?? order.currency),
+  items: order.items.map((item) => ({
+    ...item,
+    currencyCode: normalizeCurrencyCode(item.currencyCode ?? item.currency),
+    moneyIssue: item.moneyIssue ?? resolveMoneyIssue(item.currencyCode ?? item.currency),
+  })),
+})
+
+const normalizeOrderDetail = (order: OrderDetail): OrderDetail => ({
+  ...order,
+  currencyCode: normalizeCurrencyCode(order.currencyCode ?? order.currency),
+  moneyIssue: order.moneyIssue ?? resolveMoneyIssue(order.currencyCode ?? order.currency),
+  items: order.items.map((item) => ({
+    ...item,
+    currencyCode: normalizeCurrencyCode(item.currencyCode ?? item.currency),
+    moneyIssue: item.moneyIssue ?? resolveMoneyIssue(item.currencyCode ?? item.currency),
+  })),
+})
 
 const PAGE_SIZE = 5
 
@@ -35,7 +65,7 @@ export const useOrdersStore = defineStore('orders', () => {
       params.searchValue = trimmed
     }
     const result = await run(() => orderService.getOrders(params))
-    orders.value = result.orders
+    orders.value = result.orders.map(normalizeOrder)
     hasNextPage.value = result.pagination.hasNextPage
   }
 
@@ -51,7 +81,7 @@ export const useOrdersStore = defineStore('orders', () => {
         pageSize: PAGE_SIZE,
       }),
     )
-    orders.value = [...orders.value, ...result.orders]
+    orders.value = [...orders.value, ...result.orders.map(normalizeOrder)]
     currentPage.value = nextPage
     hasNextPage.value = result.pagination.hasNextPage
   }
@@ -69,7 +99,7 @@ export const useOrdersStore = defineStore('orders', () => {
 
   const fetchOrderById = async (orderId: string) => {
     await runDetail(async () => {
-      currentOrder.value = await orderService.getOrderById(orderId)
+      currentOrder.value = normalizeOrderDetail(await orderService.getOrderById(orderId))
     }).catch(() => {
       useAppStore().notifyError('orders.errors.notFound')
     })

@@ -100,6 +100,16 @@
       <div class="space-y-6">
         <ComponentCard :title="$t('product.salesInfo')">
           <div class="space-y-6">
+            <div>
+              <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
+                {{ $t('coupon.detail.discountSettings.currency') }}
+              </label>
+              <Select
+                v-model="selectedCurrencyCode"
+                :options="currencyOptions"
+                :placeholder="$t('product.pleaseSelect')"
+              />
+            </div>
             <div class="product-variants-container space-y-6">
               <div v-for="(productVariant, variantIndex) in product.variants" :key="variantIndex">
                 <div class="space-y-3">
@@ -182,7 +192,10 @@
                         </template>
 
                         <td class="px-5 py-4 sm:px-6">
-                          <input type="text" v-model="productSku.price.amount"
+                          <input
+                            type="text"
+                            :value="priceDisplayValues[getSkuKey(productSku)] || ''"
+                            @input="handleSkuPriceInput(productSku, $event)"
                             class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
                         </td>
 
@@ -213,7 +226,11 @@
                 <label class="mb-1.5 block text-sm font-medium text-gray-700 dark:text-gray-400">
                   {{ $t('product.price') }}
                 </label>
-                <input type="text" :placeholder="$t('product.typeHere')" :value="getProductNoVariantsPrice()"
+                <input
+                  type="text"
+                  :placeholder="$t('product.typeHere')"
+                  :value="priceDisplayValues[getSkuKey(product.skus[0])] || getProductNoVariantsPrice()"
+                  @input="product.skus[0] && handleSkuPriceInput(product.skus[0], $event)"
                   class="dark:bg-dark-900 h-11 w-full rounded-lg border border-gray-300 bg-transparent px-4 py-2.5 text-sm text-gray-800 shadow-theme-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-hidden focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800" />
               </div>
             </div>
@@ -410,6 +427,8 @@ import {
   PlusIcon,
   TrashIcon,
   useAppStore,
+  useMoneyInput,
+  type SupportedCurrencyCode,
 } from '@hivespace/shared'
 import { QuillEditor } from '@vueup/vue-quill'
 import ImageUploader from 'quill-image-uploader'
@@ -430,6 +449,8 @@ const { t } = useI18n()
 const {
   categories,
   categoryAttributes,
+  currencyConfig,
+  currencyOptions,
   isLoadingCategories,
   isLoadingAttributes,
 } = storeToRefs(productStore)
@@ -448,11 +469,23 @@ const categoryOptions = computed(() =>
   })),
 )
 const formData = ref<{ input?: string; selectInput?: string }>({})
+const selectedCurrencyCode = ref<SupportedCurrencyCode>('VND')
 const product = ref<Product>({
   name: '',
   category: '',
   variants: [],
-  skus: [],
+  skus: [
+    {
+      id: 1,
+      skuVariants: [],
+      price: {
+        amount: 0,
+        currencyCode: selectedCurrencyCode.value,
+      },
+      quantity: '',
+      skuNo: '',
+    },
+  ],
   images: [],
   thumbnailUrl: null,
   currentSeller: null,
@@ -500,6 +533,47 @@ const modules = ref({
 
 const  variantIdCounter = ref(1)
 const  skuIdCounter = ref(1)
+const priceDisplayValues = ref<Record<string, string>>({})
+const moneyInputModel = ref<number | null>(0)
+const {
+  formatInputValue: formatMoneyInputValue,
+  parseInputValue: parseMoneyInputValue,
+} = useMoneyInput(moneyInputModel, selectedCurrencyCode, { locale: 'en-US' })
+
+const createEmptySku = (): ProductSku => ({
+  id: skuIdCounter.value++,
+  skuVariants: [],
+  price: {
+    amount: 0,
+    currencyCode: selectedCurrencyCode.value,
+  },
+  quantity: '',
+  skuNo: '',
+})
+
+const syncSkuPriceDisplay = (productSku: ProductSku) => {
+  priceDisplayValues.value[getSkuKey(productSku)] = formatMoneyInputValue(
+    productSku.price.amount,
+    selectedCurrencyCode.value,
+  )
+}
+
+const syncAllSkuPriceDisplays = () => {
+  product.value.skus.forEach((sku) => {
+    sku.price.currencyCode = selectedCurrencyCode.value
+    syncSkuPriceDisplay(sku)
+  })
+}
+
+const handleSkuPriceInput = (productSku: ProductSku, event: Event) => {
+  const input = event.target as HTMLInputElement
+  const parsedValue = parseMoneyInputValue(input.value, selectedCurrencyCode.value)
+  productSku.price.amount = parsedValue
+  productSku.price.currencyCode = selectedCurrencyCode.value
+  const displayValue = formatMoneyInputValue(parsedValue, selectedCurrencyCode.value)
+  priceDisplayValues.value[getSkuKey(productSku)] = displayValue
+  input.value = displayValue
+}
 
 const onClickAddNewVariant = () => {
   const defaultVariantValue = {
@@ -590,7 +664,7 @@ const updateProductSkus = (
     product.value.skus.push({
       id: skuIdCounter.value++,
       skuVariants,
-      price: { amount: 0, currency: 0 },
+      price: { amount: 0, currencyCode: selectedCurrencyCode.value },
     })
   })
   product.value.skus = product.value.skus.filter(
@@ -763,7 +837,13 @@ const fetchCategoryAttributes = async (categoryId: string) => {
 
 // Load categories on component mount
 onMounted(async () => {
-  fetchCategories()
+  await Promise.all([
+    fetchCategories(),
+    productStore.fetchCurrencyConfig().catch(() => null),
+  ])
+  if (currencyConfig.value?.defaultCurrencyCode) {
+    selectedCurrencyCode.value = currencyConfig.value.defaultCurrencyCode
+  }
   await initFromRoute()
 })
 
@@ -786,9 +866,12 @@ watch(
     await initFromRoute()
   },
 )
+watch(selectedCurrencyCode, () => {
+  syncAllSkuPriceDisplays()
+})
 const getProductNoVariantsPrice = (): number | string => {
   if (product.value.skus && product.value.skus.length > 0) {
-    return product.value.skus[0].price.amount
+    return formatMoneyInputValue(product.value.skus[0].price.amount, selectedCurrencyCode.value)
   }
   return ''
 }
@@ -824,7 +907,9 @@ const loadProductDetails = async (id: string) => {
     }
     // Variants & SKUs (ensure shapes align with local types)
     product.value.variants = loaded.variants || []
-    product.value.skus = loaded.skus || []
+    product.value.skus = loaded.skus?.length ? loaded.skus : [createEmptySku()]
+    selectedCurrencyCode.value = product.value.skus[0]?.price.currencyCode || currencyConfig.value?.defaultCurrencyCode || 'VND'
+    syncAllSkuPriceDisplays()
     
     // Load existing images for product
     existingProductImages.value = loaded.images || []
@@ -877,16 +962,18 @@ const loadProductDetails = async (id: string) => {
 }
 
 const resetForm = () => {
+  selectedCurrencyCode.value = currencyConfig.value?.defaultCurrencyCode || 'VND'
   // Reset base product model
   product.value = {
     name: '',
     category: '',
     variants: [],
-    skus: [],
+    skus: [createEmptySku()],
     images: [],
     thumbnailUrl: null,
     currentSeller: null,
   }
+  syncAllSkuPriceDisplays()
   // Reset category selection and attributes UI state
   formData.value.selectInput = ''
   categoryAttributes.value = []

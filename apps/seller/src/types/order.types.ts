@@ -42,6 +42,7 @@ export interface Order {
   buyerName: string
   items: OrderItem[]
   totalAmount: number
+  currencyCode?: string | null
   paymentMethod: string
   status: OrderStatus
   actionDateTime: string

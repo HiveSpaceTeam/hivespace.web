@@ -36,6 +36,19 @@ export interface ApiConfig {
   }
 }
 
+export type SupportedCurrencyCode = 'VND' | 'USD' | 'EUR'
+
+export type MoneyIssue = {
+  code: 'missing_currency' | 'unsupported_currency' | 'invalid_amount' | 'invalid_money'
+  placeholder?: string
+}
+
+const NUMERIC_CURRENCY_CODES: Record<number, SupportedCurrencyCode> = {
+  704: 'VND',
+  840: 'USD',
+  978: 'EUR',
+}
+
 export { createNotificationStore, NotificationChannel, NotificationStatus }
 export { validateRequired, validatePositiveNumber, validateEmail }
 export type {
@@ -86,6 +99,62 @@ export const parseBoolean = (value: string | undefined, fallback = false) => {
 export const parseNumber = (value: string | undefined, fallback: number) => {
   const parsed = Number(value)
   return Number.isFinite(parsed) ? parsed : fallback
+}
+
+export const normalizeCurrencyCode = (
+  currencyCode: string | number | null | undefined,
+  fallbackCurrencyCode: SupportedCurrencyCode | null = null,
+): SupportedCurrencyCode | null => {
+  if (currencyCode === 'VND' || currencyCode === 'USD' || currencyCode === 'EUR') {
+    return currencyCode
+  }
+
+  if (typeof currencyCode === 'number') {
+    return NUMERIC_CURRENCY_CODES[currencyCode] ?? fallbackCurrencyCode
+  }
+
+  return fallbackCurrencyCode
+}
+
+export const createMoneyDisplay = (
+  amount: number | null,
+  currencyCode: string | null | undefined,
+  options?: {
+    issue?: MoneyIssue | null
+    fallbackCurrencyCode?: SupportedCurrencyCode | null
+  },
+) => ({
+  amount,
+  currencyCode: normalizeCurrencyCode(currencyCode, options?.fallbackCurrencyCode),
+  issue: options?.issue ?? null,
+})
+
+export const createAggregateMoneyDisplay = (
+  amount: number | null,
+  currencies: Array<string | null | undefined>,
+  options?: {
+    mismatchIssue?: MoneyIssue | null
+    missingIssue?: MoneyIssue | null
+    fallbackCurrencyCode?: SupportedCurrencyCode | null
+  },
+) => {
+  const normalizedCurrencies = Array.from(
+    new Set(
+      currencies
+        .map(currency => normalizeCurrencyCode(currency, options?.fallbackCurrencyCode ?? null))
+        .filter((currency): currency is SupportedCurrencyCode => currency !== null),
+    ),
+  )
+
+  if (normalizedCurrencies.length === 0) {
+    return createMoneyDisplay(amount, null, { issue: options?.missingIssue ?? null })
+  }
+
+  if (normalizedCurrencies.length > 1) {
+    return createMoneyDisplay(amount, normalizedCurrencies[0], { issue: options?.mismatchIssue ?? { code: 'invalid_money' } })
+  }
+
+  return createMoneyDisplay(amount, normalizedCurrencies[0])
 }
 
 export const joinUrl = (...parts: string[]) =>

@@ -93,6 +93,26 @@ jest.mock('@hivespace/shared', () => {
     EyeIcon: { template: '<span />' },
     PlusIcon: { template: '<span />' },
     TrashIcon: { template: '<span />' },
+    useMoneyInput: () => ({
+      displayValue: ref(''),
+      handleInput: jest.fn(),
+      formatInputValue: (value: number | null | undefined, currencyCode: string) => {
+        if (value == null) return ''
+        if (currencyCode === 'USD' || currencyCode === 'EUR') {
+          return (value / 100).toFixed(2)
+        }
+
+        return String(value)
+      },
+      parseInputValue: (value: string, currencyCode: string) => {
+        if (!value) return null
+        if (currencyCode === 'USD' || currencyCode === 'EUR') {
+          return Math.round(Number.parseFloat(value) * 100)
+        }
+
+        return Number(value)
+      },
+    }),
     useAppStore: () => ({
       notifySuccess: mockNotifySuccess,
       notifyError: mockNotifyError,
@@ -253,6 +273,13 @@ describe('UpsertProductPage', () => {
         expect.objectContaining({
           name: 'New Product',
           category: 'cat-1',
+          skus: expect.arrayContaining([
+            expect.objectContaining({
+              price: expect.objectContaining({
+                currencyCode: 'VND',
+              }),
+            }),
+          ]),
         }),
       )
     })

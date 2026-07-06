@@ -1,7 +1,14 @@
 import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import i18n from '@/i18n'
-import { useAppStore, type PaginationMetadata } from '@hivespace/shared'
+import {
+  normalizeCurrencyCode,
+  useAppStore,
+  type PaginationMetadata,
+  type PlatformCurrencyConfig,
+  type PlatformCurrencyConfigItem,
+  type SupportedCurrencyCode,
+} from '@hivespace/shared'
 import { CouponStatus } from '@/types'
 import type {
     CreateCouponRequest,
@@ -11,6 +18,17 @@ import type {
     GetCouponListQuery,
 } from '@/types'
 import { couponService } from '@/services/coupon.service'
+import { configurationService } from '@/services/configuration.service'
+
+const normalizeCouponSummary = (coupon: CouponSummaryDto): CouponSummaryDto => ({
+  ...coupon,
+  currencyCode: normalizeCurrencyCode(coupon.currencyCode, coupon.discountCurrency ?? undefined),
+})
+
+const normalizeCoupon = (coupon: CouponDto): CouponDto => ({
+  ...coupon,
+  currencyCode: normalizeCurrencyCode(coupon.currencyCode, coupon.discountCurrency ?? undefined),
+})
 
 // ────────────────────────────────────────────────────────────
 // Coupon Store
@@ -29,6 +47,20 @@ export const useCouponStore = defineStore('coupon', () => {
     const pagination = ref<PaginationMetadata | null>(null)
     const isFetching = ref(false)
     const activeTab = ref<string>(String(CouponStatus.All))
+    const currencyConfig = ref<PlatformCurrencyConfig | null>(null)
+    const currencyOptions = ref<Array<{ label: SupportedCurrencyCode; value: SupportedCurrencyCode }>>([])
+
+    const setCurrencyConfig = (config: PlatformCurrencyConfig | null) => {
+        currencyConfig.value = config
+        currencyOptions.value = config
+            ? config.items
+                .filter((item: PlatformCurrencyConfigItem) => item.enabled)
+                .map((item: PlatformCurrencyConfigItem) => ({
+                    label: item.currencyCode,
+                    value: item.currencyCode,
+                }))
+            : []
+    }
 
     // ── Actions ───────────────────────────────────────────────
 
@@ -49,7 +81,7 @@ export const useCouponStore = defineStore('coupon', () => {
             appStore.setLoading(true)
             createdCoupon.value = null
 
-            const result = await couponService.createCoupon(payload)
+            const result = normalizeCoupon(await couponService.createCoupon(payload))
             createdCoupon.value = result
             return result
         } finally {
@@ -67,7 +99,7 @@ export const useCouponStore = defineStore('coupon', () => {
         try {
             appStore.setLoading(true)
 
-            const result = await couponService.updateCoupon(payload)
+            const result = normalizeCoupon(await couponService.updateCoupon(payload))
             currentCoupon.value = result // Update localized cache if we are editing
             return result
         } finally {
@@ -91,7 +123,7 @@ export const useCouponStore = defineStore('coupon', () => {
             // we intentionally don't set global app loading here to allow for background refresh
             // or local skeleton loading states in components if desired.
             const result = await couponService.getCoupons(params)
-            coupons.value = result.coupons || []
+            coupons.value = (result.coupons || []).map(normalizeCouponSummary)
             pagination.value = result.pagination || null
             return result
         } catch (error) {
@@ -112,7 +144,7 @@ export const useCouponStore = defineStore('coupon', () => {
         const appStore = useAppStore()
         try {
             appStore.setLoading(true)
-            const result = await couponService.getCouponById(id)
+            const result = normalizeCoupon(await couponService.getCouponById(id))
             currentCoupon.value = result
             return result
         } finally {
@@ -159,6 +191,12 @@ export const useCouponStore = defineStore('coupon', () => {
         }
     }
 
+    const fetchCurrencyConfig = async () => {
+        const config = await configurationService.getCurrencyConfig()
+        setCurrencyConfig(config)
+        return config
+    }
+
     return {
         // state
         createdCoupon,
@@ -166,6 +204,8 @@ export const useCouponStore = defineStore('coupon', () => {
         coupons,
         pagination,
         isFetching,
+        currencyConfig,
+        currencyOptions,
         // actions
         createCoupon,
         updateCoupon,
@@ -175,6 +215,7 @@ export const useCouponStore = defineStore('coupon', () => {
         endCoupon,
         clearCoupons,
         reset,
+        fetchCurrencyConfig,
         activeTab,
     }
 })

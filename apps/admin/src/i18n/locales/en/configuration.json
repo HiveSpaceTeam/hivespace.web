@@ -3,7 +3,9 @@
   "searchPlaceholder": "Search settings...",
   "notifications": {
     "saved": "Configuration saved",
-    "version": "v2.185"
+    "version": "v2.185",
+    "pendingSettings": "Some settings are still local only",
+    "pendingSettingsDescription": "Only currency changes were persisted. Payment, tax, localization, and webhook edits remain unsaved."
   },
   "nav": {
     "workspace": "Workspace",
@@ -67,8 +69,13 @@
     "title": "Localization",
     "currencies": "Supported currencies",
     "default": "(default)",
+    "defaultCurrency": "Default currency",
+    "defaultCurrencyRequired": "Select another enabled default currency before disabling the current default.",
+    "enabled": "Enabled",
+    "disabled": "Disabled",
     "language": "Language",
     "timezone": "Timezone",
+    "version": "Version {version}",
     "languages": {
       "vi": "Vietnamese",
       "en": "English"
