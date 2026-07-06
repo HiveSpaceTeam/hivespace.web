@@ -29,4 +29,12 @@ describe('useMoneyFormatter', () => {
 
     expect(formatMoney({ amount: 1000, currencyCode: null })).toBe('Invalid money')
   })
+
+  it('should render supported ISO alpha currencies outside the hardcoded known set', () => {
+    const { formatMoney } = useMoneyFormatter({
+      t: i18n.global.t,
+    })
+
+    expect(formatMoney({ amount: 1050, currencyCode: 'SGD' })).toBe('SGD 10.50')
+  })
 })

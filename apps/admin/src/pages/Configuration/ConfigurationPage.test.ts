@@ -6,6 +6,13 @@ import ConfigurationPage from './ConfigurationPage.vue'
 import { configurationService } from '@/services/configuration.service'
 import type { GetPlatformCurrencyConfigResponse } from '@/types'
 
+const mockAppStore = {
+  notifyError: jest.fn(),
+  notifyInfo: jest.fn(),
+  notifySuccess: jest.fn(),
+  setLoading: jest.fn(),
+}
+
 jest.mock('@/services/configuration.service', () => ({
   configurationService: {
     getCurrencyConfig: jest.fn(),
@@ -67,7 +74,7 @@ jest.mock('@hivespace/shared', () => {
       props: ['modelValue'],
       emits: ['update:modelValue'],
     },
-    useAppStore: () => ({ setLoading: jest.fn(), notifyError: jest.fn(), notifySuccess: jest.fn() }),
+    useAppStore: () => mockAppStore,
     PaymentIcon: { template: '<span />' },
     SettingsIcon: { template: '<span />' },
     PlugInIcon: { template: '<span />' },
@@ -77,13 +84,14 @@ jest.mock('@hivespace/shared', () => {
 
 const currencyConfigFixture: GetPlatformCurrencyConfigResponse = {
   defaultCurrencyCode: 'VND' as const,
-  supportedCurrencyCodes: ['VND', 'USD', 'EUR'],
+  supportedCurrencyCodes: ['VND', 'USD', 'EUR', 'SGD'],
   updatedAtUtc: '2026-07-01T00:00:00Z',
   version: 7,
   currencies: [
     { currencyCode: 'VND' as const, isEnabled: true },
     { currencyCode: 'USD' as const, isEnabled: true },
     { currencyCode: 'EUR' as const, isEnabled: false },
+    { currencyCode: 'SGD' as const, isEnabled: false },
   ],
 }
 
@@ -102,6 +110,7 @@ const renderPage = () => {
 describe('ConfigurationPage', () => {
   beforeEach(() => {
     setActivePinia(createPinia())
+    jest.clearAllMocks()
     jest.mocked(configurationService.getCurrencyConfig).mockResolvedValue(currencyConfigFixture)
     jest.mocked(configurationService.updateCurrencyConfig).mockResolvedValue(currencyConfigFixture)
   })
@@ -116,6 +125,7 @@ describe('ConfigurationPage', () => {
     expect(screen.getAllByText('VND')).toHaveLength(2)
     expect(screen.getAllByText('USD')).toHaveLength(2)
     expect(screen.getByText('EUR')).toBeTruthy()
+    expect(screen.getByText('SGD')).toBeTruthy()
   })
 
   it('should block disabling the current default until a replacement is selected', async () => {
@@ -157,10 +167,53 @@ describe('ConfigurationPage', () => {
           { currencyCode: 'VND', isEnabled: true },
           { currencyCode: 'USD', isEnabled: true },
           { currencyCode: 'EUR', isEnabled: true },
+          { currencyCode: 'SGD', isEnabled: false },
         ],
         defaultCurrencyCode: 'USD',
         version: 7,
       })
     })
+  })
+
+  it('should show the save bar for non-currency edits', async () => {
+    renderPage()
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('VND')).toBeTruthy()
+    })
+
+    await fireEvent.update(screen.getByLabelText('Language'), 'en')
+
+    expect(
+      screen.getByRole('button', {
+        name: i18n.global.t('configuration.saveBar.save'),
+      }),
+    ).toBeTruthy()
+  })
+
+  it('should keep unsupported non-currency edits dirty after save is clicked', async () => {
+    renderPage()
+
+    await waitFor(() => {
+      expect(screen.getByDisplayValue('VND')).toBeTruthy()
+    })
+
+    await fireEvent.update(screen.getByLabelText('Language'), 'en')
+    await fireEvent.click(
+      screen.getByRole('button', {
+        name: i18n.global.t('configuration.saveBar.save'),
+      }),
+    )
+
+    expect(configurationService.updateCurrencyConfig).not.toHaveBeenCalled()
+    expect(mockAppStore.notifyInfo).toHaveBeenCalledWith(
+      i18n.global.t('configuration.notifications.pendingSettings'),
+      i18n.global.t('configuration.notifications.pendingSettingsDescription'),
+    )
+    expect(
+      screen.getByRole('button', {
+        name: i18n.global.t('configuration.saveBar.save'),
+      }),
+    ).toBeTruthy()
   })
 })

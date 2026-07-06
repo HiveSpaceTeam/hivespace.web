@@ -3,7 +3,9 @@
   "searchPlaceholder": "Tìm kiếm cài đặt...",
   "notifications": {
     "saved": "Đã lưu cấu hình",
-    "version": "v2.185"
+    "version": "v2.185",
+    "pendingSettings": "Má»™t sá»‘ cÃ i Ä‘áº·t váº«n chá»‰ lÃ  thay Ä‘á»•i cá»¥c bá»™",
+    "pendingSettingsDescription": "Hiá»‡n chá»‰ cÃ¡c thay Ä‘á»•i vá» Ä‘á»“ng tiá»n Ä‘Æ°á»£c lÆ°u. CÃ¡c chá»‰nh sá»­a thanh toÃ¡n, thuáº¿, Ä‘á»‹a phÆ°Æ¡ng hÃ³a vÃ  webhook váº«n chÆ°a Ä‘Æ°á»£c lÆ°u."
   },
   "nav": {
     "workspace": "Không gian làm việc",

@@ -88,7 +88,9 @@
                         <Input v-model="row.fee" @update:modelValue="markChanged" type="text" />
                       </div>
                     </td>
-                    <td class="px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400">{{ row.threshold }}</td>
+                    <td class="px-4 py-2.5 text-sm text-gray-500 dark:text-gray-400">
+                      {{ $t(`configuration.payments.thresholds.${row.thresholdKey}`) }}
+                    </td>
                   </tr>
                 </tbody>
               </table>
@@ -298,8 +300,6 @@ const configurationStore = useConfigurationStore()
 const {
   editableCurrencyConfig,
   validationError,
-  hasChanges,
-  changeCount,
   enabledCurrencyOptions,
 } = storeToRefs(configurationStore)
 
@@ -335,6 +335,27 @@ const setSection = (id: string) => {
   activeSection.value = id
 }
 
+interface FeeTableRow {
+  fee: string
+  thresholdKey: string
+  tier: number
+}
+
+interface NonCurrencyConfigurationDraft {
+  apiEndpoint: string
+  apiKey: string
+  feeTable: FeeTableRow[]
+  language: string
+  paymentToggleValues: Record<string, boolean>
+  payoutSchedule: string
+  providerEnabled: Record<string, boolean>
+  taxId: string
+  timezone: string
+  vatRate: string
+  webhookToggleValues: Record<string, boolean>
+  webhookUrl: string
+}
+
 const markChanged = () => undefined
 
 // Provider state separated from display data
@@ -352,11 +373,11 @@ const paymentProviders = computed(() => [
   { id: 'zalopay', name: t('configuration.payments.providers.zalopay'), sub: t('configuration.payments.providers.zalopayDesc'), abbr: 'ZP', color: '#0369a1' },
 ])
 
-const feeTable = computed(() => [
-  { tier: 1, fee: '2.5%', threshold: t('configuration.payments.thresholds.t1') },
-  { tier: 2, fee: '3.0%', threshold: t('configuration.payments.thresholds.t2') },
-  { tier: 3, fee: '3.5%', threshold: t('configuration.payments.thresholds.t3') },
-  { tier: 4, fee: '4.0%', threshold: t('configuration.payments.thresholds.t4') },
+const feeTable = ref<FeeTableRow[]>([
+  { tier: 1, fee: '2.5%', thresholdKey: 't1' },
+  { tier: 2, fee: '3.0%', thresholdKey: 't2' },
+  { tier: 3, fee: '3.5%', thresholdKey: 't3' },
+  { tier: 4, fee: '4.0%', thresholdKey: 't4' },
 ])
 
 const payoutSchedule = ref('Weekly')
@@ -417,6 +438,110 @@ const webhookToggles = computed(() => [
 
 const currencyRows = computed(() => editableCurrencyConfig.value?.items ?? [])
 
+const cloneDraft = (draft: NonCurrencyConfigurationDraft): NonCurrencyConfigurationDraft => ({
+  apiEndpoint: draft.apiEndpoint,
+  apiKey: draft.apiKey,
+  feeTable: draft.feeTable.map((row: FeeTableRow) => ({ ...row })),
+  language: draft.language,
+  paymentToggleValues: { ...draft.paymentToggleValues },
+  payoutSchedule: draft.payoutSchedule,
+  providerEnabled: { ...draft.providerEnabled },
+  taxId: draft.taxId,
+  timezone: draft.timezone,
+  vatRate: draft.vatRate,
+  webhookToggleValues: { ...draft.webhookToggleValues },
+  webhookUrl: draft.webhookUrl,
+})
+
+const getCurrentDraft = (): NonCurrencyConfigurationDraft => ({
+  apiEndpoint: apiEndpoint.value,
+  apiKey: apiKey.value,
+  feeTable: feeTable.value.map((row: FeeTableRow) => ({ ...row })),
+  language: language.value,
+  paymentToggleValues: { ...paymentToggleValues.value },
+  payoutSchedule: payoutSchedule.value,
+  providerEnabled: { ...providerEnabled.value },
+  taxId: taxId.value,
+  timezone: timezone.value,
+  vatRate: vatRate.value,
+  webhookToggleValues: { ...webhookToggleValues.value },
+  webhookUrl: webhookUrl.value,
+})
+
+const initialDraft = ref<NonCurrencyConfigurationDraft>(cloneDraft(getCurrentDraft()))
+
+const restoreDraft = (draft: NonCurrencyConfigurationDraft) => {
+  apiEndpoint.value = draft.apiEndpoint
+  apiKey.value = draft.apiKey
+  feeTable.value = draft.feeTable.map((row: FeeTableRow) => ({ ...row }))
+  language.value = draft.language
+  paymentToggleValues.value = { ...draft.paymentToggleValues }
+  payoutSchedule.value = draft.payoutSchedule
+  providerEnabled.value = { ...draft.providerEnabled }
+  taxId.value = draft.taxId
+  timezone.value = draft.timezone
+  vatRate.value = draft.vatRate
+  webhookToggleValues.value = { ...draft.webhookToggleValues }
+  webhookUrl.value = draft.webhookUrl
+}
+
+const countBooleanRecordDifferences = (
+  left: Record<string, boolean>,
+  right: Record<string, boolean>,
+) => {
+  const keys = new Set([...Object.keys(left), ...Object.keys(right)])
+  let count = 0
+
+  keys.forEach((key) => {
+    if (left[key] !== right[key]) {
+      count += 1
+    }
+  })
+
+  return count
+}
+
+const nonCurrencyChangeCount = computed(() => {
+  const currentDraft = getCurrentDraft()
+  const persistedDraft = initialDraft.value
+  let count = 0
+
+  count += countBooleanRecordDifferences(currentDraft.providerEnabled, persistedDraft.providerEnabled)
+  count += countBooleanRecordDifferences(
+    currentDraft.paymentToggleValues,
+    persistedDraft.paymentToggleValues,
+  )
+  count += countBooleanRecordDifferences(
+    currentDraft.webhookToggleValues,
+    persistedDraft.webhookToggleValues,
+  )
+
+  currentDraft.feeTable.forEach((row: FeeTableRow, index: number) => {
+    if (
+      row.fee !== persistedDraft.feeTable[index]?.fee ||
+      row.thresholdKey !== persistedDraft.feeTable[index]?.thresholdKey ||
+      row.tier !== persistedDraft.feeTable[index]?.tier
+    ) {
+      count += 1
+    }
+  })
+
+  if (currentDraft.payoutSchedule !== persistedDraft.payoutSchedule) count += 1
+  if (currentDraft.taxId !== persistedDraft.taxId) count += 1
+  if (currentDraft.vatRate !== persistedDraft.vatRate) count += 1
+  if (currentDraft.language !== persistedDraft.language) count += 1
+  if (currentDraft.timezone !== persistedDraft.timezone) count += 1
+  if (currentDraft.apiEndpoint !== persistedDraft.apiEndpoint) count += 1
+  if (currentDraft.apiKey !== persistedDraft.apiKey) count += 1
+  if (currentDraft.webhookUrl !== persistedDraft.webhookUrl) count += 1
+
+  return count
+})
+
+const hasUnsupportedChanges = computed(() => nonCurrencyChangeCount.value > 0)
+const hasChanges = computed(() => configurationStore.hasChanges || hasUnsupportedChanges.value)
+const changeCount = computed(() => configurationStore.changeCount + nonCurrencyChangeCount.value)
+
 const defaultCurrencyOptions = computed(() =>
   enabledCurrencyOptions.value.map((currencyCode: SupportedCurrencyCode) => ({
     value: currencyCode,
@@ -434,16 +559,26 @@ const updateCurrencyEnabled = (currencyCode: SupportedCurrencyCode, enabled: boo
 
 const discard = () => {
   configurationStore.discardChanges()
+  restoreDraft(initialDraft.value)
 }
 
 const save = async () => {
-  const response = await configurationStore.saveCurrencyConfig()
+  if (configurationStore.hasChanges) {
+    const response = await configurationStore.saveCurrencyConfig()
 
-  if (!response) {
-    return
+    if (!response) {
+      return
+    }
+
+    appStore.notifySuccess(t('configuration.notifications.saved'), t('configuration.notifications.version'))
   }
 
-  appStore.notifySuccess(t('configuration.notifications.saved'), t('configuration.notifications.version'))
+  if (hasUnsupportedChanges.value) {
+    appStore.notifyInfo(
+      t('configuration.notifications.pendingSettings'),
+      t('configuration.notifications.pendingSettingsDescription'),
+    )
+  }
 }
 
 onMounted(() => {

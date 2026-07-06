@@ -10,8 +10,18 @@ export const normalizeCurrencyCode = (
   currencyCode: string | number | null | undefined,
   fallback?: SupportedCurrencyCode,
 ): SupportedCurrencyCode | null => {
-  if (currencyCode === 'VND' || currencyCode === 'USD' || currencyCode === 'EUR') {
-    return currencyCode
+  if (typeof currencyCode === 'string') {
+    const normalizedCurrencyCode = currencyCode.trim().toUpperCase()
+
+    if (!normalizedCurrencyCode) {
+      return fallback ?? null
+    }
+
+    if (/^\d+$/.test(normalizedCurrencyCode)) {
+      return NUMERIC_CURRENCY_CODES[Number(normalizedCurrencyCode)] ?? fallback ?? null
+    }
+
+    return normalizedCurrencyCode
   }
 
   if (typeof currencyCode === 'number') {

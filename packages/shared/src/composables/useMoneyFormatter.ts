@@ -1,4 +1,5 @@
 import type {
+  KnownCurrencyCode,
   MoneyDisplay,
   MoneyInputMode,
   SupportedCurrencyCode,
@@ -18,22 +19,47 @@ interface FormatMoneyOptions extends UseMoneyFormatterOptions {
 const DEFAULT_LOCALE = 'en-US'
 const DEFAULT_INVALID_PLACEHOLDER = 'Invalid money'
 
-const CURRENCY_SCALE: Record<SupportedCurrencyCode, number> = {
+const KNOWN_CURRENCY_SCALE: Record<KnownCurrencyCode, number> = {
   VND: 1,
   USD: 100,
   EUR: 100,
 }
 
-const CURRENCY_FRACTION_DIGITS: Record<SupportedCurrencyCode, number> = {
+const KNOWN_CURRENCY_FRACTION_DIGITS: Record<KnownCurrencyCode, number> = {
   VND: 0,
   USD: 2,
   EUR: 2,
 }
 
+const isKnownCurrencyCode = (
+  currencyCode: string | null | undefined,
+): currencyCode is KnownCurrencyCode => {
+  return currencyCode === 'VND' || currencyCode === 'USD' || currencyCode === 'EUR'
+}
+
 const isSupportedCurrencyCode = (
   currencyCode: string | null | undefined,
 ): currencyCode is SupportedCurrencyCode => {
-  return currencyCode === 'VND' || currencyCode === 'USD' || currencyCode === 'EUR'
+  return typeof currencyCode === 'string' && /^[A-Z]{3}$/.test(currencyCode)
+}
+
+const getCurrencyFractionDigits = (currencyCode: SupportedCurrencyCode): number => {
+  if (isKnownCurrencyCode(currencyCode)) {
+    return KNOWN_CURRENCY_FRACTION_DIGITS[currencyCode] ?? 2
+  }
+
+  return new Intl.NumberFormat(DEFAULT_LOCALE, {
+    style: 'currency',
+    currency: currencyCode,
+  }).resolvedOptions().maximumFractionDigits ?? 2
+}
+
+const getCurrencyScale = (currencyCode: SupportedCurrencyCode): number => {
+  if (isKnownCurrencyCode(currencyCode)) {
+    return KNOWN_CURRENCY_SCALE[currencyCode] ?? 100
+  }
+
+  return 10 ** getCurrencyFractionDigits(currencyCode)
 }
 
 const getInvalidPlaceholder = (t?: TranslateFn, fallback?: string | null) => {
@@ -61,7 +87,7 @@ const normalizeAmount = (
     return amount
   }
 
-  return amount / CURRENCY_SCALE[currencyCode]
+  return amount / getCurrencyScale(currencyCode)
 }
 
 export const formatMoney = (
@@ -87,11 +113,13 @@ export const formatMoney = (
     return formatRawSmallestUnit(money.amount, money.currencyCode, locale)
   }
 
+  const fractionDigits = getCurrencyFractionDigits(money.currencyCode)
+
   return new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: money.currencyCode,
-    minimumFractionDigits: CURRENCY_FRACTION_DIGITS[money.currencyCode],
-    maximumFractionDigits: CURRENCY_FRACTION_DIGITS[money.currencyCode],
+    minimumFractionDigits: fractionDigits,
+    maximumFractionDigits: fractionDigits,
   }).format(normalizeAmount(money.amount, money.currencyCode, mode))
 }
 

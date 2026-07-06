@@ -21,13 +21,14 @@ jest.mock('@hivespace/shared', () => {
 
 const currencyConfigFixture: GetPlatformCurrencyConfigResponse = {
   defaultCurrencyCode: 'VND' as const,
-  supportedCurrencyCodes: ['VND', 'USD', 'EUR'],
+  supportedCurrencyCodes: ['VND', 'USD', 'EUR', 'SGD'],
   updatedAtUtc: '2026-07-01T00:00:00Z',
   version: 7,
   currencies: [
     { currencyCode: 'VND' as const, isEnabled: true },
     { currencyCode: 'USD' as const, isEnabled: true },
     { currencyCode: 'EUR' as const, isEnabled: false },
+    { currencyCode: 'SGD' as const, isEnabled: false },
   ],
 }
 
@@ -49,6 +50,7 @@ describe('useConfigurationStore', () => {
       { currencyCode: 'VND', enabled: true },
       { currencyCode: 'USD', enabled: true },
       { currencyCode: 'EUR', enabled: false },
+      { currencyCode: 'SGD', enabled: false },
     ])
   })
 
@@ -78,6 +80,7 @@ describe('useConfigurationStore', () => {
         { currencyCode: 'VND', isEnabled: true },
         { currencyCode: 'USD', isEnabled: true },
         { currencyCode: 'EUR', isEnabled: true },
+        { currencyCode: 'SGD', isEnabled: false },
       ],
       defaultCurrencyCode: 'USD',
       version: 7,
@@ -100,6 +103,7 @@ describe('useConfigurationStore', () => {
         { currencyCode: 'VND', enabled: true },
         { currencyCode: 'USD', enabled: true },
         { currencyCode: 'EUR', enabled: false },
+        { currencyCode: 'SGD', enabled: false },
       ],
     })
     expect(store.validationError).toBeNull()

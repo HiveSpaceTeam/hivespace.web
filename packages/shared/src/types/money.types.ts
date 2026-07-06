@@ -1,4 +1,6 @@
-export type SupportedCurrencyCode = 'VND' | 'USD' | 'EUR'
+export type KnownCurrencyCode = 'VND' | 'USD' | 'EUR'
+
+export type SupportedCurrencyCode = string
 
 export type MoneyIssueCode =
   | 'missing_currency'

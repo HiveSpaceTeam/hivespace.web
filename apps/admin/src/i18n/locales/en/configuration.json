@@ -3,7 +3,9 @@
   "searchPlaceholder": "Search settings...",
   "notifications": {
     "saved": "Configuration saved",
-    "version": "v2.185"
+    "version": "v2.185",
+    "pendingSettings": "Some settings are still local only",
+    "pendingSettingsDescription": "Only currency changes were persisted. Payment, tax, localization, and webhook edits remain unsaved."
   },
   "nav": {
     "workspace": "Workspace",
