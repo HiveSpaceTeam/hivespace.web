@@ -54,7 +54,6 @@ export const useOrderStore = defineStore('order', () => {
   const fetchOrders = async () => {
     isFetching.value = true
     try {
-      await fetchPaymentMethods()
       const trimmedSearchValue = searchValue.value.trim()
       const hasSearch = trimmedSearchValue.length > 0
       const result = await orderService.getOrders({
@@ -67,6 +66,13 @@ export const useOrderStore = defineStore('order', () => {
 
       orders.value = result.orders.map(mapOrderPaymentLabel)
       totalOrders.value = result.pagination.totalItems
+
+      try {
+        await fetchPaymentMethods()
+        orders.value = result.orders.map(mapOrderPaymentLabel)
+      } catch {
+        paymentMethods.value = []
+      }
     } finally {
       isFetching.value = false
     }

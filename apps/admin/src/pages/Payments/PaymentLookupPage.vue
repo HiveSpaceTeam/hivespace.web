@@ -121,9 +121,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineComponent, h, ref } from 'vue'
+import { computed, defineComponent, h, ref, watch } from 'vue'
 import type { PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
+import { useRoute } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import {
   AppShell,
@@ -137,6 +138,7 @@ import {
 import type { MoneyDisplay, PaymentAttempt, PaymentDetail, PaymentStatus } from '@hivespace/shared'
 import { usePaymentStore } from '@/stores/payment.store'
 
+const route = useRoute()
 const { t, te, locale } = useI18n()
 const paymentStore = usePaymentStore()
 const { payment } = storeToRefs(paymentStore)
@@ -147,6 +149,9 @@ const hasSearched = ref(false)
 
 const canSearch = computed(() => referenceNo.value.trim().length > 0)
 const emptyValue = computed(() => t('common.emptyValue'))
+const queryReferenceNo = computed(() =>
+  typeof route.query.referenceNo === 'string' ? route.query.referenceNo : '',
+)
 
 const formatAmount = (amount: MoneyDisplay) =>
   formatMoney(amount, { locale: locale.value })
@@ -171,10 +176,11 @@ const formatLabelValue = (label: string, value: string) =>
 const displayAttemptMethod = (attempt: PaymentAttempt) =>
   [attempt.methodCode, attempt.gatewayCode].filter(Boolean).join(PAYMENT_DISPLAY_SEPARATOR)
 
-const handleLookup = async () => {
-  const trimmed = referenceNo.value.trim()
+const lookupReference = async (value: string) => {
+  const trimmed = value.trim()
   if (!trimmed) return
 
+  referenceNo.value = trimmed
   hasSearched.value = true
   try {
     await paymentStore.fetchPaymentByReference(trimmed)
@@ -182,6 +188,20 @@ const handleLookup = async () => {
     paymentStore.clearPayment()
   }
 }
+
+const handleLookup = async () => {
+  await lookupReference(referenceNo.value)
+}
+
+watch(
+  queryReferenceNo,
+  async value => {
+    if (value && value !== referenceNo.value.trim()) {
+      await lookupReference(value)
+    }
+  },
+  { immediate: true },
+)
 
 const PaymentAttemptPanel = defineComponent({
   name: 'PaymentAttemptPanel',

@@ -154,6 +154,17 @@ describe('useOrderStore', () => {
     expect(store.orders[0]?.paymentMethodLabel).toBe('Legacy transfer')
   })
 
+  it('should keep orders available when payment metadata cannot be loaded', async () => {
+    jest.mocked(paymentService.getPaymentMethods).mockRejectedValue(new Error('Forbidden'))
+    const store = useOrderStore()
+
+    await store.fetchOrders()
+
+    expect(orderService.getOrders).toHaveBeenCalled()
+    expect(store.orders).toHaveLength(1)
+    expect(store.orders[0]?.paymentMethodLabel).toBe('COD')
+  })
+
   it('should apply filters by resetting page and refetching', async () => {
     const store = useOrderStore()
     store.page = 3

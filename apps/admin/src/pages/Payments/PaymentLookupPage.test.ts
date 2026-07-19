@@ -1,6 +1,7 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { createPinia, setActivePinia } from 'pinia'
+import { createMemoryHistory, createRouter } from 'vue-router'
 import i18n from '@/i18n'
 import PaymentLookupPage from './PaymentLookupPage.vue'
 import { paymentService } from '@/services/payment.service'
@@ -84,20 +85,31 @@ const paymentFixture: PaymentDetail = {
   ],
 }
 
-const renderPage = () => {
+const renderPage = async (path = '/payments') => {
   const pinia = createPinia()
   setActivePinia(pinia)
   i18n.global.locale.value = 'en'
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      {
+        path: '/payments',
+        name: 'Payments',
+        component: PaymentLookupPage,
+      },
+      {
+        path: '/payments/by-order/:orderId',
+        name: 'PaymentByOrder',
+        component: { template: '<div />' },
+      },
+    ],
+  })
+  await router.push(path)
+  await router.isReady()
 
   return render(PaymentLookupPage, {
     global: {
-      plugins: [pinia, i18n],
-      stubs: {
-        RouterLink: {
-          template: '<a :href="to.name === \'PaymentByOrder\' ? `/payments/by-order/${to.params.orderId}` : \'#\'"><slot /></a>',
-          props: ['to'],
-        },
-      },
+      plugins: [pinia, i18n, router],
     },
   })
 }
@@ -110,7 +122,7 @@ describe('PaymentLookupPage', () => {
   })
 
   it('should search payment by reference and render linked orders and attempts', async () => {
-    renderPage()
+    await renderPage()
 
     await fireEvent.update(
       screen.getByLabelText(i18n.global.t('payments.lookup.label')),
@@ -135,8 +147,23 @@ describe('PaymentLookupPage', () => {
     expect(screen.getByText(/VNPAY-TRANSACTION-ID/)).toBeTruthy()
   })
 
-  it('should render empty guidance before lookup', () => {
-    renderPage()
+  it('should search from route reference query', async () => {
+    await renderPage('/payments?referenceNo=PAY-01JZXYZABCDEABCDEABCDEABC')
+
+    await waitFor(() => {
+      expect(paymentService.getPaymentByReference).toHaveBeenCalledWith(
+        'PAY-01JZXYZABCDEABCDEABCDEABC',
+      )
+    })
+
+    expect(
+      (screen.getByLabelText(i18n.global.t('payments.lookup.label')) as HTMLInputElement).value,
+    ).toBe('PAY-01JZXYZABCDEABCDEABCDEABC')
+    expect(screen.getByText('ORD-01JZXYZABCDEABCDEABCDEABD')).toBeTruthy()
+  })
+
+  it('should render empty guidance before lookup', async () => {
+    await renderPage()
 
     expect(screen.getByText(i18n.global.t('payments.lookup.empty'))).toBeTruthy()
   })
