@@ -1,4 +1,5 @@
 import type { PaginationMetadata } from '@hivespace/shared'
+import type { OrderPaymentSummary } from '@hivespace/shared'
 
 export enum OrderProcessStatus {
   All = 0,
@@ -36,7 +37,7 @@ export interface OrderItem {
   tag: string | null
 }
 
-export interface Order {
+export interface Order extends OrderPaymentSummary {
   id: string
   orderCode: string
   buyerName: string
@@ -44,6 +45,7 @@ export interface Order {
   totalAmount: number
   currencyCode?: string | null
   paymentMethod: string
+  paymentMethodLabel?: string | null
   status: OrderStatus
   actionDateTime: string
   createdAt: string

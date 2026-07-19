@@ -47,7 +47,7 @@
               :key="provider.id"
               :class="[
                 'flex items-center justify-between rounded-xl border p-4 transition-colors',
-                providerEnabled[provider.id]
+                isProviderEnabled(provider.id, provider.enabled)
                   ? 'border-brand-200 bg-brand-50 dark:border-brand-800 dark:bg-brand-500/15'
                   : 'border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]',
               ]"
@@ -64,7 +64,10 @@
                   <p class="text-xs text-gray-400 dark:text-gray-500">{{ provider.sub }}</p>
                 </div>
               </div>
-              <ToggleSwitch v-model="providerEnabled[provider.id]" @update:modelValue="markChanged" />
+              <ToggleSwitch
+                :modelValue="isProviderEnabled(provider.id, provider.enabled)"
+                @update:modelValue="updateProviderEnabled(provider.id, $event)"
+              />
             </div>
           </div>
 
@@ -290,7 +293,9 @@ import {
   AppShell, PageBreadcrumb, ToggleSwitch, useAppStore,
   PaymentIcon, SettingsIcon, PlugInIcon, ListIcon,
   Tabs, Button, Input, Select,
+  paymentAvailabilityLabelKey,
 } from '@hivespace/shared'
+import type { PaymentMethodAvailability } from '@hivespace/shared'
 import type { SupportedCurrencyCode } from '@/types'
 import { useConfigurationStore } from '@/stores/configuration.store'
 
@@ -299,6 +304,7 @@ const appStore = useAppStore()
 const configurationStore = useConfigurationStore()
 const {
   editableCurrencyConfig,
+  paymentMethods,
   validationError,
   enabledCurrencyOptions,
 } = storeToRefs(configurationStore)
@@ -356,22 +362,60 @@ interface NonCurrencyConfigurationDraft {
   webhookUrl: string
 }
 
+interface PaymentProviderRow {
+  id: string
+  name: string
+  sub: string
+  abbr: string
+  color: string
+  enabled: boolean
+}
+
 const markChanged = () => undefined
 
 // Provider state separated from display data
-const providerEnabled = ref<Record<string, boolean>>({
-  vnpay: true,
-  momo: true,
-  stripe: false,
-  zalopay: true,
-})
+const providerEnabled = ref<Record<string, boolean>>({})
 
-const paymentProviders = computed(() => [
-  { id: 'vnpay',   name: t('configuration.payments.providers.vnpay'),   sub: t('configuration.payments.providers.vnpayDesc'),   abbr: 'VP', color: '#1e40af' },
-  { id: 'momo',    name: t('configuration.payments.providers.momo'),    sub: t('configuration.payments.providers.momoDesc'),    abbr: 'MM', color: '#9333ea' },
-  { id: 'stripe',  name: t('configuration.payments.providers.stripe'),  sub: t('configuration.payments.providers.stripeDesc'),  abbr: 'ST', color: '#4f46e5' },
-  { id: 'zalopay', name: t('configuration.payments.providers.zalopay'), sub: t('configuration.payments.providers.zalopayDesc'), abbr: 'ZP', color: '#0369a1' },
-])
+const methodPalette = ['#047857', '#1e40af', '#4f46e5', '#b45309', '#0f766e']
+
+const methodColor = (index: number) => methodPalette[index % methodPalette.length] ?? '#475569'
+
+const methodAbbr = (name: string, code: string) => {
+  const words = name.trim().split(/\s+/).filter(Boolean)
+  if (words.length > 1) {
+    return words.map(word => word[0]).join('').slice(0, 3).toUpperCase()
+  }
+  return code.slice(0, 3).toUpperCase()
+}
+
+const availabilityLabel = (availability: PaymentMethodAvailability) =>
+  t(paymentAvailabilityLabelKey(availability))
+
+const paymentProviders = computed<PaymentProviderRow[]>(() =>
+  paymentMethods.value.map((method, index) => {
+    const code = String(method.code).toUpperCase()
+
+    return {
+      id: code,
+      name: method.displayName,
+      sub: availabilityLabel(method.availability),
+      abbr: methodAbbr(method.displayName, code),
+      color: methodColor(index),
+      enabled: method.isEnabled,
+    }
+  }),
+)
+
+const isProviderEnabled = (providerId: string, fallback: boolean) =>
+  providerEnabled.value[providerId] ?? fallback
+
+const updateProviderEnabled = (providerId: string, enabled: boolean) => {
+  providerEnabled.value = {
+    ...providerEnabled.value,
+    [providerId]: enabled,
+  }
+  markChanged()
+}
 
 const feeTable = ref<FeeTableRow[]>([
   { tier: 1, fee: '2.5%', thresholdKey: 't1' },
@@ -583,5 +627,6 @@ const save = async () => {
 
 onMounted(() => {
   void configurationStore.fetchCurrencyConfig()
+  void configurationStore.fetchPaymentMethods()
 })
 </script>

@@ -18,7 +18,12 @@ describe('useProductStore', () => {
         {
           id: '10',
           name: 'Honey Jar',
-          price: 100_000,
+          price: {
+            amount: 100_000,
+            currencyCode: 'VND',
+            isValid: true,
+            issueCode: null,
+          },
           productImage: '/honey.png',
           soldCount: 5,
           rating: 4.8,
@@ -64,6 +69,9 @@ describe('useProductStore', () => {
 
     expect(productService.getProducts).toHaveBeenCalledWith({ page: 1, pageSize: 20 })
     expect(store.homeProducts[0]?.name).toBe('Honey Jar')
+    expect(store.homeProducts[0]?.price).toBe(100_000)
+    expect(store.homeProducts[0]?.priceCurrencyCode).toBe('VND')
+    expect(store.homeProducts[0]?.priceIssue).toBeNull()
   })
 
   it('should load product detail with title and price', async () => {

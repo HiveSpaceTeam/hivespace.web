@@ -2,8 +2,10 @@
   "detail": {
     "title": "Chi tiết đơn hàng",
     "orderCode": "Mã đơn hàng",
+    "paymentReference": "Mã thanh toán",
     "deliveryAddress": "Địa chỉ nhận hàng",
     "paymentMethod": "Phương thức thanh toán",
+    "paymentStatus": "Trạng thái thanh toán",
     "subTotal": "Tổng tiền hàng",
     "shippingFee": "Phí vận chuyển",
     "total": "Thành tiền",
@@ -12,9 +14,9 @@
     "back": "Quay lại đơn hàng",
     "timeline": {
       "placed": "Đơn Hàng Đã Đặt",
-      "paid": "Đã Thanh Toán",
+      "paid": "Đã thanh toán",
       "confirmed": "Đã Xác Nhận",
-      "shipping": "Đang Giao Hàng",
+      "shipping": "Đang giao hàng",
       "delivered": "Đã Nhận Hàng"
     },
     "status": {

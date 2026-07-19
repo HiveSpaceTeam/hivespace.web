@@ -45,7 +45,12 @@ const productResponse = (name: string, id = '10') => ({
     {
       id,
       name,
-      price: 100_000,
+      price: {
+        amount: 100_000,
+        currencyCode: 'VND',
+        isValid: true,
+        issueCode: null,
+      },
       productImage: '/honey.png',
       imageURL: '/honey.png',
       soldCount: 5,
@@ -111,6 +116,13 @@ describe('HomePage', () => {
 
     expect(await screen.findByText('Honey Jar')).toBeTruthy()
     expect(productService.getProducts).toHaveBeenCalledWith({ page: 1, pageSize: 12 })
+    expect(formatMoneyMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        amount: 100_000,
+        currencyCode: 'VND',
+      }),
+      expect.any(Object),
+    )
   })
 
   it('should load more products from the next page when requested', async () => {

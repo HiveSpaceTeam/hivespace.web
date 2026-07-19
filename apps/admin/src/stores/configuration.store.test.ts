@@ -2,12 +2,19 @@ import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { createPinia, setActivePinia } from 'pinia'
 import { useConfigurationStore } from './configuration.store'
 import { configurationService } from '@/services/configuration.service'
+import { paymentService } from '@/services/payment.service'
 import type { GetPlatformCurrencyConfigResponse } from '@/types'
 
 jest.mock('@/services/configuration.service', () => ({
   configurationService: {
     getCurrencyConfig: jest.fn(),
     updateCurrencyConfig: jest.fn(),
+  },
+}))
+
+jest.mock('@/services/payment.service', () => ({
+  paymentService: {
+    getPaymentMethods: jest.fn(),
   },
 }))
 
@@ -37,6 +44,40 @@ describe('useConfigurationStore', () => {
     setActivePinia(createPinia())
     jest.mocked(configurationService.getCurrencyConfig).mockResolvedValue(currencyConfigFixture)
     jest.mocked(configurationService.updateCurrencyConfig).mockResolvedValue(currencyConfigFixture)
+    jest.mocked(paymentService.getPaymentMethods).mockResolvedValue({
+      methods: [
+        {
+          code: 'VNPAY',
+          displayName: 'VNPay',
+          kind: 'Online',
+          gatewayCode: 'VNPAY',
+          isEnabled: true,
+          isCheckoutSelectable: true,
+          availability: 'Available',
+          sortOrder: 2,
+        },
+        {
+          code: 'COD',
+          displayName: 'Cash on Delivery',
+          kind: 'Offline',
+          gatewayCode: null,
+          isEnabled: true,
+          isCheckoutSelectable: true,
+          availability: 'Available',
+          sortOrder: 1,
+        },
+        {
+          code: 'STRIPE',
+          displayName: 'Stripe',
+          kind: 'Online',
+          gatewayCode: 'STRIPE',
+          isEnabled: false,
+          isCheckoutSelectable: false,
+          availability: 'Future',
+          sortOrder: 3,
+        },
+      ],
+    })
   })
 
   it('should load persisted currency items and default', async () => {
@@ -116,5 +157,14 @@ describe('useConfigurationStore', () => {
     store.setCurrencyEnabled('EUR', true)
 
     expect(store.enabledCurrencyOptions).toEqual(['VND', 'USD', 'EUR'])
+  })
+
+  it('should load canonical payment methods in display order', async () => {
+    const store = useConfigurationStore()
+
+    await store.fetchPaymentMethods()
+
+    expect(paymentService.getPaymentMethods).toHaveBeenCalled()
+    expect(store.paymentMethods.map((method) => method.code)).toEqual(['COD', 'VNPAY', 'STRIPE'])
   })
 })

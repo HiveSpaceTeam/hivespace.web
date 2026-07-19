@@ -1,24 +1,49 @@
-import type { MoneyIssue, SupportedCurrencyCode } from '@hivespace/shared'
+import type {
+  MoneyIssue,
+  PaymentAttempt,
+  PaymentDetail,
+  PaymentMethodCode,
+  PaymentMethodMetadata,
+  PaymentStatus,
+  SupportedCurrencyCode,
+} from '@hivespace/shared'
+import { isTerminalPaymentStatus } from '@hivespace/shared'
 
-export type PaymentStatus = 'Pending' | 'Processing' | 'Succeeded' | 'Failed' | 'Cancelled' | 'Expired'
+export type {
+  CreatePaymentAttemptRequest,
+  CreatePaymentAttemptResponse,
+  GetPaymentMethodsResponse,
+  PaymentAttempt,
+  PaymentDetail,
+  PaymentMethodCode,
+  PaymentMethodMetadata,
+  PaymentStatus,
+} from '@hivespace/shared'
 
 export interface PaymentDto {
-  paymentId: string
-  orderId: string
-  buyerId: string
+  id: string
+  paymentId?: string
+  referenceNo?: string | null
+  orderId?: string | null
+  buyerId?: string | null
   amount: number
   currency: string | null
   currencyCode?: SupportedCurrencyCode | null
   moneyIssue?: MoneyIssue | null
   status: PaymentStatus
-  gateway: string
-  gatewayTransactionId: string | null
+  methodCode?: PaymentMethodCode | null
+  method?: Partial<PaymentMethodMetadata> | null
+  gateway?: string | null
+  gatewayTransactionId?: string | null
   gatewayPaymentUrl: string | null
+  latestAttempt?: PaymentAttempt | null
+  attempts?: PaymentAttempt[]
+  linkedOrders?: PaymentDetail['linkedOrders']
   paidAt: string | null
-  expiresAt: string
-  createdAt: string
+  expiresAt?: string | null
+  createdAt?: string | null
 }
 
 export function isTerminalStatus(status: PaymentStatus): boolean {
-  return ['Succeeded', 'Failed', 'Cancelled', 'Expired'].includes(status)
+  return isTerminalPaymentStatus(status)
 }

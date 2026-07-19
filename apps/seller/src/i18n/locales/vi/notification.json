@@ -4,7 +4,7 @@
   "loadMore": "Tải thêm",
   "loading": "Đang tải...",
   "events": {
-    "newOrder": "{buyerName} vừa đặt một đơn hàng tại shop của bạn, mã đơn hàng: #{orderCode}",
+    "newOrder": "{buyerName} vừa đặt một đơn hàng tại cửa hàng của bạn, mã đơn hàng: #{orderCode}",
     "lowStock": "{productName} sắp hết hàng (còn {remaining})",
     "generic": "Sự kiện: {eventType}"
   },

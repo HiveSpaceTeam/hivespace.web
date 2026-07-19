@@ -1,5 +1,5 @@
 {
-    "title": "Thanh Toán",
+    "title": "Thanh toán",
     "shippingMethodTitle": "Chọn hình thức giao hàng",
     "deliveryGroup": "Gói {index}",
     "deliveryDate": "Giao {date}",
@@ -12,20 +12,10 @@
     "qty": "SL: x{qty}",
     "joinEcoShipping": "Tham gia chuyển Tiết kiệm Hàng",
     "paymentMethodTitle": "Chọn hình thức thanh toán",
-    "momo": "Ví Momo",
-    "momoPromo": "Giảm 50k",
-    "creditCard": "Thẻ tín dụng / ghi nợ",
-    "bankTransfer": "Thanh toán tiền mặt",
-    "kredivo": "Kredivo",
-    "zaloPay": "ZaloPay",
-    "vnPay": "VNPay",
-    "cod": "Thanh toán khi nhận hàng",
-    "cardOnDelivery": "Thẻ tín dụng/Ghi nợ",
     "scanToPay": "Quét mã QR để thanh toán",
-    "addNewCard": "+ Thêm thẻ mới",
     "deliveryAddress": "Giao tới",
     "changeAddress": "Thay đổi",
-    "promotionTitle": "Khuyến Mãi",
+    "promotionTitle": "Khuyến mãi",
     "selectOrEnterCode": "Chọn hoặc nhập mã",
     "canApply": "Có thể áp dụng",
     "appliedDiscount": "Bạn đang được giảm {amount} từ HiveStep",
@@ -45,7 +35,7 @@
     "voucherExpiry": "HSD: {date}",
     "voucherHiveSpace": "HiveSpace",
     "voucherUsageNote": "Áp dụng tối đa 1 Mã Giảm Giá",
-    "storeCoupon": "Mã giảm giá shop",
+    "storeCoupon": "Mã giảm giá cửa hàng",
     "selectCoupon": "Chọn mã ▸",
     "colUnitPrice": "Đơn giá",
     "colQuantity": "Số lượng",
@@ -61,7 +51,7 @@
     "changeAddressTitle": "Chọn địa chỉ giao hàng",
     "confirmAddress": "Xác nhận",
     "noAddresses": "Bạn chưa có địa chỉ nào",
-    "addNewAddress": "Thêm Địa Chỉ Mới"
-,
-    "couponUnavailableTitle": "MÃ£ giáº£m giÃ¡ khÃ´ng kháº£ dá»¥ng"
+    "addNewAddress": "Thêm Địa Chỉ Mới",
+    "couponUnavailableTitle": "Mã giảm giá không khả dụng",
+    "paymentMethodRequired": "Vui l\u00f2ng ch\u1ecdn ph\u01b0\u01a1ng th\u1ee9c thanh to\u00e1n kh\u1ea3 d\u1ee5ng."
 }

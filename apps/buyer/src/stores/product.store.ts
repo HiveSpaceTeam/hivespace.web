@@ -9,18 +9,51 @@ import { productService } from '@/services/product.service'
 import type {
   GetProductDetailResponse,
   GetProductListQuery,
+  MoneyReadModel,
   ProductSummary,
+  ProductSummaryReadModel,
 } from '@/types'
 
 const resolveMoneyIssue = (
   currencyCode: string | number | null | undefined,
 ): MoneyIssue | null => (normalizeCurrencyCode(currencyCode) ? null : { code: 'missing_currency' })
 
-const normalizeProductSummary = (product: ProductSummary): ProductSummary => ({
-  ...product,
-  priceCurrencyCode: normalizeCurrencyCode(product.priceCurrencyCode ?? null),
-  priceIssue: product.priceIssue ?? resolveMoneyIssue(product.priceCurrencyCode ?? null),
-})
+const isMoneyReadModel = (price: ProductSummaryReadModel['price']): price is MoneyReadModel =>
+  typeof price === 'object' && price !== null
+
+const resolveMoneyReadModelIssue = (price: MoneyReadModel): MoneyIssue | null => {
+  if (price.isValid === false) {
+    return {
+      code: price.issueCode ?? 'invalid_money',
+      placeholder: price.displayPlaceholder ?? undefined,
+    }
+  }
+
+  return resolveMoneyIssue(price.currencyCode ?? null)
+}
+
+const normalizeProductSummary = (product: ProductSummaryReadModel): ProductSummary => {
+  if (!isMoneyReadModel(product.price)) {
+    const { price, ...summary } = product
+
+    return {
+      ...summary,
+      price,
+      priceCurrencyCode: normalizeCurrencyCode(product.priceCurrencyCode ?? null),
+      priceIssue: product.priceIssue ?? resolveMoneyIssue(product.priceCurrencyCode ?? null),
+    }
+  }
+
+  const { price, ...summary } = product
+  const normalizedCurrencyCode = normalizeCurrencyCode(product.price.currencyCode ?? null)
+
+  return {
+    ...summary,
+    price: price.amount ?? 0,
+    priceCurrencyCode: normalizedCurrencyCode,
+    priceIssue: product.priceIssue ?? resolveMoneyReadModelIssue(price),
+  }
+}
 
 const normalizeProductDetail = (product: GetProductDetailResponse): GetProductDetailResponse => ({
   ...product,

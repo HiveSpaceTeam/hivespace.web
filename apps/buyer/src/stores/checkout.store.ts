@@ -1,13 +1,16 @@
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import {
+  buildPaymentAttemptIdempotencyKey,
   normalizeCurrencyCode,
   type MoneyIssue,
 } from '@hivespace/shared'
 import { checkoutService } from '@/services/checkout.service'
 import { cartService } from '@/services/cart.service'
+import { paymentService } from '@/services/payment.service'
 import { useAsyncAction } from '@/composables/useAsyncAction'
 import { isStoreCouponEqual, arePlatformCouponsEqual, areInvalidCouponsEqual } from './coupon-equality'
+import type { PaymentAttempt, PaymentMethodMetadata, PaymentMethodCode } from '@hivespace/shared'
 import type {
   AppliedPlatformCoupon,
   CheckoutItem,
@@ -116,6 +119,10 @@ export const useCheckoutStore = defineStore('checkout', () => {
   const preview = ref<CheckoutPreview | null>(null)
   const platformCoupons = ref<AppliedPlatformCoupon[]>([])
   const invalidatedCoupons = ref<InvalidAppliedCoupon[]>([])
+  const paymentMethods = ref<PaymentMethodMetadata[]>([])
+  const checkoutPaymentId = ref<string | null>(null)
+  const paymentReferenceNo = ref<string | null>(null)
+  const latestPaymentAttempt = ref<PaymentAttempt | null>(null)
   const isLoading = ref(false)
   const isRefreshing = ref(false)
   const { isLoading: submitting, run: runSubmit } = useAsyncAction()
@@ -265,8 +272,23 @@ export const useCheckoutStore = defineStore('checkout', () => {
 
   const fetchPreviewInternal = async () => normalizePreview(await checkoutService.getPreview({}))
 
+  const sortMethods = (methods: PaymentMethodMetadata[]) =>
+    [...methods].sort((left, right) => left.sortOrder - right.sortOrder)
+
+  const loadPaymentMethods = async () => {
+    const response = await paymentService.getPaymentMethods()
+    paymentMethods.value = sortMethods(response.methods)
+    return paymentMethods.value
+  }
+
   const loadInitialPreview = async () => {
-    const response = await runInitialLoad(fetchPreviewInternal)
+    const response = await runInitialLoad(async () => {
+      const [previewResponse] = await Promise.all([
+        fetchPreviewInternal(),
+        loadPaymentMethods(),
+      ])
+      return previewResponse
+    })
     applyPreviewState(response)
     return response
   }
@@ -312,10 +334,44 @@ export const useCheckoutStore = defineStore('checkout', () => {
     preview.value = null
     platformCoupons.value = []
     invalidatedCoupons.value = []
+    checkoutPaymentId.value = null
+    paymentReferenceNo.value = null
+    latestPaymentAttempt.value = null
+  }
+
+  const applyCheckoutPaymentState = (result: CheckoutResult) => {
+    checkoutPaymentId.value = result.paymentId ?? checkoutPaymentId.value
+    paymentReferenceNo.value = result.paymentReferenceNo ?? result.referenceNo ?? paymentReferenceNo.value
+    latestPaymentAttempt.value = result.latestAttempt ?? latestPaymentAttempt.value
   }
 
   const submitCheckout = async (request: CheckoutRequest): Promise<CheckoutResult> =>
-    runSubmit(() => checkoutService.initiateCheckout(request))
+    runSubmit(async () => {
+      const result = await checkoutService.initiateCheckout(request)
+      applyCheckoutPaymentState(result)
+      return result
+    })
+
+  const retryPaymentAttempt = async (methodCode?: PaymentMethodCode) => {
+    if (!checkoutPaymentId.value) {
+      throw new Error('Missing checkout payment')
+    }
+    const resolvedMethodCode = methodCode ?? latestPaymentAttempt.value?.methodCode
+    if (!resolvedMethodCode) {
+      throw new Error('Missing payment method')
+    }
+
+    const result = await runSubmit(() =>
+      paymentService.createPaymentAttempt(checkoutPaymentId.value!, {
+        methodCode: resolvedMethodCode,
+        idempotencyKey: buildPaymentAttemptIdempotencyKey(checkoutPaymentId.value!),
+      }),
+    )
+    checkoutPaymentId.value = result.paymentId
+    paymentReferenceNo.value = result.referenceNo
+    latestPaymentAttempt.value = result.attempt
+    return result
+  }
 
   const packages = computed(() => preview.value?.packages ?? [])
   const totalItems = computed(() => preview.value?.totalItems ?? 0)
@@ -330,6 +386,9 @@ export const useCheckoutStore = defineStore('checkout', () => {
     ),
   )
   const totalSaved = computed(() => originalSubtotal.value - subtotal.value + shippingDiscount.value)
+  const checkoutSelectablePaymentMethods = computed(() =>
+    paymentMethods.value.filter(method => method.isEnabled && method.isCheckoutSelectable),
+  )
 
   return {
     preview,
@@ -338,7 +397,13 @@ export const useCheckoutStore = defineStore('checkout', () => {
     submitting,
     platformCoupons,
     invalidatedCoupons,
+    paymentMethods,
+    checkoutSelectablePaymentMethods,
+    checkoutPaymentId,
+    paymentReferenceNo,
+    latestPaymentAttempt,
     loadInitialPreview,
+    loadPaymentMethods,
     fetchPreview,
     applyStoreCoupon,
     applyPlatformCoupon,
@@ -346,6 +411,7 @@ export const useCheckoutStore = defineStore('checkout', () => {
     removeStoreCoupon,
     resetPreview,
     submitCheckout,
+    retryPaymentAttempt,
     packages,
     totalItems,
     subtotal,

@@ -1,5 +1,5 @@
 {
-  "title": "Xác Thực Email",
+  "title": "Xác minh email",
   "subtitle": "Chúng tôi sẽ gửi liên kết xác thực đến địa chỉ email của bạn để xác nhận tài khoản",
   "fields": {
     "emailAddress": "Địa Chỉ Email"
@@ -8,14 +8,14 @@
     "emailAddress": "Nhập địa chỉ email của bạn"
   },
   "actions": {
-    "sendVerification": "Gửi Email Xác Thực",
+    "sendVerification": "Gửi email xác minh",
     "resendVerification": "Gửi Lại Email",
     "editEmail": "Chỉnh Sửa Email"
   },
   "messages": {
-    "success": "Email Xác Thực Đã Được Gửi",
+    "success": "Đã gửi email xác minh",
     "verificationSent": "Liên kết xác thực đã được gửi đến địa chỉ email của bạn. Vui lòng kiểm tra hộp thư đến và thư mục spam.",
-    "error": "Gửi Email Xác Thực Thất Bại",
+    "error": "Gửi email xác minh thất bại",
     "validationFailed": "Vui lòng sửa các lỗi dưới đây và thử lại.",
     "cooldownActive": "Vui lòng đợi trước khi yêu cầu gửi email xác thực khác.",
     "pendingVerificationRequired": "Tài khoản của bạn vẫn đang chờ xác minh email. Hãy yêu cầu email xác minh mới và hoàn tất liên kết trong hộp thư trước khi đăng nhập.",

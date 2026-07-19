@@ -29,6 +29,10 @@ jest.mock('@/services/order.service', () => ({
 const orderDetail: OrderDetail = {
   id: 'order-001',
   shortId: 'HS-001',
+  orderCode: 'ORD-01JZXYZABCDEABCDEABCDEABD',
+  paymentReferenceNo: 'PAY-01JZXYZABCDEABCDEABCDEABC',
+  paymentMethodCode: 'COD',
+  paymentStatus: 'Succeeded',
   userId: 'user-001',
   storeId: 'store-001',
   status: 'Confirmed',
@@ -101,10 +105,11 @@ describe('OrderDetailPage', () => {
   it('should render order detail with line items status and address', async () => {
     await renderOrderDetail()
 
-    expect(await screen.findByText('HS-001')).toBeTruthy()
+    expect(await screen.findByText('ORD-01JZXYZABCDEABCDEABCDEABD')).toBeTruthy()
+    expect(screen.getByText('PAY-01JZXYZABCDEABCDEABCDEABC')).toBeTruthy()
     expect(screen.getByText('Honey Jar')).toBeTruthy()
     expect(screen.getByText('Test Buyer')).toBeTruthy()
-    expect(screen.getByText('COD')).toBeTruthy()
+    expect(screen.getByText(i18n.global.t('payment.methods.cod'))).toBeTruthy()
   })
 
   it('should request the order by route id', async () => {

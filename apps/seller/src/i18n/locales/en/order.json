@@ -2,6 +2,11 @@
   "title": "Order Management",
   "breadcrumb": "All Orders",
   "orderCode": "Order ID",
+  "paymentReference": "Payment Reference",
+  "paymentStatus": "Payment Status",
+  "paymentStatusValue": "Payment Status: {status}",
+  "paymentAttempt": "Payment Attempt",
+  "paymentAttemptValue": "Payment Attempt {attemptNo}",
   "tabs": {
     "all": "All",
     "pendingConfirmation": "Pending Confirmation",

@@ -12,7 +12,21 @@ import type { Order } from '@/types'
 const i18n = createI18n({
   legacy: false,
   locale: 'en',
-  messages: { en: {} },
+  messages: {
+    en: {
+      common: {
+        payments: {
+          status: {
+            succeeded: 'Succeeded',
+          },
+        },
+      },
+      order: {
+        paymentStatusValue: 'Payment Status: {status}',
+        paymentAttemptValue: 'Payment Attempt {attemptNo}',
+      },
+    },
+  },
 })
 
 jest.mock('@/i18n', () => ({
@@ -21,6 +35,12 @@ jest.mock('@/i18n', () => ({
     global: {
       t: (key: string) => key,
     },
+  },
+}))
+
+jest.mock('@/services/payment.service', () => ({
+  paymentService: {
+    getPaymentMethods: jest.fn(),
   },
 }))
 
@@ -130,6 +150,11 @@ const baseOrder: Order = {
   ],
   totalAmount: 200_000,
   paymentMethod: 'Banking',
+  paymentReferenceNo: 'PAY-01JZXYZABCDEABCDEABCDEABC',
+  paymentMethodCode: 'VNPAY',
+  paymentMethodLabel: 'VNPay',
+  paymentStatus: 'Succeeded',
+  paymentAttemptNo: 2,
   status: OrderStatus.Paid,
   actionDateTime: '2026-06-13T00:00:00Z',
   createdAt: '2026-06-13T00:00:00Z',
@@ -258,5 +283,20 @@ describe('OrderManagementPage', () => {
 
     expect(consoleSpy).toHaveBeenCalledWith('Prepare goods for order:', 'order-001')
     consoleSpy.mockRestore()
+  })
+
+  it('renders the canonical payment method label from the order store', async () => {
+    await renderOrderManagement()
+
+    expect(screen.getByText('VNPay')).toBeTruthy()
+    expect(screen.queryByText('Banking')).toBeNull()
+  })
+
+  it('renders shared payment reference and latest attempt state', async () => {
+    await renderOrderManagement()
+
+    expect(screen.getByText(/PAY-01JZXYZABCDEABCDEABCDEABC/)).toBeTruthy()
+    expect(screen.getByText(/Payment Status: Succeeded/)).toBeTruthy()
+    expect(screen.getByText(/Payment Attempt 2/)).toBeTruthy()
   })
 })

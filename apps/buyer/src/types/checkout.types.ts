@@ -1,4 +1,9 @@
-import type { MoneyIssue, SupportedCurrencyCode } from '@hivespace/shared'
+import type {
+  MoneyIssue,
+  PaymentAttempt,
+  PaymentMethodCode,
+  SupportedCurrencyCode,
+} from '@hivespace/shared'
 import type { AppliedPlatformCoupon, AppliedStoreCoupon, InvalidAppliedCoupon } from './cart.types'
 
 export interface CheckoutItem {
@@ -60,25 +65,25 @@ export interface DeliveryAddressDto {
 }
 
 export const PaymentMethod = {
-  COD: 1,
-  VNPAY: 2,
-  MOMO: 3,
-  BankTransfer: 4,
-  Balance: 5,
-  PayPal: 6,
+  COD: 'COD',
+  VNPAY: 'VNPAY',
 } as const
 
 export type PaymentMethod = (typeof PaymentMethod)[keyof typeof PaymentMethod]
 
 export interface CheckoutRequest {
   deliveryAddress: DeliveryAddressDto
-  paymentMethod?: PaymentMethod
+  paymentMethodCode?: PaymentMethodCode
 }
 
 export interface CheckoutResult {
   orderIds: string[]
   status: string
   grandTotal: number
+  paymentId?: string | null
+  paymentReferenceNo?: string | null
+  referenceNo?: string | null
+  latestAttempt?: PaymentAttempt | null
   paymentUrl?: string | null
   paymentExpiresAt?: string | null
 }

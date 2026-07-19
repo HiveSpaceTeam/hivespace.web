@@ -5,11 +5,15 @@ import type {
   UpdatePlatformCurrencyConfigRequest,
   UpdatePlatformCurrencyConfigResponse,
 } from '@/types'
-import type { PlatformCurrencyConfig } from '@hivespace/shared'
+import type { PaymentMethodMetadata, PlatformCurrencyConfig } from '@hivespace/shared'
 import { useAppStore } from '@hivespace/shared'
 import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import { configurationService } from '@/services/configuration.service'
+import { paymentService } from '@/services/payment.service'
+
+const sortMethods = (methods: PaymentMethodMetadata[]) =>
+  [...methods].sort((left, right) => left.sortOrder - right.sortOrder)
 
 const mapApiResponseToConfig = (
   response: GetPlatformCurrencyConfigResponse | UpdatePlatformCurrencyConfigResponse,
@@ -61,6 +65,7 @@ const hasMatchingItems = (
 export const useConfigurationStore = defineStore('configuration', () => {
   const currencyConfig = ref<PlatformCurrencyConfig | null>(null)
   const editableCurrencyConfig = ref<PlatformCurrencyConfig | null>(null)
+  const paymentMethods = ref<PaymentMethodMetadata[]>([])
   const validationError = ref<string | null>(null)
 
   const enabledCurrencyOptions = computed(() => {
@@ -125,6 +130,12 @@ export const useConfigurationStore = defineStore('configuration', () => {
     } finally {
       appStore.setLoading(false)
     }
+  }
+
+  const fetchPaymentMethods = async () => {
+    const response = await paymentService.getPaymentMethods()
+    paymentMethods.value = sortMethods(response.methods)
+    return paymentMethods.value
   }
 
   const setDefaultCurrency = (currencyCode: SupportedCurrencyCode) => {
@@ -203,11 +214,13 @@ export const useConfigurationStore = defineStore('configuration', () => {
   return {
     currencyConfig,
     editableCurrencyConfig,
+    paymentMethods,
     validationError,
     enabledCurrencyOptions,
     hasChanges,
     changeCount,
     fetchCurrencyConfig,
+    fetchPaymentMethods,
     setDefaultCurrency,
     setCurrencyEnabled,
     discardChanges,

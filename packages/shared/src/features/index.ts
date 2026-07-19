@@ -1,5 +1,6 @@
 export * from './auth'
 export * from './notifications'
 export * from './media-upload'
+export * from './payments'
 export * from './user-settings'
 export * from './user-profile'

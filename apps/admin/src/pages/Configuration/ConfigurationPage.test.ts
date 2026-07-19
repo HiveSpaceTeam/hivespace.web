@@ -4,6 +4,7 @@ import { createPinia, setActivePinia } from 'pinia'
 import i18n from '@/i18n'
 import ConfigurationPage from './ConfigurationPage.vue'
 import { configurationService } from '@/services/configuration.service'
+import { paymentService } from '@/services/payment.service'
 import type { GetPlatformCurrencyConfigResponse } from '@/types'
 
 const mockAppStore = {
@@ -17,6 +18,12 @@ jest.mock('@/services/configuration.service', () => ({
   configurationService: {
     getCurrencyConfig: jest.fn(),
     updateCurrencyConfig: jest.fn(),
+  },
+}))
+
+jest.mock('@/services/payment.service', () => ({
+  paymentService: {
+    getPaymentMethods: jest.fn(),
   },
 }))
 
@@ -113,6 +120,40 @@ describe('ConfigurationPage', () => {
     jest.clearAllMocks()
     jest.mocked(configurationService.getCurrencyConfig).mockResolvedValue(currencyConfigFixture)
     jest.mocked(configurationService.updateCurrencyConfig).mockResolvedValue(currencyConfigFixture)
+    jest.mocked(paymentService.getPaymentMethods).mockResolvedValue({
+      methods: [
+        {
+          code: 'COD',
+          displayName: 'Cash on Delivery',
+          kind: 'Offline',
+          gatewayCode: null,
+          isEnabled: true,
+          isCheckoutSelectable: true,
+          availability: 'Available',
+          sortOrder: 1,
+        },
+        {
+          code: 'VNPAY',
+          displayName: 'VNPay',
+          kind: 'Online',
+          gatewayCode: 'VNPAY',
+          isEnabled: true,
+          isCheckoutSelectable: true,
+          availability: 'Available',
+          sortOrder: 2,
+        },
+        {
+          code: 'STRIPE',
+          displayName: 'Stripe',
+          kind: 'Online',
+          gatewayCode: 'STRIPE',
+          isEnabled: false,
+          isCheckoutSelectable: false,
+          availability: 'Future',
+          sortOrder: 3,
+        },
+      ],
+    })
   })
 
   it('should load persisted currency items and default', async () => {
@@ -215,5 +256,20 @@ describe('ConfigurationPage', () => {
         name: i18n.global.t('configuration.saveBar.save'),
       }),
     ).toBeTruthy()
+  })
+
+  it('should render canonical PaymentService payment methods', async () => {
+    renderPage()
+
+    await waitFor(() => {
+      expect(screen.getByText('Cash on Delivery')).toBeTruthy()
+    })
+
+    expect(paymentService.getPaymentMethods).toHaveBeenCalled()
+    expect(screen.getByText('VNPay')).toBeTruthy()
+    expect(screen.getByText('Stripe')).toBeTruthy()
+    expect(screen.getByText('Future')).toBeTruthy()
+    expect(screen.queryByText('MoMo')).toBeNull()
+    expect(screen.queryByText('ZaloPay')).toBeNull()
   })
 })

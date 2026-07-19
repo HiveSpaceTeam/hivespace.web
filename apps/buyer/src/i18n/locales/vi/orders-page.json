@@ -1,6 +1,6 @@
 {
   "title": "Đơn Mua",
-  "searchPlaceholder": "Bạn có thể tìm kiếm theo tên Shop, ID đơn hàng hoặc Tên sản phẩm",
+  "searchPlaceholder": "Bạn có thể tìm kiếm theo tên cửa hàng, mã đơn hàng hoặc tên sản phẩm",
   "tabAll": "Tất cả",
   "tabWaitingPayment": "Chờ thanh toán",
   "tabProcessing": "Đang xử lý",

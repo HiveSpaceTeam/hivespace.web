@@ -3,6 +3,7 @@
   "verifyingSubtext": "Vui lòng không đóng tab này.",
   "successTitle": "Thanh toán thành công!",
   "successSubtext": "Cảm ơn bạn đã mua hàng.",
+  "referenceNo": "Mã thanh toán",
   "orderReference": "Mã đơn hàng",
   "amountPaid": "Số tiền đã thanh toán",
   "transactionId": "Mã giao dịch",
@@ -19,5 +20,13 @@
   "pendingTitle": "Đang chờ xác nhận",
   "pendingSubtext": "Chúng tôi đang chờ xác nhận thanh toán. Vui lòng chờ một chút.",
   "refresh": "Kiểm tra lại",
-  "invalidReference": "Mã thanh toán không hợp lệ."
+  "invalidReference": "Mã thanh toán không hợp lệ.",
+  "retryPayment": "Thử lại thanh toán",
+  "methods": {
+    "cod": "Thanh toán khi nhận hàng",
+    "vnpay": "VNPay",
+    "stripe": "Stripe",
+    "unavailable": "Không khả dụng",
+    "future": "Sẽ hỗ trợ sau"
+  }
 }

@@ -3,6 +3,7 @@
   "verifyingSubtext": "Please do not close this tab.",
   "successTitle": "Payment Successful!",
   "successSubtext": "Thank you for your purchase.",
+  "referenceNo": "Payment Reference",
   "orderReference": "Order Reference",
   "amountPaid": "Amount Paid",
   "transactionId": "Transaction ID",
@@ -19,5 +20,13 @@
   "pendingTitle": "Payment Pending",
   "pendingSubtext": "We are still confirming your payment. This may take a moment.",
   "refresh": "Check Again",
-  "invalidReference": "Invalid payment reference."
+  "invalidReference": "Invalid payment reference.",
+  "retryPayment": "Retry Payment",
+  "methods": {
+    "cod": "Cash on Delivery",
+    "vnpay": "VNPay",
+    "stripe": "Stripe",
+    "unavailable": "Unavailable",
+    "future": "Coming later"
+  }
 }

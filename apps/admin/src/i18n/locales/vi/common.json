@@ -29,6 +29,23 @@
     "signingOut": "Đang đăng xuất...",
     "rememberMe": "Ghi nhớ đăng nhập"
   },
+  "payments": {
+    "methods": {
+      "availability": {
+        "available": "Khả dụng",
+        "unavailable": "Không khả dụng",
+        "future": "Sắp hỗ trợ"
+      }
+    },
+    "status": {
+      "pending": "Đang chờ",
+      "processing": "Đang xử lý",
+      "succeeded": "Thành công",
+      "failed": "Thất bại",
+      "cancelled": "Đã hủy",
+      "expired": "Hết hạn"
+    }
+  },
   "header": {
     "openApplicationMenu": "Mở menu ứng dụng",
     "closeApplicationMenu": "Đóng menu ứng dụng"

@@ -29,6 +29,23 @@
     "signingOut": "Signing out...",
     "rememberMe": "Remember me"
   },
+  "payments": {
+    "methods": {
+      "availability": {
+        "available": "Available",
+        "unavailable": "Unavailable",
+        "future": "Future"
+      }
+    },
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "succeeded": "Succeeded",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    }
+  },
   "header": {
     "openApplicationMenu": "Open application menu",
     "closeApplicationMenu": "Close application menu"

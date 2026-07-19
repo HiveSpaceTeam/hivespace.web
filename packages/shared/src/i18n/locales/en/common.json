@@ -4,6 +4,7 @@
   "loading": "Loading...",
   "error": "Error",
   "success": "Success",
+  "emptyValue": "-",
   "backHome": "Back to home",
   "cancel": "Cancel",
   "save": "Save",
@@ -35,6 +36,35 @@
   },
   "money": {
     "invalid": "Invalid money"
+  },
+  "payments": {
+    "methods": {
+      "cod": "Cash on Delivery",
+      "vnpay": "VNPay",
+      "stripe": "Stripe",
+      "availability": {
+        "available": "Available",
+        "unavailable": "Unavailable",
+        "future": "Future"
+      }
+    },
+    "status": {
+      "pending": "Pending",
+      "processing": "Processing",
+      "succeeded": "Succeeded",
+      "failed": "Failed",
+      "cancelled": "Cancelled",
+      "expired": "Expired"
+    },
+    "referenceNo": "Payment reference",
+    "linkedOrders": "Linked orders",
+    "attempt": "Attempt",
+    "retryPayment": "Retry payment",
+    "checkoutPayment": "Checkout payment"
+  },
+  "orders": {
+    "orderCode": "Order code",
+    "paymentReference": "Payment reference"
   },
   "maintenance": {
     "title": "Under maintenance",

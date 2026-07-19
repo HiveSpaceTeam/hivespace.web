@@ -109,6 +109,18 @@ const router = createRouter({
       meta: { titleKey: 'configuration.title' },
     },
     {
+      path: '/payments',
+      name: 'Payments',
+      component: () => import('@/pages/Payments/PaymentLookupPage.vue'),
+      meta: { titleKey: 'payments.title' },
+    },
+    {
+      path: '/payments/by-order/:orderId',
+      name: 'PaymentByOrder',
+      component: () => import('@/pages/Payments/PaymentByOrderPage.vue'),
+      meta: { titleKey: 'payments.byOrder.title' },
+    },
+    {
       path: '/accounts',
       name: 'Accounts',
       component: () => import('@/pages/Accounts/AccountsPage.vue'),
