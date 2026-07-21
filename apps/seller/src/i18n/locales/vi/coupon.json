@@ -1,21 +1,21 @@
 {
   "title": "Danh sách Mã giảm giá",
   "creationGateway": {
-    "title": "Tạo Coupon",
-    "description": "Tạo Mã giảm giá toàn shop hoặc Mã giảm giá sản phẩm ngay bây giờ để thu hút người mua.",
+    "title": "Tạo mã giảm giá",
+    "description": "Tạo mã giảm giá toàn cửa hàng hoặc mã giảm giá sản phẩm ngay bây giờ để thu hút người mua.",
     "shopCoupon": {
-      "title": "Coupon toàn Shop",
-      "description": "Coupon áp dụng cho tất cả sản phẩm trong Shop của bạn.",
+      "title": "Mã giảm giá toàn cửa hàng",
+      "description": "Mã giảm giá áp dụng cho tất cả sản phẩm trong cửa hàng của bạn.",
       "button": "Tạo"
     },
     "productCoupon": {
-      "title": "Coupon sản phẩm",
-      "description": "Coupon chỉ áp dụng cho những sản phẩm nhất định mà Shop chọn.",
+      "title": "Mã giảm giá sản phẩm",
+      "description": "Mã giảm giá chỉ áp dụng cho những sản phẩm nhất định mà cửa hàng chọn.",
       "button": "Tạo"
     },
     "privateCoupon": {
-      "title": "Coupon riêng tư",
-      "description": "Coupon áp dụng cho nhóm Khách hàng Shop muốn thông qua mã Voucher",
+      "title": "Mã giảm giá riêng tư",
+      "description": "Mã giảm giá áp dụng cho nhóm khách hàng cửa hàng muốn thông qua mã ưu đãi",
       "button": "Tạo"
     }
   },
@@ -28,10 +28,10 @@
       "upcoming": "Sắp diễn ra",
       "expired": "Đã kết thúc"
     },
-    "searchPlaceholder": "Tên Coupon / Mã coupon",
+    "searchPlaceholder": "Tên mã giảm giá / Mã giảm giá",
     "searchButton": "Tìm",
     "table": {
-      "nameAndCode": "Tên Coupon | Mã coupon",
+      "nameAndCode": "Tên mã giảm giá | Mã giảm giá",
       "type": "Loại mã",
       "applicableProducts": "Sản phẩm áp dụng",
       "discount": "Giảm giá",
@@ -49,18 +49,18 @@
     "discountMax": "Tối đa"
   },
   "detail": {
-    "titleCreate": "Tạo Coupon mới",
-    "titleEdit": "Chỉnh sửa Coupon",
+    "titleCreate": "Tạo mã giảm giá mới",
+    "titleEdit": "Chỉnh sửa mã giảm giá",
     "basicInfo": {
       "title": "Thông tin cơ bản",
       "status": "Trạng thái",
       "type": "Loại mã",
-      "typeEntireShop": "Coupon toàn Shop",
-      "typeSpecificProducts": "Coupon sản phẩm",
+      "typeEntireShop": "Mã giảm giá toàn cửa hàng",
+      "typeSpecificProducts": "Mã giảm giá sản phẩm",
       "programName": "Tên chương trình giảm giá",
-      "programNameHint": "Tên Coupon sẽ không được hiển thị cho Người mua",
-      "couponCode": "Mã coupon",
-      "couponCodePrefix": "Vui lòng chỉ nhập các kí tự chữ cái (A-Z), số (0-9); tối đa 5 kí tự.",
+      "programNameHint": "Tên mã giảm giá sẽ không hiển thị cho người mua",
+      "couponCode": "Mã giảm giá",
+      "couponCodePrefix": "Vui lòng chỉ nhập các ký tự chữ cái (A-Z), số (0-9); tối đa 5 ký tự.",
       "couponCodeFull": "Mã giảm giá đầy đủ là",
       "usagePeriod": "Thời gian sử dụng mã",
       "allowEarlySave": "Cho phép lưu mã trước Thời gian sử dụng",
@@ -73,8 +73,8 @@
     },
     "discountSettings": {
       "title": "Thiết lập mã giảm giá",
-      "rewardType": "Loại Coupon",
-      "rewardTypeDiscount": "Khuyến Mãi",
+      "rewardType": "Loại mã giảm giá",
+      "rewardTypeDiscount": "Khuyến mãi",
       "rewardTypeCoin": "Hoàn Xu",
       "discountType": "Loại giảm giá | Mức giảm",
       "discountTypeFixed": "Theo số tiền",
@@ -86,15 +86,15 @@
       "minOrderValue": "Giá trị đơn hàng tối thiểu",
       "totalMaxUsages": "Tổng lượt sử dụng tối đa",
       "totalMaxUsagesHint": "Tổng số Mã giảm giá có thể sử dụng",
-      "maxUsagesPerBuyer": "Lượt sử dụng tối đa/Người mua",
+      "maxUsagesPerBuyer": "Lượt sử dụng tối đa/người mua",
       "currency": "Đơn vị tiền tệ"
     },
     "displayAndProducts": {
       "title": "Hiển thị mã giảm giá và các sản phẩm áp dụng",
       "displaySettings": "Thiết lập hiển thị",
       "displayPublic": "Hiển thị nhiều nơi",
-      "displayCodeOnly": "Chia sẻ thông qua mã Coupon",
-      "displayCodeOnlyHint": "Người mua chỉ có thể sử dụng mã này khi nhập trực tiếp mã coupon.",
+      "displayCodeOnly": "Chia sẻ thông qua mã giảm giá",
+      "displayCodeOnlyHint": "Người mua chỉ có thể sử dụng mã này khi nhập trực tiếp mã giảm giá.",
       "displayCodeOnlyFixed": "Chia sẻ thông qua Mã giảm giá",
       "applicableProducts": "Sản phẩm được áp dụng",
       "allProducts": "Tất cả sản phẩm",
@@ -116,24 +116,24 @@
     },
     "notifications": {
       "createSuccess": {
-        "title": "Tạo Coupon thành công",
-        "message": "Coupon của bạn đã được tạo thành công."
+        "title": "Tạo mã giảm giá thành công",
+        "message": "Mã giảm giá của bạn đã được tạo thành công."
       },
       "createError": {
         "title": "Tạo thất bại",
-        "message": "Đã xảy ra lỗi khi tạo coupon. Vui lòng thử lại."
+        "message": "Đã xảy ra lỗi khi tạo mã giảm giá. Vui lòng thử lại."
       },
       "loadError": {
         "title": "Tải thất bại",
-        "message": "Đã xảy ra lỗi khi tải chi tiết coupon. Vui lòng thử lại."
+        "message": "Đã xảy ra lỗi khi tải chi tiết mã giảm giá. Vui lòng thử lại."
       }
     },
     "validation": {
       "nameRequired": "Tên chương trình giảm giá là bắt buộc.",
       "nameTooLong": "Tên không được vượt quá 100 ký tự.",
-      "codeRequired": "Mã coupon là bắt buộc.",
-      "codeAlphanumeric": "Mã coupon chỉ được chứa chữ cái (A-Z) và số (0-9).",
-      "codeTooLong": "Mã coupon chỉ được tối đa 5 ký tự.",
+      "codeRequired": "Mã giảm giá là bắt buộc.",
+      "codeAlphanumeric": "Mã giảm giá chỉ được chứa chữ cái (A-Z) và số (0-9).",
+      "codeTooLong": "Mã giảm giá chỉ được tối đa 5 ký tự.",
       "startDateRequired": "Ngày bắt đầu là bắt buộc.",
       "startDateFuture": "Ngày bắt đầu phải ở trong tương lai.",
       "endDateRequired": "Ngày kết thúc là bắt buộc.",
@@ -152,7 +152,7 @@
       "title": "Chọn Sản Phẩm",
       "tabs": {
         "select": "Chọn",
-        "upload": "Tải Lên Danh Sách Sản Phẩm"
+        "upload": "Tải lên danh sách sản phẩm"
       },
       "uploadComingSoon": "Tính năng tải lên danh sách sản phẩm sẽ sớm ra mắt.",
       "category": "Ngành hàng",

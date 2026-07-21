@@ -46,6 +46,73 @@ export type MoneyIssue = {
   placeholder?: string
 }
 
+export type PaymentMethodCode = 'COD' | 'VNPAY' | 'STRIPE' | string
+export type PaymentMethodAvailability = 'Available' | 'Unavailable' | 'Future' | string
+export type PaymentStatus = 'Pending' | 'Processing' | 'Succeeded' | 'Failed' | 'Cancelled' | 'Expired'
+
+export const PAYMENT_STATUS = {
+  Pending: 'Pending',
+  Processing: 'Processing',
+  Succeeded: 'Succeeded',
+  Failed: 'Failed',
+  Cancelled: 'Cancelled',
+  Expired: 'Expired',
+} as const
+
+export const PENDING_PAYMENT_SESSION_KEY = 'hivespace_pending_payment'
+export const PAYMENT_DISPLAY_SEPARATOR = ' / '
+
+export const buildPaymentAttemptIdempotencyKey = (
+  paymentId: string,
+  timestamp = Date.now(),
+) => `payment-attempt:${paymentId}:${timestamp}`
+
+export const isTerminalPaymentStatus = (status: PaymentStatus) =>
+  ['Succeeded', 'Failed', 'Cancelled', 'Expired'].includes(status)
+
+export const isRetryablePaymentStatus = (status: PaymentStatus) =>
+  ['Failed', 'Cancelled', 'Expired'].includes(status)
+
+export const normalizePaymentStatus = (status?: string | null): PaymentStatus | null => {
+  switch (status?.toLowerCase()) {
+    case 'success':
+    case 'succeeded':
+      return 'Succeeded'
+    case 'fail':
+    case 'failed':
+    case 'failure':
+      return 'Failed'
+    case 'cancelled':
+    case 'canceled':
+      return 'Cancelled'
+    case 'expired':
+      return 'Expired'
+    case 'pending':
+      return 'Pending'
+    case 'processing':
+      return 'Processing'
+    default:
+      return null
+  }
+}
+
+export const paymentStatusLabelKey = (status: PaymentStatus) =>
+  `common.payments.status.${status.toLowerCase()}`
+
+export const paymentAvailabilityLabelKey = (availability: PaymentMethodAvailability) =>
+  `common.payments.methods.availability.${String(availability).toLowerCase()}`
+
+export interface PaymentMethodMetadata {
+  code: PaymentMethodCode
+  displayName: string
+  kind: string
+  gatewayCode: string | null
+  isEnabled: boolean
+  isCheckoutSelectable: boolean
+  availability: PaymentMethodAvailability
+  sortOrder: number
+}
+
 const NUMERIC_CURRENCY_CODES: Record<number, SupportedCurrencyCode> = {
   704: 'VND',
   840: 'USD',
@@ -280,6 +347,14 @@ export const createNotificationService = () => ({
 export const createMediaUploadService = () => ({
   presignUpload: async () => ({ url: 'https://fake-presign.test/upload', uploadRef: 'fake-ref' }),
   confirmUpload: async () => ({ confirmed: true, mediaId: 'fake-ref' }),
+})
+
+export const createPaymentService = () => ({
+  getPaymentMethods: async () => ({ methods: [] }),
+  getPaymentDetail: async () => null,
+  getPaymentByReference: async () => null,
+  getPaymentByOrder: async () => null,
+  createPaymentAttempt: async () => null,
 })
 
 export const createUserProfileService = () => ({

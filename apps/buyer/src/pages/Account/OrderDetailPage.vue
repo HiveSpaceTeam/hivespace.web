@@ -80,7 +80,9 @@
               </RouterLink>
               <div class="flex-1 min-w-0">
                 <span class="text-xs text-gray-400">{{ $t('orders.detail.orderCode') }}</span>
-                <span class="ml-2 text-sm font-semibold text-gray-800 dark:text-gray-100">{{ currentOrder.shortId }}</span>
+                <span class="ml-2 text-sm font-semibold text-gray-800 dark:text-gray-100">
+                  {{ currentOrder.orderCode ?? currentOrder.shortId }}
+                </span>
               </div>
               <span
                 class="text-xs font-semibold uppercase tracking-wide"
@@ -178,10 +180,26 @@
             </div>
 
             <!-- Payment method -->
-            <div v-if="currentOrder.paymentMethod" class="bg-white dark:bg-card-dark rounded shadow-sm px-5 py-4">
-              <div class="flex justify-between items-center text-sm">
+            <div
+              v-if="currentOrder.paymentMethod || currentOrder.paymentMethodCode || currentOrder.paymentReferenceNo"
+              class="bg-white dark:bg-card-dark rounded shadow-sm px-5 py-4 space-y-3">
+              <div v-if="currentOrder.paymentReferenceNo" class="flex justify-between items-center text-sm">
+                <span class="text-gray-500 dark:text-gray-400">{{ $t('orders.detail.paymentReference') }}</span>
+                <span class="font-medium text-gray-800 dark:text-gray-100">{{ currentOrder.paymentReferenceNo }}</span>
+              </div>
+              <div
+                v-if="currentOrder.paymentMethod || currentOrder.paymentMethodCode"
+                class="flex justify-between items-center text-sm">
                 <span class="text-gray-500 dark:text-gray-400">{{ $t('orders.detail.paymentMethod') }}</span>
-                <span class="font-medium text-gray-800 dark:text-gray-100">{{ currentOrder.paymentMethod }}</span>
+                <span class="font-medium text-gray-800 dark:text-gray-100">
+                  {{ paymentMethodLabel(currentOrder.paymentMethodCode, currentOrder.paymentMethod) }}
+                </span>
+              </div>
+              <div v-if="currentOrder.paymentStatus" class="flex justify-between items-center text-sm">
+                <span class="text-gray-500 dark:text-gray-400">{{ $t('orders.detail.paymentStatus') }}</span>
+                <span class="font-medium text-gray-800 dark:text-gray-100">
+                  {{ currentOrder.paymentStatus }}
+                </span>
               </div>
             </div>
           </template>
@@ -258,6 +276,13 @@ const statusColor = (status: string) => STATUS_COLOR[status] ?? 'text-gray-400'
 
 const statusLabel = (status: string) =>
   t(`orders.detail.status.${status}`, status)
+
+const paymentMethodLabel = (code?: string | null, fallback?: string | null) => {
+  if (!code) return fallback ?? ''
+  const key = `payment.methods.${code.toLowerCase()}`
+  const translated = t(key)
+  return translated === key ? fallback ?? code : translated
+}
 
 // ── Timeline ─────────────────────────────────────────────────────────────────
 

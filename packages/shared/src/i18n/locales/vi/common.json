@@ -4,6 +4,7 @@
   "loading": "Đang tải...",
   "error": "Lỗi",
   "success": "Thành công",
+  "emptyValue": "-",
   "backHome": "Về trang chủ",
   "cancel": "Hủy",
   "save": "Lưu",
@@ -34,7 +35,36 @@
     "signingOut": "Đang đăng xuất..."
   },
   "money": {
-    "invalid": "Tien khong hop le"
+    "invalid": "Tiền không hợp lệ"
+  },
+  "payments": {
+    "methods": {
+      "cod": "Thanh toán khi nhận hàng",
+      "vnpay": "VNPay",
+      "stripe": "Stripe",
+      "availability": {
+        "available": "Khả dụng",
+        "unavailable": "Không khả dụng",
+        "future": "Sắp hỗ trợ"
+      }
+    },
+    "status": {
+      "pending": "Đang chờ",
+      "processing": "Đang xử lý",
+      "succeeded": "Thành công",
+      "failed": "Thất bại",
+      "cancelled": "Đã hủy",
+      "expired": "Hết hạn"
+    },
+    "referenceNo": "Mã tham chiếu thanh toán",
+    "linkedOrders": "Đơn hàng liên kết",
+    "attempt": "Lần thử",
+    "retryPayment": "Thanh toán lại",
+    "checkoutPayment": "Thanh toán khi đặt hàng"
+  },
+  "orders": {
+    "orderCode": "Mã đơn hàng",
+    "paymentReference": "Mã tham chiếu thanh toán"
   },
   "maintenance": {
     "title": "Đang bảo trì",

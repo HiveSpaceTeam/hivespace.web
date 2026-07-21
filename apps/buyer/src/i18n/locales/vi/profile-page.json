@@ -1,7 +1,7 @@
 {
-  "title": "Hồ Sơ Của Tôi",
+  "title": "Hồ sơ của tôi",
   "subtitle": "Quản lý thông tin hồ sơ để bảo mật tài khoản",
-  "editProfile": "Sửa Hồ Sơ",
+  "editProfile": "Sửa hồ sơ",
   "username": "Tên đăng nhập",
   "name": "Tên",
   "email": "Email",
@@ -21,7 +21,7 @@
   "photoFormat": "Định dạng: JPEG, PNG, WebP",
   "navNotifications": "Thông Báo",
   "navMyAccount": "Tài Khoản Của Tôi",
-  "navProfile": "Hồ Sơ",
+  "navProfile": "Hồ sơ",
   "navAddress": "Địa Chỉ",
   "navChangePassword": "Đổi Mật Khẩu",
   "navMyOrders": "Đơn Mua",

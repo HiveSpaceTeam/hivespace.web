@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { createPinia, setActivePinia } from 'pinia'
 import { useOrderStore } from './order.store'
 import { orderService } from '@/services/order.service'
+import { paymentService } from '@/services/payment.service'
 import { OrderProcessStatus, OrderStatus } from '@/types'
 import type { GetOrderListResponse } from '@/types'
 
@@ -13,6 +14,12 @@ jest.mock('@/services/order.service', () => ({
     getOrders: jest.fn(),
     confirmOrder: jest.fn(),
     rejectOrder: jest.fn(),
+  },
+}))
+
+jest.mock('@/services/payment.service', () => ({
+  paymentService: {
+    getPaymentMethods: jest.fn(),
   },
 }))
 
@@ -49,6 +56,10 @@ const orderListResponse = (count = 1): GetOrderListResponse => ({
     ],
     totalAmount: 100_000,
     paymentMethod: 'COD',
+    paymentReferenceNo: 'PAY-01JZXYZABCDEABCDEABCDEABC',
+    paymentMethodCode: 'COD',
+    paymentStatus: 'Succeeded',
+    paymentAttemptNo: 1,
     status: OrderStatus.Paid,
     actionDateTime: '2026-06-13T00:00:00Z',
     createdAt: '2026-06-13T00:00:00Z',
@@ -70,6 +81,40 @@ describe('useOrderStore', () => {
     jest.mocked(orderService.getOrders).mockResolvedValue(orderListResponse())
     jest.mocked(orderService.confirmOrder).mockResolvedValue(undefined)
     jest.mocked(orderService.rejectOrder).mockResolvedValue(undefined)
+    jest.mocked(paymentService.getPaymentMethods).mockResolvedValue({
+      methods: [
+        {
+          code: 'COD',
+          displayName: 'Cash on Delivery',
+          kind: 'Offline',
+          gatewayCode: null,
+          isEnabled: true,
+          isCheckoutSelectable: true,
+          availability: 'Available',
+          sortOrder: 1,
+        },
+        {
+          code: 'VNPAY',
+          displayName: 'VNPay',
+          kind: 'Online',
+          gatewayCode: 'VNPAY',
+          isEnabled: true,
+          isCheckoutSelectable: true,
+          availability: 'Available',
+          sortOrder: 2,
+        },
+        {
+          code: 'STRIPE',
+          displayName: 'Stripe',
+          kind: 'Online',
+          gatewayCode: 'STRIPE',
+          isEnabled: false,
+          isCheckoutSelectable: false,
+          availability: 'Future',
+          sortOrder: 3,
+        },
+      ],
+    })
   })
 
   it('should fetch orders with seller filters', async () => {
@@ -84,8 +129,40 @@ describe('useOrderStore', () => {
         pageSize: 10,
       }),
     )
+    expect(paymentService.getPaymentMethods).toHaveBeenCalled()
     expect(store.orders).toHaveLength(1)
     expect(store.orders[0]?.orderCode).toBe('HS-001')
+    expect(store.orders[0]?.paymentReferenceNo).toBe('PAY-01JZXYZABCDEABCDEABCDEABC')
+    expect(store.orders[0]?.paymentMethodLabel).toBe('Cash on Delivery')
+  })
+
+  it('should preserve historical payment fallback when metadata is missing', async () => {
+    jest.mocked(orderService.getOrders).mockResolvedValue({
+      ...orderListResponse(),
+      orders: [
+        {
+          ...orderListResponse().orders[0]!,
+          paymentMethod: 'Legacy transfer',
+          paymentMethodCode: 'LEGACY_BANK',
+        },
+      ],
+    })
+    const store = useOrderStore()
+
+    await store.fetchOrders()
+
+    expect(store.orders[0]?.paymentMethodLabel).toBe('Legacy transfer')
+  })
+
+  it('should keep orders available when payment metadata cannot be loaded', async () => {
+    jest.mocked(paymentService.getPaymentMethods).mockRejectedValue(new Error('Forbidden'))
+    const store = useOrderStore()
+
+    await store.fetchOrders()
+
+    expect(orderService.getOrders).toHaveBeenCalled()
+    expect(store.orders).toHaveLength(1)
+    expect(store.orders[0]?.paymentMethodLabel).toBe('COD')
   })
 
   it('should apply filters by resetting page and refetching', async () => {

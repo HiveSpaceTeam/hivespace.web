@@ -2,6 +2,7 @@ import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { createPinia, setActivePinia } from 'pinia'
 import { checkoutService } from '@/services/checkout.service'
 import { cartService } from '@/services/cart.service'
+import { paymentService } from '@/services/payment.service'
 import { PaymentMethod, type CheckoutPreview } from '@/types'
 import { useCheckoutStore } from './checkout.store'
 
@@ -18,6 +19,13 @@ jest.mock('@/services/cart.service', () => ({
     removePlatformCoupon: jest.fn(),
     applyStoreCoupon: jest.fn(),
     removeStoreCoupon: jest.fn(),
+  },
+}))
+
+jest.mock('@/services/payment.service', () => ({
+  paymentService: {
+    getPaymentMethods: jest.fn(),
+    createPaymentAttempt: jest.fn(),
   },
 }))
 
@@ -69,8 +77,58 @@ describe('useCheckoutStore', () => {
       orderIds: ['order-001'],
       status: 'Created',
       grandTotal: 200_000,
+      paymentId: 'payment-001',
+      paymentReferenceNo: 'PAY-01JZXYZABCDEABCDEABCDEABC',
       paymentUrl: 'https://payment.example.test/pay',
       paymentExpiresAt: null,
+    })
+    jest.mocked(paymentService.getPaymentMethods).mockResolvedValue({
+      methods: [
+        {
+          code: 'COD',
+          displayName: 'Cash on delivery',
+          kind: 'Offline',
+          gatewayCode: null,
+          isEnabled: true,
+          isCheckoutSelectable: true,
+          availability: 'Available',
+          sortOrder: 10,
+        },
+        {
+          code: 'VNPAY',
+          displayName: 'VNPay',
+          kind: 'Online',
+          gatewayCode: 'VNPAY',
+          isEnabled: true,
+          isCheckoutSelectable: true,
+          availability: 'Available',
+          sortOrder: 20,
+        },
+        {
+          code: 'STRIPE',
+          displayName: 'Stripe',
+          kind: 'Online',
+          gatewayCode: 'STRIPE',
+          isEnabled: false,
+          isCheckoutSelectable: false,
+          availability: 'Future',
+          sortOrder: 30,
+        },
+      ],
+    })
+    jest.mocked(paymentService.createPaymentAttempt).mockResolvedValue({
+      paymentId: 'payment-001',
+      referenceNo: 'PAY-01JZXYZABCDEABCDEABCDEABC',
+      attempt: {
+        id: 'attempt-002',
+        attemptNo: 2,
+        methodCode: 'VNPAY',
+        gatewayCode: 'VNPAY',
+        status: 'Processing',
+        redirectUrl: 'https://payment.example.test/retry',
+        createdAt: '2026-07-11T10:15:00Z',
+        expiresAt: '2026-07-11T10:30:00Z',
+      },
     })
     jest.mocked(cartService.applyPlatformCoupon).mockResolvedValue(undefined)
   })
@@ -108,11 +166,11 @@ describe('useCheckoutStore', () => {
         commune: 'Ward 1',
         province: 'Ho Chi Minh City',
       },
-      paymentMethod: PaymentMethod.VNPAY,
+      paymentMethodCode: PaymentMethod.VNPAY,
     })
 
     expect(checkoutService.initiateCheckout).toHaveBeenCalledWith(
-      expect.objectContaining({ paymentMethod: PaymentMethod.VNPAY }),
+      expect.objectContaining({ paymentMethodCode: PaymentMethod.VNPAY }),
     )
     expect(result.orderIds).toEqual(['order-001'])
   })
@@ -187,9 +245,42 @@ describe('useCheckoutStore', () => {
           commune: 'Ward 1',
           province: 'Ho Chi Minh City',
         },
-        paymentMethod: PaymentMethod.VNPAY,
+          paymentMethodCode: PaymentMethod.VNPAY,
       }),
     ).rejects.toThrow('Payment gateway error')
+  })
+
+  it('should load checkout-selectable methods and hide future Stripe in checkout', async () => {
+    const store = useCheckoutStore()
+
+    await store.loadInitialPreview()
+
+    expect(store.checkoutSelectablePaymentMethods.map(method => method.code)).toEqual(['COD', 'VNPAY'])
+    expect(store.paymentMethods.map(method => method.code)).toEqual(['COD', 'VNPAY', 'STRIPE'])
+  })
+
+  it('should create retry attempt under same payment reference after failed VNPay', async () => {
+    const store = useCheckoutStore()
+
+    await store.submitCheckout({
+      deliveryAddress: {
+        recipientName: 'Test Buyer',
+        phone: '0900000000',
+        streetAddress: '1 Test Street',
+        commune: 'Ward 1',
+        province: 'Ho Chi Minh City',
+      },
+      paymentMethodCode: PaymentMethod.VNPAY,
+    })
+    const result = await store.retryPaymentAttempt('VNPAY')
+
+    expect(paymentService.createPaymentAttempt).toHaveBeenCalledWith(
+      'payment-001',
+      expect.objectContaining({ methodCode: 'VNPAY' }),
+    )
+    expect(result.referenceNo).toBe('PAY-01JZXYZABCDEABCDEABCDEABC')
+    expect(store.paymentReferenceNo).toBe('PAY-01JZXYZABCDEABCDEABCDEABC')
+    expect(store.latestPaymentAttempt?.attemptNo).toBe(2)
   })
 
   it('fetchPreview_WithIdenticalData_SkipsStateUpdate', async () => {

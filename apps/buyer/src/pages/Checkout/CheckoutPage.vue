@@ -142,6 +142,28 @@
                 </template>
               </RadioGroup>
             </div>
+
+            <div
+              v-if="canRetryPayment"
+              class="bg-white dark:bg-card-dark rounded-sm shadow-sm mb-6 p-4">
+              <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                <div class="min-w-0">
+                  <h2 class="text-base font-medium text-gray-800 dark:text-gray-200">
+                    {{ t('payment.retryPayment') }}
+                  </h2>
+                  <p class="mt-1 text-sm text-gray-500 dark:text-gray-400">
+                    {{ paymentReferenceNo }}
+                  </p>
+                </div>
+                <Button
+                  variant="primary"
+                  size="sm"
+                  :disabled="submitting"
+                  @click="handleRetryPayment">
+                  {{ t('payment.retryPayment') }}
+                </Button>
+              </div>
+            </div>
           </div>
 
           <div class="lg:w-[340px] shrink-0">
@@ -280,14 +302,15 @@ import {
   Badge,
   Spinner,
   useModal,
+  isRetryablePaymentStatus,
+  PENDING_PAYMENT_SESSION_KEY,
   createMoneyDisplay,
   useMoneyFormatter,
 } from '@hivespace/shared'
-import { PaymentMethod } from '@/types'
 import type { DeliveryPackage, InvalidAppliedCoupon, UserAddress } from '@/types'
 import type { MoneyIssue } from '@hivespace/shared'
 
-const { t, locale } = useI18n()
+const { t, te, locale } = useI18n()
 const router = useRouter()
 const appStore = useAppStore()
 const { formatMoney } = useMoneyFormatter({ t })
@@ -306,6 +329,10 @@ const {
   totalSaved,
   platformCoupons,
   submitting,
+  checkoutSelectablePaymentMethods,
+  checkoutPaymentId,
+  paymentReferenceNo,
+  latestPaymentAttempt,
 } = storeToRefs(checkoutStore)
 const {
   loadInitialPreview,
@@ -316,6 +343,7 @@ const {
   removeStoreCoupon,
   resetPreview,
   submitCheckout,
+  retryPaymentAttempt,
 } = checkoutStore
 
 const shopCouponOpenMap = ref<Record<string, boolean>>({})
@@ -360,19 +388,47 @@ const handleChangeAddress = async () => {
   if (result) selectedAddress.value = result as UserAddress
 }
 
-const selectedPaymentMethod = ref('cod')
+const selectedPaymentMethod = ref('')
 
-const paymentMethodOptions = computed(() => [
-  { value: 'cod', icon: '📦', label: t('checkout.cod') },
-  { value: 'vnpay', icon: '🔵', label: t('checkout.vnPay'), subLabel: t('checkout.scanToPay') },
-  { value: 'momo', icon: '💖', label: t('checkout.momo'), tag: t('checkout.momoPromo'), tagClass: 'bg-pink-100 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400' },
-])
-
-const paymentMethodMap: Record<string, PaymentMethod> = {
-  momo: PaymentMethod.MOMO,
-  vnpay: PaymentMethod.VNPAY,
-  cod: PaymentMethod.COD,
+const paymentMethodLabel = (code: string, fallback: string) => {
+  const key = `payment.methods.${code.toLowerCase()}`
+  return te(key) ? t(key) : fallback
 }
+
+const paymentMethodOptions = computed(() =>
+  checkoutSelectablePaymentMethods.value
+    .map(method => {
+      return {
+        value: method.code,
+        icon: method.code,
+        label: paymentMethodLabel(method.code, method.displayName),
+        subLabel: method.kind,
+      }
+    }),
+)
+
+const canRetryPayment = computed(() =>
+  !!checkoutPaymentId.value &&
+  !!paymentReferenceNo.value &&
+  !!latestPaymentAttempt.value &&
+  isRetryablePaymentStatus(latestPaymentAttempt.value.status),
+)
+
+watch(
+  paymentMethodOptions,
+  methods => {
+    if (!selectedPaymentMethod.value && methods[0]) {
+      selectedPaymentMethod.value = methods[0].value
+    }
+    if (
+      selectedPaymentMethod.value &&
+      !methods.some(method => method.value === selectedPaymentMethod.value)
+    ) {
+      selectedPaymentMethod.value = methods[0]?.value ?? ''
+    }
+  },
+  { immediate: true },
+)
 
 const getPackageProductIds = (pkg: DeliveryPackage) =>
   [...new Set(pkg.items.map(item => item.productId))]
@@ -391,13 +447,30 @@ async function handlePlaceOrder() {
     commune: addr.commune,
     province: addr.province,
   }
-  const paymentMethod = paymentMethodMap[selectedPaymentMethod.value] ?? PaymentMethod.COD
+  const paymentMethodCode = selectedPaymentMethod.value
+  if (!paymentMethodCode) {
+    appStore.notifyError(t('checkout.orderFailedTitle'), t('checkout.paymentMethodRequired'))
+    return
+  }
 
   try {
-    const result = await submitCheckout({ deliveryAddress: deliveryAddressDto, paymentMethod })
-    if (result.paymentUrl) {
-      sessionStorage.setItem('hivespace_pending_order', JSON.stringify({ orderId: result.orderIds[0] }))
-      window.location.href = result.paymentUrl
+    const result = await submitCheckout({ deliveryAddress: deliveryAddressDto, paymentMethodCode })
+    const redirectUrl = result.latestAttempt?.redirectUrl ?? result.paymentUrl
+    if (redirectUrl) {
+      persistPendingPayment({
+        paymentId: result.paymentId ?? checkoutPaymentId.value,
+        paymentReferenceNo:
+          result.paymentReferenceNo ?? result.referenceNo ?? paymentReferenceNo.value,
+        attemptId: result.latestAttempt?.id ?? latestPaymentAttempt.value?.id,
+        attemptNo: result.latestAttempt?.attemptNo ?? latestPaymentAttempt.value?.attemptNo,
+        orderIds: result.orderIds,
+      })
+      window.location.href = redirectUrl
+    } else if (
+      result.latestAttempt &&
+      isRetryablePaymentStatus(result.latestAttempt.status)
+    ) {
+      appStore.notifyError(t('checkout.orderFailedTitle'), t('checkout.orderFailedMessage'))
     } else {
       appStore.notifySuccess(t('checkout.orderSuccessTitle'), t('checkout.orderSuccessMessage'))
       router.push({ name: 'Home' })
@@ -405,6 +478,36 @@ async function handlePlaceOrder() {
   } catch {
     appStore.notifyError(t('checkout.orderFailedTitle'), t('checkout.orderFailedMessage'))
     await refreshPreview()
+  }
+}
+
+const persistPendingPayment = (paymentState: {
+  paymentId?: string | null
+  paymentReferenceNo?: string | null
+  attemptId?: string | null
+  attemptNo?: number | null
+  orderIds?: string[]
+}) => {
+  sessionStorage.setItem(PENDING_PAYMENT_SESSION_KEY, JSON.stringify(paymentState))
+}
+
+const handleRetryPayment = async () => {
+  try {
+    const result = await retryPaymentAttempt(selectedPaymentMethod.value || undefined)
+    const redirectUrl = result.attempt.redirectUrl
+
+    persistPendingPayment({
+      paymentId: result.paymentId,
+      paymentReferenceNo: result.referenceNo,
+      attemptId: result.attempt.id,
+      attemptNo: result.attempt.attemptNo,
+    })
+
+    if (redirectUrl) {
+      window.location.href = redirectUrl
+    }
+  } catch {
+    appStore.notifyError(t('checkout.orderFailedTitle'), t('checkout.orderFailedMessage'))
   }
 }
 

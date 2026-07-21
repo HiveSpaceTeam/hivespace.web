@@ -24,6 +24,7 @@ import {
   UserGroupIcon,
   FolderIcon,
   InfoIcon,
+  PaymentIcon,
   ShieldIcon,
   ChatIcon,
   CalenderIcon,
@@ -74,6 +75,7 @@ const menuGroups = computed<SidebarMenuGroup[]>(() => {
     { name: t('common.accounts'), icon: UserGroupIcon, path: '/accounts', badge: '25', badgeTone: 'primary' },
     { name: t('buyers.title'), icon: UserCircleIcon, path: '/buyers', badge: '842k', badgeTone: 'success' },
     { name: t('merchants.title'), icon: FolderIcon, path: '/merchants', badge: '12,487', badgeTone: 'light' },
+    { name: t('payments.title'), icon: PaymentIcon, path: '/payments' },
     { name: t('common.auditLog'), icon: InfoIcon, path: '/audit-log', badge: '3', badgeTone: 'error' },
     { name: t('configuration.title'), icon: SettingsIcon, path: '/configuration' },
   ]

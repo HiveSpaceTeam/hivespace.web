@@ -40,14 +40,14 @@
   "pageTitle": {
     "home": "HiveSpace - Mua sắm trực tuyến",
     "cart": "Giỏ Hàng - HiveSpace",
-    "checkout": "Thanh Toán - HiveSpace",
+    "checkout": "Thanh toán - HiveSpace",
     "product": "HiveSpace - Mua sắm trực tuyến",
     "serverError": "Lỗi máy chủ",
     "maintenance": "Bảo trì",
     "notFound": "Không tìm thấy trang",
-    "profile": "Hồ Sơ Của Tôi - HiveSpace",
+    "profile": "Hồ sơ của tôi - HiveSpace",
     "address": "Địa Chỉ Của Tôi - HiveSpace",
-    "paymentResult": "Kết Quả Thanh Toán - HiveSpace",
+    "paymentResult": "Kết quả thanh toán - HiveSpace",
     "orders": "Đơn Mua - HiveSpace",
     "orderDetail": "Chi Tiết Đơn Hàng - HiveSpace",
     "notifications": "Thông Báo - HiveSpace"

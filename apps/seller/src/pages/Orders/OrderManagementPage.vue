@@ -126,6 +126,9 @@
                       <span class="text-sm text-gray-500">
                         {{ $t('order.orderCode') }} {{ order.orderCode }}
                       </span>
+                      <span v-if="order.paymentReferenceNo" class="text-sm text-gray-500">
+                        {{ $t('order.paymentReference') }} {{ order.paymentReferenceNo }}
+                      </span>
                     </div>
                   </td>
                 </tr>
@@ -138,7 +141,15 @@
                     <p class="whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">
                       {{ formatOrderTotal(order.totalAmount, order.currencyCode) }}
                     </p>
-                    <p class="mt-0.5 text-xs text-gray-500">{{ order.paymentMethod }}</p>
+                    <p class="mt-0.5 text-xs text-gray-500">
+                      {{ order.paymentMethodLabel || order.paymentMethod }}
+                    </p>
+                    <p v-if="order.paymentStatus" class="mt-0.5 text-xs text-gray-500">
+                      {{ formatPaymentStatus(order.paymentStatus) }}
+                    </p>
+                    <p v-if="order.paymentAttemptNo" class="mt-0.5 text-xs text-gray-500">
+                      {{ formatPaymentAttempt(order.paymentAttemptNo) }}
+                    </p>
                   </td>
                   <td :rowspan="order.items.length" class="px-4 py-3 align-top">
                     <p class="text-sm text-gray-700 dark:text-gray-300">{{ getStatusLabel(order.status) }}</p>
@@ -221,12 +232,14 @@ import {
   ListIcon,
   MailIcon,
   useConfirmModal,
+  paymentStatusLabelKey,
 } from '@hivespace/shared'
+import type { PaymentStatus } from '@hivespace/shared'
 import { OrderProcessStatus, OrderStatus } from '@/types'
 import { useOrderStore } from '@/stores/order.store'
 import ProductCell from '@/components/orders/ProductCell.vue'
 
-const { t, locale } = useI18n()
+const { t, te, locale } = useI18n()
 const orderStore = useOrderStore()
 const { confirm, deleteConfirm } = useConfirmModal()
 const { formatDateTime } = useFormatDate()
@@ -336,6 +349,15 @@ const handlePrepare = (orderId: string) => {
 const getStatusLabel = (status: OrderStatus) => {
   return t(orderStatusLabelKeys[status])
 }
+
+const formatPaymentStatus = (status: PaymentStatus) => {
+  const key = paymentStatusLabelKey(status)
+  const label = te(key) ? t(key) : status
+  return t('order.paymentStatusValue', { status: label })
+}
+
+const formatPaymentAttempt = (attemptNo: number) =>
+  t('order.paymentAttemptValue', { attemptNo })
 
 const canConfirmOrder = (status: OrderStatus) => {
   return status === OrderStatus.Paid || status === OrderStatus.COD

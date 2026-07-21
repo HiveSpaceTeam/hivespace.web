@@ -1,0 +1,35 @@
+{
+  "title": "Payments",
+  "breadcrumb": "Payment reconciliation",
+  "lookup": {
+    "label": "Payment reference",
+    "placeholder": "PAY-01JZXYZABCDEABCDEABCDEABC",
+    "action": "Search",
+    "empty": "Search a payment reference to view linked orders and attempts.",
+    "notFound": "No payment found for this reference."
+  },
+  "byOrder": {
+    "title": "Order payment",
+    "backToReference": "Open reference lookup",
+    "notFound": "No payment found for this order."
+  },
+  "detail": {
+    "referenceNo": "Payment reference",
+    "status": "Status",
+    "method": "Method",
+    "amount": "Amount",
+    "linkedOrders": "Linked orders",
+    "orderCode": "Order code",
+    "storeId": "Store",
+    "latestAttempt": "Latest attempt",
+    "attemptHistory": "Attempt history",
+    "attemptNo": "Attempt",
+    "attemptNumber": "Attempt {attemptNo}",
+    "attemptStatus": "Attempt {attemptNo} - {status}",
+    "labelValue": "{label}: {value}",
+    "gatewayTransactionId": "Gateway transaction",
+    "failureReason": "Failure reason",
+    "createdAt": "Created",
+    "completedAt": "Completed"
+  }
+}

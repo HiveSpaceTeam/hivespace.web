@@ -19,6 +19,7 @@ export * from './api.types'
 export * from './auth-session'
 export * from './auth-branding'
 export * from './money.types'
+export * from '../features/payments/payment.types'
 
 // Notification types
 export * from '../features/notifications/notifications.types'

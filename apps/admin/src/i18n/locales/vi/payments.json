@@ -1,0 +1,35 @@
+{
+  "title": "Thanh toán",
+  "breadcrumb": "Đối soát thanh toán",
+  "lookup": {
+    "label": "Mã thanh toán",
+    "placeholder": "PAY-01JZXYZABCDEABCDEABCDEABC",
+    "action": "Tìm kiếm",
+    "empty": "Nhập mã thanh toán để xem đơn hàng và các lần thử thanh toán.",
+    "notFound": "Không tìm thấy thanh toán cho mã này."
+  },
+  "byOrder": {
+    "title": "Thanh toán của đơn hàng",
+    "backToReference": "Mở tra cứu mã thanh toán",
+    "notFound": "Không tìm thấy thanh toán cho đơn hàng này."
+  },
+  "detail": {
+    "referenceNo": "Mã thanh toán",
+    "status": "Trạng thái",
+    "method": "Phương thức",
+    "amount": "Số tiền",
+    "linkedOrders": "Đơn hàng liên kết",
+    "orderCode": "Mã đơn hàng",
+    "storeId": "Cửa hàng",
+    "latestAttempt": "Lần thử mới nhất",
+    "attemptHistory": "Lịch sử lần thử",
+    "attemptNo": "Lần thử",
+    "attemptNumber": "Lần thử {attemptNo}",
+    "attemptStatus": "Lần thử {attemptNo} - {status}",
+    "labelValue": "{label}: {value}",
+    "gatewayTransactionId": "Giao dịch cổng thanh toán",
+    "failureReason": "Lý do lỗi",
+    "createdAt": "Tạo lúc",
+    "completedAt": "Hoàn tất lúc"
+  }
+}

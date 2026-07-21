@@ -2,12 +2,18 @@ import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import i18n from '@/i18n'
 import { useAppStore } from '@hivespace/shared'
+import type { PaymentMethodMetadata, PaymentMethodCode } from '@hivespace/shared'
 import { OrderProcessStatus } from '@/types'
 import type { Order } from '@/types'
 import { orderService } from '@/services/order.service'
+import { paymentService } from '@/services/payment.service'
+
+const sortMethods = (methods: PaymentMethodMetadata[]) =>
+  [...methods].sort((left, right) => left.sortOrder - right.sortOrder)
 
 export const useOrderStore = defineStore('order', () => {
   const orders = ref<Order[]>([])
+  const paymentMethods = ref<PaymentMethodMetadata[]>([])
   const totalOrders = ref(0)
   const isFetching = ref(false)
 
@@ -18,6 +24,32 @@ export const useOrderStore = defineStore('order', () => {
   const pageSize = ref(10)
 
   const totalPages = computed(() => Math.max(1, Math.ceil(totalOrders.value / pageSize.value)))
+
+  const paymentMethodLabelMap = computed(() =>
+    paymentMethods.value.reduce<Record<string, string>>((labels, method) => {
+      labels[String(method.code).toUpperCase()] = method.displayName
+      return labels
+    }, {}),
+  )
+
+  const resolvePaymentMethodLabel = (
+    methodCode?: PaymentMethodCode | null,
+    fallback?: string | null,
+  ) => {
+    const code = methodCode ? String(methodCode).toUpperCase() : ''
+    return (code ? paymentMethodLabelMap.value[code] : undefined) ?? fallback ?? ''
+  }
+
+  const mapOrderPaymentLabel = (order: Order): Order => ({
+    ...order,
+    paymentMethodLabel: resolvePaymentMethodLabel(order.paymentMethodCode, order.paymentMethod),
+  })
+
+  const fetchPaymentMethods = async () => {
+    const response = await paymentService.getPaymentMethods()
+    paymentMethods.value = sortMethods(response.methods)
+    return paymentMethods.value
+  }
 
   const fetchOrders = async () => {
     isFetching.value = true
@@ -32,8 +64,15 @@ export const useOrderStore = defineStore('order', () => {
         pageSize: pageSize.value,
       })
 
-      orders.value = result.orders
+      orders.value = result.orders.map(mapOrderPaymentLabel)
       totalOrders.value = result.pagination.totalItems
+
+      try {
+        await fetchPaymentMethods()
+        orders.value = result.orders.map(mapOrderPaymentLabel)
+      } catch {
+        paymentMethods.value = []
+      }
     } finally {
       isFetching.value = false
     }
@@ -89,6 +128,7 @@ export const useOrderStore = defineStore('order', () => {
 
   return {
     orders,
+    paymentMethods,
     totalOrders,
     isFetching,
     activeTab,
@@ -97,6 +137,8 @@ export const useOrderStore = defineStore('order', () => {
     page,
     pageSize,
     totalPages,
+    fetchPaymentMethods,
+    resolvePaymentMethodLabel,
     fetchOrders,
     applyFilters,
     resetFilters,

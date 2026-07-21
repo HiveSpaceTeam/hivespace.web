@@ -4,8 +4,8 @@
   "notifications": {
     "saved": "Đã lưu cấu hình",
     "version": "v2.185",
-    "pendingSettings": "Má»™t sá»‘ cÃ i Ä‘áº·t váº«n chá»‰ lÃ  thay Ä‘á»•i cá»¥c bá»™",
-    "pendingSettingsDescription": "Hiá»‡n chá»‰ cÃ¡c thay Ä‘á»•i vá» Ä‘á»“ng tiá»n Ä‘Æ°á»£c lÆ°u. CÃ¡c chá»‰nh sá»­a thanh toÃ¡n, thuáº¿, Ä‘á»‹a phÆ°Æ¡ng hÃ³a vÃ  webhook váº«n chÆ°a Ä‘Æ°á»£c lÆ°u."
+    "pendingSettings": "Một số cài đặt vẫn chỉ là thay đổi cục bộ",
+    "pendingSettingsDescription": "Hiện chỉ các thay đổi về đồng tiền được lưu. Các chỉnh sửa thanh toán, thuế, địa phương hóa và webhook vẫn chưa được lưu."
   },
   "nav": {
     "workspace": "Không gian làm việc",

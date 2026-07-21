@@ -1,29 +1,29 @@
 {
   "title": "Đăng ký người bán",
   "subtitle": "Hoàn thành hồ sơ người bán để bắt đầu bán hàng trên HiveSpace",
-  "storeInformation": "Thông tin Shop",
+  "storeInformation": "Thông tin cửa hàng",
   "fields": {
-    "storeName": "Tên Shop",
-    "storeDescription": "Mô tả Shop",
-    "storeLogo": "Logo Shop",
-    "storeAddress": "Địa chỉ Shop"
+    "storeName": "Tên cửa hàng",
+    "storeDescription": "Mô tả cửa hàng",
+    "storeLogo": "Logo cửa hàng",
+    "storeAddress": "Địa chỉ cửa hàng"
   },
   "placeholders": {
-    "storeName": "Nhập tên shop của bạn",
-    "storeDescription": "Mô tả về shop và sản phẩm của bạn",
-    "storeAddress": "Nhập địa chỉ shop của bạn"
+    "storeName": "Nhập tên cửa hàng của bạn",
+    "storeDescription": "Mô tả về cửa hàng và sản phẩm của bạn",
+    "storeAddress": "Nhập địa chỉ cửa hàng của bạn"
   },
   "actions": {
     "submit": "Đăng ký",
     "editAddress": "Chỉnh sửa"
   },
   "errors": {
-    "storeNameRequired": "Tên shop là bắt buộc",
-    "storeDescriptionRequired": "Mô tả shop là bắt buộc",
-    "storeLogoRequired": "Logo shop là bắt buộc",
-    "storeAddressRequired": "Địa chỉ shop là bắt buộc",
-    "invalidFileType": "Vui lòng tải lên file hình ảnh",
-    "fileTooLarge": "Kích thước file phải nhỏ hơn 5MB"
+    "storeNameRequired": "Tên cửa hàng là bắt buộc",
+    "storeDescriptionRequired": "Mô tả cửa hàng là bắt buộc",
+    "storeLogoRequired": "Logo cửa hàng là bắt buộc",
+    "storeAddressRequired": "Địa chỉ cửa hàng là bắt buộc",
+    "invalidFileType": "Vui lòng tải lên tệp hình ảnh",
+    "fileTooLarge": "Kích thước tệp phải nhỏ hơn 5MB"
   },
   "messages": {
     "registrationInProgress": "Đang đăng ký cửa hàng...",
@@ -35,7 +35,7 @@
     "validationFailed": "Vui lòng điền đầy đủ các trường bắt buộc."
   },
   "fileInput": {
-    "chooseLogo": "Chọn Logo",
+    "chooseLogo": "Chọn logo",
     "logoHelpText": "Tải lên logo cửa hàng của bạn (JPG, PNG, tối đa 5MB)"
   }
 }

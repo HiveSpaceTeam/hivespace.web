@@ -7,6 +7,7 @@ import CheckoutPage from './CheckoutPage.vue'
 import { addressService } from '@/services/address.service'
 import { cartService } from '@/services/cart.service'
 import { checkoutService } from '@/services/checkout.service'
+import { paymentService } from '@/services/payment.service'
 import { PaymentMethod, type CheckoutPreview, type UserAddress } from '@/types'
 
 const mockNotifyError = jest.fn()
@@ -39,7 +40,10 @@ jest.mock('@hivespace/shared', () => {
             type="button"
             @click="$emit('update:modelValue', option.value)"
           >
+            <span v-if="option.icon">{{ option.icon }}</span>
             {{ option.label }}
+            <span v-if="option.subLabel">{{ option.subLabel }}</span>
+            <span v-if="option.tag">{{ option.tag }}</span>
           </button>
         </div>
       `,
@@ -107,6 +111,13 @@ jest.mock('@/services/checkout.service', () => ({
   checkoutService: {
     getPreview: jest.fn(),
     initiateCheckout: jest.fn(),
+  },
+}))
+
+jest.mock('@/services/payment.service', () => ({
+  paymentService: {
+    getPaymentMethods: jest.fn(),
+    createPaymentAttempt: jest.fn(),
   },
 }))
 
@@ -211,8 +222,54 @@ describe('CheckoutPage', () => {
       orderIds: ['order-001'],
       status: 'Created',
       grandTotal: 200_000,
+      paymentId: 'payment-001',
+      paymentReferenceNo: 'PAY-01JZXYZABCDEABCDEABCDEABC',
       paymentUrl: null,
       paymentExpiresAt: null,
+    })
+    jest.mocked(paymentService.getPaymentMethods).mockResolvedValue({
+      methods: [
+        {
+          code: 'COD',
+          displayName: 'Cash on delivery',
+          kind: 'Offline',
+          gatewayCode: null,
+          isEnabled: true,
+          isCheckoutSelectable: true,
+          availability: 'Available',
+          sortOrder: 10,
+        },
+        {
+          code: 'VNPAY',
+          displayName: 'VNPay',
+          kind: 'Online',
+          gatewayCode: 'VNPAY',
+          isEnabled: true,
+          isCheckoutSelectable: true,
+          availability: 'Available',
+          sortOrder: 20,
+        },
+        {
+          code: 'MOMO',
+          displayName: 'MoMo',
+          kind: 'Online',
+          gatewayCode: 'MOMO',
+          isEnabled: true,
+          isCheckoutSelectable: true,
+          availability: 'Available',
+          sortOrder: 25,
+        },
+        {
+          code: 'STRIPE',
+          displayName: 'Stripe',
+          kind: 'Online',
+          gatewayCode: 'STRIPE',
+          isEnabled: false,
+          isCheckoutSelectable: false,
+          availability: 'Future',
+          sortOrder: 30,
+        },
+      ],
     })
     jest.mocked(addressService.getDefaultAddress).mockResolvedValue(defaultAddress)
     jest.mocked(cartService.applyPlatformCoupon).mockResolvedValue(undefined)
@@ -259,16 +316,44 @@ describe('CheckoutPage', () => {
           commune: 'Ward 1',
           province: 'Ho Chi Minh City',
         },
-        paymentMethod: PaymentMethod.COD,
+        paymentMethodCode: PaymentMethod.COD,
       })
     })
+  })
+
+  it('should not submit checkout when no backend-selectable payment method is available', async () => {
+    jest.mocked(paymentService.getPaymentMethods).mockResolvedValue({
+      methods: [
+        {
+          code: 'STRIPE',
+          displayName: 'Stripe',
+          kind: 'Online',
+          gatewayCode: 'STRIPE',
+          isEnabled: false,
+          isCheckoutSelectable: false,
+          availability: 'Future',
+          sortOrder: 30,
+        },
+      ],
+    })
+    await renderCheckout()
+
+    await fireEvent.click(await screen.findByRole('button', {
+      name: i18n.global.t('checkout.placeOrder'),
+    }))
+
+    expect(checkoutService.initiateCheckout).not.toHaveBeenCalled()
+    expect(mockNotifyError).toHaveBeenCalledWith(
+      i18n.global.t('checkout.orderFailedTitle'),
+      i18n.global.t('checkout.paymentMethodRequired'),
+    )
   })
 
   it('should submit checkout with the selected non-default payment method', async () => {
     await renderCheckout()
 
     await fireEvent.click(await screen.findByRole('button', {
-      name: i18n.global.t('checkout.vnPay'),
+      name: new RegExp(i18n.global.t('payment.methods.vnpay')),
     }))
     await fireEvent.click(screen.getByRole('button', {
       name: i18n.global.t('checkout.placeOrder'),
@@ -277,7 +362,7 @@ describe('CheckoutPage', () => {
     await waitFor(() => {
       expect(checkoutService.initiateCheckout).toHaveBeenCalledWith(
         expect.objectContaining({
-          paymentMethod: PaymentMethod.VNPAY,
+          paymentMethodCode: PaymentMethod.VNPAY,
         }),
       )
     })
@@ -407,7 +492,7 @@ describe('CheckoutPage', () => {
     })
   })
 
-  it('should store the pending order and redirect when checkout returns a payment URL', async () => {
+  it('should store the pending payment and redirect when checkout returns a payment URL', async () => {
     const originalLocation = window.location
     Object.defineProperty(window, 'location', {
       configurable: true,
@@ -417,7 +502,17 @@ describe('CheckoutPage', () => {
       orderIds: ['order-redirect'],
       status: 'Created',
       grandTotal: 200_000,
-      paymentUrl: 'https://payments.example.test/session',
+      paymentId: 'payment-redirect',
+      paymentReferenceNo: 'PAY-01JZXYZABCDEABCDEABCDEABC',
+      latestAttempt: {
+        id: 'attempt-001',
+        attemptNo: 1,
+        methodCode: 'VNPAY',
+        gatewayCode: 'VNPAY',
+        status: 'Processing',
+        redirectUrl: 'https://payments.example.test/session',
+        createdAt: '2026-07-11T10:00:00Z',
+      },
       paymentExpiresAt: null,
     })
 
@@ -427,8 +522,88 @@ describe('CheckoutPage', () => {
     }))
 
     await waitFor(() => {
-      expect(sessionStorage.getItem('hivespace_pending_order')).toContain('order-redirect')
+      expect(sessionStorage.getItem('hivespace_pending_payment')).toContain(
+        'PAY-01JZXYZABCDEABCDEABCDEABC',
+      )
       expect(window.location.href).toBe('https://payments.example.test/session')
+    })
+
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: originalLocation,
+    })
+  })
+
+  it('should render backend-selectable checkout methods without future Stripe', async () => {
+    await renderCheckout()
+
+    expect(await screen.findByRole('button', {
+      name: new RegExp(i18n.global.t('payment.methods.cod')),
+    })).toBeTruthy()
+    expect(screen.getByRole('button', {
+      name: new RegExp(i18n.global.t('payment.methods.vnpay')),
+    })).toBeTruthy()
+    expect(screen.getByRole('button', { name: /MoMo/ })).toBeTruthy()
+    expect(screen.queryByRole('button', { name: i18n.global.t('payment.methods.stripe') })).toBeNull()
+  })
+
+  it('should retry a failed VNPay attempt under the same payment reference', async () => {
+    const originalLocation = window.location
+    Object.defineProperty(window, 'location', {
+      configurable: true,
+      value: { href: 'http://localhost/' },
+    })
+    jest.mocked(checkoutService.initiateCheckout).mockResolvedValue({
+      orderIds: ['order-retry'],
+      status: 'PaymentFailed',
+      grandTotal: 200_000,
+      paymentId: 'payment-retry',
+      paymentReferenceNo: 'PAY-01JZXYZABCDEABCDEABCDEABC',
+      latestAttempt: {
+        id: 'attempt-failed',
+        attemptNo: 1,
+        methodCode: 'VNPAY',
+        gatewayCode: 'VNPAY',
+        status: 'Failed',
+        createdAt: '2026-07-11T10:00:00Z',
+      },
+      paymentUrl: null,
+      paymentExpiresAt: null,
+    })
+    jest.mocked(paymentService.createPaymentAttempt).mockResolvedValue({
+      paymentId: 'payment-retry',
+      referenceNo: 'PAY-01JZXYZABCDEABCDEABCDEABC',
+      attempt: {
+        id: 'attempt-retry',
+        attemptNo: 2,
+        methodCode: 'VNPAY',
+        gatewayCode: 'VNPAY',
+        status: 'Processing',
+        redirectUrl: 'https://payments.example.test/retry',
+        createdAt: '2026-07-11T10:05:00Z',
+      },
+    })
+
+    await renderCheckout()
+    await fireEvent.click(await screen.findByRole('button', {
+      name: new RegExp(i18n.global.t('payment.methods.vnpay')),
+    }))
+    await fireEvent.click(screen.getByRole('button', {
+      name: i18n.global.t('checkout.placeOrder'),
+    }))
+    await fireEvent.click(await screen.findByRole('button', {
+      name: i18n.global.t('payment.retryPayment'),
+    }))
+
+    await waitFor(() => {
+      expect(paymentService.createPaymentAttempt).toHaveBeenCalledWith(
+        'payment-retry',
+        expect.objectContaining({ methodCode: 'VNPAY' }),
+      )
+      expect(sessionStorage.getItem('hivespace_pending_payment')).toContain(
+        'PAY-01JZXYZABCDEABCDEABCDEABC',
+      )
+      expect(window.location.href).toBe('https://payments.example.test/retry')
     })
 
     Object.defineProperty(window, 'location', {

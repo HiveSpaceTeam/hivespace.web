@@ -1,5 +1,6 @@
 import type { MoneyIssue, SupportedCurrencyCode } from '@hivespace/shared'
 import type { PaginationMetadata } from '@hivespace/shared'
+import type { OrderPaymentSummary } from '@hivespace/shared'
 
 // Filter param accepted by GET /api/v1/orders?processStatus=
 export type CustomerOrderProcessStatus =
@@ -43,9 +44,10 @@ export interface OrderItem {
   moneyIssue?: MoneyIssue | null
 }
 
-export interface Order {
+export interface Order extends OrderPaymentSummary {
   id: string
   shortId: string
+  orderCode?: string | null
   status: OrderStatus
   totalAmount: number
   currency: string | null
@@ -85,9 +87,10 @@ export interface OrderDetailItem {
   isCOD: boolean
 }
 
-export interface OrderDetail {
+export interface OrderDetail extends OrderPaymentSummary {
   id: string
   shortId: string
+  orderCode?: string | null
   userId: string
   storeId: string
   status: OrderStatus
@@ -110,4 +113,3 @@ export interface OrderDetail {
   confirmedAt?: string
   items: OrderDetailItem[]
 }
-

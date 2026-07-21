@@ -57,6 +57,14 @@ export interface CurrentSeller {
   logoUrl: string | null
 }
 
+export interface MoneyReadModel {
+  amount: number | null
+  currencyCode?: SupportedCurrencyCode | null
+  isValid?: boolean
+  issueCode?: MoneyIssue['code'] | null
+  displayPlaceholder?: string | null
+}
+
 export interface ProductSummary {
   id: string
   name: string
@@ -75,13 +83,17 @@ export interface ProductSummary {
   imageURL?: string
 }
 
+export interface ProductSummaryReadModel extends Omit<ProductSummary, 'price'> {
+  price: MoneyReadModel | number
+}
+
 export interface GetProductListQuery {
   pageSize: number
   page: number
 }
 
 export interface GetProductListResponse {
-  items: ProductSummary[]
+  items: ProductSummaryReadModel[]
   pagination: PaginationMetadata
 }
 

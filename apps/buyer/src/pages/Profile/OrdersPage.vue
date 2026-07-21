@@ -63,7 +63,13 @@
               <!-- Order header -->
               <div class="flex items-center gap-3 px-5 py-3 border-b border-gray-100 dark:border-gray-700">
                 <ShoppingBag class="w-4 h-4 shrink-0 text-gray-400" />
-                <span class="text-sm font-medium text-gray-800 dark:text-gray-100">{{ order.shortId }}</span>
+                <span class="text-sm font-medium text-gray-800 dark:text-gray-100">
+                  {{ order.orderCode ?? order.shortId }}
+                </span>
+                <template v-if="order.paymentReferenceNo">
+                  <span class="text-xs text-gray-400">·</span>
+                  <span class="text-xs text-gray-400">{{ order.paymentReferenceNo }}</span>
+                </template>
                 <span class="text-xs text-gray-400">·</span>
                 <span class="text-xs text-gray-400">
                   {{ $t('storefront.ordersPage.itemCount', { count: order.itemCount }) }}
