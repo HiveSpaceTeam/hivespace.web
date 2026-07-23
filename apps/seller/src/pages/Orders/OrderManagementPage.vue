@@ -226,6 +226,7 @@ import {
   Pagination,
   Avatar,
   Spinner,
+  createMoneyDisplay,
   useFormatDate,
   useMoneyFormatter,
   ArrowDownRedIcon,
@@ -233,6 +234,7 @@ import {
   MailIcon,
   useConfirmModal,
   paymentStatusLabelKey,
+  type CurrencyCodeInput,
 } from '@hivespace/shared'
 import type { PaymentStatus } from '@hivespace/shared'
 import { OrderProcessStatus, OrderStatus } from '@/types'
@@ -367,22 +369,8 @@ const canPrepareOrder = (status: OrderStatus) => {
   return status === OrderStatus.Confirmed || status === OrderStatus.ReadyToShip
 }
 
-const formatOrderTotal = (amount: number, currencyCode?: string | null) =>
-  formatMoney(
-    {
-      amount,
-      currencyCode: currencyCode === 'VND' || currencyCode === 'USD' || currencyCode === 'EUR'
-        ? currencyCode
-        : null,
-      issue:
-        currencyCode === 'VND' || currencyCode === 'USD' || currencyCode === 'EUR'
-          ? undefined
-          : currencyCode
-            ? { code: 'unsupported_currency' }
-            : { code: 'missing_currency' },
-    },
-    { locale: locale.value },
-  )
+const formatOrderTotal = (amount: number, currencyCode?: CurrencyCodeInput) =>
+  formatMoney(createMoneyDisplay(amount, currencyCode), { locale: locale.value })
 
 const formatActionDateTime = (value: string) => {
   return formatDateTime(value)

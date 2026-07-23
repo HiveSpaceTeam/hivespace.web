@@ -221,6 +221,7 @@ import {
   Spinner,
   OrderTimeline,
   createMoneyDisplay,
+  type CurrencyCodeInput,
   useMoneyFormatter,
 } from '@hivespace/shared'
 import type { TimelineStep } from '@hivespace/shared'
@@ -250,7 +251,7 @@ onUnmounted(() => ordersStore.clearCurrentOrder())
 
 const formatPrice = (
   amount: number,
-  currencyCode: string | number | null | undefined,
+  currencyCode: CurrencyCodeInput,
   issue?: MoneyIssue | null,
 ) => formatMoney(createMoneyDisplay(amount, currencyCode, { issue }), { locale: locale.value })
 

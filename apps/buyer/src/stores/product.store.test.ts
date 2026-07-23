@@ -74,6 +74,41 @@ describe('useProductStore', () => {
     expect(store.homeProducts[0]?.priceIssue).toBeNull()
   })
 
+  it('should normalize numeric ISO currencies in storefront product summaries', async () => {
+    jest.mocked(productService.getProducts).mockResolvedValueOnce({
+      items: [
+        {
+          id: '11',
+          name: 'Thermos',
+          price: {
+            amount: 149_000,
+            currency: 704,
+            currencyCode: null,
+            isValid: true,
+            issueCode: null,
+          },
+          productImage: '/thermos.png',
+          soldCount: 3,
+          rating: 4.7,
+        },
+      ],
+      pagination: {
+        currentPage: 1,
+        pageSize: 20,
+        totalItems: 1,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      },
+    })
+    const store = useProductStore()
+
+    await store.fetchHomeProducts({ page: 1, pageSize: 20 })
+
+    expect(store.homeProducts[0]?.priceCurrencyCode).toBe('VND')
+    expect(store.homeProducts[0]?.priceIssue).toBeNull()
+  })
+
   it('should load product detail with title and price', async () => {
     const store = useProductStore()
 

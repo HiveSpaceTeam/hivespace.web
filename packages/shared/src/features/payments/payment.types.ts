@@ -1,4 +1,4 @@
-import type { MoneyDisplay } from '../../types/money.types'
+import type { CurrencyCodeInput, MoneyDisplay } from '../../types/money.types'
 
 export type PaymentMethodCode = 'COD' | 'VNPAY' | 'STRIPE' | string
 
@@ -41,7 +41,9 @@ export interface PaymentLinkedOrder {
   orderId: string
   orderCode?: string | null
   storeId?: string | null
-  amount?: MoneyDisplay | null
+  amount?: MoneyDisplay | number | null
+  currency?: CurrencyCodeInput
+  currencyCode?: CurrencyCodeInput
 }
 
 export interface OrderPaymentSummary {
@@ -68,9 +70,9 @@ export interface PaymentDetail {
   method?: Partial<PaymentMethodMetadata> | null
   methodCode?: PaymentMethodCode | null
   status: PaymentStatus
-  amount: MoneyDisplay
-  currency?: string | null
-  currencyCode?: string | null
+  amount: MoneyDisplay | number
+  currency?: CurrencyCodeInput
+  currencyCode?: CurrencyCodeInput
   moneyIssue?: MoneyDisplay['issue']
   gateway?: PaymentGatewaySummary | string | null
   gatewayTransactionId?: string | null

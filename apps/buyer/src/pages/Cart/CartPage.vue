@@ -244,6 +244,7 @@ import {
   useAppStore,
   createAggregateMoneyDisplay,
   createMoneyDisplay,
+  type CurrencyCodeInput,
   useMoneyFormatter,
 } from '@hivespace/shared'
 import CartHeader from '@/components/layout/CartHeader.vue'
@@ -282,13 +283,13 @@ const allCartCurrencies = computed(() =>
   cartGroups.value.flatMap(group => group.items.map(item => item.currencyCode)),
 )
 
-const formatItemPrice = (price: number, currencyCode: string | null) =>
+const formatItemPrice = (price: number, currencyCode: CurrencyCodeInput) =>
   formatMoney(createMoneyDisplay(price, currencyCode), { locale: locale.value })
 
 const formatSummaryPrice = (price: number) =>
   formatMoney(createAggregateMoneyDisplay(price, allCartCurrencies.value), { locale: locale.value })
 
-const formatLegacyProductPrice = (price: number, currencyCode?: string | null) =>
+const formatLegacyProductPrice = (price: number, currencyCode?: CurrencyCodeInput) =>
   formatMoney(createMoneyDisplay(price, currencyCode), { locale: locale.value })
 
 const notifyInvalidCoupons = (coupons: InvalidAppliedCoupon[] = []) => {

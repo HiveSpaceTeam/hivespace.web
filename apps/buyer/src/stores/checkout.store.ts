@@ -3,7 +3,10 @@ import { computed, ref } from 'vue'
 import {
   buildPaymentAttemptIdempotencyKey,
   normalizeCurrencyCode,
+  normalizeMoneyDisplay,
+  type CurrencyCodeInput,
   type MoneyIssue,
+  type NormalizableMoney,
 } from '@hivespace/shared'
 import { checkoutService } from '@/services/checkout.service'
 import { cartService } from '@/services/cart.service'
@@ -21,29 +24,95 @@ import type {
   InvalidAppliedCoupon,
 } from '@/types'
 
-const resolveMoneyIssue = (
-  currencyCode: string | null | undefined,
-): MoneyIssue | null => (normalizeCurrencyCode(currencyCode) ? null : { code: 'missing_currency' })
+const resolveMoneyIssue = (currencyCode: CurrencyCodeInput): MoneyIssue | null =>
+  normalizeCurrencyCode(currencyCode) ? null : { code: 'missing_currency' }
 
-const normalizeCheckoutItem = (item: CheckoutItem): CheckoutItem => ({
-  ...item,
-  currencyCode: normalizeCurrencyCode(item.currencyCode ?? item.currency),
-  moneyIssue: item.moneyIssue ?? resolveMoneyIssue(item.currencyCode ?? item.currency),
-})
+const normalizeCheckoutItem = (item: CheckoutItem): CheckoutItem => {
+  const price = normalizeMoneyDisplay(item.price as NormalizableMoney, { currencyCode: item.currencyCode ?? item.currency })
+  const originalPrice = normalizeMoneyDisplay(item.originalPrice as NormalizableMoney, {
+    currencyCode: item.currencyCode ?? item.currency ?? price.currencyCode,
+  })
+  const lineTotal = normalizeMoneyDisplay(item.lineTotal as NormalizableMoney, {
+    currencyCode: item.currencyCode ?? item.currency ?? price.currencyCode,
+  })
+  const currencyCode = price.currencyCode
+    ?? lineTotal.currencyCode
+    ?? normalizeCurrencyCode(item.currencyCode ?? item.currency)
 
-const normalizeDeliveryPackage = (pkg: DeliveryPackage): DeliveryPackage => ({
-  ...pkg,
-  currencyCode: normalizeCurrencyCode(pkg.currencyCode ?? pkg.currency),
-  moneyIssue: pkg.moneyIssue ?? resolveMoneyIssue(pkg.currencyCode ?? pkg.currency),
-  items: pkg.items.map(normalizeCheckoutItem),
-})
+  return {
+    ...item,
+    originalPrice: originalPrice.amount ?? undefined,
+    price: price.amount ?? 0,
+    currency: item.currency ?? currencyCode,
+    currencyCode,
+    moneyIssue: price.issue ?? lineTotal.issue ?? item.moneyIssue ?? resolveMoneyIssue(currencyCode),
+    lineTotal: lineTotal.amount ?? 0,
+  }
+}
 
-const normalizePreview = (response: CheckoutPreview): CheckoutPreview => ({
-  ...response,
-  currencyCode: normalizeCurrencyCode(response.currencyCode ?? response.currency),
-  moneyIssue: response.moneyIssue ?? resolveMoneyIssue(response.currencyCode ?? response.currency),
-  packages: response.packages.map(normalizeDeliveryPackage),
-})
+const normalizeDeliveryPackage = (pkg: DeliveryPackage): DeliveryPackage => {
+  const shippingFee = normalizeMoneyDisplay(pkg.shippingFee as NormalizableMoney, {
+    currencyCode: pkg.currencyCode ?? pkg.currency,
+  })
+  const originalShippingFee = normalizeMoneyDisplay(pkg.originalShippingFee as NormalizableMoney, {
+    currencyCode: pkg.currencyCode ?? pkg.currency ?? shippingFee.currencyCode,
+  })
+  const subtotal = normalizeMoneyDisplay(pkg.subtotal as NormalizableMoney, {
+    currencyCode: pkg.currencyCode ?? pkg.currency ?? shippingFee.currencyCode,
+  })
+  const originalSubtotal = normalizeMoneyDisplay(pkg.originalSubtotal as NormalizableMoney, {
+    currencyCode: pkg.currencyCode ?? pkg.currency ?? subtotal.currencyCode,
+  })
+  const packageTotal = normalizeMoneyDisplay(pkg.packageTotal as NormalizableMoney, {
+    currencyCode: pkg.currencyCode ?? pkg.currency ?? subtotal.currencyCode,
+  })
+  const currencyCode = shippingFee.currencyCode
+    ?? subtotal.currencyCode
+    ?? normalizeCurrencyCode(pkg.currencyCode ?? pkg.currency)
+
+  return {
+    ...pkg,
+    originalShippingFee: originalShippingFee.amount ?? undefined,
+    shippingFee: shippingFee.amount ?? 0,
+    currency: pkg.currency ?? currencyCode,
+    currencyCode,
+    moneyIssue: shippingFee.issue ?? subtotal.issue ?? pkg.moneyIssue ?? resolveMoneyIssue(currencyCode),
+    originalSubtotal: originalSubtotal.amount ?? 0,
+    subtotal: subtotal.amount ?? 0,
+    packageTotal: packageTotal.amount ?? 0,
+    items: pkg.items.map(normalizeCheckoutItem),
+  }
+}
+
+const normalizePreview = (response: CheckoutPreview): CheckoutPreview => {
+  const subtotal = normalizeMoneyDisplay(response.subtotal as NormalizableMoney, {
+    currencyCode: response.currencyCode ?? response.currency,
+  })
+  const originalSubtotal = normalizeMoneyDisplay(response.originalSubtotal as NormalizableMoney, {
+    currencyCode: response.currencyCode ?? response.currency ?? subtotal.currencyCode,
+  })
+  const totalShippingFee = normalizeMoneyDisplay(response.totalShippingFee as NormalizableMoney, {
+    currencyCode: response.currencyCode ?? response.currency ?? subtotal.currencyCode,
+  })
+  const grandTotal = normalizeMoneyDisplay(response.grandTotal as NormalizableMoney, {
+    currencyCode: response.currencyCode ?? response.currency ?? subtotal.currencyCode,
+  })
+  const currencyCode = subtotal.currencyCode
+    ?? grandTotal.currencyCode
+    ?? normalizeCurrencyCode(response.currencyCode ?? response.currency)
+
+  return {
+    ...response,
+    originalSubtotal: originalSubtotal.amount ?? 0,
+    subtotal: subtotal.amount ?? 0,
+    currency: response.currency ?? currencyCode,
+    currencyCode,
+    moneyIssue: subtotal.issue ?? grandTotal.issue ?? response.moneyIssue ?? resolveMoneyIssue(currencyCode),
+    totalShippingFee: totalShippingFee.amount ?? 0,
+    grandTotal: grandTotal.amount ?? 0,
+    packages: response.packages.map(normalizeDeliveryPackage),
+  }
+}
 
 const areCheckoutItemsEqual = (left: CheckoutItem, right: CheckoutItem) =>
   left.cartItemId === right.cartItemId &&
@@ -348,8 +417,13 @@ export const useCheckoutStore = defineStore('checkout', () => {
   const submitCheckout = async (request: CheckoutRequest): Promise<CheckoutResult> =>
     runSubmit(async () => {
       const result = await checkoutService.initiateCheckout(request)
-      applyCheckoutPaymentState(result)
-      return result
+      const grandTotal = normalizeMoneyDisplay(result.grandTotal as NormalizableMoney)
+      const normalizedResult = {
+        ...result,
+        grandTotal: grandTotal.amount ?? 0,
+      }
+      applyCheckoutPaymentState(normalizedResult)
+      return normalizedResult
     })
 
   const retryPaymentAttempt = async (methodCode?: PaymentMethodCode) => {

@@ -21,26 +21,13 @@ import { categoryService } from '@/services/category.service'
 import { configurationService } from '@/services/configuration.service'
 import { productService } from '@/services/product.service'
 
-const toSupportedCurrencyCode = (
-  currencyCode: string | number | null | undefined,
-): SupportedCurrencyCode | undefined => {
-  if (currencyCode === 'VND' || currencyCode === 'USD' || currencyCode === 'EUR') {
-    return currencyCode
-  }
-
-  return undefined
-}
-
 const normalizeProduct = (product: Product): Product => ({
   ...product,
   skus: product.skus.map((sku) => ({
     ...sku,
     price: {
       ...sku.price,
-      currencyCode: normalizeCurrencyCode(
-        sku.price?.currencyCode,
-        toSupportedCurrencyCode(sku.price?.currency),
-      ),
+      currencyCode: normalizeCurrencyCode(sku.price?.currencyCode ?? sku.price?.currency),
     },
   })),
 })

@@ -1,6 +1,10 @@
 export type KnownCurrencyCode = 'VND' | 'USD' | 'EUR'
 
-export type SupportedCurrencyCode = string
+export type CurrencyCode = string
+
+export type CurrencyCodeInput = CurrencyCode | number | null | undefined
+
+export type SupportedCurrencyCode = CurrencyCode
 
 export type MoneyIssueCode =
   | 'missing_currency'
@@ -15,17 +19,17 @@ export interface MoneyIssue {
 
 export interface MoneyDisplay {
   amount: number | null
-  currencyCode: SupportedCurrencyCode | null
+  currencyCode: CurrencyCode | null
   issue?: MoneyIssue | null
 }
 
 export interface PlatformCurrencyConfigItem {
-  currencyCode: SupportedCurrencyCode
+  currencyCode: CurrencyCode
   enabled: boolean
 }
 
 export interface PlatformCurrencyConfig {
-  defaultCurrencyCode: SupportedCurrencyCode
+  defaultCurrencyCode: CurrencyCode
   items: PlatformCurrencyConfigItem[]
   version: number
 }

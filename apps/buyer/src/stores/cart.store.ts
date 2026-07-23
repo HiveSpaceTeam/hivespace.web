@@ -1,6 +1,11 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
-import { useAppStore } from '@hivespace/shared'
+import {
+  normalizeCurrencyCode,
+  normalizeMoneyDisplay,
+  type NormalizableMoney,
+  useAppStore,
+} from '@hivespace/shared'
 import i18n from '@/i18n'
 import { cartService } from '@/services/cart.service'
 import { isStoreCouponEqual, arePlatformCouponsEqual, areInvalidCouponsEqual } from './coupon-equality'
@@ -30,20 +35,27 @@ const parseSkuAttributes = (raw: string): string => {
   }
 }
 
-const mapApiItem = (item: CartItemResponse): CartItem => ({
-  id: item.cartItemId,
-  cartItemId: item.cartItemId,
-  productId: item.productId,
-  skuId: item.skuId,
-  name: item.productName ?? '',
-  image: item.skuImageUrl || item.productThumbnailUrl || '',
-  price: item.price ?? 0,
-  currencyCode: item.currency,
-  originalPrice: item.originalPrice ?? undefined,
-  quantity: item.quantity,
-  variant: item.skuAttributes ? parseSkuAttributes(item.skuAttributes) : undefined,
-  selected: item.isSelected,
-})
+const mapApiItem = (item: CartItemResponse): CartItem => {
+  const price = normalizeMoneyDisplay(item.price as NormalizableMoney, { currencyCode: item.currency })
+  const originalPrice = normalizeMoneyDisplay(item.originalPrice as NormalizableMoney, {
+    currencyCode: item.currency ?? price.currencyCode,
+  })
+
+  return {
+    id: item.cartItemId,
+    cartItemId: item.cartItemId,
+    productId: item.productId,
+    skuId: item.skuId,
+    name: item.productName ?? '',
+    image: item.skuImageUrl || item.productThumbnailUrl || '',
+    price: price.amount ?? 0,
+    currencyCode: price.currencyCode ?? normalizeCurrencyCode(item.currency),
+    originalPrice: originalPrice.amount ?? undefined,
+    quantity: item.quantity,
+    variant: item.skuAttributes ? parseSkuAttributes(item.skuAttributes) : undefined,
+    selected: item.isSelected,
+  }
+}
 
 const mapApiGroup = (group: CartStoreGroupResponse): CartGroup => ({
   storeId: group.storeId,
@@ -231,13 +243,19 @@ export const useCartStore = defineStore('cart', () => {
   }
 
   const syncSummary = (nextSummary: CartSummary) => {
-    if (isSummaryEqual(summary.value, nextSummary)) {
+    const normalizedSummary: CartSummary = {
+      discountAmount: normalizeMoneyDisplay(nextSummary.discountAmount as NormalizableMoney).amount ?? 0,
+      subTotal: normalizeMoneyDisplay(nextSummary.subTotal as NormalizableMoney).amount ?? 0,
+      total: normalizeMoneyDisplay(nextSummary.total as NormalizableMoney).amount ?? 0,
+    }
+
+    if (isSummaryEqual(summary.value, normalizedSummary)) {
       return
     }
 
-    summary.value.discountAmount = nextSummary.discountAmount
-    summary.value.subTotal = nextSummary.subTotal
-    summary.value.total = nextSummary.total
+    summary.value.discountAmount = normalizedSummary.discountAmount
+    summary.value.subTotal = normalizedSummary.subTotal
+    summary.value.total = normalizedSummary.total
   }
 
   const syncPlatformCoupons = (nextCoupons: AppliedPlatformCoupon[]) => {

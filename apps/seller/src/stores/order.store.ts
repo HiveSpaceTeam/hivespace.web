@@ -1,7 +1,7 @@
 import { ref, computed } from 'vue'
 import { defineStore } from 'pinia'
 import i18n from '@/i18n'
-import { useAppStore } from '@hivespace/shared'
+import { normalizeMoneyDisplay, type NormalizableMoney, useAppStore } from '@hivespace/shared'
 import type { PaymentMethodMetadata, PaymentMethodCode } from '@hivespace/shared'
 import { OrderProcessStatus } from '@/types'
 import type { Order } from '@/types'
@@ -40,10 +40,18 @@ export const useOrderStore = defineStore('order', () => {
     return (code ? paymentMethodLabelMap.value[code] : undefined) ?? fallback ?? ''
   }
 
-  const mapOrderPaymentLabel = (order: Order): Order => ({
-    ...order,
-    paymentMethodLabel: resolvePaymentMethodLabel(order.paymentMethodCode, order.paymentMethod),
-  })
+  const mapOrderPaymentLabel = (order: Order): Order => {
+    const totalAmount = normalizeMoneyDisplay(order.totalAmount as NormalizableMoney, {
+      currencyCode: order.currencyCode,
+    })
+
+    return {
+      ...order,
+      totalAmount: totalAmount.amount ?? 0,
+      currencyCode: totalAmount.currencyCode ?? order.currencyCode,
+      paymentMethodLabel: resolvePaymentMethodLabel(order.paymentMethodCode, order.paymentMethod),
+    }
+  }
 
   const fetchPaymentMethods = async () => {
     const response = await paymentService.getPaymentMethods()

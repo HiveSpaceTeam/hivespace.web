@@ -318,7 +318,7 @@
 import { ref, computed, onMounted, watch } from "vue";
 import { storeToRefs } from 'pinia'
 import { useRoute } from "vue-router";
-import { createMoneyDisplay, useMoneyFormatter } from '@hivespace/shared'
+import { createMoneyDisplay, type CurrencyCodeInput, useMoneyFormatter } from '@hivespace/shared'
 import type {
   ProductImage,
   ProductSkuImage,
@@ -465,7 +465,7 @@ const fetchSimilarProducts = async () => {
 const toggleDescription = () => {
   descriptionExpanded.value = !descriptionExpanded.value;
 };
-const formatPrice = (price: number, currencyCode: string | number | null | undefined = getCurrentCurrency()) =>
+const formatPrice = (price: number, currencyCode: CurrencyCodeInput = getCurrentCurrency()) =>
   formatMoney(
     createMoneyDisplay(price, currencyCode),
     { locale: locale.value },

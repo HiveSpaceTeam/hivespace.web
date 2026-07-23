@@ -2,38 +2,102 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import {
   normalizeCurrencyCode,
+  normalizeMoneyDisplay,
+  type CurrencyCodeInput,
   type MoneyIssue,
+  type NormalizableMoney,
   useAppStore,
 } from '@hivespace/shared'
 import { orderService } from '@/services/order.service'
 import { useAsyncAction } from '@/composables/useAsyncAction'
 import type { Order, OrderDetail, CustomerOrderProcessStatus, GetOrdersQuery } from '@/types'
 
-const resolveMoneyIssue = (
-  currencyCode: string | null | undefined,
-): MoneyIssue | null => (normalizeCurrencyCode(currencyCode) ? null : { code: 'missing_currency' })
+const resolveMoneyIssue = (currencyCode: CurrencyCodeInput): MoneyIssue | null =>
+  normalizeCurrencyCode(currencyCode) ? null : { code: 'missing_currency' }
 
-const normalizeOrder = (order: Order): Order => ({
-  ...order,
-  currencyCode: normalizeCurrencyCode(order.currencyCode ?? order.currency),
-  moneyIssue: order.moneyIssue ?? resolveMoneyIssue(order.currencyCode ?? order.currency),
-  items: order.items.map((item) => ({
-    ...item,
-    currencyCode: normalizeCurrencyCode(item.currencyCode ?? item.currency),
-    moneyIssue: item.moneyIssue ?? resolveMoneyIssue(item.currencyCode ?? item.currency),
-  })),
-})
+const normalizeOrder = (order: Order): Order => {
+  const totalAmount = normalizeMoneyDisplay(order.totalAmount as NormalizableMoney, {
+    currencyCode: order.currencyCode ?? order.currency,
+  })
+  const currencyCode = totalAmount.currencyCode ?? normalizeCurrencyCode(order.currencyCode ?? order.currency)
 
-const normalizeOrderDetail = (order: OrderDetail): OrderDetail => ({
-  ...order,
-  currencyCode: normalizeCurrencyCode(order.currencyCode ?? order.currency),
-  moneyIssue: order.moneyIssue ?? resolveMoneyIssue(order.currencyCode ?? order.currency),
-  items: order.items.map((item) => ({
-    ...item,
-    currencyCode: normalizeCurrencyCode(item.currencyCode ?? item.currency),
-    moneyIssue: item.moneyIssue ?? resolveMoneyIssue(item.currencyCode ?? item.currency),
-  })),
-})
+  return {
+    ...order,
+    totalAmount: totalAmount.amount ?? 0,
+    currency: order.currency ?? currencyCode,
+    currencyCode,
+    moneyIssue: totalAmount.issue ?? order.moneyIssue ?? resolveMoneyIssue(currencyCode),
+    items: order.items.map((item) => {
+      const unitPrice = normalizeMoneyDisplay(item.unitPrice as NormalizableMoney, {
+        currencyCode: item.currencyCode ?? item.currency ?? currencyCode,
+      })
+      const originalPrice = normalizeMoneyDisplay(item.originalPrice as NormalizableMoney, {
+        currencyCode: item.currencyCode ?? item.currency ?? unitPrice.currencyCode ?? currencyCode,
+      })
+      const lineTotal = normalizeMoneyDisplay(item.lineTotal as NormalizableMoney, {
+        currencyCode: item.currencyCode ?? item.currency ?? unitPrice.currencyCode ?? currencyCode,
+      })
+      const itemCurrencyCode = unitPrice.currencyCode
+        ?? lineTotal.currencyCode
+        ?? normalizeCurrencyCode(item.currencyCode ?? item.currency ?? currencyCode)
+
+      return {
+        ...item,
+        originalPrice: originalPrice.amount ?? 0,
+        unitPrice: unitPrice.amount ?? 0,
+        lineTotal: lineTotal.amount ?? 0,
+        currency: item.currency ?? itemCurrencyCode,
+        currencyCode: itemCurrencyCode,
+        moneyIssue: unitPrice.issue ?? lineTotal.issue ?? item.moneyIssue ?? resolveMoneyIssue(itemCurrencyCode),
+      }
+    }),
+  }
+}
+
+const normalizeOrderDetail = (order: OrderDetail): OrderDetail => {
+  const totalAmount = normalizeMoneyDisplay(order.totalAmount as NormalizableMoney, {
+    currencyCode: order.currencyCode ?? order.currency,
+  })
+  const subTotal = normalizeMoneyDisplay(order.subTotal as NormalizableMoney, {
+    currencyCode: order.currencyCode ?? order.currency ?? totalAmount.currencyCode,
+  })
+  const shippingFee = normalizeMoneyDisplay(order.shippingFee as NormalizableMoney, {
+    currencyCode: order.currencyCode ?? order.currency ?? totalAmount.currencyCode,
+  })
+  const currencyCode = totalAmount.currencyCode
+    ?? subTotal.currencyCode
+    ?? normalizeCurrencyCode(order.currencyCode ?? order.currency)
+
+  return {
+    ...order,
+    subTotal: subTotal.amount ?? 0,
+    shippingFee: shippingFee.amount ?? 0,
+    totalAmount: totalAmount.amount ?? 0,
+    currency: order.currency ?? currencyCode,
+    currencyCode,
+    moneyIssue: totalAmount.issue ?? subTotal.issue ?? order.moneyIssue ?? resolveMoneyIssue(currencyCode),
+    items: order.items.map((item) => {
+      const unitPrice = normalizeMoneyDisplay(item.unitPrice as NormalizableMoney, {
+        currencyCode: item.currencyCode ?? item.currency ?? currencyCode,
+      })
+      const lineTotal = normalizeMoneyDisplay(item.lineTotal as NormalizableMoney, {
+        currencyCode: item.currencyCode ?? item.currency ?? unitPrice.currencyCode ?? currencyCode,
+      })
+      const itemCurrencyCode = unitPrice.currencyCode
+        ?? lineTotal.currencyCode
+        ?? normalizeCurrencyCode(item.currencyCode ?? item.currency ?? currencyCode)
+
+      return {
+        ...item,
+        unitPrice: unitPrice.amount ?? 0,
+        lineTotal: lineTotal.amount ?? 0,
+        currency: item.currency ?? itemCurrencyCode,
+        currencyCode: itemCurrencyCode,
+        moneyIssue: unitPrice.issue ?? lineTotal.issue ?? item.moneyIssue ?? resolveMoneyIssue(itemCurrencyCode),
+      }
+    }),
+  }
+}
 
 const PAGE_SIZE = 5
 

@@ -31,7 +31,9 @@ export interface ApiConfig {
   }
 }
 
-export type SupportedCurrencyCode = 'VND' | 'USD' | 'EUR'
+export type CurrencyCode = string
+export type CurrencyCodeInput = CurrencyCode | number | null | undefined
+export type SupportedCurrencyCode = CurrencyCode
 export type MoneyIssue = {
   code: 'missing_currency' | 'unsupported_currency' | 'invalid_amount' | 'invalid_money'
   placeholder?: string
@@ -123,9 +125,9 @@ export interface PaymentDetail {
   referenceNo?: string | null
   orderId?: string | null
   buyerId?: string | null
-  amount: { amount: number | null; currencyCode: SupportedCurrencyCode | null; issue?: MoneyIssue | null }
-  currency?: string | null
-  currencyCode?: string | null
+  amount: { amount: number | null; currencyCode: CurrencyCode | null; issue?: MoneyIssue | null } | number
+  currency?: CurrencyCodeInput
+  currencyCode?: CurrencyCodeInput
   moneyIssue?: MoneyIssue | null
   status: PaymentStatus
   methodCode?: PaymentMethodCode | null
@@ -139,7 +141,9 @@ export interface PaymentDetail {
     orderId: string
     orderCode?: string | null
     storeId?: string | null
-    amount?: { amount: number | null; currencyCode: SupportedCurrencyCode | null; issue?: MoneyIssue | null } | null
+    amount?: { amount: number | null; currencyCode: CurrencyCode | null; issue?: MoneyIssue | null } | number | null
+    currency?: CurrencyCodeInput
+    currencyCode?: CurrencyCodeInput
   }>
   paidAt?: string | null
   expiresAt?: string | null
@@ -199,6 +203,71 @@ export const joinUrl = (...parts: string[]) =>
     .filter(Boolean)
     .map((part, index) => (index === 0 ? part.replace(/\/+$/, '') : part.replace(/^\/+|\/+$/g, '')))
     .join('/')
+
+const NUMERIC_CURRENCY_CODES: Record<number, SupportedCurrencyCode> = {
+  704: 'VND',
+  840: 'USD',
+  978: 'EUR',
+}
+
+export const normalizeCurrencyCode = (
+  currencyCode: CurrencyCodeInput,
+  fallbackCurrencyCode: SupportedCurrencyCode | null = null,
+): SupportedCurrencyCode | null => {
+  if (typeof currencyCode === 'string') {
+    const normalizedCurrencyCode = currencyCode.trim().toUpperCase()
+    if (!normalizedCurrencyCode) return fallbackCurrencyCode
+    if (/^\d+$/.test(normalizedCurrencyCode)) {
+      return NUMERIC_CURRENCY_CODES[Number(normalizedCurrencyCode)] ?? fallbackCurrencyCode
+    }
+    return normalizedCurrencyCode as SupportedCurrencyCode
+  }
+
+  if (typeof currencyCode === 'number') {
+    return NUMERIC_CURRENCY_CODES[currencyCode] ?? fallbackCurrencyCode
+  }
+
+  return fallbackCurrencyCode
+}
+
+export const createMoneyDisplay = (
+  amount: number | null | undefined,
+  currencyCode: CurrencyCodeInput,
+  options?: {
+    issue?: MoneyIssue | null
+    fallbackCurrencyCode?: SupportedCurrencyCode | null
+  },
+) => ({
+  amount: amount ?? null,
+  currencyCode: normalizeCurrencyCode(currencyCode, options?.fallbackCurrencyCode),
+  issue: options?.issue ?? null,
+})
+
+export const normalizeMoneyDisplay = (
+  money:
+    | { amount?: number | null; currency?: CurrencyCodeInput; currencyCode?: CurrencyCodeInput; issue?: MoneyIssue | null }
+    | number
+    | null
+    | undefined,
+  options?: {
+    currencyCode?: CurrencyCodeInput
+    fallbackCurrencyCode?: SupportedCurrencyCode | null
+    issue?: MoneyIssue | null
+  },
+) => {
+  if (typeof money === 'number') {
+    return createMoneyDisplay(money, options?.currencyCode, options)
+  }
+
+  if (typeof money === 'object' && money !== null) {
+    return createMoneyDisplay(money.amount, money.currencyCode ?? money.currency ?? options?.currencyCode, {
+      fallbackCurrencyCode: options?.fallbackCurrencyCode,
+      issue: money.issue ?? options?.issue ?? null,
+    })
+  }
+
+  return createMoneyDisplay(null, options?.currencyCode, options)
+}
 
 export class ApiService {
   constructor(public readonly config: ApiConfig) {}

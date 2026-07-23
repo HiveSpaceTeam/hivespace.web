@@ -47,6 +47,7 @@
     }
   },
   "header": {
+    "searchPlaceholder": "Search workspace...",
     "openApplicationMenu": "Open application menu",
     "closeApplicationMenu": "Close application menu"
   },

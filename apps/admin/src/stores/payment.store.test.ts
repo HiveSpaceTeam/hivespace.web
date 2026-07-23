@@ -94,9 +94,57 @@ describe('usePaymentStore', () => {
     expect(mockSetLoading).toHaveBeenLastCalledWith(false)
   })
 
+  it('should normalize legacy numeric currency payment responses', async () => {
+    jest.mocked(paymentService.getPaymentByReference).mockResolvedValueOnce({
+      ...paymentFixture,
+      amount: 12500000,
+      currency: 704,
+      currencyCode: null,
+      linkedOrders: [
+        {
+          orderId: 'order-001',
+          orderCode: 'ORD-01JZXYZABCDEABCDEABCDEABD',
+          storeId: 'store-001',
+          amount: 6500000,
+          currency: 704,
+        },
+      ],
+    })
+    const store = usePaymentStore()
+
+    const result = await store.fetchPaymentByReference('PAY-01JZXYZABCDEABCDEABCDEABC')
+
+    expect(result.amount).toEqual({ amount: 12500000, currencyCode: 'VND', issue: null })
+    expect(result.linkedOrders?.[0]?.amount).toEqual({
+      amount: 6500000,
+      currencyCode: 'VND',
+      issue: null,
+    })
+  })
+
   it('should clear payment detail', () => {
     const store = usePaymentStore()
-    store.payment = paymentFixture
+    store.payment = {
+      ...paymentFixture,
+      amount: {
+        amount: 12500000,
+        currencyCode: 'VND',
+        issue: null,
+      },
+      currency: 'VND',
+      currencyCode: 'VND',
+      moneyIssue: paymentFixture.moneyIssue ?? null,
+      linkedOrders: paymentFixture.linkedOrders?.map(order => ({
+        ...order,
+        amount: {
+          amount: 6500000,
+          currencyCode: 'VND',
+          issue: null,
+        },
+        currency: 'VND',
+        currencyCode: 'VND',
+      })),
+    }
 
     store.clearPayment()
 

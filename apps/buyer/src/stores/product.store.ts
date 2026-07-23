@@ -2,6 +2,7 @@ import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import {
   normalizeCurrencyCode,
+  type CurrencyCodeInput,
   type MoneyIssue,
   useAppStore,
 } from '@hivespace/shared'
@@ -14,9 +15,8 @@ import type {
   ProductSummaryReadModel,
 } from '@/types'
 
-const resolveMoneyIssue = (
-  currencyCode: string | number | null | undefined,
-): MoneyIssue | null => (normalizeCurrencyCode(currencyCode) ? null : { code: 'missing_currency' })
+const resolveMoneyIssue = (currencyCode: CurrencyCodeInput): MoneyIssue | null =>
+  normalizeCurrencyCode(currencyCode) ? null : { code: 'missing_currency' }
 
 const isMoneyReadModel = (price: ProductSummaryReadModel['price']): price is MoneyReadModel =>
   typeof price === 'object' && price !== null
@@ -29,7 +29,7 @@ const resolveMoneyReadModelIssue = (price: MoneyReadModel): MoneyIssue | null =>
     }
   }
 
-  return resolveMoneyIssue(price.currencyCode ?? null)
+  return resolveMoneyIssue(price.currencyCode ?? price.currency)
 }
 
 const normalizeProductSummary = (product: ProductSummaryReadModel): ProductSummary => {
@@ -45,7 +45,9 @@ const normalizeProductSummary = (product: ProductSummaryReadModel): ProductSumma
   }
 
   const { price, ...summary } = product
-  const normalizedCurrencyCode = normalizeCurrencyCode(product.price.currencyCode ?? null)
+  const normalizedCurrencyCode = normalizeCurrencyCode(
+    product.price.currencyCode ?? product.price.currency,
+  )
 
   return {
     ...summary,

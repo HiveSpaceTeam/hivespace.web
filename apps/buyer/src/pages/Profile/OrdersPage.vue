@@ -187,7 +187,13 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import { Button, Spinner, createMoneyDisplay, useMoneyFormatter } from '@hivespace/shared'
+import {
+  Button,
+  Spinner,
+  createMoneyDisplay,
+  type CurrencyCodeInput,
+  useMoneyFormatter,
+} from '@hivespace/shared'
 import { storeToRefs } from 'pinia'
 import { ShoppingBag, Search } from 'lucide-vue-next'
 import { useI18n } from 'vue-i18n'
@@ -238,7 +244,7 @@ const refundStatuses: OrderStatus[] = ['Refunding', 'Refunded', 'Solved', 'Claim
 
 const formatPrice = (
   price: number,
-  currencyCode: string | number | null | undefined,
+  currencyCode: CurrencyCodeInput,
   issue?: MoneyIssue | null,
 ) => formatMoney(createMoneyDisplay(price, currencyCode, { issue }), { locale: locale.value })
 

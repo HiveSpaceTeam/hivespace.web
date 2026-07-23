@@ -47,6 +47,7 @@
     }
   },
   "header": {
+    "searchPlaceholder": "Tìm kiếm trong không gian làm việc...",
     "openApplicationMenu": "Mở menu ứng dụng",
     "closeApplicationMenu": "Đóng menu ứng dụng"
   },
