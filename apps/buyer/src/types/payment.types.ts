@@ -1,4 +1,5 @@
 import type {
+  CurrencyCodeInput,
   MoneyIssue,
   PaymentAttempt,
   PaymentDetail,
@@ -27,7 +28,7 @@ export interface PaymentDto {
   orderId?: string | null
   buyerId?: string | null
   amount: number
-  currency: string | null
+  currency: CurrencyCodeInput
   currencyCode?: SupportedCurrencyCode | null
   moneyIssue?: MoneyIssue | null
   status: PaymentStatus

@@ -1,22 +1,23 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 import {
-  createMoneyDisplay,
+  normalizeMoneyDisplay,
   normalizeCurrencyCode,
+  type CurrencyCodeInput,
   type MoneyIssue,
   useAppStore,
 } from '@hivespace/shared'
 import { paymentService } from '@/services/payment.service'
 import type { PaymentDetail, PaymentDto } from '@/types'
 
-const resolveMoneyIssue = (
-  currencyCode: string | null | undefined,
-): MoneyIssue | null => (normalizeCurrencyCode(currencyCode) ? null : { code: 'missing_currency' })
+const resolveMoneyIssue = (currencyCode: CurrencyCodeInput): MoneyIssue | null =>
+  normalizeCurrencyCode(currencyCode) ? null : { code: 'missing_currency' }
 
 const normalizePayment = (payment: PaymentDetail): PaymentDto => {
-  const amount = typeof payment.amount === 'number'
-    ? createMoneyDisplay(payment.amount, payment.currencyCode ?? payment.currency)
-    : payment.amount
+  const amount = normalizeMoneyDisplay(payment.amount, {
+    currencyCode: payment.currencyCode ?? payment.currency,
+    issue: payment.moneyIssue ?? null,
+  })
   const currencyCode = normalizeCurrencyCode(amount.currencyCode ?? payment.currencyCode ?? payment.currency)
   const gateway = typeof payment.gateway === 'string' ? payment.gateway : payment.gateway?.code ?? null
   const gatewayTransactionId = typeof payment.gateway === 'string'

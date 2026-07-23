@@ -1,4 +1,11 @@
-import type { MoneyDisplay, MoneyIssue, SupportedCurrencyCode } from '../types/money.types'
+import type {
+  CurrencyCode,
+  CurrencyCodeInput,
+  MoneyDisplay,
+  MoneyIssue,
+  MoneyIssueCode,
+  SupportedCurrencyCode,
+} from '../types/money.types'
 
 const NUMERIC_CURRENCY_CODES: Record<number, SupportedCurrencyCode> = {
   704: 'VND',
@@ -7,7 +14,7 @@ const NUMERIC_CURRENCY_CODES: Record<number, SupportedCurrencyCode> = {
 }
 
 export const normalizeCurrencyCode = (
-  currencyCode: string | number | null | undefined,
+  currencyCode: CurrencyCodeInput,
   fallback?: SupportedCurrencyCode,
 ): SupportedCurrencyCode | null => {
   if (typeof currencyCode === 'string') {
@@ -33,7 +40,7 @@ export const normalizeCurrencyCode = (
 
 export const createMoneyDisplay = (
   amount: number | null | undefined,
-  currencyCode: string | number | null | undefined,
+  currencyCode: CurrencyCodeInput,
   options?: {
     fallbackCurrencyCode?: SupportedCurrencyCode
     issue?: MoneyIssue | null
@@ -71,14 +78,81 @@ export const createMoneyDisplay = (
   }
 }
 
+export interface NormalizeMoneyDisplayOptions {
+  currencyCode?: CurrencyCodeInput
+  fallbackCurrencyCode?: SupportedCurrencyCode
+  issue?: MoneyIssue | null
+}
+
+export interface MoneyReadModelLike {
+  amount?: number | null
+  currency?: CurrencyCodeInput
+  currencyCode?: CurrencyCodeInput
+  issue?: MoneyIssue | null
+  isValid?: boolean
+  issueCode?: MoneyIssueCode | null
+  displayPlaceholder?: string | null
+}
+
+export type NormalizableMoney = MoneyDisplay | MoneyReadModelLike | number | null | undefined
+
+const isMoneyReadModelLike = (money: NormalizableMoney): money is MoneyReadModelLike =>
+  typeof money === 'object' && money !== null
+
+const resolveMoneyIssue = (
+  money: MoneyReadModelLike,
+  fallbackIssue?: MoneyIssue | null,
+): MoneyIssue | null => {
+  if (money.issue) {
+    return money.issue
+  }
+
+  if (money.isValid === false) {
+    return {
+      code: money.issueCode ?? 'invalid_money',
+      placeholder: money.displayPlaceholder ?? undefined,
+    }
+  }
+
+  return fallbackIssue ?? null
+}
+
+export const normalizeMoneyDisplay = (
+  money: NormalizableMoney,
+  options?: NormalizeMoneyDisplayOptions,
+): MoneyDisplay => {
+  if (typeof money === 'number') {
+    return createMoneyDisplay(money, options?.currencyCode, {
+      fallbackCurrencyCode: options?.fallbackCurrencyCode,
+      issue: options?.issue,
+    })
+  }
+
+  if (isMoneyReadModelLike(money)) {
+    return createMoneyDisplay(
+      money.amount,
+      money.currencyCode ?? money.currency ?? options?.currencyCode,
+      {
+        fallbackCurrencyCode: options?.fallbackCurrencyCode,
+        issue: resolveMoneyIssue(money, options?.issue),
+      },
+    )
+  }
+
+  return createMoneyDisplay(null, options?.currencyCode, {
+    fallbackCurrencyCode: options?.fallbackCurrencyCode,
+    issue: options?.issue,
+  })
+}
+
 export const createAggregateMoneyDisplay = (
   amount: number | null | undefined,
-  currencies: Array<string | number | null | undefined>,
+  currencies: CurrencyCodeInput[],
   fallback?: SupportedCurrencyCode,
 ): MoneyDisplay => {
   const normalizedCurrencies = Array.from(
     new Set(currencies.map((currency) => normalizeCurrencyCode(currency, fallback)).filter(Boolean)),
-  ) as SupportedCurrencyCode[]
+  ) as CurrencyCode[]
 
   if (normalizedCurrencies.length === 0) {
     return createMoneyDisplay(amount, null, {

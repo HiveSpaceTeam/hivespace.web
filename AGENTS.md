@@ -242,6 +242,15 @@ Never write raw `<div class="animate-spin ...">` inline. Use shared loading comp
 - In store actions, call `useAppStore().setLoading(true/false)` via `try/finally`.
 - Show toast notifications through `useAppStore().notifySuccess/notifyError/notifyInfo`.
 
+### Money Handling
+
+- API money responses should use a consistent money read model: `{ amount, currencyCode, isValid?, issueCode?, displayPlaceholder? }`. New backend APIs should return `currencyCode` as an ISO alpha `CurrencyCode` such as `VND`, `USD`, or `EUR`, and should avoid numeric `currency` values.
+- Use `CurrencyCode` from `@hivespace/shared` for normalized frontend state and canonical API read models. Use `CurrencyCodeInput` only at legacy API boundaries and shared normalization helper inputs where numeric ISO codes such as `704` must remain supported.
+- Normalize money at the store or service boundary before components render it. Do not normalize currency codes ad hoc inside pages or table cells.
+- Use shared money helpers from `@hivespace/shared`: `normalizeCurrencyCode`, `createMoneyDisplay`, `createAggregateMoneyDisplay`, `useMoneyInput`, and `useMoneyFormatter`. Do not add local currency allowlists such as `currencyCode === 'VND' || currencyCode === 'USD'`.
+- When mapping legacy response shapes, always resolve currency with `currencyCode ?? currency` so both canonical and legacy backend fields display correctly.
+- Components should receive normalized money state and call `formatMoney(...)`; they should not know about numeric currency codes, legacy `currency` fields, or fallback rules.
+
 ### Shared Feature Modules
 
 - `notification`, `media upload`, and `user settings` use shared feature modules under `packages/shared/src/features/`.
@@ -427,7 +436,7 @@ GitHub Actions pipeline (`.github/workflows/ci-pipeline.yml` inside each app):
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 
-This project is indexed by GitNexus as **hivespace.web** (2307 symbols, 5057 relationships, 142 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
+This project is indexed by GitNexus as **hivespace.web** (2409 symbols, 5298 relationships, 150 execution flows). Use the GitNexus MCP tools to understand code, assess impact, and navigate safely.
 
 > If any GitNexus tool warns the index is stale, run `npx gitnexus analyze` in terminal first.
 

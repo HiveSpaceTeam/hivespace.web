@@ -1,3 +1,5 @@
+import type { CurrencyCode, CurrencyCodeInput } from '@hivespace/shared'
+
 export interface AppliedPlatformCoupon {
   couponCode: string
 }
@@ -23,7 +25,7 @@ export interface CartItem {
   name: string
   image: string
   price: number
-  currencyCode: string | null
+  currencyCode: CurrencyCode | null
   originalPrice?: number
   quantity: number
   variant?: string
@@ -53,7 +55,7 @@ export interface CartItemResponse {
   productStatus: number | null
   originalPrice?: number | null
   price: number | null
-  currency: string | null
+  currency: CurrencyCodeInput
   skuNo: string | null
   skuName?: string | null
   skuImageUrl: string | null

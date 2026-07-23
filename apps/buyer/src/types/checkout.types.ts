@@ -1,4 +1,5 @@
 import type {
+  CurrencyCodeInput,
   MoneyIssue,
   PaymentAttempt,
   PaymentMethodCode,
@@ -15,7 +16,7 @@ export interface CheckoutItem {
   skuAttributes?: string
   originalPrice?: number
   price: number
-  currency: string | null
+  currency: CurrencyCodeInput
   currencyCode: SupportedCurrencyCode | null
   moneyIssue?: MoneyIssue | null
   quantity: number
@@ -28,7 +29,7 @@ export interface DeliveryPackage {
   shippingType: 'economy' | 'fast'
   originalShippingFee?: number
   shippingFee: number
-  currency: string | null
+  currency: CurrencyCodeInput
   currencyCode: SupportedCurrencyCode | null
   moneyIssue?: MoneyIssue | null
   originalSubtotal: number
@@ -42,7 +43,7 @@ export interface CheckoutPreview {
   packages: DeliveryPackage[]
   originalSubtotal: number
   subtotal: number
-  currency: string | null
+  currency: CurrencyCodeInput
   currencyCode: SupportedCurrencyCode | null
   moneyIssue?: MoneyIssue | null
   totalShippingFee: number

@@ -1,4 +1,4 @@
-import type { MoneyIssue, SupportedCurrencyCode } from '@hivespace/shared'
+import type { CurrencyCodeInput, MoneyIssue, SupportedCurrencyCode } from '@hivespace/shared'
 import type { PaginationMetadata } from '@hivespace/shared'
 
 export interface ProductVariantOption {
@@ -29,7 +29,7 @@ export interface ProductSku {
   skuName?: string
   price: {
     amount: number
-    currency?: number | string
+    currency?: CurrencyCodeInput
     currencyCode?: SupportedCurrencyCode | null
     issue?: MoneyIssue | null
   }
@@ -60,6 +60,7 @@ export interface CurrentSeller {
 export interface MoneyReadModel {
   amount: number | null
   currencyCode?: SupportedCurrencyCode | null
+  currency?: CurrencyCodeInput
   isValid?: boolean
   issueCode?: MoneyIssue['code'] | null
   displayPlaceholder?: string | null

@@ -121,7 +121,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, defineComponent, h, ref, watch } from 'vue'
+import { computed, defineComponent, h, onBeforeUnmount, ref, watch } from 'vue'
 import type { PropType } from 'vue'
 import { useI18n } from 'vue-i18n'
 import { useRoute } from 'vue-router'
@@ -202,6 +202,10 @@ watch(
   },
   { immediate: true },
 )
+
+onBeforeUnmount(() => {
+  paymentStore.clearPayment()
+})
 
 const PaymentAttemptPanel = defineComponent({
   name: 'PaymentAttemptPanel',

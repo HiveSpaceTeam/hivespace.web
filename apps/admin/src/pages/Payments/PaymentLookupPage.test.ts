@@ -5,6 +5,7 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import i18n from '@/i18n'
 import PaymentLookupPage from './PaymentLookupPage.vue'
 import { paymentService } from '@/services/payment.service'
+import { usePaymentStore } from '@/stores/payment.store'
 import type { PaymentDetail } from '@hivespace/shared'
 
 const mockSetLoading = jest.fn()
@@ -166,5 +167,18 @@ describe('PaymentLookupPage', () => {
     await renderPage()
 
     expect(screen.getByText(i18n.global.t('payments.lookup.empty'))).toBeTruthy()
+  })
+
+  it('should clear payment detail when leaving the page', async () => {
+    const { unmount } = await renderPage('/payments?referenceNo=PAY-01JZXYZABCDEABCDEABCDEABC')
+    const paymentStore = usePaymentStore()
+
+    await waitFor(() => {
+      expect(paymentStore.payment?.referenceNo).toBe('PAY-01JZXYZABCDEABCDEABCDEABC')
+    })
+
+    unmount()
+
+    expect(paymentStore.payment).toBeNull()
   })
 })

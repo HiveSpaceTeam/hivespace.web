@@ -42,6 +42,30 @@ describe('usePaymentStore', () => {
     expect(store.payment?.moneyIssue).toBeNull()
   })
 
+  it('should normalize legacy numeric currency payment responses', async () => {
+    jest.mocked(paymentService.getPaymentByOrder).mockResolvedValueOnce({
+      id: 'payment-legacy',
+      referenceNo: 'PAY-LEGACY',
+      linkedOrders: [{ orderId: 'order-legacy', orderCode: 'ORD-LEGACY' }],
+      buyerId: 'buyer-001',
+      amount: 200_000,
+      currency: 704,
+      status: 'Succeeded',
+      gateway: { code: 'VNPAY', gatewayTransactionId: 'gateway-legacy' },
+      gatewayPaymentUrl: null,
+      paidAt: '2026-06-12T00:00:00Z',
+      expiresAt: '2026-06-12T01:00:00Z',
+      createdAt: '2026-06-12T00:00:00Z',
+    })
+    const store = usePaymentStore()
+
+    const result = await store.fetchPaymentByOrder('order-legacy')
+
+    expect(result.amount).toBe(200_000)
+    expect(result.currencyCode).toBe('VND')
+    expect(result.moneyIssue).toBeNull()
+  })
+
   it('should mark missing currencies with invalid-money metadata', async () => {
     jest.mocked(paymentService.getPaymentByOrder).mockResolvedValueOnce({
       id: 'payment-002',

@@ -5,6 +5,7 @@ import { createMemoryHistory, createRouter } from 'vue-router'
 import i18n from '@/i18n'
 import PaymentByOrderPage from './PaymentByOrderPage.vue'
 import { paymentService } from '@/services/payment.service'
+import { usePaymentStore } from '@/stores/payment.store'
 import type { PaymentDetail } from '@hivespace/shared'
 
 const mockSetLoading = jest.fn()
@@ -21,6 +22,8 @@ jest.mock('@hivespace/shared', () => {
   return {
     ...actual,
     AppShell: { template: '<div><slot /></div>' },
+    BackArrowIcon: { template: '<span />' },
+    Badge: { template: '<span><slot /></span>', props: ['size', 'color', 'dot'] },
     PageBreadcrumb: { template: '<div />', props: ['pageTitle'] },
     Spinner: { template: '<div />' },
     useMoneyFormatter: () => ({
@@ -90,7 +93,7 @@ const renderPage = async () => {
   await router.push('/payments/by-order/order-001')
   await router.isReady()
 
-  render(PaymentByOrderPage, {
+  return render(PaymentByOrderPage, {
     global: {
       plugins: [pinia, i18n, router],
     },
@@ -116,5 +119,22 @@ describe('PaymentByOrderPage', () => {
     expect(screen.getByText('Succeeded')).toBeTruthy()
     expect(screen.getByText(/Attempt 2/)).toBeTruthy()
     expect(screen.getByText('VNPAY-TRANSACTION-ID')).toBeTruthy()
+    const backLink = screen.getByRole('link', { name: i18n.global.t('payments.byOrder.backToReference') })
+    expect(backLink.getAttribute('href')).toBe('/payments?referenceNo=PAY-01JZXYZABCDEABCDEABCDEABC')
+    expect(backLink.textContent).toBe('')
+    expect(screen.queryByRole('heading', { name: i18n.global.t('payments.byOrder.title') })).toBeNull()
+  })
+
+  it('should clear payment detail when leaving the page', async () => {
+    const { unmount } = await renderPage()
+    const paymentStore = usePaymentStore()
+
+    await waitFor(() => {
+      expect(paymentStore.payment?.referenceNo).toBe('PAY-01JZXYZABCDEABCDEABCDEABC')
+    })
+
+    unmount()
+
+    expect(paymentStore.payment).toBeNull()
   })
 })

@@ -96,6 +96,28 @@ describe('useCartStore', () => {
     expect(store.summary.total).toBe(100_000)
   })
 
+  it('should normalize numeric ISO cart item currencies', async () => {
+    jest.mocked(cartService.getCartSummary).mockResolvedValueOnce({
+      ...cartSummary(),
+      stores: [
+        {
+          ...cartSummary().stores[0]!,
+          items: [
+            {
+              ...cartSummary().stores[0]!.items[0]!,
+              currency: 704,
+            },
+          ],
+        },
+      ],
+    })
+    const store = useCartStore()
+
+    await store.loadInitialCartSummary()
+
+    expect(store.cartGroups[0]?.items[0]?.currencyCode).toBe('VND')
+  })
+
   it('should refresh selected count when an item is added', async () => {
     const store = useCartStore()
 

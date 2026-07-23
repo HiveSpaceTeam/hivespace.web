@@ -108,6 +108,48 @@ describe('useProductStore (seller)', () => {
     expect(store.products[0]?.skus[0]?.price.currencyCode).toBe('USD')
   })
 
+  it('should normalize numeric ISO sku currencies in the product list', async () => {
+    jest.mocked(productService.getProducts).mockResolvedValueOnce({
+      items: [
+        {
+          id: 11,
+          name: 'Thermos',
+          category: 'Home',
+          description: 'Keeps drinks warm',
+          variants: [],
+          skus: [
+            {
+              id: 101,
+              skuVariants: [],
+              price: {
+                amount: 149_000,
+                currencyCode: null,
+                currency: 704,
+              },
+              quantity: 10,
+              skuNo: 'SKU-002',
+            },
+          ],
+          thumbnailUrl: '/thermos.png',
+          currentSeller: null,
+        },
+      ],
+      pagination: {
+        currentPage: 1,
+        pageSize: 20,
+        totalItems: 1,
+        totalPages: 1,
+        hasNextPage: false,
+        hasPreviousPage: false,
+      },
+    })
+    const store = useProductStore()
+
+    await store.fetchProducts({ page: 1, pageSize: 20 })
+
+    expect(store.products[0]?.skus[0]?.price.currencyCode).toBe('VND')
+  })
+
   it('should normalize legacy sku currencies in product detail', async () => {
     const store = useProductStore()
 

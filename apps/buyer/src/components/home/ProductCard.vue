@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group relative bg-white dark:bg-card-dark rounded-sm hover:-translate-y-1 hover:shadow-md transition-all duration-300 border border-transparent hover:border-primary overflow-hidden">
+    class="group relative bg-white dark:bg-card-dark rounded-sm cursor-pointer hover:-translate-y-1 hover:shadow-md transition-all duration-300 border border-transparent hover:border-primary overflow-hidden">
     <!-- Image -->
     <div class="relative aspect-square overflow-hidden bg-gray-100 dark:bg-gray-800">
       <img :src="product.imageURL" :alt="product.name" class="w-full h-full object-cover">

@@ -305,6 +305,7 @@ import {
   isRetryablePaymentStatus,
   PENDING_PAYMENT_SESSION_KEY,
   createMoneyDisplay,
+  type CurrencyCodeInput,
   useMoneyFormatter,
 } from '@hivespace/shared'
 import type { DeliveryPackage, InvalidAppliedCoupon, UserAddress } from '@/types'
@@ -553,7 +554,7 @@ const parseSkuAttributes = (raw: string): string => {
 
 const formatPackagePrice = (
   price: number,
-  currencyCode: string | number | null | undefined,
+  currencyCode: CurrencyCodeInput,
   issue?: MoneyIssue | null,
 ) => formatMoney(createMoneyDisplay(price, currencyCode, { issue }), { locale: locale.value })
 

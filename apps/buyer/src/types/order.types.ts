@@ -1,4 +1,4 @@
-import type { MoneyIssue, SupportedCurrencyCode } from '@hivespace/shared'
+import type { CurrencyCodeInput, MoneyIssue, SupportedCurrencyCode } from '@hivespace/shared'
 import type { PaginationMetadata } from '@hivespace/shared'
 import type { OrderPaymentSummary } from '@hivespace/shared'
 
@@ -39,7 +39,7 @@ export interface OrderItem {
   originalPrice: number
   unitPrice: number
   lineTotal: number
-  currency: string | null
+  currency: CurrencyCodeInput
   currencyCode?: SupportedCurrencyCode | null
   moneyIssue?: MoneyIssue | null
 }
@@ -50,7 +50,7 @@ export interface Order extends OrderPaymentSummary {
   orderCode?: string | null
   status: OrderStatus
   totalAmount: number
-  currency: string | null
+  currency: CurrencyCodeInput
   currencyCode?: SupportedCurrencyCode | null
   moneyIssue?: MoneyIssue | null
   createdAt: string
@@ -81,7 +81,7 @@ export interface OrderDetailItem {
   quantity: number
   unitPrice: number
   lineTotal: number
-  currency: string | null
+  currency: CurrencyCodeInput
   currencyCode?: SupportedCurrencyCode | null
   moneyIssue?: MoneyIssue | null
   isCOD: boolean
@@ -97,7 +97,7 @@ export interface OrderDetail extends OrderPaymentSummary {
   subTotal: number
   shippingFee: number
   totalAmount: number
-  currency: string | null
+  currency: CurrencyCodeInput
   currencyCode?: SupportedCurrencyCode | null
   moneyIssue?: MoneyIssue | null
   recipientName: string

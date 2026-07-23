@@ -36,7 +36,9 @@ export interface ApiConfig {
   }
 }
 
-export type SupportedCurrencyCode = 'VND' | 'USD' | 'EUR'
+export type CurrencyCode = string
+export type CurrencyCodeInput = CurrencyCode | number | null | undefined
+export type SupportedCurrencyCode = CurrencyCode
 
 export type MoneyIssue = {
   code: 'missing_currency' | 'unsupported_currency' | 'invalid_amount' | 'invalid_money'
@@ -130,9 +132,9 @@ export interface PaymentDetail {
   referenceNo?: string | null
   orderId?: string | null
   buyerId?: string | null
-  amount: { amount: number | null; currencyCode: SupportedCurrencyCode | null; issue?: MoneyIssue | null }
-  currency?: string | null
-  currencyCode?: string | null
+  amount: { amount: number | null; currencyCode: CurrencyCode | null; issue?: MoneyIssue | null } | number
+  currency?: CurrencyCodeInput
+  currencyCode?: CurrencyCodeInput
   moneyIssue?: MoneyIssue | null
   status: PaymentStatus
   methodCode?: PaymentMethodCode | null
@@ -141,7 +143,13 @@ export interface PaymentDetail {
   gatewayTransactionId?: string | null
   gatewayPaymentUrl?: string | null
   latestAttempt?: PaymentAttempt | null
-  linkedOrders?: Array<{ orderId: string; orderCode?: string | null }>
+  linkedOrders?: Array<{
+    orderId: string
+    orderCode?: string | null
+    amount?: { amount: number | null; currencyCode: CurrencyCode | null; issue?: MoneyIssue | null } | number | null
+    currency?: CurrencyCodeInput
+    currencyCode?: CurrencyCodeInput
+  }>
   paidAt?: string | null
   expiresAt?: string | null
   createdAt?: string | null
@@ -206,7 +214,7 @@ export const parseNumber = (value: string | undefined, fallback: number) => {
 }
 
 export const normalizeCurrencyCode = (
-  currencyCode: string | number | null | undefined,
+  currencyCode: CurrencyCodeInput,
   fallbackCurrencyCode: SupportedCurrencyCode | null = null,
 ): SupportedCurrencyCode | null => {
   if (currencyCode === 'VND' || currencyCode === 'USD' || currencyCode === 'EUR') {
@@ -222,7 +230,7 @@ export const normalizeCurrencyCode = (
 
 export const createMoneyDisplay = (
   amount: number | null,
-  currencyCode: string | null | undefined,
+  currencyCode: CurrencyCodeInput,
   options?: {
     issue?: MoneyIssue | null
     fallbackCurrencyCode?: SupportedCurrencyCode | null
@@ -235,7 +243,7 @@ export const createMoneyDisplay = (
 
 export const createAggregateMoneyDisplay = (
   amount: number | null,
-  currencies: Array<string | null | undefined>,
+  currencies: CurrencyCodeInput[],
   options?: {
     mismatchIssue?: MoneyIssue | null
     missingIssue?: MoneyIssue | null
@@ -259,6 +267,32 @@ export const createAggregateMoneyDisplay = (
   }
 
   return createMoneyDisplay(amount, normalizedCurrencies[0])
+}
+
+export const normalizeMoneyDisplay = (
+  money:
+    | { amount?: number | null; currency?: CurrencyCodeInput; currencyCode?: CurrencyCodeInput; issue?: MoneyIssue | null }
+    | number
+    | null
+    | undefined,
+  options?: {
+    currencyCode?: CurrencyCodeInput
+    fallbackCurrencyCode?: SupportedCurrencyCode | null
+    issue?: MoneyIssue | null
+  },
+) => {
+  if (typeof money === 'number') {
+    return createMoneyDisplay(money, options?.currencyCode, options)
+  }
+
+  if (typeof money === 'object' && money !== null) {
+    return createMoneyDisplay(money.amount ?? null, money.currencyCode ?? money.currency ?? options?.currencyCode, {
+      fallbackCurrencyCode: options?.fallbackCurrencyCode,
+      issue: money.issue ?? options?.issue ?? null,
+    })
+  }
+
+  return createMoneyDisplay(null, options?.currencyCode, options)
 }
 
 export const joinUrl = (...parts: string[]) =>

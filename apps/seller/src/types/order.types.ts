@@ -1,4 +1,4 @@
-import type { PaginationMetadata } from '@hivespace/shared'
+import type { CurrencyCodeInput, PaginationMetadata } from '@hivespace/shared'
 import type { OrderPaymentSummary } from '@hivespace/shared'
 
 export enum OrderProcessStatus {
@@ -43,7 +43,7 @@ export interface Order extends OrderPaymentSummary {
   buyerName: string
   items: OrderItem[]
   totalAmount: number
-  currencyCode?: string | null
+  currencyCode?: CurrencyCodeInput
   paymentMethod: string
   paymentMethodLabel?: string | null
   status: OrderStatus

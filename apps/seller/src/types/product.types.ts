@@ -1,4 +1,5 @@
 import type {
+  CurrencyCodeInput,
   MoneyIssue,
   PaginationMetadata,
   SupportedCurrencyCode,
@@ -40,7 +41,7 @@ export interface ProductSku {
     amount: number | null
     currencyCode: SupportedCurrencyCode | null
     issue?: MoneyIssue | null
-    currency?: number | string | null
+    currency?: CurrencyCodeInput
   }
   quantity?: number | string
   skuNo?: string

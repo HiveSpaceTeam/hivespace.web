@@ -299,4 +299,10 @@ describe('OrderManagementPage', () => {
     expect(screen.getByText(/Payment Status: Succeeded/)).toBeTruthy()
     expect(screen.getByText(/Payment Attempt 2/)).toBeTruthy()
   })
+
+  it('formats totals with numeric ISO currency codes', async () => {
+    await renderOrderManagement([{ ...baseOrder, currencyCode: 704 }])
+
+    expect(screen.getByText('₫200,000')).toBeTruthy()
+  })
 })
