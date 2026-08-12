@@ -103,6 +103,18 @@ const router = createRouter({
       meta: { titleKey: 'merchants.title' },
     },
     {
+      path: '/catalog-imports',
+      name: 'CatalogImports',
+      component: () => import('@/pages/catalog-imports/CatalogImportListPage.vue'),
+      meta: { titleKey: 'catalogImports.list.title' },
+    },
+    {
+      path: '/catalog-imports/jobs/:jobId',
+      name: 'CatalogImportJobDetail',
+      component: () => import('@/pages/catalog-imports/CatalogImportJobDetailPage.vue'),
+      meta: { titleKey: 'catalogImports.detail.title' },
+    },
+    {
       path: '/configuration',
       name: 'Configuration',
       component: () => import('@/pages/Configuration/ConfigurationPage.vue'),
