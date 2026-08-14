@@ -148,10 +148,8 @@ foreach ($workspaceName in $selectedWorkspaces) {
     Push-Location $workspaceConfig.Path
     try {
         $testArgs = @(
-            'exec'
-            'jest'
-            '--config'
-            $workspaceConfig.Config
+            'test'
+            '--'
             '--runInBand'
             '--coverage'
             '--coverageDirectory'

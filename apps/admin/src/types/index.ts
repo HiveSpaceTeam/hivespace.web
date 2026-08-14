@@ -18,3 +18,6 @@ export * from './merchant.types'
 
 // Configuration types
 export * from './configuration.types'
+
+// Catalog import types
+export * from './catalog-import.types'

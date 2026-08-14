@@ -1,0 +1,805 @@
+import { beforeEach, describe, expect, it, jest } from '@jest/globals'
+import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
+import { flushPromises, mount } from '@vue/test-utils'
+import { createPinia, setActivePinia } from 'pinia'
+import { createMemoryHistory, createRouter } from 'vue-router'
+import { nextTick } from 'vue'
+import i18n from '@/i18n'
+import CatalogImportJobDetailPage from './CatalogImportJobDetailPage.vue'
+import { catalogImportService } from '@/services/catalog-import.service'
+import type { CatalogImportDuplicateGroup, CatalogImportValidationIssue } from '@/types'
+
+const mockSetLoading = jest.fn()
+const mockOpenModal = jest.fn<() => Promise<{ result: 'confirm' | 'cancel' }>>()
+
+jest.mock('@/services/catalog-import.service', () => ({
+  catalogImportService: {
+    listBundles: jest.fn(),
+    listJobs: jest.fn(),
+    getJob: jest.fn(),
+    getBundleSummary: jest.fn(),
+    listBundleCategoryLinks: jest.fn(),
+    listBundleSellers: jest.fn(),
+    listBundleProducts: jest.fn(),
+    listBundleDuplicateGroups: jest.fn(),
+    listBundleValidationIssues: jest.fn(),
+    validateBundle: jest.fn(),
+    provisionSellers: jest.fn(),
+    approveSellerOwnership: jest.fn(),
+    importReadyProducts: jest.fn(),
+  },
+}))
+
+jest.mock('@hivespace/shared', () => {
+  const actual = jest.requireActual<typeof import('@hivespace/shared')>('@hivespace/shared')
+
+  return {
+    ...actual,
+    AppShell: { template: '<div><slot /></div>' },
+    PageBreadcrumb: {
+      template: '<div><h2>{{ pageTitle }}</h2><slot /></div>',
+      props: ['pageTitle'],
+    },
+    BackArrowIcon: { template: '<span>back</span>' },
+    ConfirmModal: { template: '<div />' },
+    Button: {
+      template:
+        '<button :type="type ?? \'button\'" :disabled="disabled || loading" :data-loading="loading ? \'true\' : undefined" @click="onClick && onClick()"><slot /></button>',
+      props: ['type', 'variant', 'size', 'disabled', 'loading', 'onClick'],
+    },
+    Input: {
+      template:
+        '<label><span>{{ label }}</span><input :value="modelValue" @input="$emit(\'update:modelValue\', $event.target.value)" /></label>',
+      props: ['modelValue', 'label'],
+      emits: ['update:modelValue'],
+    },
+    Tabs: {
+      template:
+        '<div><button v-for="option in options" :key="option.value" type="button" @click="$emit(\'update:modelValue\', option.value)">{{ option.label }}</button></div>',
+      props: ['options', 'modelValue', 'variant'],
+      emits: ['update:modelValue'],
+    },
+    Checkbox: {
+      template:
+        '<label><span>{{ label }}</span><input type="checkbox" :checked="modelValue" :disabled="disabled" @click="$emit(\'update:modelValue\', !modelValue)" /></label>',
+      props: ['modelValue', 'label', 'disabled'],
+      emits: ['update:modelValue'],
+    },
+    Badge: { template: '<span><slot /></span>', props: ['color'] },
+    Spinner: { template: '<div />' },
+    Pagination: {
+      template:
+        '<div><button type="button" @click="$emit(\'pageChange\', 2)">Next page</button></div>',
+      props: ['currentPage', 'totalPages', 'pageSize', 'totalItems'],
+      emits: ['pageChange', 'pageSizeChange'],
+    },
+    useFormatDate: () => ({
+      formatDateTime: (value: string) => `formatted:${value}`,
+      formatRelativeTime: (value: string) => `relative:${value}`,
+    }),
+    useMoneyFormatter: () => ({
+      formatMoney: (money: { amount: number; currencyCode?: string | null }) =>
+        `${money.amount} ${money.currencyCode ?? ''}`.trim(),
+    }),
+    useModal: () => ({
+      openModal: mockOpenModal,
+      closeModal: jest.fn(),
+    }),
+    useAppStore: () => ({
+      setLoading: mockSetLoading,
+      notifySuccess: jest.fn(),
+      notifyError: jest.fn(),
+    }),
+  }
+})
+
+const createDeferred = <T,>() => {
+  let resolve!: (value: T | PromiseLike<T>) => void
+  let reject!: (reason?: unknown) => void
+  const promise = new Promise<T>((res, rej) => {
+    resolve = res
+    reject = rej
+  })
+
+  return { promise, resolve, reject }
+}
+
+const pagination = {
+  currentPage: 1,
+  pageSize: 10,
+  totalItems: 1,
+  totalPages: 1,
+  hasNextPage: false,
+  hasPreviousPage: false,
+}
+
+const page = <T,>(
+  data: T[],
+  paginationOverrides: Partial<typeof pagination> = {},
+) => ({
+  data,
+  pagination: { ...pagination, totalItems: data.length, ...paginationOverrides },
+})
+
+const jobFixture = {
+  jobId: 'job-001',
+  status: 'Completed',
+  operationType: 'SubmitBundle',
+  sourceFileName: 'bundle.json',
+  requestedAt: '2026-08-04T10:00:00Z',
+  startedAt: '2026-08-04T10:01:00Z',
+  completedAt: '2026-08-04T10:05:00Z',
+  progress: { total: 20, processed: 20 },
+  resultSummary: {
+    totalProducts: 20,
+    readyProducts: 1,
+    blockedProducts: 0,
+    warningCount: 0,
+    duplicateCount: 0,
+  },
+  bundleId: 'bundle-001',
+  errorSummary: null,
+}
+
+const categoryJobFixture = {
+  ...jobFixture,
+  jobId: 'job-categories',
+  operationType: 'ProvisionCategories',
+  sourceFileName: 'categories.json',
+  bundleId: null,
+}
+
+const bundleFixture = {
+  bundleId: 'bundle-001',
+  status: 'NeedsAttention',
+  sourceFileName: 'bundle.json',
+  source: { system: 'tiki', type: 'category', value: '1846' },
+  crawl: {
+    startedAt: '2026-08-04T09:00:00Z',
+    completedAt: '2026-08-04T09:05:00Z',
+    sourceFingerprint: 'sha256:bundle',
+    checkpointId: null,
+  },
+  summary: {
+    totalProducts: 20,
+    readyProducts: 1,
+    blockedProducts: 0,
+    warningCount: 0,
+    duplicateCount: 0,
+  },
+}
+
+const mockDetail = (
+  sellerStatus = 'Matched',
+  overrides?: {
+    summary?: Partial<typeof bundleFixture.summary>
+    validationIssues?: CatalogImportValidationIssue[]
+    duplicateGroups?: CatalogImportDuplicateGroup[]
+  },
+) => {
+  jest.mocked(catalogImportService.getJob).mockResolvedValue(jobFixture)
+  jest.mocked(catalogImportService.getBundleSummary).mockResolvedValue({
+    ...bundleFixture,
+    summary: {
+      ...bundleFixture.summary,
+      ...overrides?.summary,
+    },
+  })
+  jest.mocked(catalogImportService.listBundleCategoryLinks).mockResolvedValue(
+    page([{ externalCategoryId: '1846', categoryId: 'category-001', categoryName: 'Books', status: 'Matched' }]),
+  )
+  jest.mocked(catalogImportService.listBundleSellers).mockResolvedValue(
+    page([
+      {
+        importedSellerId: 'imported-seller-001',
+        externalSellerId: 'seller-001',
+        displayName: 'Tiki Trading',
+        status: sellerStatus,
+        userId: sellerStatus === 'Matched' ? 'user-001' : null,
+        storeId: sellerStatus === 'Matched' ? 'store-001' : null,
+        conflictReason: sellerStatus === 'Conflict' ? 'Similar store name' : null,
+        existingStoreCandidates:
+          sellerStatus === 'Conflict'
+            ? [{ userId: 'user-001', storeId: 'store-001', storeName: 'Tiki Shop' }]
+            : [],
+      },
+    ]),
+  )
+  jest.mocked(catalogImportService.listBundleProducts).mockResolvedValue(
+    page([
+      {
+        productId: 'product-001',
+        externalProductId: '271001',
+        externalSellerId: 'seller-001',
+        externalCategoryIds: ['1846'],
+        title: 'Imported book',
+        readinessStatus: 'Ready',
+        skus: [{ externalSkuId: 'sku-001', variantSelections: {}, price: { amount: 1, currencyCode: 'VND' } }],
+      },
+      {
+        productId: 'product-002',
+        externalProductId: '271002',
+        externalSellerId: 'seller-001',
+        externalCategoryIds: ['1846'],
+        title: 'Imported notebook',
+        readinessStatus: 'Warning',
+        skus: [{ externalSkuId: 'sku-002', variantSelections: {}, price: { amount: 2, currencyCode: 'VND' } }],
+      },
+    ]),
+  )
+  jest.mocked(catalogImportService.listBundleDuplicateGroups).mockResolvedValue(
+    page(overrides?.duplicateGroups ?? []),
+  )
+  jest.mocked(catalogImportService.listBundleValidationIssues).mockResolvedValue(
+    page(overrides?.validationIssues ?? []),
+  )
+}
+
+const renderPage = async () => {
+  const pinia = createPinia()
+  setActivePinia(pinia)
+  i18n.global.locale.value = 'en'
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      { path: '/catalog-imports', name: 'CatalogImports', component: { template: '<div>List</div>' } },
+      { path: '/catalog-imports/jobs/:jobId', component: CatalogImportJobDetailPage },
+    ],
+  })
+  await router.push('/catalog-imports/jobs/job-001')
+  await router.isReady()
+
+  const result = render(CatalogImportJobDetailPage, {
+    global: {
+      plugins: [pinia, i18n, router],
+    },
+  })
+
+  return { ...result, router }
+}
+
+const mountPage = async () => {
+  const pinia = createPinia()
+  setActivePinia(pinia)
+  i18n.global.locale.value = 'en'
+  const router = createRouter({
+    history: createMemoryHistory(),
+    routes: [
+      { path: '/catalog-imports', name: 'CatalogImports', component: { template: '<div>List</div>' } },
+      { path: '/catalog-imports/jobs/:jobId', component: CatalogImportJobDetailPage },
+    ],
+  })
+  await router.push('/catalog-imports/jobs/job-001')
+  await router.isReady()
+
+  const wrapper = mount(CatalogImportJobDetailPage, {
+    global: {
+      plugins: [pinia, i18n, router],
+    },
+  })
+
+  await flushPromises()
+
+  return wrapper
+}
+
+describe('CatalogImportJobDetailPage', () => {
+  beforeEach(() => {
+    setActivePinia(createPinia())
+    jest.clearAllMocks()
+    mockOpenModal.mockResolvedValue({ result: 'confirm' })
+    jest.mocked(catalogImportService.listBundles).mockResolvedValue({
+      data: [bundleFixture],
+      pagination,
+    })
+    jest.mocked(catalogImportService.listJobs).mockResolvedValue(page([jobFixture]))
+    jest.mocked(catalogImportService.validateBundle).mockResolvedValue({
+      jobId: 'job-validate',
+      status: 'Pending',
+      operationType: 'ValidateBundle',
+      bundleId: 'bundle-001',
+    })
+    jest.mocked(catalogImportService.provisionSellers).mockResolvedValue({
+      jobId: 'job-sellers',
+      status: 'Pending',
+      operationType: 'ProvisionSellers',
+      bundleId: 'bundle-001',
+    })
+    jest.mocked(catalogImportService.importReadyProducts).mockResolvedValue({
+      jobId: 'job-import',
+      status: 'Pending',
+      operationType: 'ImportReadyProducts',
+      bundleId: 'bundle-001',
+    })
+    jest.mocked(catalogImportService.approveSellerOwnership).mockResolvedValue({
+      importedSellerId: 'imported-seller-001',
+      externalSellerId: 'seller-001',
+      userId: 'user-001',
+      storeId: 'store-001',
+      status: 'Matched',
+      conflictReason: null,
+    })
+    mockDetail()
+  })
+
+  it('should render job detail bundle summary and validation sections from the store', async () => {
+    await renderPage()
+
+    expect(await screen.findByRole('heading', { name: 'Catalog Import Job' })).toBeTruthy()
+    expect(screen.getAllByRole('heading', { name: 'Catalog Import Job' })).toHaveLength(1)
+    expect(screen.getByText(i18n.global.t('catalogImports.detail.description'))).toBeTruthy()
+    expect(await screen.findByText('job-001')).toBeTruthy()
+    expect(await screen.findByText('bundle-001')).toBeTruthy()
+    expect(screen.getByText('Imported book')).toBeTruthy()
+    expect(screen.getByText(i18n.global.t('catalogImports.sections.validationIssues'))).toBeTruthy()
+  })
+
+  it('should navigate back to the catalog imports list from the back arrow', async () => {
+    const { router } = await renderPage()
+
+    await fireEvent.click(
+      screen.getByRole('link', {
+        name: i18n.global.t('catalogImports.actions.backToList'),
+      }),
+    )
+
+    await waitFor(() => {
+      expect(router.currentRoute.value.fullPath).toBe('/catalog-imports')
+    })
+  })
+
+  it('should switch between the large review tables with shared tabs', async () => {
+    await renderPage()
+
+    expect(await screen.findByText('Imported book')).toBeTruthy()
+    expect(screen.queryByText('Tiki Trading')).toBeNull()
+    expect(screen.queryByText('Books')).toBeNull()
+
+    await fireEvent.click(
+      screen.getByRole('button', {
+        name: i18n.global.t('catalogImports.sections.sellers'),
+      }),
+    )
+    expect(await screen.findByText('Tiki Trading')).toBeTruthy()
+    expect(screen.queryByText('Imported book')).toBeNull()
+
+    await fireEvent.click(
+      screen.getByRole('button', {
+        name: i18n.global.t('catalogImports.sections.categoryLinks'),
+      }),
+    )
+    expect(await screen.findByText('Books')).toBeTruthy()
+    expect(screen.queryByText('Tiki Trading')).toBeNull()
+  })
+
+  it('should render category provisioning jobs without product bundle sections', async () => {
+    jest.mocked(catalogImportService.getJob).mockResolvedValue(categoryJobFixture)
+
+    await renderPage()
+
+    expect(await screen.findByText('job-categories')).toBeTruthy()
+    expect(screen.getByText(i18n.global.t('catalogImports.sections.categoryProvisioning'))).toBeTruthy()
+    expect(
+      screen.getByText(i18n.global.t('catalogImports.empty.categoryProvisioningJobDetail')),
+    ).toBeTruthy()
+    expect(screen.queryByText(i18n.global.t('catalogImports.sections.workflowActions'))).toBeNull()
+    expect(screen.queryByText(i18n.global.t('catalogImports.sections.products'))).toBeNull()
+    expect(screen.queryByText(i18n.global.t('catalogImports.sections.sellers'))).toBeNull()
+  })
+
+  it('should provision sellers and refresh bundle detail', async () => {
+    await renderPage()
+
+    await fireEvent.click(
+      await screen.findByRole('button', {
+        name: i18n.global.t('catalogImports.actions.provisionSellers'),
+      }),
+    )
+
+    await waitFor(() => {
+      expect(catalogImportService.provisionSellers).toHaveBeenCalledWith('bundle-001')
+    })
+    expect(catalogImportService.listJobs).toHaveBeenCalled()
+  })
+
+  it('should show loading on the validate bundle button while the action is running', async () => {
+    const deferred = createDeferred<{
+      jobId: string
+      status: string
+      operationType: string
+      bundleId: string
+    }>()
+    jest.mocked(catalogImportService.validateBundle).mockReturnValueOnce(
+      deferred.promise as ReturnType<typeof catalogImportService.validateBundle>,
+    )
+
+    await renderPage()
+
+    const validateButton = await screen.findByRole('button', {
+      name: i18n.global.t('catalogImports.actions.validateBundle'),
+    })
+    await fireEvent.click(validateButton)
+
+    await waitFor(() => {
+      expect(validateButton.getAttribute('data-loading')).toBe('true')
+    })
+
+    deferred.resolve({
+      jobId: 'job-validate',
+      status: 'Pending',
+      operationType: 'ValidateBundle',
+      bundleId: 'bundle-001',
+    })
+
+    await waitFor(() => {
+      expect(validateButton.getAttribute('data-loading')).toBeNull()
+    })
+  })
+
+  it('should keep import all ready enabled when seller ownership is missing but bundle has eligible products', async () => {
+    mockDetail('Conflict')
+
+    await renderPage()
+    await screen.findByText('job-001')
+    await fireEvent.click(
+      screen.getByRole('button', {
+        name: i18n.global.t('catalogImports.sections.sellers'),
+      }),
+    )
+
+    const importAllButton = await screen.findByRole('button', {
+      name: i18n.global.t('catalogImports.actions.importAllReadyProducts'),
+    })
+    const importSelectedButton = await screen.findByRole('button', {
+      name: i18n.global.t('catalogImports.actions.importSelectedReadyProducts'),
+    })
+    expect(await screen.findByText(/Similar store name/)).toBeTruthy()
+    await waitFor(() => {
+      expect(importAllButton.hasAttribute('disabled')).toBe(false)
+      expect(importSelectedButton.hasAttribute('disabled')).toBe(false)
+    })
+    expect(screen.getByText(/Tiki Shop/)).toBeTruthy()
+  })
+
+  it('should keep import all ready enabled when validation issues exist but bundle has eligible products', async () => {
+    mockDetail('Matched', {
+      validationIssues: [
+        {
+          issueId: 'issue-001',
+          entityType: 'Product',
+          entitySourceId: 'product-999',
+          field: 'category',
+          severity: 'Blocking',
+          reasonCode: 'CategoryNotProvisioned',
+          message: 'Category is not provisioned',
+        },
+      ],
+    })
+
+    await renderPage()
+
+    const importAllButton = await screen.findByRole('button', {
+      name: i18n.global.t('catalogImports.actions.importAllReadyProducts'),
+    })
+
+    await waitFor(() => {
+      expect(importAllButton.hasAttribute('disabled')).toBe(false)
+    })
+  })
+
+  it('should keep import all ready enabled when duplicate groups exist but bundle has eligible products', async () => {
+    mockDetail('Matched', {
+      duplicateGroups: [
+        {
+          groupId: 'duplicate-001',
+          externalProductIds: ['271999'],
+          canonicalExternalProductId: '271999',
+          reasonCode: 'SimilarProduct',
+          resolutionStatus: 'Pending',
+        },
+      ],
+    })
+
+    await renderPage()
+
+    const importAllButton = await screen.findByRole('button', {
+      name: i18n.global.t('catalogImports.actions.importAllReadyProducts'),
+    })
+
+    await waitFor(() => {
+      expect(importAllButton.hasAttribute('disabled')).toBe(false)
+    })
+  })
+
+  it('should require an approval reason before linking an existing store', async () => {
+    mockDetail('Conflict')
+
+    await renderPage()
+    await screen.findByText('job-001')
+    await fireEvent.click(
+      screen.getByRole('button', {
+        name: i18n.global.t('catalogImports.sections.sellers'),
+      }),
+    )
+    await fireEvent.click(
+      await screen.findByRole('button', {
+        name: i18n.global.t('catalogImports.actions.approveSellerOwnership'),
+      }),
+    )
+
+    expect(
+      await screen.findByText(i18n.global.t('catalogImports.sellers.approvalReasonRequired')),
+    ).toBeTruthy()
+    expect(catalogImportService.approveSellerOwnership).not.toHaveBeenCalled()
+  })
+
+  it('should approve conflicted seller ownership and refresh bundle detail', async () => {
+    mockDetail('Conflict')
+    const deferred = createDeferred<{
+      importedSellerId: string
+      externalSellerId: string
+      userId: string
+      storeId: string
+      status: string
+      conflictReason: null
+    }>()
+    jest.mocked(catalogImportService.approveSellerOwnership).mockReturnValueOnce(
+      deferred.promise as ReturnType<typeof catalogImportService.approveSellerOwnership>,
+    )
+
+    await renderPage()
+    await screen.findByText('job-001')
+    await fireEvent.click(
+      screen.getByRole('button', {
+        name: i18n.global.t('catalogImports.sections.sellers'),
+      }),
+    )
+    await screen.findByText(/Similar store name/)
+    await fireEvent.update(
+      screen.getByLabelText(i18n.global.t('catalogImports.sellers.approvalReason')),
+      'Reviewed existing store',
+    )
+    await fireEvent.click(
+      await screen.findByRole('button', {
+        name: i18n.global.t('catalogImports.actions.approveSellerOwnership'),
+      }),
+    )
+
+    const approveButtons = await screen.findAllByRole('button', {
+      name: i18n.global.t('catalogImports.actions.approveSellerOwnership'),
+    })
+
+    await waitFor(() => {
+      expect(approveButtons[0].getAttribute('data-loading')).toBe('true')
+    })
+
+    deferred.resolve({
+      importedSellerId: 'imported-seller-001',
+      externalSellerId: 'seller-001',
+      userId: 'user-001',
+      storeId: 'store-001',
+      status: 'Matched',
+      conflictReason: null,
+    })
+
+    await waitFor(() => {
+      expect(catalogImportService.approveSellerOwnership).toHaveBeenCalledWith(
+        'bundle-001',
+        'imported-seller-001',
+        {
+          targetUserId: 'user-001',
+          targetStoreId: 'store-001',
+          approvalReason: 'Reviewed existing store',
+        },
+      )
+    })
+
+    await waitFor(() => {
+      const refreshedApproveButtons = screen.getAllByRole('button', {
+        name: i18n.global.t('catalogImports.actions.approveSellerOwnership'),
+      })
+      expect(refreshedApproveButtons[0].getAttribute('data-loading')).toBeNull()
+    })
+  })
+
+  it('should import all eligible products in the bundle without product ids', async () => {
+    await renderPage()
+
+    await fireEvent.click(
+      await screen.findByRole('button', {
+        name: i18n.global.t('catalogImports.actions.importAllReadyProducts'),
+      }),
+    )
+
+    await waitFor(() => {
+      expect(catalogImportService.importReadyProducts).toHaveBeenCalledWith('bundle-001', {
+        publicationState: 'Draft',
+      })
+    })
+  })
+
+  it('should import ready and warning selected products as draft records', async () => {
+    await renderPage()
+    await screen.findByText(
+      i18n.global.t('catalogImports.products.selectedImportableProducts', { count: 2 }),
+    )
+
+    await fireEvent.click(
+      await screen.findByRole('button', {
+        name: i18n.global.t('catalogImports.actions.importSelectedReadyProducts'),
+      }),
+    )
+
+    await waitFor(() => {
+      expect(catalogImportService.importReadyProducts).toHaveBeenCalledWith('bundle-001', {
+        productIds: ['product-001', 'product-002'],
+        publicationState: 'Draft',
+      })
+    })
+  })
+
+  it('should keep checked products across pages and import every checked product', async () => {
+    const pageOneProducts = [
+      {
+        productId: 'product-001',
+        externalProductId: '271001',
+        externalSellerId: 'seller-001',
+        externalCategoryIds: ['1846'],
+        title: 'Imported book',
+        readinessStatus: 'Ready',
+        skus: [{ externalSkuId: 'sku-001', variantSelections: {}, price: { amount: 1, currencyCode: 'VND' } }],
+      },
+      {
+        productId: 'product-002',
+        externalProductId: '271002',
+        externalSellerId: 'seller-001',
+        externalCategoryIds: ['1846'],
+        title: 'Imported notebook',
+        readinessStatus: 'Warning',
+        skus: [{ externalSkuId: 'sku-002', variantSelections: {}, price: { amount: 2, currencyCode: 'VND' } }],
+      },
+    ]
+
+    const pageTwoProducts = [
+      {
+        productId: 'product-003',
+        externalProductId: '271003',
+        externalSellerId: 'seller-001',
+        externalCategoryIds: ['1846'],
+        title: 'Imported ruler',
+        readinessStatus: 'Ready',
+        skus: [{ externalSkuId: 'sku-003', variantSelections: {}, price: { amount: 3, currencyCode: 'VND' } }],
+      },
+    ]
+
+    jest.mocked(catalogImportService.listBundleProducts)
+      .mockReset()
+      .mockResolvedValueOnce(
+        page(pageOneProducts, { totalItems: 3, totalPages: 2, hasNextPage: true }),
+      )
+      .mockResolvedValueOnce(
+        page(pageTwoProducts, {
+          currentPage: 2,
+          totalItems: 3,
+          totalPages: 2,
+          hasNextPage: false,
+          hasPreviousPage: true,
+        }),
+      )
+
+    const wrapper = await mountPage()
+
+    await waitFor(() => {
+      expect(wrapper.text()).toContain(
+        i18n.global.t('catalogImports.products.selectedImportableProducts', { count: 2 }),
+      )
+    })
+
+    const nextPageButtons = wrapper
+      .findAll('button')
+      .filter(button => button.text() === 'Next page')
+
+    await nextPageButtons[0].trigger('click')
+    await flushPromises()
+
+    await waitFor(() => {
+      expect(wrapper.text()).toContain('Imported ruler')
+    })
+    expect(wrapper.text()).toContain(
+      i18n.global.t('catalogImports.products.selectedImportableProducts', { count: 2 }),
+    )
+
+    ;(wrapper.vm as unknown as { selectedProductIds: string[] }).selectedProductIds = [
+      'product-001',
+      'product-002',
+      'product-003',
+    ]
+    await nextTick()
+
+    expect(wrapper.text()).toContain(
+      i18n.global.t('catalogImports.products.selectedImportableProducts', { count: 3 }),
+    )
+
+    const importButton = wrapper
+      .findAll('button')
+      .find(button =>
+        button.text().includes(
+          i18n.global.t('catalogImports.actions.importSelectedReadyProducts'),
+        ),
+      )
+
+    if (!importButton) {
+      throw new Error('Import button not found')
+    }
+
+    await importButton.trigger('click')
+    await flushPromises()
+
+    await waitFor(() => {
+      expect(catalogImportService.importReadyProducts).toHaveBeenCalledWith('bundle-001', {
+        productIds: ['product-001', 'product-002', 'product-003'],
+        publicationState: 'Draft',
+      })
+    })
+  })
+
+  it('should keep bundle-wide import enabled when no products are selected', async () => {
+    const wrapper = await mountPage()
+
+    await waitFor(() => {
+      expect(wrapper.text()).toContain(
+        i18n.global.t('catalogImports.products.selectedImportableProducts', { count: 2 }),
+      )
+    })
+
+    ;(wrapper.vm as unknown as { selectedProductIds: string[] }).selectedProductIds = []
+    await nextTick()
+
+    const importAllButton = wrapper
+      .findAll('button')
+      .find(button =>
+        button.text().includes(i18n.global.t('catalogImports.actions.importAllReadyProducts')),
+      )
+    const importSelectedButton = wrapper
+      .findAll('button')
+      .find(button =>
+        button
+          .text()
+          .includes(i18n.global.t('catalogImports.actions.importSelectedReadyProducts')),
+      )
+
+    if (!importAllButton || !importSelectedButton) {
+      throw new Error('Import buttons not found')
+    }
+
+    expect(importAllButton.attributes('disabled')).toBeUndefined()
+    expect(importSelectedButton.attributes('disabled')).toBeDefined()
+
+    await importAllButton.trigger('click')
+    await flushPromises()
+
+    await waitFor(() => {
+      expect(catalogImportService.importReadyProducts).toHaveBeenCalledWith('bundle-001', {
+        publicationState: 'Draft',
+      })
+    })
+  })
+
+  it('should disable import all ready when the bundle summary has no eligible products', async () => {
+    mockDetail('Matched', {
+      summary: {
+        readyProducts: 0,
+        warningCount: 0,
+      },
+    })
+
+    await renderPage()
+
+    const importAllButton = await screen.findByRole('button', {
+      name: i18n.global.t('catalogImports.actions.importAllReadyProducts'),
+    })
+
+    expect(importAllButton.hasAttribute('disabled')).toBe(true)
+  })
+
+})

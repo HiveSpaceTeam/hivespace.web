@@ -1,0 +1,191 @@
+{
+  "list": {
+    "title": "Nhap danh muc",
+    "description": "Gui tep danh muc va goi san pham Tiki, sau do xem goi va cac tac vu lien quan."
+  },
+  "detail": {
+    "title": "Tac vu nhap danh muc",
+    "description": "Xem tien do tac vu, du lieu goi lien ket, loi kiem tra va thao tac tiep theo."
+  },
+  "actions": {
+    "actions": "Thao tac",
+    "backToList": "Quay lai nhap danh muc",
+    "refresh": "Lam moi",
+    "provisionCategories": "Provision danh muc",
+    "provisionSellers": "Provision nguoi ban",
+    "importSelectedReadyProducts": "Nhap muc da chon",
+    "importAllReadyProducts": "Nhap tat ca muc san sang",
+    "validateBundle": "Kiem tra goi",
+    "submitBundle": "Gui goi",
+    "approveSellerOwnership": "Duyet lien ket so huu",
+    "retryJob": "Thu lai tac vu",
+    "cancel": "Huy"
+  },
+  "upload": {
+    "categoryLabel": "Tep JSON provision danh muc",
+    "bundleLabel": "Tep JSON goi san pham",
+    "bundleDescription": "Chi gui goi san pham sau khi danh muc Tiki da duoc provision.",
+    "bundleAction": "Gui goi",
+    "invalidJson": "Tep da chon khong phai JSON hop le."
+  },
+  "sections": {
+    "bundleSubmission": "Gui goi san pham",
+    "bundleHistory": "Goi san pham",
+    "categoryProvisioning": "Provision danh muc",
+    "categoryProvisioningHistory": "Lich su tai len provision danh muc",
+    "categoryLinks": "Lien ket danh muc da provision",
+    "jobHistory": "Lich su tac vu nhap",
+    "relatedJobs": "Tac vu cua goi da chon",
+    "workflowActions": "Thao tac quy trinh",
+    "sellerApproval": "Duyet so huu nguoi ban",
+    "sellers": "Nguoi ban da nhap",
+    "products": "San pham da nhap",
+    "validationIssues": "Van de kiem tra",
+    "duplicates": "Nhom trung lap"
+  },
+  "jobs": {
+    "historyDescription": "Moi thao tac nhap cua CatalogService xuat hien tai day, gom tai tep, kiem tra, provision nguoi ban, nhap va thu lai.",
+    "categoryHistoryDescription": "Lich su provision danh muc duoc hien thi rieng voi bang goi san pham chinh.",
+    "relatedDescription": "Xem cac tac vu gui goi, kiem tra, provision nguoi ban va nhap cua goi da chon ngay tren trang danh sach.",
+    "jobId": "ID tac vu",
+    "operationType": "Thao tac",
+    "status": "Trang thai",
+    "sourceFileName": "Tep nguon",
+    "requestedAt": "Thoi diem yeu cau",
+    "startedAt": "Bat dau",
+    "completedAt": "Hoan tat",
+    "progress": "Tien do",
+    "progressValue": "{processed} / {total}",
+    "resultSummary": "Tom tat ket qua"
+  },
+  "operationTypes": {
+    "ProvisionCategories": "Provision danh muc",
+    "SubmitBundle": "Gui goi",
+    "ValidateBundle": "Kiem tra goi",
+    "ProvisionSellers": "Provision nguoi ban",
+    "ImportReadyProducts": "Nhap san pham san sang"
+  },
+  "statuses": {
+    "Pending": "Dang cho",
+    "Running": "Dang chay",
+    "Completed": "Hoan tat",
+    "Failed": "That bai"
+  },
+  "bundleStatuses": {
+    "Submitted": "Da gui",
+    "NeedsAttention": "Can xem xet",
+    "Validated": "Da kiem tra",
+    "Imported": "Da nhap"
+  },
+  "bundles": {
+    "historyDescription": "Xem danh sach goi san pham co phan trang truoc, sau do mo cac tac vu lien quan cua goi da chon trong khung ben canh.",
+    "bundleId": "ID goi",
+    "source": "Nguon",
+    "status": "Trang thai",
+    "submittedAt": "Thoi diem gui",
+    "summary": "Tom tat",
+    "summaryValue": "{ready} san sang, {blocked} bi chan, {warnings} canh bao"
+  },
+  "source": {
+    "type": "Loai nguon",
+    "value": "Gia tri nguon",
+    "completedAt": "Hoan tat"
+  },
+  "summary": {
+    "bundleId": "Goi",
+    "totalProducts": "Tong san pham",
+    "readyProducts": "San pham san sang",
+    "blockedProducts": "San pham bi chan",
+    "warningCount": "Canh bao",
+    "duplicateCount": "Trung lap"
+  },
+  "results": {
+    "totalCategories": "Tong danh muc",
+    "totalProducts": "Tong san pham",
+    "readyProducts": "San pham san sang",
+    "blockedProducts": "San pham bi chan",
+    "warningCount": "Canh bao",
+    "duplicateCount": "Trung lap",
+    "created": "Da tao",
+    "matched": "Da khop",
+    "failed": "That bai",
+    "conflict": "Xung dot",
+    "imported": "Da nhap",
+    "skipped": "Bo qua",
+    "blocked": "Bi chan"
+  },
+  "categories": {
+    "provisioningDescription": "Gui du lieu danh muc SellerCenter de CatalogService tao hoac khop danh muc HiveSpace truoc khi kiem tra goi san pham.",
+    "linksDescription": "Lien ket danh muc phai ton tai truoc khi san pham lien quan co the san sang.",
+    "externalId": "ID danh muc ngoai",
+    "hiveSpaceCategory": "Danh muc HiveSpace",
+    "status": "Trang thai",
+    "conflictReason": "Ly do xung dot"
+  },
+  "sellers": {
+    "name": "Nguoi ban",
+    "externalId": "ID ngoai",
+    "status": "Trang thai",
+    "ownership": "So huu",
+    "pending": "Dang cho",
+    "conflictReason": "Ly do xung dot",
+    "targetUserId": "ID nguoi dung dich",
+    "targetStoreId": "ID cua hang dich",
+    "approvalReason": "Ly do duyet",
+    "approvalReasonRequired": "Can nhap nguoi dung dich, cua hang dich va ly do duyet.",
+    "approvalConfirmTitle": "Duyet lien ket so huu",
+    "approvalConfirmMessage": "Thao tac nay lien ket nguoi ban Tiki ngoai voi tai khoan nguoi ban va cua hang HiveSpace hien co. Ho so cua hang hien co se khong bi thay doi."
+  },
+  "products": {
+    "product": "San pham",
+    "seller": "Nguoi ban",
+    "categories": "Danh muc",
+    "skus": "SKU",
+    "price": "Gia",
+    "status": "Trang thai",
+    "selectProduct": "Chon san pham",
+    "selectedImportableProducts": "Da chon {count} san pham co the nhap",
+    "importAllReadyDescription": "Nhap moi san pham du dieu kien trong goi ma khong can tai tung trang."
+  },
+  "validation": {
+    "description": "Chay tac vu tiep theo tu trang chi tiet va theo doi tung thao tac bat dong bo den khi hoan tat."
+  },
+  "issues": {
+    "severity": "Muc do",
+    "entity": "Doi tuong",
+    "field": "Truong",
+    "reason": "Ly do"
+  },
+  "duplicates": {
+    "group": "Nhom",
+    "products": "San pham",
+    "reason": "Ly do"
+  },
+  "severity": {
+    "warning": "Canh bao",
+    "blocking": "Bi chan"
+  },
+  "empty": {
+    "bundles": "Chua co goi san pham nao.",
+    "jobs": "Chua co tac vu nhap danh muc.",
+    "relatedJobs": "Chua co tac vu nao lien ket voi goi nay.",
+    "relatedJobsSelection": "Hay chon mot goi de xem cac tac vu lien quan.",
+    "categoryProvisioningHistory": "Chua co lan tai len provision danh muc nao.",
+    "categoryLinks": "Chua co lien ket danh muc da provision.",
+    "sellers": "Chua co nguoi ban da nhap.",
+    "products": "Chua co san pham da nhap.",
+    "validationIssues": "Khong co van de kiem tra.",
+    "duplicates": "Khong co nhom trung lap.",
+    "categoryProvisioningJobDetail": "Tac vu provision danh muc nay duoc theo doi bang tien do va tom tat ket qua tac vu. Cac phan ra soat goi san pham chi hien thi cho tac vu nhap san pham.",
+    "operationSections": "Khong co phan chuyen biet cho thao tac nhap nay."
+  },
+  "notifications": {
+    "errorTitle": "Nhap danh muc that bai",
+    "failed": "Khong the hoan tat thao tac nhap danh muc.",
+    "jobQueuedTitle": "Da xep hang tac vu nhap",
+    "categoriesQueuedMessage": "Provision danh muc da duoc xep hang trong CatalogService.",
+    "bundleQueuedMessage": "Gui goi san pham da duoc xep hang trong CatalogService.",
+    "sellerApprovedTitle": "Da duyet lien ket so huu",
+    "sellerApprovedMessage": "Lien ket so huu nguoi ban da duoc luu. Hay chay lai kiem tra truoc khi nhap san pham lien quan."
+  }
+}

@@ -1,0 +1,191 @@
+{
+  "list": {
+    "title": "Catalog Imports",
+    "description": "Submit Tiki category and product bundle files, then review bundles and related jobs."
+  },
+  "detail": {
+    "title": "Catalog Import Job",
+    "description": "Inspect job progress, linked bundle data, validation issues, and follow-up actions."
+  },
+  "actions": {
+    "actions": "Actions",
+    "backToList": "Back to catalog imports",
+    "refresh": "Refresh",
+    "provisionCategories": "Provision categories",
+    "provisionSellers": "Provision sellers",
+    "importSelectedReadyProducts": "Import selected ready",
+    "importAllReadyProducts": "Import all ready",
+    "validateBundle": "Validate bundle",
+    "submitBundle": "Submit bundle",
+    "approveSellerOwnership": "Approve ownership link",
+    "retryJob": "Retry job",
+    "cancel": "Cancel"
+  },
+  "upload": {
+    "categoryLabel": "Category provisioning JSON",
+    "bundleLabel": "Product bundle JSON",
+    "bundleDescription": "Submit a product bundle only after its Tiki categories have been provisioned.",
+    "bundleAction": "Submit bundle",
+    "invalidJson": "The selected file is not valid JSON."
+  },
+  "sections": {
+    "bundleSubmission": "Product bundle submission",
+    "bundleHistory": "Product bundles",
+    "categoryProvisioning": "Category provisioning",
+    "categoryProvisioningHistory": "Category provisioning uploads",
+    "categoryLinks": "Provisioned category links",
+    "jobHistory": "Import job history",
+    "relatedJobs": "Selected bundle jobs",
+    "workflowActions": "Workflow actions",
+    "sellerApproval": "Seller ownership approval",
+    "sellers": "Imported sellers",
+    "products": "Imported products",
+    "validationIssues": "Validation issues",
+    "duplicates": "Duplicate groups"
+  },
+  "jobs": {
+    "historyDescription": "All CatalogService import operations appear here, including uploads, validation, seller provisioning, import, and retry jobs.",
+    "categoryHistoryDescription": "Category provisioning submissions stay separate from the primary product-bundle table.",
+    "relatedDescription": "Inspect submit, validate, seller provisioning, and import jobs for the selected bundle without leaving the list page.",
+    "jobId": "Job ID",
+    "operationType": "Operation",
+    "status": "Status",
+    "sourceFileName": "Source file",
+    "requestedAt": "Requested",
+    "startedAt": "Started",
+    "completedAt": "Completed",
+    "progress": "Progress",
+    "progressValue": "{processed} of {total}",
+    "resultSummary": "Result summary"
+  },
+  "operationTypes": {
+    "ProvisionCategories": "Provision categories",
+    "SubmitBundle": "Submit bundle",
+    "ValidateBundle": "Validate bundle",
+    "ProvisionSellers": "Provision sellers",
+    "ImportReadyProducts": "Import ready products"
+  },
+  "statuses": {
+    "Pending": "Pending",
+    "Running": "Running",
+    "Completed": "Completed",
+    "Failed": "Failed"
+  },
+  "bundleStatuses": {
+    "Submitted": "Submitted",
+    "NeedsAttention": "Needs attention",
+    "Validated": "Validated",
+    "Imported": "Imported"
+  },
+  "bundles": {
+    "historyDescription": "Review paginated product bundles first, then inspect the selected bundle's related jobs from the side pane.",
+    "bundleId": "Bundle ID",
+    "source": "Source",
+    "status": "Status",
+    "submittedAt": "Submitted",
+    "summary": "Summary",
+    "summaryValue": "{ready} ready, {blocked} blocked, {warnings} warnings"
+  },
+  "source": {
+    "type": "Source type",
+    "value": "Source value",
+    "completedAt": "Completed"
+  },
+  "summary": {
+    "bundleId": "Bundle",
+    "totalProducts": "Total products",
+    "readyProducts": "Ready products",
+    "blockedProducts": "Blocked products",
+    "warningCount": "Warnings",
+    "duplicateCount": "Duplicates"
+  },
+  "results": {
+    "totalCategories": "Total categories",
+    "totalProducts": "Total products",
+    "readyProducts": "Ready products",
+    "blockedProducts": "Blocked products",
+    "warningCount": "Warnings",
+    "duplicateCount": "Duplicates",
+    "created": "Created",
+    "matched": "Matched",
+    "failed": "Failed",
+    "conflict": "Conflicts",
+    "imported": "Imported",
+    "skipped": "Skipped",
+    "blocked": "Blocked"
+  },
+  "categories": {
+    "provisioningDescription": "Submit SellerCenter category output so CatalogService can create or match HiveSpace categories before product bundles are validated.",
+    "linksDescription": "Category links must exist before affected products can become ready.",
+    "externalId": "External category ID",
+    "hiveSpaceCategory": "HiveSpace category",
+    "status": "Status",
+    "conflictReason": "Conflict reason"
+  },
+  "sellers": {
+    "name": "Seller",
+    "externalId": "External ID",
+    "status": "Status",
+    "ownership": "Ownership",
+    "pending": "Pending",
+    "conflictReason": "Conflict reason",
+    "targetUserId": "Target user ID",
+    "targetStoreId": "Target store ID",
+    "approvalReason": "Approval reason",
+    "approvalReasonRequired": "Target user, target store, and approval reason are required.",
+    "approvalConfirmTitle": "Approve ownership link",
+    "approvalConfirmMessage": "This links the external Tiki seller to an existing HiveSpace seller account and store. Existing store profile data will not be changed."
+  },
+  "products": {
+    "product": "Product",
+    "seller": "Seller",
+    "categories": "Categories",
+    "skus": "SKUs",
+    "price": "Price",
+    "status": "Status",
+    "selectProduct": "Select product",
+    "selectedImportableProducts": "{count} importable products selected",
+    "importAllReadyDescription": "Imports every currently eligible product in the bundle without loading every page."
+  },
+  "validation": {
+    "description": "Run follow-up jobs from the detail page and monitor each async operation to completion."
+  },
+  "issues": {
+    "severity": "Severity",
+    "entity": "Entity",
+    "field": "Field",
+    "reason": "Reason"
+  },
+  "duplicates": {
+    "group": "Group",
+    "products": "Products",
+    "reason": "Reason"
+  },
+  "severity": {
+    "warning": "Warning",
+    "blocking": "Blocking"
+  },
+  "empty": {
+    "bundles": "No product bundles yet.",
+    "jobs": "No catalog import jobs yet.",
+    "relatedJobs": "No jobs are linked to this bundle yet.",
+    "relatedJobsSelection": "Select a bundle to inspect its related jobs.",
+    "categoryProvisioningHistory": "No category provisioning uploads yet.",
+    "categoryLinks": "No provisioned category links.",
+    "sellers": "No imported sellers.",
+    "products": "No imported products.",
+    "validationIssues": "No validation issues.",
+    "duplicates": "No duplicate groups.",
+    "categoryProvisioningJobDetail": "This category provisioning job is tracked by job progress and result summary. Product bundle review sections are shown only for product import jobs.",
+    "operationSections": "No specialized sections are available for this import operation."
+  },
+  "notifications": {
+    "errorTitle": "Catalog import failed",
+    "failed": "The catalog import action could not be completed.",
+    "jobQueuedTitle": "Import job queued",
+    "categoriesQueuedMessage": "Category provisioning was queued in CatalogService.",
+    "bundleQueuedMessage": "Product bundle submission was queued in CatalogService.",
+    "sellerApprovedTitle": "Ownership link approved",
+    "sellerApprovedMessage": "The seller ownership link was saved. Re-run validation before importing affected products."
+  }
+}
