@@ -17,8 +17,11 @@ import type {
   ImportReadyCatalogProductsRequest,
   ImportedProduct,
   ImportedSeller,
+  MapImportedCategoryRequest,
+  MapImportedCategoryResult,
   ProvisionedCategoryLink,
   SellerOwnershipApprovalResponse,
+  CategoryAttributeChunk,
   SubmitCategoryProvisioningRequest,
   SubmitCatalogImportBundleRequest,
 } from '@/types'
@@ -40,6 +43,17 @@ class CatalogImportService extends BaseService {
   ): Promise<CatalogImportJobSubmission> {
     return this.post<CatalogImportJobSubmission>(
       '/admins/catalog-imports/categories/provisioning',
+      payload,
+      sourceFileHeader(sourceFileName),
+    )
+  }
+
+  provisionCategoryAttributes(
+    payload: CategoryAttributeChunk,
+    sourceFileName?: string | null,
+  ): Promise<CatalogImportJobSubmission> {
+    return this.post<CatalogImportJobSubmission>(
+      '/admins/catalog-imports/categories/attributes/provisioning',
       payload,
       sourceFileHeader(sourceFileName),
     )
@@ -151,6 +165,19 @@ class CatalogImportService extends BaseService {
   ): Promise<SellerOwnershipApprovalResponse> {
     return this.post<SellerOwnershipApprovalResponse>(
       `/admins/catalog-imports/bundles/${bundleId}/sellers/${importedSellerId}/ownership-link`,
+      payload,
+    )
+  }
+
+  mapImportedCategory(
+    bundleId: string,
+    externalCategoryId: string,
+    payload: MapImportedCategoryRequest,
+  ): Promise<MapImportedCategoryResult> {
+    return this.post<MapImportedCategoryResult>(
+      `/admins/catalog-imports/bundles/${bundleId}/category-links/${encodeURIComponent(
+        externalCategoryId,
+      )}/mapping`,
       payload,
     )
   }

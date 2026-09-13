@@ -11,10 +11,18 @@ const mockSetLoading = jest.fn()
 jest.mock('@/services/catalog-import.service', () => ({
   catalogImportService: {
     provisionCategories: jest.fn(),
+    provisionCategoryAttributes: jest.fn(),
     submitBundle: jest.fn(),
+    retryJob: jest.fn(),
     listBundles: jest.fn(),
     listJobs: jest.fn(),
     getBundleSummary: jest.fn(),
+  },
+}))
+
+jest.mock('@/services/category.service', () => ({
+  categoryService: {
+    getCategories: jest.fn(),
   },
 }))
 
@@ -68,7 +76,7 @@ const bundleHistoryResponse = {
   data: [
     {
       bundleId: 'bundle-001',
-      status: 'NeedsAttention',
+      status: 'PartiallyImported',
       sourceFileName: 'bundle.json',
       source: { system: 'tiki', type: 'category', value: '1846' },
       crawl: {
@@ -139,6 +147,28 @@ const categoryHistoryResponse = {
   },
 }
 
+const categoryAttributeHistoryResponse = {
+  data: [
+    {
+      jobId: 'job-category-attributes',
+      status: 'Failed',
+      operationType: 'ProvisionCategoryAttributes',
+      sourceFileName: 'chunk-0001.json',
+      requestedAt: '2026-08-03T11:00:00Z',
+      progress: { total: 62, processed: 62 },
+      bundleId: null,
+    },
+  ],
+  pagination: {
+    currentPage: 1,
+    pageSize: 10,
+    totalItems: 1,
+    totalPages: 1,
+    hasNextPage: false,
+    hasPreviousPage: false,
+  },
+}
+
 const renderPage = async () => {
   const pinia = createPinia()
   setActivePinia(pinia)
@@ -167,17 +197,23 @@ describe('CatalogImportListPage', () => {
     setActivePinia(createPinia())
     jest.clearAllMocks()
     jest.mocked(catalogImportService.listBundles).mockResolvedValue(bundleHistoryResponse)
-    jest.mocked(catalogImportService.listJobs).mockImplementation(async (query?: { bundleId?: string; operationType?: string }) => {
-      if (query?.bundleId === 'bundle-001') {
+    jest.mocked(catalogImportService.listJobs).mockImplementation(
+      async (query?: { bundleId?: string; operationType?: string }) => {
+        if (query?.bundleId === 'bundle-001') {
+          return selectedBundleJobsResponse
+        }
+
+        if (query?.operationType === 'ProvisionCategories') {
+          return categoryHistoryResponse
+        }
+
+        if (query?.operationType === 'ProvisionCategoryAttributes') {
+          return categoryAttributeHistoryResponse
+        }
+
         return selectedBundleJobsResponse
-      }
-
-      if (query?.operationType === 'ProvisionCategories') {
-        return categoryHistoryResponse
-      }
-
-      return selectedBundleJobsResponse
-    })
+      },
+    )
     jest.mocked(catalogImportService.getBundleSummary).mockResolvedValue(bundleHistoryResponse.data[0]!)
     jest.mocked(catalogImportService.provisionCategories).mockResolvedValue({
       jobId: 'job-categories',
@@ -185,11 +221,24 @@ describe('CatalogImportListPage', () => {
       operationType: 'ProvisionCategories',
       sourceFileName: 'categories.json',
     })
+    jest.mocked(catalogImportService.provisionCategoryAttributes).mockResolvedValue({
+      jobId: 'job-category-attributes',
+      status: 'Pending',
+      operationType: 'ProvisionCategoryAttributes',
+      sourceFileName: 'chunk-0001.json',
+    })
     jest.mocked(catalogImportService.submitBundle).mockResolvedValue({
       jobId: 'job-bundle',
       status: 'Pending',
       operationType: 'SubmitBundle',
       sourceFileName: 'bundle.json',
+      bundleId: null,
+    })
+    jest.mocked(catalogImportService.retryJob).mockResolvedValue({
+      jobId: 'job-category-attributes-retry',
+      status: 'Pending',
+      operationType: 'ProvisionCategoryAttributes',
+      sourceFileName: 'chunk-0001.json',
       bundleId: null,
     })
   })
@@ -203,7 +252,15 @@ describe('CatalogImportListPage', () => {
     expect(
       await screen.findByLabelText(i18n.global.t('catalogImports.upload.categoryLabel')),
     ).toBeTruthy()
-    expect(screen.getByLabelText(i18n.global.t('catalogImports.upload.bundleLabel'))).toBeTruthy()
+    expect(
+      screen.getByLabelText(i18n.global.t('catalogImports.upload.categoryAttributeManifestLabel')),
+    ).toBeTruthy()
+    expect(
+      screen.getByLabelText(i18n.global.t('catalogImports.upload.categoryAttributeChunksLabel')),
+    ).toBeTruthy()
+    const bundleInput = screen.getByLabelText(i18n.global.t('catalogImports.upload.bundleLabel'))
+    expect(bundleInput).toBeTruthy()
+    expect(bundleInput.getAttribute('multiple')).toBe('')
   })
 
   it('should render paginated all-operation job history on the list page', async () => {
@@ -211,6 +268,7 @@ describe('CatalogImportListPage', () => {
 
     expect(await screen.findByText('bundle-001')).toBeTruthy()
     expect(screen.getByText('bundle.json')).toBeTruthy()
+    expect(screen.getByText(i18n.global.t('catalogImports.bundleStatuses.PartiallyImported'))).toBeTruthy()
     expect(screen.getByText(i18n.global.t('catalogImports.sections.bundleHistory'))).toBeTruthy()
   })
 
@@ -372,6 +430,449 @@ describe('CatalogImportListPage', () => {
     ).toBeTruthy()
     expect(screen.getByText('job-categories')).toBeTruthy()
     expect(screen.getByText('categories.json')).toBeTruthy()
+  })
+
+  it('should render separate category attribute provisioning upload history on the list page', async () => {
+    await renderPage()
+
+    expect(
+      await screen.findByText(
+        i18n.global.t('catalogImports.sections.categoryAttributeProvisioningHistory'),
+      ),
+    ).toBeTruthy()
+    expect(screen.getByText('job-category-attributes')).toBeTruthy()
+    expect(screen.getByText('chunk-0001.json')).toBeTruthy()
+  })
+
+  it('should submit bundle files individually with matching source file names', async () => {
+    await renderPage()
+    const firstPayload = {
+      schemaVersion: '2026-08-20',
+      source: { system: 'tiki', type: 'search', value: 'laptop' },
+      crawl: {
+        startedAt: '2026-08-20T10:00:00Z',
+        completedAt: '2026-08-20T10:05:00Z',
+        sourceFingerprint: 'sha256:bundle-1',
+      },
+      sellers: [],
+      products: [],
+      validationHints: [],
+    }
+    const secondPayload = {
+      schemaVersion: '2026-08-21',
+      source: { system: 'tiki', type: 'search', value: 'phone' },
+      crawl: {
+        startedAt: '2026-08-21T10:00:00Z',
+        completedAt: '2026-08-21T10:05:00Z',
+        sourceFingerprint: 'sha256:bundle-2',
+      },
+      sellers: [],
+      products: [],
+      validationHints: [],
+    }
+
+    await fireEvent.change(
+      screen.getByLabelText(i18n.global.t('catalogImports.upload.bundleLabel')),
+      {
+        target: {
+          files: [
+            new File([JSON.stringify(firstPayload)], 'bundle-1.json', {
+              type: 'application/json',
+            }),
+            new File([JSON.stringify(secondPayload)], 'bundle-2.json', {
+              type: 'application/json',
+            }),
+          ],
+        },
+      },
+    )
+    const bundleButton = screen.getByRole('button', {
+      name: i18n.global.t('catalogImports.upload.bundleAction'),
+    })
+    await waitFor(() => {
+      expect(bundleButton.hasAttribute('disabled')).toBe(false)
+    })
+    await fireEvent.click(bundleButton)
+
+    await waitFor(() => {
+      expect(catalogImportService.submitBundle).toHaveBeenNthCalledWith(
+        1,
+        firstPayload,
+        'bundle-1.json',
+      )
+      expect(catalogImportService.submitBundle).toHaveBeenNthCalledWith(
+        2,
+        secondPayload,
+        'bundle-2.json',
+      )
+    })
+  })
+
+  it('should not submit any bundle jobs when one selected bundle file has invalid json', async () => {
+    await renderPage()
+
+    await fireEvent.change(
+      screen.getByLabelText(i18n.global.t('catalogImports.upload.bundleLabel')),
+      {
+        target: {
+          files: [
+            new File(['{"schemaVersion":"2026-08-20"}'], 'bundle-1.json', {
+              type: 'application/json',
+            }),
+            new File(['{invalid-json'], 'bundle-2.json', {
+              type: 'application/json',
+            }),
+          ],
+        },
+      },
+    )
+    const bundleButton = screen.getByRole('button', {
+      name: i18n.global.t('catalogImports.upload.bundleAction'),
+    })
+    await waitFor(() => {
+      expect(bundleButton.hasAttribute('disabled')).toBe(false)
+    })
+    await fireEvent.click(bundleButton)
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(i18n.global.t('catalogImports.upload.invalidJson')),
+      ).toBeTruthy()
+    })
+    expect(catalogImportService.submitBundle).not.toHaveBeenCalled()
+  })
+
+  it('should stop bundle queueing after the first submit failure', async () => {
+    await renderPage()
+    const firstPayload = {
+      schemaVersion: '2026-08-20',
+      source: { system: 'tiki', type: 'search', value: 'laptop' },
+      crawl: {
+        startedAt: '2026-08-20T10:00:00Z',
+        completedAt: '2026-08-20T10:05:00Z',
+        sourceFingerprint: 'sha256:bundle-1',
+      },
+      sellers: [],
+      products: [],
+      validationHints: [],
+    }
+    const secondPayload = {
+      schemaVersion: '2026-08-21',
+      source: { system: 'tiki', type: 'search', value: 'phone' },
+      crawl: {
+        startedAt: '2026-08-21T10:00:00Z',
+        completedAt: '2026-08-21T10:05:00Z',
+        sourceFingerprint: 'sha256:bundle-2',
+      },
+      sellers: [],
+      products: [],
+      validationHints: [],
+    }
+    const thirdPayload = {
+      schemaVersion: '2026-08-22',
+      source: { system: 'tiki', type: 'search', value: 'tablet' },
+      crawl: {
+        startedAt: '2026-08-22T10:00:00Z',
+        completedAt: '2026-08-22T10:05:00Z',
+        sourceFingerprint: 'sha256:bundle-3',
+      },
+      sellers: [],
+      products: [],
+      validationHints: [],
+    }
+
+    jest.mocked(catalogImportService.submitBundle)
+      .mockResolvedValueOnce({
+        jobId: 'job-bundle-1',
+        status: 'Pending',
+        operationType: 'SubmitBundle',
+        sourceFileName: 'bundle-1.json',
+        bundleId: null,
+      })
+      .mockRejectedValueOnce(new Error('submit failed'))
+
+    await fireEvent.change(
+      screen.getByLabelText(i18n.global.t('catalogImports.upload.bundleLabel')),
+      {
+        target: {
+          files: [
+            new File([JSON.stringify(firstPayload)], 'bundle-1.json', {
+              type: 'application/json',
+            }),
+            new File([JSON.stringify(secondPayload)], 'bundle-2.json', {
+              type: 'application/json',
+            }),
+            new File([JSON.stringify(thirdPayload)], 'bundle-3.json', {
+              type: 'application/json',
+            }),
+          ],
+        },
+      },
+    )
+    const bundleButton = screen.getByRole('button', {
+      name: i18n.global.t('catalogImports.upload.bundleAction'),
+    })
+    await waitFor(() => {
+      expect(bundleButton.hasAttribute('disabled')).toBe(false)
+    })
+    await fireEvent.click(bundleButton)
+
+    await waitFor(() => {
+      expect(catalogImportService.submitBundle).toHaveBeenCalledTimes(2)
+    })
+    expect(catalogImportService.submitBundle).toHaveBeenNthCalledWith(
+      1,
+      firstPayload,
+      'bundle-1.json',
+    )
+    expect(catalogImportService.submitBundle).toHaveBeenNthCalledWith(
+      2,
+      secondPayload,
+      'bundle-2.json',
+    )
+    expect(catalogImportService.submitBundle).not.toHaveBeenCalledWith(
+      thirdPayload,
+      'bundle-3.json',
+    )
+  })
+
+  it('should show retry only for failed history rows and navigate to the new job when clicked', async () => {
+    const { router } = await renderPage()
+
+    const retryButton = await screen.findByRole('button', {
+      name: i18n.global.t('catalogImports.actions.retryJob'),
+    })
+
+    await fireEvent.click(retryButton)
+
+    await waitFor(() => {
+      expect(catalogImportService.retryJob).toHaveBeenCalledWith('job-category-attributes')
+    })
+
+    await waitFor(() => {
+      expect(router.currentRoute.value.fullPath).toBe('/catalog-imports/jobs/job-category-attributes-retry')
+    })
+  })
+
+  it('should not navigate to job detail when retry is clicked from a history row', async () => {
+    const deferred = createDeferred<{
+      jobId: string
+      status: string
+      operationType: string
+      sourceFileName: string
+      bundleId: null
+    }>()
+    jest.mocked(catalogImportService.retryJob).mockReturnValueOnce(
+      deferred.promise as ReturnType<typeof catalogImportService.retryJob>,
+    )
+
+    const { router } = await renderPage()
+
+    const retryButton = await screen.findByRole('button', {
+      name: i18n.global.t('catalogImports.actions.retryJob'),
+    })
+
+    await fireEvent.click(retryButton)
+
+    expect(router.currentRoute.value.fullPath).toBe('/catalog-imports')
+
+    deferred.resolve({
+      jobId: 'job-category-attributes-retry',
+      status: 'Pending',
+      operationType: 'ProvisionCategoryAttributes',
+      sourceFileName: 'chunk-0001.json',
+      bundleId: null,
+    })
+  })
+
+  it('should show retry loading only for the clicked failed history row', async () => {
+    const deferred = createDeferred<{
+      jobId: string
+      status: string
+      operationType: string
+      sourceFileName: string
+      bundleId: null
+    }>()
+    jest.mocked(catalogImportService.retryJob).mockReturnValueOnce(
+      deferred.promise as ReturnType<typeof catalogImportService.retryJob>,
+    )
+
+    await renderPage()
+
+    const retryButton = await screen.findByRole('button', {
+      name: i18n.global.t('catalogImports.actions.retryJob'),
+    })
+    await fireEvent.click(retryButton)
+
+    await waitFor(() => {
+      expect(retryButton.getAttribute('data-loading')).toBe('true')
+    })
+
+    deferred.resolve({
+      jobId: 'job-category-attributes-retry',
+      status: 'Pending',
+      operationType: 'ProvisionCategoryAttributes',
+      sourceFileName: 'chunk-0001.json',
+      bundleId: null,
+    })
+
+    await waitFor(() => {
+      expect(retryButton.getAttribute('data-loading')).toBeNull()
+    })
+  })
+
+  it('should submit category attribute chunks individually with chunk file names', async () => {
+    await renderPage()
+    const manifest = {
+      schemaVersion: '2026-08-16',
+      source: {
+        system: 'tiki',
+        type: 'sellercenter_category_attributes',
+        value: 'parent:2',
+      },
+      crawl: {
+        categorySourceFingerprint: 'sha256:categories',
+        chunkSize: 100,
+        totalCategories: 6101,
+        totalChunks: 1,
+        startedAt: '2026-08-16T10:00:00Z',
+        completedAt: '2026-08-16T10:30:00Z',
+      },
+      chunks: [{ fileName: 'chunk-0001.json', chunkIndex: 1, sourceFingerprint: 'sha256:chunk-1' }],
+    }
+    const chunk = {
+      schemaVersion: '2026-08-16',
+      source: {
+        system: 'tiki',
+        type: 'sellercenter_category_attributes',
+        value: 'parent:2',
+      },
+      crawl: {
+        startedAt: '2026-08-16T10:00:00Z',
+        completedAt: '2026-08-16T10:05:00Z',
+        sourceFingerprint: 'sha256:chunk-1',
+        categorySourceFingerprint: 'sha256:categories',
+        checkpointId: null,
+        chunkIndex: 1,
+      },
+      categories: [{ externalCategoryId: '1846', productSetId: '9001', status: 'complete', attributes: [] }],
+    }
+    const validChunk = {
+      ...chunk,
+      categories: [
+        { externalCategoryId: '1846', productSetId: '9001', status: 'complete', attributes: [] },
+        {
+          externalCategoryId: '1847',
+          productSetId: '9002',
+          status: 'complete',
+          attributes: [{ name: 'Brand' }],
+        },
+      ],
+    }
+
+    await fireEvent.change(
+      screen.getByLabelText(i18n.global.t('catalogImports.upload.categoryAttributeManifestLabel')),
+      { target: { files: [new File([JSON.stringify(manifest)], 'manifest.json', { type: 'application/json' })] } },
+    )
+    await fireEvent.change(
+      screen.getByLabelText(i18n.global.t('catalogImports.upload.categoryAttributeChunksLabel')),
+      {
+        target: {
+          files: [new File([JSON.stringify(validChunk)], 'chunk-0001.json', { type: 'application/json' })],
+        },
+      },
+    )
+    await fireEvent.click(
+      screen.getByRole('button', {
+        name: i18n.global.t('catalogImports.actions.provisionCategoryAttributes'),
+      }),
+    )
+
+    await waitFor(() => {
+      expect(catalogImportService.provisionCategoryAttributes).toHaveBeenCalledWith(
+        {
+          ...validChunk,
+          categories: [validChunk.categories[1]],
+        },
+        'chunk-0001.json',
+      )
+    })
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          i18n.global.t('catalogImports.upload.categoryAttributeQueueSummary', {
+            submitted: 1,
+            skipped: 0,
+            filtered: 1,
+          }),
+        ),
+      ).toBeTruthy()
+    })
+  })
+
+  it('should skip unmatched or empty category attribute chunks', async () => {
+    await renderPage()
+    const manifest = {
+      schemaVersion: '2026-08-16',
+      source: {
+        system: 'tiki',
+        type: 'sellercenter_category_attributes',
+        value: 'parent:2',
+      },
+      crawl: {
+        categorySourceFingerprint: 'sha256:categories',
+        chunkSize: 100,
+        totalCategories: 6101,
+        totalChunks: 1,
+        startedAt: '2026-08-16T10:00:00Z',
+        completedAt: '2026-08-16T10:30:00Z',
+      },
+      chunks: [{ fileName: 'chunk-0001.json', chunkIndex: 1, sourceFingerprint: 'sha256:chunk-1' }],
+    }
+    const unmatchedChunk = {
+      schemaVersion: '2026-08-16',
+      source: {
+        system: 'tiki',
+        type: 'sellercenter_category_attributes',
+        value: 'parent:2',
+      },
+      crawl: {
+        startedAt: '2026-08-16T10:00:00Z',
+        completedAt: '2026-08-16T10:05:00Z',
+        sourceFingerprint: 'sha256:other',
+        categorySourceFingerprint: 'sha256:categories',
+        checkpointId: null,
+        chunkIndex: 2,
+      },
+      categories: [{ externalCategoryId: '1846', productSetId: '9001', status: 'complete', attributes: [] }],
+    }
+
+    await fireEvent.change(
+      screen.getByLabelText(i18n.global.t('catalogImports.upload.categoryAttributeManifestLabel')),
+      { target: { files: [new File([JSON.stringify(manifest)], 'manifest.json', { type: 'application/json' })] } },
+    )
+    await fireEvent.change(
+      screen.getByLabelText(i18n.global.t('catalogImports.upload.categoryAttributeChunksLabel')),
+      {
+        target: {
+          files: [new File([JSON.stringify(unmatchedChunk)], 'chunk-0002.json', { type: 'application/json' })],
+        },
+      },
+    )
+    await fireEvent.click(
+      screen.getByRole('button', {
+        name: i18n.global.t('catalogImports.actions.provisionCategoryAttributes'),
+      }),
+    )
+
+    await waitFor(() => {
+      expect(
+        screen.getByText(
+          i18n.global.t('catalogImports.upload.noProvisionableCategoryAttributeChunks'),
+        ),
+      ).toBeTruthy()
+    })
+    expect(catalogImportService.provisionCategoryAttributes).not.toHaveBeenCalled()
   })
 
   it('should render formatted local datetime plus relative hint on list-page tables', async () => {

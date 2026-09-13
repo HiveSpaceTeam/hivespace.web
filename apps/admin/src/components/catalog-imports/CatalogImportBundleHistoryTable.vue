@@ -125,6 +125,7 @@ const { formatDateTime, formatRelativeTime } = useFormatDate()
 
 const statusColor = (status: string) => {
   if (status === 'Imported') return 'success'
+  if (status === 'PartiallyImported') return 'warning'
   if (status === 'NeedsAttention') return 'warning'
   if (status === 'Validated') return 'info'
   return 'light'

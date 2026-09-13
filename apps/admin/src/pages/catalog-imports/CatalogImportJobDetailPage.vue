@@ -8,23 +8,19 @@
 
     <div class="space-y-5">
       <div class="flex items-center">
-        <RouterLink
-          :to="catalogImportsRoute"
-          :aria-label="$t('catalogImports.actions.backToList')"
-          class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white"
-        >
+        <RouterLink :to="catalogImportsRoute" :aria-label="$t('catalogImports.actions.backToList')"
+          class="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-gray-100 text-gray-600 transition hover:bg-gray-200 hover:text-gray-800 dark:bg-white/5 dark:text-gray-400 dark:hover:bg-white/10 dark:hover:text-white">
           <BackArrowIcon class="h-4 w-4" />
         </RouterLink>
       </div>
 
       <div class="flex flex-wrap items-center justify-end gap-3">
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          :loading="activeAction === 'refreshDetail'"
-          :onClick="refreshDetail"
-        >
+        <Button v-if="canRetrySelectedJob" type="button" variant="outline" size="sm"
+          :loading="activeAction === 'retryJob'" :onClick="handleRetryJob">
+          {{ $t('catalogImports.actions.retryJob') }}
+        </Button>
+        <Button type="button" variant="outline" size="sm" :loading="activeAction === 'refreshDetail'"
+          :onClick="refreshDetail">
           {{ $t('catalogImports.actions.refresh') }}
         </Button>
       </div>
@@ -37,17 +33,13 @@
         <JobSummaryPanel :job="selectedJobDetail" />
 
         <template v-if="isCategoryImportJob">
-          <CategoryProvisioningPanel
-            v-if="selectedBundleId"
-            :categoryLinks="selectedBundleDetail.categoryLinks.data"
-            :pagination="selectedBundleDetail.categoryLinks.pagination"
+          <CategoryProvisioningPanel v-if="selectedBundleId" :categoryLinks="selectedBundleDetail.categoryLinks.data"
+            :pagination="selectedBundleDetail.categoryLinks.pagination" :searchTerm="categoryLinksSearchTerm"
+            @update:searchTerm="handleCategoryLinksSearch"
             @pageChange="page => fetchCategoryLinks({ pageNumber: page })"
-            @pageSizeChange="pageSize => fetchCategoryLinks({ pageNumber: 1, pageSize })"
-          />
-          <section
-            v-else
-            class="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]"
-          >
+            @pageSizeChange="pageSize => fetchCategoryLinks({ pageNumber: 1, pageSize })" />
+          <section v-else
+            class="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
             <h2 class="text-base font-semibold text-gray-900 dark:text-white">
               {{ $t('catalogImports.sections.categoryProvisioning') }}
             </h2>
@@ -58,10 +50,8 @@
         </template>
 
         <template v-if="isProductImportJob">
-          <section
-            v-if="selectedBundleId"
-            class="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]"
-          >
+          <section v-if="selectedBundleId"
+            class="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
             <div class="flex flex-wrap items-start justify-between gap-4">
               <div>
                 <h2 class="text-base font-semibold text-gray-900 dark:text-white">
@@ -71,45 +61,26 @@
                   {{ $t('catalogImports.validation.description') }}
                 </p>
               </div>
-              <div class="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  :disabled="catalogImportStore.isSubmitting"
-                  :loading="activeAction === 'validateBundle'"
-                  :onClick="handleValidateBundle"
-                >
+              <div class="flex flex-wrap items-end gap-2">
+                <div class="min-w-56">
+                  <Select v-model="selectedPublicationState" :label="$t('catalogImports.import.publicationStateLabel')"
+                    :options="publicationStateOptions" :disabled="catalogImportStore.isSubmitting" />
+                </div>
+                <Button type="button" variant="outline" size="md" :disabled="catalogImportStore.isSubmitting"
+                  :loading="activeAction === 'validateBundle'" :onClick="handleValidateBundle">
                   {{ $t('catalogImports.actions.validateBundle') }}
                 </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  :disabled="catalogImportStore.isSubmitting"
-                  :loading="activeAction === 'provisionSellers'"
-                  :onClick="handleProvisionSellers"
-                >
+                <Button type="button" variant="outline" size="md" :disabled="catalogImportStore.isSubmitting"
+                  :loading="activeAction === 'provisionSellers'" :onClick="handleProvisionSellers">
                   {{ $t('catalogImports.actions.provisionSellers') }}
                 </Button>
-                <Button
-                  type="button"
-                  variant="primary"
-                  size="sm"
-                  :disabled="isImportAllDisabled"
-                  :loading="activeAction === 'importAllReadyProducts'"
-                  :onClick="handleImportAllReadyProducts"
-                >
+                <Button type="button" variant="primary" size="md" :disabled="isImportAllDisabled"
+                  :loading="activeAction === 'importAllReadyProducts'" :onClick="handleImportAllReadyProducts">
                   {{ $t('catalogImports.actions.importAllReadyProducts') }}
                 </Button>
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  :disabled="isImportSelectedDisabled"
+                <Button type="button" variant="outline" size="md" :disabled="isImportSelectedDisabled"
                   :loading="activeAction === 'importSelectedReadyProducts'"
-                  :onClick="handleImportSelectedReadyProducts"
-                >
+                  :onClick="handleImportSelectedReadyProducts">
                   {{ $t('catalogImports.actions.importSelectedReadyProducts') }}
                 </Button>
               </div>
@@ -129,83 +100,57 @@
 
           <BundleSummaryPanel v-if="selectedBundleDetail.bundle" :bundle="selectedBundleDetail.bundle" />
 
-          <section
-            class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]"
-          >
+          <section class="rounded-xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
             <h2 class="text-base font-semibold text-gray-900 dark:text-white">
               {{ $t('catalogImports.sections.sellerApproval') }}
             </h2>
             <div class="mt-4 grid gap-3 md:grid-cols-3">
-              <Input
-                v-model="approvalTargetUserId"
-                :label="$t('catalogImports.sellers.targetUserId')"
-              />
-              <Input
-                v-model="approvalTargetStoreId"
-                :label="$t('catalogImports.sellers.targetStoreId')"
-              />
-              <Input
-                v-model="approvalReason"
-                :label="$t('catalogImports.sellers.approvalReason')"
-              />
+              <Input v-model="approvalTargetUserId" :label="$t('catalogImports.sellers.targetUserId')" />
+              <Input v-model="approvalTargetStoreId" :label="$t('catalogImports.sellers.targetStoreId')" />
+              <Input v-model="approvalReason" :label="$t('catalogImports.sellers.approvalReason')" />
             </div>
             <p v-if="approvalError" class="mt-3 text-sm text-error-500">{{ approvalError }}</p>
           </section>
 
           <section class="space-y-4">
-            <Tabs
-              v-model="activeProductReviewTab"
-              :options="productReviewTabOptions"
-              variant="pills"
-            />
+            <Tabs v-model="activeProductReviewTab" :options="productReviewTabOptions" variant="pills" />
 
-            <CategoryProvisioningPanel
-              v-if="activeProductReviewTab === 'categoryLinks'"
+            <CategoryProvisioningPanel v-if="activeProductReviewTab === 'categoryLinks'"
               :categoryLinks="selectedBundleDetail.categoryLinks.data"
-              :pagination="selectedBundleDetail.categoryLinks.pagination"
+              :pagination="selectedBundleDetail.categoryLinks.pagination" :searchTerm="categoryLinksSearchTerm"
+              @update:searchTerm="handleCategoryLinksSearch"
               @pageChange="page => fetchCategoryLinks({ pageNumber: page })"
-              @pageSizeChange="pageSize => fetchCategoryLinks({ pageNumber: 1, pageSize })"
-            />
-            <ImportedSellersTable
-              v-else-if="activeProductReviewTab === 'sellers'"
-              :sellers="selectedBundleDetail.sellers.data"
-              :pagination="selectedBundleDetail.sellers.pagination"
-              :disabled="catalogImportStore.isSubmitting"
-              :loadingSellerId="approvingSellerId"
-              @approve="handleApproveSeller"
+              @pageSizeChange="pageSize => fetchCategoryLinks({ pageNumber: 1, pageSize })" />
+            <ImportedSellersTable v-else-if="activeProductReviewTab === 'sellers'"
+              :sellers="selectedBundleDetail.sellers.data" :pagination="selectedBundleDetail.sellers.pagination"
+              :searchTerm="sellersSearchTerm"
+              :disabled="catalogImportStore.isSubmitting" :loadingSellerId="approvingSellerId"
+              @approve="handleApproveSeller" @update:searchTerm="handleSellersSearch"
               @pageChange="page => fetchSellers({ pageNumber: page })"
-              @pageSizeChange="pageSize => fetchSellers({ pageNumber: 1, pageSize })"
-            />
-            <ImportedProductsTable
-              v-else
-              v-model:selected-product-ids="selectedProductIds"
-              :products="selectedBundleDetail.products.data"
-              :pagination="selectedBundleDetail.products.pagination"
-              :selectable="true"
-              :disabled="catalogImportStore.isSubmitting"
+              @pageSizeChange="pageSize => fetchSellers({ pageNumber: 1, pageSize })" />
+            <ImportedProductsTable v-else v-model:selected-product-ids="selectedProductIds"
+              :products="selectedBundleDetail.products.data" :pagination="selectedBundleDetail.products.pagination"
+              :searchTerm="productsSearchTerm" :selectable="true" :disabled="catalogImportStore.isSubmitting"
+              @update:searchTerm="handleProductsSearch"
               @pageChange="page => fetchProducts({ pageNumber: page })"
-              @pageSizeChange="pageSize => fetchProducts({ pageNumber: 1, pageSize })"
-            />
+              @pageSizeChange="pageSize => fetchProducts({ pageNumber: 1, pageSize })" />
           </section>
 
-          <ValidationIssueTable
-            :issues="selectedBundleDetail.validationIssues.data"
-            :pagination="selectedBundleDetail.validationIssues.pagination"
+          <ValidationIssueTable :issues="selectedBundleDetail.validationIssues.data"
+            :pagination="selectedBundleDetail.validationIssues.pagination" :searchTerm="validationIssuesSearchTerm"
+            @update:searchTerm="handleValidationIssuesSearch"
             @pageChange="page => fetchValidationIssues({ pageNumber: page })"
             @pageSizeChange="pageSize => fetchValidationIssues({ pageNumber: 1, pageSize })"
-          />
-          <DuplicateGroupsTable
-            :duplicateGroups="selectedBundleDetail.duplicateGroups.data"
-            :pagination="selectedBundleDetail.duplicateGroups.pagination"
+            @mapCategory="handleMapCategory" />
+          <DuplicateGroupsTable :duplicateGroups="selectedBundleDetail.duplicateGroups.data"
+            :pagination="selectedBundleDetail.duplicateGroups.pagination" :searchTerm="duplicateGroupsSearchTerm"
+            @update:searchTerm="handleDuplicateGroupsSearch"
             @pageChange="page => fetchDuplicateGroups({ pageNumber: page })"
-            @pageSizeChange="pageSize => fetchDuplicateGroups({ pageNumber: 1, pageSize })"
-          />
+            @pageSizeChange="pageSize => fetchDuplicateGroups({ pageNumber: 1, pageSize })" />
         </template>
 
-        <section
-          v-if="!isCategoryImportJob && !isProductImportJob"
-          class="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]"
-        >
+        <section v-if="!isCategoryImportJob && !isProductImportJob"
+          class="rounded-lg border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03]">
           <p class="text-sm text-gray-500">
             {{ $t('catalogImports.empty.operationSections') }}
           </p>
@@ -218,7 +163,7 @@
 <script setup lang="ts">
 import { computed, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { useI18n } from 'vue-i18n'
 import {
   AppShell,
@@ -227,11 +172,13 @@ import {
   ConfirmModal,
   Input,
   PageBreadcrumb,
+  Select,
   Spinner,
   Tabs,
   useModal,
 } from '@hivespace/shared'
 import BundleSummaryPanel from '@/components/catalog-imports/BundleSummaryPanel.vue'
+import CategoryMappingModal from '@/components/catalog-imports/CategoryMappingModal.vue'
 import CategoryProvisioningPanel from '@/components/catalog-imports/CategoryProvisioningPanel.vue'
 import DuplicateGroupsTable from '@/components/catalog-imports/DuplicateGroupsTable.vue'
 import ImportedProductsTable from '@/components/catalog-imports/ImportedProductsTable.vue'
@@ -245,10 +192,13 @@ import type {
   BundleProductsQuery,
   BundleSellersQuery,
   BundleValidationIssuesQuery,
+  CatalogImportPublicationState,
+  CatalogImportValidationIssue,
   ImportedSeller,
 } from '@/types'
 
 const route = useRoute()
+const router = useRouter()
 const { t } = useI18n()
 const { openModal } = useModal()
 const catalogImportStore = useCatalogImportStore()
@@ -256,6 +206,7 @@ const {
   selectedJobDetail,
   selectedBundleDetail,
   selectedBundleId,
+  categoryOptions,
   importableProductIds,
 } = storeToRefs(catalogImportStore)
 
@@ -266,15 +217,23 @@ type DetailAction =
   | 'provisionSellers'
   | 'importAllReadyProducts'
   | 'importSelectedReadyProducts'
+  | 'retryJob'
   | 'approveSellerOwnership'
+  | 'mapCategory'
   | null
 
 const DEFAULT_PRODUCT_REVIEW_TAB: ProductReviewTab = 'products'
 
 const activeProductReviewTab = ref<ProductReviewTab>(DEFAULT_PRODUCT_REVIEW_TAB)
 const selectedProductIds = ref<string[]>([])
+const selectedPublicationState = ref<CatalogImportPublicationState>('Draft')
 const selectedProductsBundleId = ref<string | null>(null)
 const hasInitializedProductSelectionForBundle = ref(false)
+const categoryLinksSearchTerm = ref('')
+const sellersSearchTerm = ref('')
+const productsSearchTerm = ref('')
+const validationIssuesSearchTerm = ref('')
+const duplicateGroupsSearchTerm = ref('')
 const approvalTargetUserId = ref('')
 const approvalTargetStoreId = ref('')
 const approvalReason = ref('')
@@ -299,6 +258,7 @@ const isImportSelectedDisabled = computed(
 const isCategoryImportJob = computed(
   () => selectedJobDetail.value?.operationType === 'ProvisionCategories',
 )
+const canRetrySelectedJob = computed(() => selectedJobDetail.value?.status === 'Failed')
 const isProductImportJob = computed(() =>
   [
     'SubmitBundle',
@@ -321,6 +281,20 @@ const productReviewTabOptions = computed(() => [
     value: 'products',
   },
 ])
+const publicationStateOptions = computed(() => [
+  {
+    label: t('catalogImports.import.states.Draft'),
+    value: 'Draft',
+  },
+  {
+    label: t('catalogImports.import.states.Unpublish'),
+    value: 'Unpublish',
+  },
+  {
+    label: t('catalogImports.import.states.Available'),
+    value: 'Available',
+  },
+])
 
 const runWithAction = async <T>(action: Exclude<DetailAction, null>, task: () => Promise<T>) => {
   activeAction.value = action
@@ -330,6 +304,11 @@ const runWithAction = async <T>(action: Exclude<DetailAction, null>, task: () =>
   } finally {
     activeAction.value = null
   }
+}
+
+const normalizedSearchTerm = (searchTerm: string) => {
+  const normalized = searchTerm.trim()
+  return normalized.length > 0 ? normalized : undefined
 }
 
 const refreshDetail = async () => {
@@ -350,6 +329,7 @@ const fetchCategoryLinks = async (query: BundleCategoryLinksQuery) => {
   if (!selectedBundleId.value) return
   await catalogImportStore.fetchBundleCategoryLinks(selectedBundleId.value, {
     pageSize: selectedBundleDetail.value.categoryLinks.pagination.pageSize,
+    searchTerm: normalizedSearchTerm(categoryLinksSearchTerm.value),
     ...query,
   })
 }
@@ -358,6 +338,7 @@ const fetchSellers = async (query: BundleSellersQuery) => {
   if (!selectedBundleId.value) return
   await catalogImportStore.fetchBundleSellers(selectedBundleId.value, {
     pageSize: selectedBundleDetail.value.sellers.pagination.pageSize,
+    searchTerm: normalizedSearchTerm(sellersSearchTerm.value),
     ...query,
   })
 }
@@ -366,6 +347,7 @@ const fetchProducts = async (query: BundleProductsQuery) => {
   if (!selectedBundleId.value) return
   await catalogImportStore.fetchBundleProducts(selectedBundleId.value, {
     pageSize: selectedBundleDetail.value.products.pagination.pageSize,
+    searchTerm: normalizedSearchTerm(productsSearchTerm.value),
     ...query,
   })
 }
@@ -374,6 +356,7 @@ const fetchDuplicateGroups = async (query: BundleDuplicateGroupsQuery) => {
   if (!selectedBundleId.value) return
   await catalogImportStore.fetchBundleDuplicateGroups(selectedBundleId.value, {
     pageSize: selectedBundleDetail.value.duplicateGroups.pagination.pageSize,
+    searchTerm: normalizedSearchTerm(duplicateGroupsSearchTerm.value),
     ...query,
   })
 }
@@ -382,8 +365,34 @@ const fetchValidationIssues = async (query: BundleValidationIssuesQuery) => {
   if (!selectedBundleId.value) return
   await catalogImportStore.fetchBundleValidationIssues(selectedBundleId.value, {
     pageSize: selectedBundleDetail.value.validationIssues.pagination.pageSize,
+    searchTerm: normalizedSearchTerm(validationIssuesSearchTerm.value),
     ...query,
   })
+}
+
+const handleCategoryLinksSearch = async (searchTerm: string) => {
+  categoryLinksSearchTerm.value = searchTerm
+  await fetchCategoryLinks({ pageNumber: 1 })
+}
+
+const handleSellersSearch = async (searchTerm: string) => {
+  sellersSearchTerm.value = searchTerm
+  await fetchSellers({ pageNumber: 1 })
+}
+
+const handleProductsSearch = async (searchTerm: string) => {
+  productsSearchTerm.value = searchTerm
+  await fetchProducts({ pageNumber: 1 })
+}
+
+const handleValidationIssuesSearch = async (searchTerm: string) => {
+  validationIssuesSearchTerm.value = searchTerm
+  await fetchValidationIssues({ pageNumber: 1 })
+}
+
+const handleDuplicateGroupsSearch = async (searchTerm: string) => {
+  duplicateGroupsSearchTerm.value = searchTerm
+  await fetchDuplicateGroups({ pageNumber: 1 })
 }
 
 const startActionPolling = (submission: { jobId: string }) => {
@@ -414,7 +423,7 @@ const handleImportAllReadyProducts = async () => {
   startActionPolling(
     await runWithAction('importAllReadyProducts', async () =>
       catalogImportStore.importReadyProducts(selectedBundleId.value!, {
-        publicationState: 'Draft',
+        publicationState: selectedPublicationState.value,
       }),
     ),
   )
@@ -427,10 +436,20 @@ const handleImportSelectedReadyProducts = async () => {
     await runWithAction('importSelectedReadyProducts', async () =>
       catalogImportStore.importReadyProducts(selectedBundleId.value!, {
         productIds: selectedProductIds.value,
-        publicationState: 'Draft',
+        publicationState: selectedPublicationState.value,
       }),
     ),
   )
+}
+
+const handleRetryJob = async () => {
+  if (!jobId.value || !canRetrySelectedJob.value) return
+
+  const submission = await runWithAction('retryJob', async () =>
+    catalogImportStore.retryJob(jobId.value),
+  )
+  await router.push(`/catalog-imports/jobs/${submission.jobId}`)
+  startActionPolling(submission)
 }
 
 const handleApproveSeller = async (seller: ImportedSeller) => {
@@ -475,11 +494,47 @@ const handleApproveSeller = async (seller: ImportedSeller) => {
   }
 }
 
+const handleMapCategory = async (issue: CatalogImportValidationIssue) => {
+  if (!selectedBundleId.value) return
+
+  await catalogImportStore.fetchCategoryOptions()
+
+  const importedProduct = selectedBundleDetail.value.products.data.find(
+    product => product.externalProductId === issue.entitySourceId,
+  )
+
+  const result = await openModal<{
+    hiveSpaceCategoryId: number
+    externalCategoryId: string
+  }>(CategoryMappingModal, {
+    title: t('catalogImports.mapping.title'),
+    description: t('catalogImports.mapping.description'),
+    maxWidth: '420px',
+    externalProductId: issue.entitySourceId,
+    productName: importedProduct?.title ?? null,
+    externalCategoryIds: issue.metadata?.missingExternalCategoryIds ?? [],
+    categories: categoryOptions.value,
+  })
+
+  if (!result) return
+
+  await runWithAction('mapCategory', async () => {
+    await catalogImportStore.mapImportedCategory(selectedBundleId.value!, result.externalCategoryId, {
+      hiveSpaceCategoryId: result.hiveSpaceCategoryId,
+    })
+  })
+}
+
 const resetProductSelectionForBundle = (bundleId: string | null) => {
   selectedProductsBundleId.value = bundleId
   selectedProductIds.value = []
   hasInitializedProductSelectionForBundle.value = false
   activeProductReviewTab.value = DEFAULT_PRODUCT_REVIEW_TAB
+  categoryLinksSearchTerm.value = ''
+  sellersSearchTerm.value = ''
+  productsSearchTerm.value = ''
+  validationIssuesSearchTerm.value = ''
+  duplicateGroupsSearchTerm.value = ''
 }
 
 const syncSelectedProductsForCurrentPage = () => {

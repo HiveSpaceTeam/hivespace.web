@@ -3,6 +3,7 @@ import { defineStore } from 'pinia'
 import { computed, ref } from 'vue'
 import i18n from '@/i18n'
 import { catalogImportService } from '@/services/catalog-import.service'
+import { categoryService } from '@/services/category.service'
 import type {
   ApproveSellerOwnershipRequest,
   BundleCategoryLinksQuery,
@@ -10,15 +11,18 @@ import type {
   BundleProductsQuery,
   BundleSellersQuery,
   BundleValidationIssuesQuery,
+  CatalogCategoryOption,
   CatalogImportBundleQuery,
   CatalogImportBundleDetail,
   CatalogImportBundleSummary,
+  CategoryAttributeChunk,
   CatalogImportJobDetail,
   CatalogImportJobHistoryRow,
   CatalogImportJobQuery,
   CatalogImportJobSubmission,
   CatalogImportPaginatedResponse,
   ImportReadyCatalogProductsRequest,
+  MapImportedCategoryRequest,
   SubmitCategoryProvisioningRequest,
   SubmitCatalogImportBundleRequest,
 } from '@/types'
@@ -54,10 +58,20 @@ export const useCatalogImportStore = defineStore('catalogImport', () => {
     pageSize: 10,
     operationType: 'ProvisionCategories',
   })
+  const categoryAttributeProvisioningHistory = ref<CatalogImportJobHistoryRow[]>([])
+  const categoryAttributeProvisioningHistoryPagination = ref<PaginationMetadata>(
+    defaultPagination(),
+  )
+  const categoryAttributeProvisioningFilters = ref<CatalogImportJobQuery>({
+    pageNumber: 1,
+    pageSize: 10,
+    operationType: 'ProvisionCategoryAttributes',
+  })
   const jobHistory = ref<CatalogImportJobHistoryRow[]>([])
   const jobHistoryPagination = ref<PaginationMetadata>(defaultPagination())
   const jobFilters = ref<CatalogImportJobQuery>({ pageNumber: 1, pageSize: 10 })
   const selectedBundleSummary = ref<CatalogImportBundleSummary | null>(null)
+  const categoryOptions = ref<CatalogCategoryOption[]>([])
   const selectedBundleJobs = ref<CatalogImportJobHistoryRow[]>([])
   const selectedBundleJobsPagination = ref<PaginationMetadata>(defaultPagination())
   const selectedBundleJobFilters = ref<CatalogImportJobQuery>({ pageNumber: 1, pageSize: 10 })
@@ -98,7 +112,7 @@ export const useCatalogImportStore = defineStore('catalogImport', () => {
     () => selectedBundleDetail.value.duplicateGroups.data.length > 0,
   )
   const importableProductIds = computed(() =>
-    selectedBundleDetail.value.products.data
+    (selectedBundleDetail.value.products?.data ?? [])
       .filter(product => product.readinessStatus === 'Ready' || product.readinessStatus === 'Warning')
       .map(product => product.productId),
   )
@@ -138,6 +152,14 @@ export const useCatalogImportStore = defineStore('catalogImport', () => {
       return response
     })
 
+  const fetchCategoryOptions = async () =>
+    withLoading(async () => {
+      if (categoryOptions.value.length > 0) return categoryOptions.value
+
+      categoryOptions.value = await categoryService.getCategories()
+      return categoryOptions.value
+    })
+
   const fetchJobHistory = async (query: CatalogImportJobQuery = jobFilters.value) =>
     withLoading(async () => {
       jobFilters.value = { pageNumber: 1, pageSize: 10, ...query }
@@ -160,6 +182,22 @@ export const useCatalogImportStore = defineStore('catalogImport', () => {
       const response = await catalogImportService.listJobs(categoryProvisioningFilters.value)
       categoryProvisioningHistory.value = response.data
       categoryProvisioningHistoryPagination.value = response.pagination
+      return response
+    })
+
+  const fetchCategoryAttributeProvisioningHistory = async (
+    query: CatalogImportJobQuery = categoryAttributeProvisioningFilters.value,
+  ) =>
+    withLoading(async () => {
+      categoryAttributeProvisioningFilters.value = {
+        pageNumber: 1,
+        pageSize: 10,
+        ...query,
+        operationType: 'ProvisionCategoryAttributes',
+      }
+      const response = await catalogImportService.listJobs(categoryAttributeProvisioningFilters.value)
+      categoryAttributeProvisioningHistory.value = response.data
+      categoryAttributeProvisioningHistoryPagination.value = response.pagination
       return response
     })
 
@@ -290,6 +328,24 @@ export const useCatalogImportStore = defineStore('catalogImport', () => {
       return response
     }, true)
 
+  const provisionCategoryAttributes = async (
+    payload: CategoryAttributeChunk,
+    sourceFileName?: string | null,
+  ) =>
+    withLoading(async () => {
+      const response = await catalogImportService.provisionCategoryAttributes(
+        payload,
+        sourceFileName,
+      )
+      rememberActiveJob(response)
+      useAppStore().notifySuccess(
+        i18n.global.t('catalogImports.notifications.jobQueuedTitle'),
+        i18n.global.t('catalogImports.notifications.categoryAttributesQueuedMessage'),
+      )
+      await fetchCategoryAttributeProvisioningHistory()
+      return response
+    }, true)
+
   const submitBundle = async (
     payload: SubmitCatalogImportBundleRequest,
     sourceFileName?: string | null,
@@ -340,6 +396,27 @@ export const useCatalogImportStore = defineStore('catalogImport', () => {
       return response
     }, true)
 
+  const mapImportedCategory = async (
+    bundleId: string,
+    externalCategoryId: string,
+    payload: MapImportedCategoryRequest,
+  ) =>
+    withLoading(async () => {
+      const response = await catalogImportService.mapImportedCategory(
+        bundleId,
+        externalCategoryId,
+        payload,
+      )
+      useAppStore().notifySuccess(
+        i18n.global.t('catalogImports.notifications.categoryMappedTitle'),
+        i18n.global.t('catalogImports.notifications.categoryMappedMessage', {
+          count: response.affectedProductCount,
+        }),
+      )
+      await fetchBundleDetail(bundleId)
+      return response
+    }, true)
+
   const importReadyProducts = async (
     bundleId: string,
     payload: ImportReadyCatalogProductsRequest,
@@ -355,7 +432,12 @@ export const useCatalogImportStore = defineStore('catalogImport', () => {
     withLoading(async () => {
       const response = await catalogImportService.retryJob(jobId)
       rememberActiveJob(response)
-      await Promise.all([fetchJobHistory(), fetchBundleHistory(), fetchCategoryProvisioningHistory()])
+      await Promise.all([
+        fetchJobHistory(),
+        fetchBundleHistory(),
+        fetchCategoryProvisioningHistory(),
+        fetchCategoryAttributeProvisioningHistory(),
+      ])
       return response
     }, true)
 
@@ -379,6 +461,7 @@ export const useCatalogImportStore = defineStore('catalogImport', () => {
       fetchJobHistory(jobFilters.value),
       fetchBundleHistory(bundleFilters.value),
       fetchCategoryProvisioningHistory(categoryProvisioningFilters.value),
+      fetchCategoryAttributeProvisioningHistory(categoryAttributeProvisioningFilters.value),
     ]
 
     if (job.bundleId) {
@@ -411,6 +494,8 @@ export const useCatalogImportStore = defineStore('catalogImport', () => {
     bundleHistoryPagination.value = defaultPagination()
     categoryProvisioningHistory.value = []
     categoryProvisioningHistoryPagination.value = defaultPagination()
+    categoryAttributeProvisioningHistory.value = []
+    categoryAttributeProvisioningHistoryPagination.value = defaultPagination()
     selectedJobDetail.value = null
     selectedBundleSummary.value = null
     selectedBundleJobs.value = []
@@ -435,10 +520,14 @@ export const useCatalogImportStore = defineStore('catalogImport', () => {
     categoryProvisioningHistory,
     categoryProvisioningHistoryPagination,
     categoryProvisioningFilters,
+    categoryAttributeProvisioningHistory,
+    categoryAttributeProvisioningHistoryPagination,
+    categoryAttributeProvisioningFilters,
     jobHistory,
     jobHistoryPagination,
     jobFilters,
     selectedBundleSummary,
+    categoryOptions,
     selectedBundleJobs,
     selectedBundleJobsPagination,
     selectedBundleJobFilters,
@@ -457,7 +546,9 @@ export const useCatalogImportStore = defineStore('catalogImport', () => {
     hasUnresolvedDuplicates,
     importableProductIds,
     fetchBundleHistory,
+    fetchCategoryOptions,
     fetchCategoryProvisioningHistory,
+    fetchCategoryAttributeProvisioningHistory,
     fetchJobHistory,
     fetchSelectedBundleJobs,
     setSelectedBundleSummary,
@@ -470,10 +561,12 @@ export const useCatalogImportStore = defineStore('catalogImport', () => {
     fetchBundleValidationIssues,
     fetchBundleDetail,
     provisionCategories,
+    provisionCategoryAttributes,
     submitBundle,
     validateBundle,
     provisionSellers,
     approveSellerOwnership,
+    mapImportedCategory,
     importReadyProducts,
     retryJob,
     fetchJobStatus,

@@ -63,7 +63,7 @@
         </div>
 
         <!-- Shipping Info -->
-        <div class="section">
+        <div v-if="shouldShowUserShipping" class="section">
           <h3>{{ $t('storefront.productDetail.shippingInfo') }}</h3>
           <div class="shipping-address">
             <span>{{ $t('storefront.productDetail.defaultAddress') }}: {{ defaultAddressText }}</span>
@@ -318,7 +318,12 @@
 import { ref, computed, onMounted, watch } from "vue";
 import { storeToRefs } from 'pinia'
 import { useRoute } from "vue-router";
-import { createMoneyDisplay, type CurrencyCodeInput, useMoneyFormatter } from '@hivespace/shared'
+import {
+  createMoneyDisplay,
+  type CurrencyCodeInput,
+  useAuth,
+  useMoneyFormatter,
+} from '@hivespace/shared'
 import type {
   ProductImage,
   ProductSkuImage,
@@ -334,11 +339,13 @@ const pageIndex = ref(1)
 const pageSize = ref(8)
 const { t, locale } = useI18n()
 const { formatMoney } = useMoneyFormatter({ t })
+const { currentUser } = useAuth()
 const productStore = useProductStore()
 const cartStore = useCartStore()
 const addressStore = useAddressStore()
 const { productDetail, similarProducts, similarTotalCount: totalCount } = storeToRefs(productStore)
 const { defaultAddress } = storeToRefs(addressStore)
+const shouldShowUserShipping = computed(() => Boolean(currentUser.value))
 const primarySku = computed(() => productDetail.value.skus[0] ?? null)
 const store = computed(() => ({
   name: productDetail.value.currentSeller?.storeName || t('storefront.productDetail.fallbackStoreName'),
@@ -476,7 +483,6 @@ onMounted(async () => {
   const id = route.query.pid as string;
   await productStore.fetchProductDetail(id);
   await fetchSimilarProducts();
-  await fetchDefaultAddress();
 });
 const fetchDefaultAddress = async () => {
   await addressStore.fetchDefaultAddress()
@@ -504,6 +510,12 @@ const fetchDefaultAddress = async () => {
     .join(", ");
 */
 };
+
+watch(currentUser, async (user, previousUser) => {
+  if (user && !previousUser) {
+    await fetchDefaultAddress()
+  }
+}, { immediate: true })
 
 </script>
 

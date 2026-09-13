@@ -1,9 +1,20 @@
 <template>
   <section class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="border-b border-gray-200 px-5 py-4 dark:border-gray-800">
-      <h2 class="text-base font-semibold text-gray-900 dark:text-white">
-        {{ $t('catalogImports.sections.sellers') }}
-      </h2>
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white">
+          {{ $t('catalogImports.sections.sellers') }}
+        </h2>
+        <div class="w-full max-w-md">
+          <Input
+            :modelValue="searchTerm"
+            :label="$t('catalogImports.search.sellersLabel')"
+            :placeholder="$t('catalogImports.search.sellersPlaceholder')"
+            type="search"
+            @update:modelValue="value => emit('update:searchTerm', value)"
+          />
+        </div>
+      </div>
     </div>
     <div class="overflow-x-auto">
       <table class="min-w-full">
@@ -32,7 +43,7 @@
             </td>
             <td class="px-4 py-4">
               <Badge :color="seller.status === 'Conflict' || seller.status === 'Failed' ? 'error' : 'info'">
-                {{ seller.status ?? $t('catalogImports.sellers.pending') }}
+                {{ sellerStatusLabel(seller.status) }}
               </Badge>
             </td>
             <td class="px-4 py-4 text-sm text-gray-600 dark:text-gray-300">
@@ -62,7 +73,11 @@
           </tr>
           <tr v-if="sellers.length === 0">
             <td colspan="5" class="px-5 py-12 text-center text-sm text-gray-500">
-              {{ $t('catalogImports.empty.sellers') }}
+              {{
+                hasSearchTerm
+                  ? $t('catalogImports.empty.sellersSearch')
+                  : $t('catalogImports.empty.sellers')
+              }}
             </td>
           </tr>
         </tbody>
@@ -83,19 +98,36 @@
 </template>
 
 <script setup lang="ts">
-import { Badge, Button, Pagination, type PaginationMetadata } from '@hivespace/shared'
+import { computed } from 'vue'
+import { Badge, Button, Input, Pagination, type PaginationMetadata } from '@hivespace/shared'
+import { useI18n } from 'vue-i18n'
 import type { ImportedSeller } from '@/types'
 
-defineProps<{
-  sellers: ImportedSeller[]
-  pagination: PaginationMetadata
-  disabled?: boolean
-  loadingSellerId?: string | null
-}>()
+const props = withDefaults(
+  defineProps<{
+    sellers: ImportedSeller[]
+    pagination: PaginationMetadata
+    disabled?: boolean
+    loadingSellerId?: string | null
+    searchTerm?: string
+  }>(),
+  {
+    searchTerm: '',
+  },
+)
+
+const { t } = useI18n()
+const hasSearchTerm = computed(() => props.searchTerm.trim().length > 0)
 
 const emit = defineEmits<{
   approve: [seller: ImportedSeller]
+  'update:searchTerm': [searchTerm: string]
   pageChange: [page: number]
   pageSizeChange: [pageSize: number]
 }>()
+
+const sellerStatusLabel = (status?: string | null) => {
+  if (!status) return t('catalogImports.sellers.pending')
+  return t(`catalogImports.sellers.statuses.${status}`, status)
+}
 </script>

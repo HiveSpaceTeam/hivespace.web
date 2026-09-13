@@ -6,10 +6,12 @@ export type CatalogImportSourceType =
   | 'search'
   | 'product-list'
   | 'sellercenter_categories'
+  | 'sellercenter_category_attributes'
   | string
 export type CatalogImportJobStatus = 'Pending' | 'Running' | 'Completed' | 'Failed' | string
 export type CatalogImportOperationType =
   | 'ProvisionCategories'
+  | 'ProvisionCategoryAttributes'
   | 'SubmitBundle'
   | 'ValidateBundle'
   | 'ProvisionSellers'
@@ -19,6 +21,8 @@ export type CatalogImportBundleStatus =
   | 'Submitted'
   | 'NeedsAttention'
   | 'Validated'
+  | 'ReadyToImport'
+  | 'PartiallyImported'
   | 'Imported'
   | string
 export type CatalogImportIssueSeverity = 'Warning' | 'Blocking'
@@ -33,7 +37,7 @@ export type CatalogImportProductImportStatus =
 export type ImportedSellerStatus = 'Pending' | 'Created' | 'Matched' | 'Conflict' | 'Failed' | string
 export type ProvisionedCategoryLinkStatus = 'Created' | 'Matched' | 'Conflict' | 'Failed' | string
 export type ImportedImageRole = 'Thumbnail' | 'ProductImage' | 'SkuImage' | string
-export type CatalogImportPublicationState = 'Draft'
+export type CatalogImportPublicationState = 'Draft' | 'Unpublish' | 'Available'
 
 export interface CatalogImportSource {
   system: CatalogImportSourceSystem
@@ -179,6 +183,89 @@ export interface SubmitCategoryProvisioningRequest {
   categories: CategoryProvisioningCategory[]
 }
 
+export interface CategoryAttributeManifestChunkReference {
+  fileName: string
+  chunkIndex: number
+  sourceFingerprint: string
+}
+
+export interface CategoryAttributeManifestCrawl {
+  categorySourceFingerprint: string
+  chunkSize: number
+  totalCategories: number
+  totalChunks: number
+  startedAt: string
+  completedAt: string
+}
+
+export interface CategoryAttributeManifest {
+  schemaVersion: string
+  source: CatalogImportSource
+  crawl: CategoryAttributeManifestCrawl
+  chunks: CategoryAttributeManifestChunkReference[]
+}
+
+export interface CategoryAttributeChunkCrawl extends CatalogImportCrawl {
+  categorySourceFingerprint: string
+  chunkIndex: number
+}
+
+export interface CategoryAttributeSelectableValue {
+  value: string
+  label?: string | null
+  metadata?: Record<string, unknown>
+}
+
+export interface CategoryAttributeDefinition {
+  attributeId?: string | null
+  code?: string | null
+  name: string
+  description?: string | null
+  isRequired?: boolean
+  isVariantAxis?: boolean
+  dataType?: string | null
+  unit?: string | null
+  values?: CategoryAttributeSelectableValue[] | null
+  metadata?: Record<string, unknown>
+}
+
+export interface CategoryAttributeGroup {
+  groupId?: string | null
+  name: string
+  attributes: CategoryAttributeDefinition[]
+}
+
+export interface CategoryAttributeChunkCategory {
+  externalCategoryId: string
+  productSetId?: string | null
+  status: string
+  attributes: CategoryAttributeDefinition[]
+  groups?: CategoryAttributeGroup[] | null
+  metadata?: Record<string, unknown>
+}
+
+export interface CategoryAttributeChunk {
+  schemaVersion: string
+  source: CatalogImportSource
+  crawl: CategoryAttributeChunkCrawl
+  categories: CategoryAttributeChunkCategory[]
+}
+
+export interface CategoryAttributeProvisioningSubmissionResult {
+  fileName: string
+  filteredCategoryCount: number
+  skippedCategoryCount: number
+  job: CatalogImportJobSubmission
+}
+
+export interface CatalogCategoryOption {
+  id: number
+  name: string
+  displayName: string
+  imageFileId?: string | null
+  imageUrl?: string | null
+}
+
 export interface ProvisionedCategoryLink {
   externalCategoryId: string
   categoryId?: string | null
@@ -246,6 +333,10 @@ export interface CatalogImportValidationIssue {
   severity: CatalogImportIssueSeverity
   reasonCode: string
   message?: string | null
+  metadata?: {
+    missingExternalCategoryIds?: string[]
+  } & Record<string, unknown>
+  createdAt?: string | null
 }
 
 export interface CatalogImportDuplicateGroup {
@@ -281,26 +372,31 @@ export interface SubmitCatalogImportBundleRequest {
 
 export interface BundleCategoryLinksQuery extends CatalogImportPageQuery {
   status?: ProvisionedCategoryLinkStatus
+  searchTerm?: string
 }
 
 export interface BundleSellersQuery extends CatalogImportPageQuery {
   provisioningStatus?: ImportedSellerStatus
+  searchTerm?: string
 }
 
 export interface BundleProductsQuery extends CatalogImportPageQuery {
   readinessStatus?: CatalogImportReadinessStatus
   importStatus?: CatalogImportProductImportStatus
   sellerId?: string
+  searchTerm?: string
 }
 
 export interface BundleDuplicateGroupsQuery extends CatalogImportPageQuery {
   resolutionStatus?: string
+  searchTerm?: string
 }
 
 export interface BundleValidationIssuesQuery extends CatalogImportPageQuery {
   severity?: CatalogImportIssueSeverity
   entityType?: string
   reasonCode?: string
+  searchTerm?: string
 }
 
 export interface ApproveSellerOwnershipRequest {
@@ -316,6 +412,18 @@ export interface SellerOwnershipApprovalResponse {
   storeId: string
   status: ImportedSellerStatus
   conflictReason?: string | null
+}
+
+export interface MapImportedCategoryRequest {
+  hiveSpaceCategoryId: number
+}
+
+export interface MapImportedCategoryResult {
+  bundleId: string
+  externalCategoryId: string
+  hiveSpaceCategoryId: number
+  status: ProvisionedCategoryLinkStatus
+  affectedProductCount: number
 }
 
 export interface ImportReadyCatalogProductsRequest {

@@ -100,7 +100,7 @@ export interface GetProductListResponse {
 
 export interface GetProductDetailResponse {
   id?: number
-  sellerId?: string
+  storeId?: string
   name: string
   category?: string
   categories?: {

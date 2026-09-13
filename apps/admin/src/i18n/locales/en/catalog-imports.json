@@ -12,27 +12,36 @@
     "backToList": "Back to catalog imports",
     "refresh": "Refresh",
     "provisionCategories": "Provision categories",
+    "provisionCategoryAttributes": "Provision category attributes",
     "provisionSellers": "Provision sellers",
     "importSelectedReadyProducts": "Import selected ready",
     "importAllReadyProducts": "Import all ready",
     "validateBundle": "Validate bundle",
     "submitBundle": "Submit bundle",
     "approveSellerOwnership": "Approve ownership link",
+    "mapCategory": "Map category",
     "retryJob": "Retry job",
     "cancel": "Cancel"
   },
   "upload": {
     "categoryLabel": "Category provisioning JSON",
+    "categoryAttributeManifestLabel": "Category attribute manifest JSON",
+    "categoryAttributeChunksLabel": "Category attribute chunk JSON files",
+    "categoryAttributeDescription": "Submit the category-attribute manifest and chunk files so CatalogService can queue one chunk-sized provisioning job per selected file before bundle validation.",
+    "categoryAttributeQueueSummary": "{submitted} chunks queued, {skipped} chunks skipped, {filtered} empty-attribute categories filtered out.",
     "bundleLabel": "Product bundle JSON",
     "bundleDescription": "Submit a product bundle only after its Tiki categories have been provisioned.",
     "bundleAction": "Submit bundle",
-    "invalidJson": "The selected file is not valid JSON."
+    "invalidJson": "The selected file is not valid JSON.",
+    "noProvisionableCategoryAttributeChunks": "No selected category attribute chunks matched the manifest with at least one provisionable category."
   },
   "sections": {
     "bundleSubmission": "Product bundle submission",
     "bundleHistory": "Product bundles",
     "categoryProvisioning": "Category provisioning",
+    "categoryAttributeProvisioning": "Category attribute provisioning",
     "categoryProvisioningHistory": "Category provisioning uploads",
+    "categoryAttributeProvisioningHistory": "Category attribute provisioning uploads",
     "categoryLinks": "Provisioned category links",
     "jobHistory": "Import job history",
     "relatedJobs": "Selected bundle jobs",
@@ -46,6 +55,7 @@
   "jobs": {
     "historyDescription": "All CatalogService import operations appear here, including uploads, validation, seller provisioning, import, and retry jobs.",
     "categoryHistoryDescription": "Category provisioning submissions stay separate from the primary product-bundle table.",
+    "categoryAttributeHistoryDescription": "Category attribute provisioning submissions stay separate from both the category-upload and product-bundle tables.",
     "relatedDescription": "Inspect submit, validate, seller provisioning, and import jobs for the selected bundle without leaving the list page.",
     "jobId": "Job ID",
     "operationType": "Operation",
@@ -60,6 +70,7 @@
   },
   "operationTypes": {
     "ProvisionCategories": "Provision categories",
+    "ProvisionCategoryAttributes": "Provision category attributes",
     "SubmitBundle": "Submit bundle",
     "ValidateBundle": "Validate bundle",
     "ProvisionSellers": "Provision sellers",
@@ -75,6 +86,8 @@
     "Submitted": "Submitted",
     "NeedsAttention": "Needs attention",
     "Validated": "Validated",
+    "ReadyToImport": "Ready to import",
+    "PartiallyImported": "Partially imported",
     "Imported": "Imported"
   },
   "bundles": {
@@ -120,7 +133,32 @@
     "externalId": "External category ID",
     "hiveSpaceCategory": "HiveSpace category",
     "status": "Status",
-    "conflictReason": "Conflict reason"
+    "conflictReason": "Conflict reason",
+    "statuses": {
+      "Unmapped": "Unmapped",
+      "Mapped": "Mapped",
+      "Created": "Created",
+      "Matched": "Matched",
+      "Conflict": "Conflict",
+      "Failed": "Failed"
+    }
+  },
+  "mapping": {
+    "title": "Map imported category",
+    "description": "Choose the existing HiveSpace category for this external category link.",
+    "productName": "Product name",
+    "externalProductId": "External product ID",
+    "externalCategoryLabel": "External category ID",
+    "externalCategoryPlaceholder": "Select an external category",
+    "externalCategoryRequired": "Select an external category before mapping.",
+    "productCategoryMissing": "The product category is not loaded, so this mapping cannot be submitted safely.",
+    "searchLabel": "Search HiveSpace categories",
+    "searchPlaceholder": "Search by category name or ID",
+    "categoryLabel": "HiveSpace category",
+    "categoryPlaceholder": "Select a category",
+    "categoryRequired": "Select a HiveSpace category before mapping.",
+    "noCategories": "No categories match this search.",
+    "revalidationHint": "After mapping, run validation again so affected products can be recalculated."
   },
   "sellers": {
     "name": "Seller",
@@ -134,7 +172,14 @@
     "approvalReason": "Approval reason",
     "approvalReasonRequired": "Target user, target store, and approval reason are required.",
     "approvalConfirmTitle": "Approve ownership link",
-    "approvalConfirmMessage": "This links the external Tiki seller to an existing HiveSpace seller account and store. Existing store profile data will not be changed."
+    "approvalConfirmMessage": "This links the external Tiki seller to an existing HiveSpace seller account and store. Existing store profile data will not be changed.",
+    "statuses": {
+      "Pending": "Pending",
+      "Created": "Created",
+      "Matched": "Matched",
+      "Conflict": "Conflict",
+      "Failed": "Failed"
+    }
   },
   "products": {
     "product": "Product",
@@ -145,10 +190,35 @@
     "status": "Status",
     "selectProduct": "Select product",
     "selectedImportableProducts": "{count} importable products selected",
-    "importAllReadyDescription": "Imports every currently eligible product in the bundle without loading every page."
+    "importAllReadyDescription": "Imports every currently eligible product in the bundle without loading every page.",
+    "readinessStatuses": {
+      "Ready": "Ready",
+      "Warning": "Warning",
+      "Blocked": "Blocked"
+    }
+  },
+  "import": {
+    "publicationStateLabel": "Publication status",
+    "states": {
+      "Draft": "Draft",
+      "Unpublish": "Unpublish",
+      "Available": "Available"
+    }
   },
   "validation": {
     "description": "Run follow-up jobs from the detail page and monitor each async operation to completion."
+  },
+  "search": {
+    "categoryLinksLabel": "Search category links",
+    "categoryLinksPlaceholder": "Search by external or HiveSpace category",
+    "sellersLabel": "Search sellers",
+    "sellersPlaceholder": "Search by seller, user, or store",
+    "productsLabel": "Search products",
+    "productsPlaceholder": "Search by product, category, or seller",
+    "validationIssuesLabel": "Search validation issues",
+    "validationIssuesPlaceholder": "Search by issue, entity, field, or reason",
+    "duplicatesLabel": "Search duplicate groups",
+    "duplicatesPlaceholder": "Search by group, product, or reason"
   },
   "issues": {
     "severity": "Severity",
@@ -171,11 +241,17 @@
     "relatedJobs": "No jobs are linked to this bundle yet.",
     "relatedJobsSelection": "Select a bundle to inspect its related jobs.",
     "categoryProvisioningHistory": "No category provisioning uploads yet.",
+    "categoryAttributeProvisioningHistory": "No category attribute provisioning uploads yet.",
     "categoryLinks": "No provisioned category links.",
+    "categoryLinksSearch": "No category links match this search.",
     "sellers": "No imported sellers.",
+    "sellersSearch": "No sellers match this search.",
     "products": "No imported products.",
+    "productsSearch": "No products match this search.",
     "validationIssues": "No validation issues.",
+    "validationIssuesSearch": "No validation issues match this search.",
     "duplicates": "No duplicate groups.",
+    "duplicatesSearch": "No duplicate groups match this search.",
     "categoryProvisioningJobDetail": "This category provisioning job is tracked by job progress and result summary. Product bundle review sections are shown only for product import jobs.",
     "operationSections": "No specialized sections are available for this import operation."
   },
@@ -184,8 +260,11 @@
     "failed": "The catalog import action could not be completed.",
     "jobQueuedTitle": "Import job queued",
     "categoriesQueuedMessage": "Category provisioning was queued in CatalogService.",
+    "categoryAttributesQueuedMessage": "Category attribute provisioning was queued in CatalogService.",
     "bundleQueuedMessage": "Product bundle submission was queued in CatalogService.",
     "sellerApprovedTitle": "Ownership link approved",
-    "sellerApprovedMessage": "The seller ownership link was saved. Re-run validation before importing affected products."
+    "sellerApprovedMessage": "The seller ownership link was saved. Re-run validation before importing affected products.",
+    "categoryMappedTitle": "Category mapped",
+    "categoryMappedMessage": "The category link was saved for {count} affected products. Re-run validation before importing them."
   }
 }

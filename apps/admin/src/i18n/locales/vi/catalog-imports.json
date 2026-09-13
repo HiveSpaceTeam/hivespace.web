@@ -1,191 +1,270 @@
 {
   "list": {
-    "title": "Nhap danh muc",
-    "description": "Gui tep danh muc va goi san pham Tiki, sau do xem goi va cac tac vu lien quan."
+    "title": "Nhập dữ liệu catalog",
+    "description": "Tải lên tệp danh mục Tiki và gói sản phẩm, sau đó xem các gói và tác vụ liên quan."
   },
   "detail": {
-    "title": "Tac vu nhap danh muc",
-    "description": "Xem tien do tac vu, du lieu goi lien ket, loi kiem tra va thao tac tiep theo."
+    "title": "Tác vụ nhập dữ liệu catalog",
+    "description": "Theo dõi tiến độ tác vụ, dữ liệu gói liên kết, lỗi kiểm tra và các thao tác tiếp theo."
   },
   "actions": {
-    "actions": "Thao tac",
-    "backToList": "Quay lai nhap danh muc",
-    "refresh": "Lam moi",
-    "provisionCategories": "Provision danh muc",
-    "provisionSellers": "Provision nguoi ban",
-    "importSelectedReadyProducts": "Nhap muc da chon",
-    "importAllReadyProducts": "Nhap tat ca muc san sang",
-    "validateBundle": "Kiem tra goi",
-    "submitBundle": "Gui goi",
-    "approveSellerOwnership": "Duyet lien ket so huu",
-    "retryJob": "Thu lai tac vu",
-    "cancel": "Huy"
+    "actions": "Thao tác",
+    "backToList": "Quay lại danh sách nhập dữ liệu catalog",
+    "refresh": "Làm mới",
+    "provisionCategories": "Khởi tạo danh mục",
+    "provisionCategoryAttributes": "Khởi tạo thuộc tính danh mục",
+    "provisionSellers": "Khởi tạo người bán",
+    "importSelectedReadyProducts": "Nhập các sản phẩm đã chọn",
+    "importAllReadyProducts": "Nhập tất cả sản phẩm sẵn sàng",
+    "validateBundle": "Kiểm tra gói",
+    "submitBundle": "Gửi gói",
+    "approveSellerOwnership": "Duyệt liên kết quyền sở hữu",
+    "mapCategory": "Gán danh mục",
+    "retryJob": "Chạy lại tác vụ",
+    "cancel": "Hủy"
   },
   "upload": {
-    "categoryLabel": "Tep JSON provision danh muc",
-    "bundleLabel": "Tep JSON goi san pham",
-    "bundleDescription": "Chi gui goi san pham sau khi danh muc Tiki da duoc provision.",
-    "bundleAction": "Gui goi",
-    "invalidJson": "Tep da chon khong phai JSON hop le."
+    "categoryLabel": "Tệp JSON khởi tạo danh mục",
+    "categoryAttributeManifestLabel": "Tệp JSON manifest thuộc tính danh mục",
+    "categoryAttributeChunksLabel": "Các tệp JSON chunk thuộc tính danh mục",
+    "categoryAttributeDescription": "Tải lên manifest và các tệp chunk thuộc tính danh mục để CatalogService xếp hàng một tác vụ khởi tạo cho từng tệp đã chọn trước khi kiểm tra gói.",
+    "categoryAttributeQueueSummary": "Đã xếp hàng {submitted} chunk, bỏ qua {skipped} chunk, lọc {filtered} danh mục không có thuộc tính.",
+    "bundleLabel": "Tệp JSON gói sản phẩm",
+    "bundleDescription": "Chỉ gửi gói sản phẩm sau khi các danh mục Tiki tương ứng đã được khởi tạo.",
+    "bundleAction": "Gửi gói",
+    "invalidJson": "Tệp đã chọn không phải JSON hợp lệ.",
+    "noProvisionableCategoryAttributeChunks": "Không có chunk thuộc tính danh mục nào khớp với manifest và chứa ít nhất một danh mục có thể khởi tạo."
   },
   "sections": {
-    "bundleSubmission": "Gui goi san pham",
-    "bundleHistory": "Goi san pham",
-    "categoryProvisioning": "Provision danh muc",
-    "categoryProvisioningHistory": "Lich su tai len provision danh muc",
-    "categoryLinks": "Lien ket danh muc da provision",
-    "jobHistory": "Lich su tac vu nhap",
-    "relatedJobs": "Tac vu cua goi da chon",
-    "workflowActions": "Thao tac quy trinh",
-    "sellerApproval": "Duyet so huu nguoi ban",
-    "sellers": "Nguoi ban da nhap",
-    "products": "San pham da nhap",
-    "validationIssues": "Van de kiem tra",
-    "duplicates": "Nhom trung lap"
+    "bundleSubmission": "Gửi gói sản phẩm",
+    "bundleHistory": "Gói sản phẩm",
+    "categoryProvisioning": "Khởi tạo danh mục",
+    "categoryAttributeProvisioning": "Khởi tạo thuộc tính danh mục",
+    "categoryProvisioningHistory": "Lịch sử tải lên khởi tạo danh mục",
+    "categoryAttributeProvisioningHistory": "Lịch sử tải lên khởi tạo thuộc tính danh mục",
+    "categoryLinks": "Liên kết danh mục đã khởi tạo",
+    "jobHistory": "Lịch sử tác vụ nhập",
+    "relatedJobs": "Tác vụ của gói đã chọn",
+    "workflowActions": "Thao tác quy trình",
+    "sellerApproval": "Duyệt quyền sở hữu người bán",
+    "sellers": "Người bán đã nhập",
+    "products": "Sản phẩm đã nhập",
+    "validationIssues": "Vấn đề kiểm tra",
+    "duplicates": "Nhóm trùng lặp"
   },
   "jobs": {
-    "historyDescription": "Moi thao tac nhap cua CatalogService xuat hien tai day, gom tai tep, kiem tra, provision nguoi ban, nhap va thu lai.",
-    "categoryHistoryDescription": "Lich su provision danh muc duoc hien thi rieng voi bang goi san pham chinh.",
-    "relatedDescription": "Xem cac tac vu gui goi, kiem tra, provision nguoi ban va nhap cua goi da chon ngay tren trang danh sach.",
-    "jobId": "ID tac vu",
-    "operationType": "Thao tac",
-    "status": "Trang thai",
-    "sourceFileName": "Tep nguon",
-    "requestedAt": "Thoi diem yeu cau",
-    "startedAt": "Bat dau",
-    "completedAt": "Hoan tat",
-    "progress": "Tien do",
+    "historyDescription": "Mọi thao tác nhập của CatalogService đều hiển thị tại đây, bao gồm tải lên, kiểm tra, khởi tạo người bán, nhập và chạy lại tác vụ.",
+    "categoryHistoryDescription": "Các lần gửi yêu cầu khởi tạo danh mục được hiển thị riêng với bảng gói sản phẩm chính.",
+    "categoryAttributeHistoryDescription": "Các lần gửi yêu cầu khởi tạo thuộc tính danh mục được hiển thị riêng với cả bảng tải lên danh mục và bảng gói sản phẩm chính.",
+    "relatedDescription": "Xem các tác vụ gửi gói, kiểm tra, khởi tạo người bán và nhập của gói đã chọn ngay trên trang danh sách.",
+    "jobId": "ID tác vụ",
+    "operationType": "Thao tác",
+    "status": "Trạng thái",
+    "sourceFileName": "Tệp nguồn",
+    "requestedAt": "Thời điểm yêu cầu",
+    "startedAt": "Bắt đầu",
+    "completedAt": "Hoàn tất",
+    "progress": "Tiến độ",
     "progressValue": "{processed} / {total}",
-    "resultSummary": "Tom tat ket qua"
+    "resultSummary": "Tóm tắt kết quả"
   },
   "operationTypes": {
-    "ProvisionCategories": "Provision danh muc",
-    "SubmitBundle": "Gui goi",
-    "ValidateBundle": "Kiem tra goi",
-    "ProvisionSellers": "Provision nguoi ban",
-    "ImportReadyProducts": "Nhap san pham san sang"
+    "ProvisionCategories": "Khởi tạo danh mục",
+    "ProvisionCategoryAttributes": "Khởi tạo thuộc tính danh mục",
+    "SubmitBundle": "Gửi gói",
+    "ValidateBundle": "Kiểm tra gói",
+    "ProvisionSellers": "Khởi tạo người bán",
+    "ImportReadyProducts": "Nhập sản phẩm sẵn sàng"
   },
   "statuses": {
-    "Pending": "Dang cho",
-    "Running": "Dang chay",
-    "Completed": "Hoan tat",
-    "Failed": "That bai"
+    "Pending": "Đang chờ",
+    "Running": "Đang chạy",
+    "Completed": "Hoàn tất",
+    "Failed": "Thất bại"
   },
   "bundleStatuses": {
-    "Submitted": "Da gui",
-    "NeedsAttention": "Can xem xet",
-    "Validated": "Da kiem tra",
-    "Imported": "Da nhap"
+    "Submitted": "Đã gửi",
+    "NeedsAttention": "Cần xem xét",
+    "Validated": "Đã kiểm tra",
+    "ReadyToImport": "Sẵn sàng để nhập",
+    "PartiallyImported": "Đã nhập một phần",
+    "Imported": "Đã nhập"
   },
   "bundles": {
-    "historyDescription": "Xem danh sach goi san pham co phan trang truoc, sau do mo cac tac vu lien quan cua goi da chon trong khung ben canh.",
-    "bundleId": "ID goi",
-    "source": "Nguon",
-    "status": "Trang thai",
-    "submittedAt": "Thoi diem gui",
-    "summary": "Tom tat",
-    "summaryValue": "{ready} san sang, {blocked} bi chan, {warnings} canh bao"
+    "historyDescription": "Xem danh sách gói sản phẩm có phân trang trước, sau đó kiểm tra các tác vụ liên quan của gói đã chọn ở khung bên cạnh.",
+    "bundleId": "ID gói",
+    "source": "Nguồn",
+    "status": "Trạng thái",
+    "submittedAt": "Thời điểm gửi",
+    "summary": "Tóm tắt",
+    "summaryValue": "{ready} sẵn sàng, {blocked} bị chặn, {warnings} cảnh báo"
   },
   "source": {
-    "type": "Loai nguon",
-    "value": "Gia tri nguon",
-    "completedAt": "Hoan tat"
+    "type": "Loại nguồn",
+    "value": "Giá trị nguồn",
+    "completedAt": "Hoàn tất"
   },
   "summary": {
-    "bundleId": "Goi",
-    "totalProducts": "Tong san pham",
-    "readyProducts": "San pham san sang",
-    "blockedProducts": "San pham bi chan",
-    "warningCount": "Canh bao",
-    "duplicateCount": "Trung lap"
+    "bundleId": "Gói",
+    "totalProducts": "Tổng sản phẩm",
+    "readyProducts": "Sản phẩm sẵn sàng",
+    "blockedProducts": "Sản phẩm bị chặn",
+    "warningCount": "Cảnh báo",
+    "duplicateCount": "Trùng lặp"
   },
   "results": {
-    "totalCategories": "Tong danh muc",
-    "totalProducts": "Tong san pham",
-    "readyProducts": "San pham san sang",
-    "blockedProducts": "San pham bi chan",
-    "warningCount": "Canh bao",
-    "duplicateCount": "Trung lap",
-    "created": "Da tao",
-    "matched": "Da khop",
-    "failed": "That bai",
-    "conflict": "Xung dot",
-    "imported": "Da nhap",
-    "skipped": "Bo qua",
-    "blocked": "Bi chan"
+    "totalCategories": "Tổng danh mục",
+    "totalProducts": "Tổng sản phẩm",
+    "readyProducts": "Sản phẩm sẵn sàng",
+    "blockedProducts": "Sản phẩm bị chặn",
+    "warningCount": "Cảnh báo",
+    "duplicateCount": "Trùng lặp",
+    "created": "Đã tạo",
+    "matched": "Đã khớp",
+    "failed": "Thất bại",
+    "conflict": "Xung đột",
+    "imported": "Đã nhập",
+    "skipped": "Bỏ qua",
+    "blocked": "Bị chặn"
   },
   "categories": {
-    "provisioningDescription": "Gui du lieu danh muc SellerCenter de CatalogService tao hoac khop danh muc HiveSpace truoc khi kiem tra goi san pham.",
-    "linksDescription": "Lien ket danh muc phai ton tai truoc khi san pham lien quan co the san sang.",
-    "externalId": "ID danh muc ngoai",
-    "hiveSpaceCategory": "Danh muc HiveSpace",
-    "status": "Trang thai",
-    "conflictReason": "Ly do xung dot"
+    "provisioningDescription": "Tải lên dữ liệu danh mục từ SellerCenter để CatalogService tạo mới hoặc ghép khớp danh mục HiveSpace trước khi kiểm tra các gói sản phẩm.",
+    "linksDescription": "Các liên kết danh mục phải tồn tại trước khi những sản phẩm liên quan có thể chuyển sang trạng thái sẵn sàng.",
+    "externalId": "ID danh mục bên ngoài",
+    "hiveSpaceCategory": "Danh mục HiveSpace",
+    "status": "Trạng thái",
+    "conflictReason": "Lý do xung đột",
+    "statuses": {
+      "Unmapped": "Chưa gán",
+      "Mapped": "Đã gán",
+      "Created": "Đã tạo",
+      "Matched": "Đã khớp",
+      "Conflict": "Xung đột",
+      "Failed": "Thất bại"
+    }
+  },
+  "mapping": {
+    "title": "Gán danh mục đã nhập",
+    "description": "Chọn danh mục HiveSpace hiện có cho liên kết danh mục bên ngoài này.",
+    "productName": "Tên sản phẩm",
+    "externalProductId": "ID sản phẩm bên ngoài",
+    "externalCategoryLabel": "ID danh mục bên ngoài",
+    "externalCategoryPlaceholder": "Chọn danh mục bên ngoài",
+    "externalCategoryRequired": "Hãy chọn danh mục bên ngoài trước khi gán.",
+    "productCategoryMissing": "Danh mục của sản phẩm chưa được tải nên không thể gửi thao tác gán một cách an toàn.",
+    "searchLabel": "Tìm danh mục HiveSpace",
+    "searchPlaceholder": "Tìm theo tên hoặc ID danh mục",
+    "categoryLabel": "Danh mục HiveSpace",
+    "categoryPlaceholder": "Chọn danh mục",
+    "categoryRequired": "Hãy chọn danh mục HiveSpace trước khi gán.",
+    "noCategories": "Không có danh mục nào khớp với tìm kiếm.",
+    "revalidationHint": "Sau khi gán, hãy chạy kiểm tra lại để tính lại trạng thái sản phẩm liên quan."
   },
   "sellers": {
-    "name": "Nguoi ban",
-    "externalId": "ID ngoai",
-    "status": "Trang thai",
-    "ownership": "So huu",
-    "pending": "Dang cho",
-    "conflictReason": "Ly do xung dot",
-    "targetUserId": "ID nguoi dung dich",
-    "targetStoreId": "ID cua hang dich",
-    "approvalReason": "Ly do duyet",
-    "approvalReasonRequired": "Can nhap nguoi dung dich, cua hang dich va ly do duyet.",
-    "approvalConfirmTitle": "Duyet lien ket so huu",
-    "approvalConfirmMessage": "Thao tac nay lien ket nguoi ban Tiki ngoai voi tai khoan nguoi ban va cua hang HiveSpace hien co. Ho so cua hang hien co se khong bi thay doi."
+    "name": "Người bán",
+    "externalId": "ID bên ngoài",
+    "status": "Trạng thái",
+    "ownership": "Quyền sở hữu",
+    "pending": "Đang chờ",
+    "conflictReason": "Lý do xung đột",
+    "targetUserId": "ID người dùng đích",
+    "targetStoreId": "ID cửa hàng đích",
+    "approvalReason": "Lý do duyệt",
+    "approvalReasonRequired": "Bắt buộc nhập người dùng đích, cửa hàng đích và lý do duyệt.",
+    "approvalConfirmTitle": "Duyệt liên kết quyền sở hữu",
+    "approvalConfirmMessage": "Thao tác này sẽ liên kết người bán Tiki bên ngoài với tài khoản người bán và cửa hàng HiveSpace hiện có. Dữ liệu hồ sơ cửa hàng hiện tại sẽ không bị thay đổi.",
+    "statuses": {
+      "Pending": "Đang chờ",
+      "Created": "Đã tạo",
+      "Matched": "Đã khớp",
+      "Conflict": "Xung đột",
+      "Failed": "Thất bại"
+    }
   },
   "products": {
-    "product": "San pham",
-    "seller": "Nguoi ban",
-    "categories": "Danh muc",
+    "product": "Sản phẩm",
+    "seller": "Người bán",
+    "categories": "Danh mục",
     "skus": "SKU",
-    "price": "Gia",
-    "status": "Trang thai",
-    "selectProduct": "Chon san pham",
-    "selectedImportableProducts": "Da chon {count} san pham co the nhap",
-    "importAllReadyDescription": "Nhap moi san pham du dieu kien trong goi ma khong can tai tung trang."
+    "price": "Giá",
+    "status": "Trạng thái",
+    "selectProduct": "Chọn sản phẩm",
+    "selectedImportableProducts": "Đã chọn {count} sản phẩm có thể nhập",
+    "importAllReadyDescription": "Nhập toàn bộ sản phẩm hiện đủ điều kiện trong gói mà không cần tải từng trang.",
+    "readinessStatuses": {
+      "Ready": "Sẵn sàng",
+      "Warning": "Cảnh báo",
+      "Blocked": "Bị chặn"
+    }
+  },
+  "import": {
+    "publicationStateLabel": "Trạng thái xuất bản",
+    "states": {
+      "Draft": "Bản nháp",
+      "Unpublish": "Ngừng hiển thị",
+      "Available": "Sẵn sàng"
+    }
   },
   "validation": {
-    "description": "Chay tac vu tiep theo tu trang chi tiet va theo doi tung thao tac bat dong bo den khi hoan tat."
+    "description": "Chạy các tác vụ tiếp theo từ trang chi tiết và theo dõi từng thao tác bất đồng bộ cho đến khi hoàn tất."
+  },
+  "search": {
+    "categoryLinksLabel": "Tìm kiếm liên kết danh mục",
+    "categoryLinksPlaceholder": "Tìm theo danh mục ngoài hoặc HiveSpace",
+    "sellersLabel": "Tìm kiếm người bán",
+    "sellersPlaceholder": "Tìm theo người bán, người dùng hoặc cửa hàng",
+    "productsLabel": "Tìm kiếm sản phẩm",
+    "productsPlaceholder": "Tìm theo sản phẩm, danh mục hoặc người bán",
+    "validationIssuesLabel": "Tìm kiếm vấn đề kiểm tra",
+    "validationIssuesPlaceholder": "Tìm theo mã lỗi, đối tượng, trường hoặc lý do",
+    "duplicatesLabel": "Tìm kiếm nhóm trùng lặp",
+    "duplicatesPlaceholder": "Tìm theo nhóm, sản phẩm hoặc lý do"
   },
   "issues": {
-    "severity": "Muc do",
-    "entity": "Doi tuong",
-    "field": "Truong",
-    "reason": "Ly do"
+    "severity": "Mức độ",
+    "entity": "Đối tượng",
+    "field": "Trường",
+    "reason": "Lý do"
   },
   "duplicates": {
-    "group": "Nhom",
-    "products": "San pham",
-    "reason": "Ly do"
+    "group": "Nhóm",
+    "products": "Sản phẩm",
+    "reason": "Lý do"
   },
   "severity": {
-    "warning": "Canh bao",
-    "blocking": "Bi chan"
+    "warning": "Cảnh báo",
+    "blocking": "Bị chặn"
   },
   "empty": {
-    "bundles": "Chua co goi san pham nao.",
-    "jobs": "Chua co tac vu nhap danh muc.",
-    "relatedJobs": "Chua co tac vu nao lien ket voi goi nay.",
-    "relatedJobsSelection": "Hay chon mot goi de xem cac tac vu lien quan.",
-    "categoryProvisioningHistory": "Chua co lan tai len provision danh muc nao.",
-    "categoryLinks": "Chua co lien ket danh muc da provision.",
-    "sellers": "Chua co nguoi ban da nhap.",
-    "products": "Chua co san pham da nhap.",
-    "validationIssues": "Khong co van de kiem tra.",
-    "duplicates": "Khong co nhom trung lap.",
-    "categoryProvisioningJobDetail": "Tac vu provision danh muc nay duoc theo doi bang tien do va tom tat ket qua tac vu. Cac phan ra soat goi san pham chi hien thi cho tac vu nhap san pham.",
-    "operationSections": "Khong co phan chuyen biet cho thao tac nhap nay."
+    "bundles": "Chưa có gói sản phẩm nào.",
+    "jobs": "Chưa có tác vụ nhập dữ liệu catalog nào.",
+    "relatedJobs": "Chưa có tác vụ nào được liên kết với gói này.",
+    "relatedJobsSelection": "Hãy chọn một gói để xem các tác vụ liên quan.",
+    "categoryProvisioningHistory": "Chưa có lần tải lên khởi tạo danh mục nào.",
+    "categoryAttributeProvisioningHistory": "Chưa có lần tải lên khởi tạo thuộc tính danh mục nào.",
+    "categoryLinks": "Chưa có liên kết danh mục nào đã được khởi tạo.",
+    "categoryLinksSearch": "Không có liên kết danh mục nào khớp với từ khóa tìm kiếm.",
+    "sellers": "Chưa có người bán nào đã được nhập.",
+    "sellersSearch": "Không có người bán nào khớp với từ khóa tìm kiếm.",
+    "products": "Chưa có sản phẩm nào đã được nhập.",
+    "productsSearch": "Không có sản phẩm nào khớp với từ khóa tìm kiếm.",
+    "validationIssues": "Không có vấn đề kiểm tra nào.",
+    "validationIssuesSearch": "Không có vấn đề kiểm tra nào khớp với từ khóa tìm kiếm.",
+    "duplicates": "Không có nhóm trùng lặp nào.",
+    "duplicatesSearch": "Không có nhóm trùng lặp nào khớp với từ khóa tìm kiếm.",
+    "categoryProvisioningJobDetail": "Tác vụ khởi tạo danh mục này được theo dõi bằng tiến độ và phần tóm tắt kết quả tác vụ. Các phần rà soát gói sản phẩm chỉ hiển thị cho tác vụ nhập sản phẩm.",
+    "operationSections": "Không có phần chuyên biệt nào cho thao tác nhập này."
   },
   "notifications": {
-    "errorTitle": "Nhap danh muc that bai",
-    "failed": "Khong the hoan tat thao tac nhap danh muc.",
-    "jobQueuedTitle": "Da xep hang tac vu nhap",
-    "categoriesQueuedMessage": "Provision danh muc da duoc xep hang trong CatalogService.",
-    "bundleQueuedMessage": "Gui goi san pham da duoc xep hang trong CatalogService.",
-    "sellerApprovedTitle": "Da duyet lien ket so huu",
-    "sellerApprovedMessage": "Lien ket so huu nguoi ban da duoc luu. Hay chay lai kiem tra truoc khi nhap san pham lien quan."
+    "errorTitle": "Nhập dữ liệu catalog thất bại",
+    "failed": "Không thể hoàn tất thao tác nhập dữ liệu catalog.",
+    "jobQueuedTitle": "Đã xếp hàng tác vụ nhập",
+    "categoriesQueuedMessage": "Yêu cầu khởi tạo danh mục đã được xếp hàng trong CatalogService.",
+    "categoryAttributesQueuedMessage": "Yêu cầu khởi tạo thuộc tính danh mục đã được xếp hàng trong CatalogService.",
+    "bundleQueuedMessage": "Yêu cầu gửi gói sản phẩm đã được xếp hàng trong CatalogService.",
+    "sellerApprovedTitle": "Đã duyệt liên kết quyền sở hữu",
+    "sellerApprovedMessage": "Liên kết quyền sở hữu người bán đã được lưu. Hãy chạy lại bước kiểm tra trước khi nhập các sản phẩm liên quan.",
+    "categoryMappedTitle": "Đã gán danh mục",
+    "categoryMappedMessage": "Liên kết danh mục đã được lưu cho {count} sản phẩm liên quan. Hãy chạy kiểm tra lại trước khi nhập."
   }
 }
