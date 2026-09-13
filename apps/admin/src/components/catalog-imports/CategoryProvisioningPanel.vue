@@ -1,12 +1,25 @@
 <template>
   <section class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="border-b border-gray-200 px-5 py-4 dark:border-gray-800">
-      <h2 class="text-base font-semibold text-gray-900 dark:text-white">
-        {{ $t('catalogImports.sections.categoryLinks') }}
-      </h2>
-      <p class="mt-1 text-sm text-gray-500">
-        {{ $t('catalogImports.categories.linksDescription') }}
-      </p>
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h2 class="text-base font-semibold text-gray-900 dark:text-white">
+            {{ $t('catalogImports.sections.categoryLinks') }}
+          </h2>
+          <p class="mt-1 text-sm text-gray-500">
+            {{ $t('catalogImports.categories.linksDescription') }}
+          </p>
+        </div>
+        <div class="w-full max-w-md">
+          <Input
+            :modelValue="searchTerm"
+            :label="$t('catalogImports.search.categoryLinksLabel')"
+            :placeholder="$t('catalogImports.search.categoryLinksPlaceholder')"
+            type="search"
+            @update:modelValue="value => emit('update:searchTerm', value)"
+          />
+        </div>
+      </div>
     </div>
     <div class="overflow-x-auto">
       <table class="min-w-full">
@@ -34,7 +47,7 @@
             </td>
             <td class="px-4 py-4">
               <Badge :color="link.status === 'Conflict' || link.status === 'Failed' ? 'error' : 'info'">
-                {{ link.status }}
+                {{ categoryStatusLabel(link.status) }}
               </Badge>
             </td>
             <td class="px-4 py-4 text-sm text-gray-600 dark:text-gray-300">
@@ -43,7 +56,11 @@
           </tr>
           <tr v-if="categoryLinks.length === 0">
             <td colspan="4" class="px-5 py-12 text-center text-sm text-gray-500">
-              {{ $t('catalogImports.empty.categoryLinks') }}
+              {{
+                hasSearchTerm
+                  ? $t('catalogImports.empty.categoryLinksSearch')
+                  : $t('catalogImports.empty.categoryLinks')
+              }}
             </td>
           </tr>
         </tbody>
@@ -64,16 +81,31 @@
 </template>
 
 <script setup lang="ts">
-import { Badge, Pagination, type PaginationMetadata } from '@hivespace/shared'
+import { computed } from 'vue'
+import { Badge, Input, Pagination, type PaginationMetadata } from '@hivespace/shared'
+import { useI18n } from 'vue-i18n'
 import type { ProvisionedCategoryLink } from '@/types'
 
-defineProps<{
-  categoryLinks: ProvisionedCategoryLink[]
-  pagination: PaginationMetadata
-}>()
+const props = withDefaults(
+  defineProps<{
+    categoryLinks: ProvisionedCategoryLink[]
+    pagination: PaginationMetadata
+    searchTerm?: string
+  }>(),
+  {
+    searchTerm: '',
+  },
+)
+
+const { t } = useI18n()
+const hasSearchTerm = computed(() => props.searchTerm.trim().length > 0)
 
 const emit = defineEmits<{
+  'update:searchTerm': [searchTerm: string]
   pageChange: [page: number]
   pageSizeChange: [pageSize: number]
 }>()
+
+const categoryStatusLabel = (status: string) =>
+  t(`catalogImports.categories.statuses.${status}`, status)
 </script>

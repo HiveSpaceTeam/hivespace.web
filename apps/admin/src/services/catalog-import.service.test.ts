@@ -44,6 +44,43 @@ describe('catalogImportService', () => {
     )
   })
 
+  it('should submit one category attribute chunk with chunk file name metadata', async () => {
+    mockPost.mockResolvedValue({
+      jobId: 'job-attributes',
+      status: 'Pending',
+      operationType: 'ProvisionCategoryAttributes',
+      sourceFileName: 'chunk-0001.json',
+    })
+    const payload = {
+      schemaVersion: '2026-08-16',
+      source: { system: 'tiki', type: 'sellercenter_category_attributes', value: 'parent:2' },
+      crawl: {
+        startedAt: '2026-08-16T10:00:00Z',
+        completedAt: '2026-08-16T10:05:00Z',
+        sourceFingerprint: 'sha256:chunk-1',
+        categorySourceFingerprint: 'sha256:categories',
+        checkpointId: null,
+        chunkIndex: 1,
+      },
+      categories: [
+        {
+          externalCategoryId: '1846',
+          productSetId: '9001',
+          status: 'complete',
+          attributes: [{ name: 'Brand' }],
+        },
+      ],
+    }
+
+    await catalogImportService.provisionCategoryAttributes(payload, 'chunk-0001.json')
+
+    expect(mockPost).toHaveBeenCalledWith(
+      '/admins/catalog-imports/categories/attributes/provisioning',
+      payload,
+      { headers: { 'X-Source-File-Name': 'chunk-0001.json' } },
+    )
+  })
+
   it('should load paginated job history from the all-operation endpoint', async () => {
     mockGet.mockResolvedValue({ data: [], pagination: { currentPage: 1 } })
 
@@ -67,19 +104,41 @@ describe('catalogImportService', () => {
   it('should call paginated bundle section endpoints', async () => {
     mockGet.mockResolvedValue({ data: [], pagination: { currentPage: 1 } })
 
-    await catalogImportService.listBundleSellers('bundle-001', { pageNumber: 3, pageSize: 10 })
-    await catalogImportService.listBundleProducts('bundle-001', { readinessStatus: 'Ready' })
-    await catalogImportService.listBundleValidationIssues('bundle-001', { severity: 'Blocking' })
+    await catalogImportService.listBundleSellers('bundle-001', {
+      pageNumber: 3,
+      pageSize: 10,
+      searchTerm: 'seller-001',
+    })
+    await catalogImportService.listBundleProducts('bundle-001', {
+      readinessStatus: 'Ready',
+      searchTerm: '271001',
+    })
+    await catalogImportService.listBundleValidationIssues('bundle-001', {
+      severity: 'Blocking',
+      searchTerm: 'MissingCategory',
+    })
+    await catalogImportService.listBundleCategoryLinks('bundle-001', { searchTerm: '1846' })
+    await catalogImportService.listBundleDuplicateGroups('bundle-001', {
+      searchTerm: 'product-001',
+    })
 
     expect(mockGet).toHaveBeenCalledWith('/admins/catalog-imports/bundles/bundle-001/sellers', {
-      params: { pageNumber: 3, pageSize: 10 },
+      params: { pageNumber: 3, pageSize: 10, searchTerm: 'seller-001' },
     })
     expect(mockGet).toHaveBeenCalledWith('/admins/catalog-imports/bundles/bundle-001/products', {
-      params: { readinessStatus: 'Ready' },
+      params: { readinessStatus: 'Ready', searchTerm: '271001' },
     })
     expect(mockGet).toHaveBeenCalledWith(
+      '/admins/catalog-imports/bundles/bundle-001/category-links',
+      { params: { searchTerm: '1846' } },
+    )
+    expect(mockGet).toHaveBeenCalledWith(
+      '/admins/catalog-imports/bundles/bundle-001/duplicate-groups',
+      { params: { searchTerm: 'product-001' } },
+    )
+    expect(mockGet).toHaveBeenCalledWith(
       '/admins/catalog-imports/bundles/bundle-001/validation-issues',
-      { params: { severity: 'Blocking' } },
+      { params: { severity: 'Blocking', searchTerm: 'MissingCategory' } },
     )
   })
 
@@ -99,6 +158,25 @@ describe('catalogImportService', () => {
         targetStoreId: 'store-001',
         approvalReason: 'Reviewed existing store',
       },
+    )
+  })
+
+  it('should map imported category links with encoded external category id', async () => {
+    mockPost.mockResolvedValue({
+      bundleId: 'bundle-001',
+      externalCategoryId: '1846/child',
+      hiveSpaceCategoryId: 123,
+      status: 'Mapped',
+      affectedProductCount: 2,
+    })
+
+    await catalogImportService.mapImportedCategory('bundle-001', '1846/child', {
+      hiveSpaceCategoryId: 123,
+    })
+
+    expect(mockPost).toHaveBeenCalledWith(
+      '/admins/catalog-imports/bundles/bundle-001/category-links/1846%2Fchild/mapping',
+      { hiveSpaceCategoryId: 123 },
     )
   })
 
@@ -133,6 +211,32 @@ describe('catalogImportService', () => {
 
     expect(mockPost).toHaveBeenCalledWith('/admins/catalog-imports/bundles/bundle-001/import', {
       publicationState: 'Draft',
+    })
+  })
+
+  it('should pass through available publication state for ready-product imports', async () => {
+    mockPost.mockResolvedValue({ jobId: 'job-004', status: 'Pending' })
+
+    await catalogImportService.importReadyProducts('bundle-001', {
+      publicationState: 'Available',
+    })
+
+    expect(mockPost).toHaveBeenCalledWith('/admins/catalog-imports/bundles/bundle-001/import', {
+      publicationState: 'Available',
+    })
+  })
+
+  it('should pass through unpublish publication state for selected ready-product imports', async () => {
+    mockPost.mockResolvedValue({ jobId: 'job-005', status: 'Pending' })
+
+    await catalogImportService.importReadyProducts('bundle-001', {
+      productIds: ['product-001'],
+      publicationState: 'Unpublish',
+    })
+
+    expect(mockPost).toHaveBeenCalledWith('/admins/catalog-imports/bundles/bundle-001/import', {
+      productIds: ['product-001'],
+      publicationState: 'Unpublish',
     })
   })
 })

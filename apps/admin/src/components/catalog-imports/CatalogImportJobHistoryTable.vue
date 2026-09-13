@@ -36,6 +36,7 @@
             <th class="px-4 py-3">{{ $t('catalogImports.jobs.sourceFileName') }}</th>
             <th class="px-4 py-3">{{ $t('catalogImports.jobs.requestedAt') }}</th>
             <th class="px-4 py-3">{{ $t('catalogImports.jobs.progress') }}</th>
+            <th v-if="showRetryColumn" class="px-4 py-3 text-right"></th>
           </tr>
         </thead>
         <tbody>
@@ -69,9 +70,23 @@
             <td class="px-4 py-4 text-sm text-gray-600 dark:text-gray-300">
               {{ progressText(job.progress) }}
             </td>
+            <td v-if="showRetryColumn" class="px-4 py-4 text-right">
+              <div v-if="canRetryJob(job)" @click.stop>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  :disabled="loading"
+                  :loading="retryingJobId === job.jobId"
+                  :onClick="() => emit('retry', job.jobId)"
+                >
+                  {{ $t('catalogImports.actions.retryJob') }}
+                </Button>
+              </div>
+            </td>
           </tr>
           <tr v-if="jobs.length === 0">
-            <td colspan="6" class="px-5 py-12 text-center text-sm text-gray-500">
+            <td :colspan="showRetryColumn ? 7 : 6" class="px-5 py-12 text-center text-sm text-gray-500">
               {{ $t(props.emptyKey) }}
             </td>
           </tr>
@@ -93,6 +108,7 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import { Badge, Button, Pagination, Spinner, type PaginationMetadata } from '@hivespace/shared'
 import { useFormatDate } from '@hivespace/shared'
 import { useI18n } from 'vue-i18n'
@@ -109,6 +125,7 @@ const props = withDefaults(
     pagination: PaginationMetadata
     loading?: boolean
     refreshLoading?: boolean
+    retryingJobId?: string | null
     titleKey?: string
     descriptionKey?: string
     emptyKey?: string
@@ -116,6 +133,7 @@ const props = withDefaults(
   {
     loading: false,
     refreshLoading: false,
+    retryingJobId: null,
     titleKey: 'catalogImports.sections.jobHistory',
     descriptionKey: 'catalogImports.jobs.historyDescription',
     emptyKey: 'catalogImports.empty.jobs',
@@ -124,6 +142,7 @@ const props = withDefaults(
 
 const emit = defineEmits<{
   select: [jobId: string]
+  retry: [jobId: string]
   refresh: []
   pageChange: [page: number]
   pageSizeChange: [pageSize: number]
@@ -137,6 +156,12 @@ const statusLabel = (status: CatalogImportJobStatus) =>
 
 const operationLabel = (operationType: CatalogImportOperationType) =>
   t(`catalogImports.operationTypes.${operationType}`, operationType)
+
+const canRetryJob = (job: CatalogImportJobHistoryRow) => job.status === 'Failed'
+
+const showRetryColumn = computed(
+  () => props.jobs.some(canRetryJob) || Boolean(props.retryingJobId),
+)
 
 const statusColor = (status: CatalogImportJobStatus) => {
   if (status === 'Completed') return 'success'

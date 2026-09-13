@@ -9,7 +9,7 @@
   "kycQueue": "Hàng đợi KYC / KYB",
   "disputes": "Tranh chấp",
   "scheduledJobs": "Công việc định kỳ",
-  "catalogImports": "Nhập danh mục",
+  "catalogImports": "Nhập dữ liệu catalog",
   "backHome": "Quay lại trang chủ",
   "emptyValue": "-",
   "ago": "{value}{unit} trước",

@@ -1,8 +1,10 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals'
 import { createPinia, setActivePinia } from 'pinia'
 import { catalogImportService } from '@/services/catalog-import.service'
+import { categoryService } from '@/services/category.service'
 import { useCatalogImportStore } from './catalog-import.store'
 import type {
+  CategoryAttributeChunk,
   CatalogImportBundleSummary,
   CatalogImportJobDetail,
   CatalogImportJobHistoryRow,
@@ -15,10 +17,12 @@ import type {
 } from '@/types'
 
 const mockSetLoading = jest.fn()
+const mockNotifySuccess = jest.fn()
 
 jest.mock('@/services/catalog-import.service', () => ({
   catalogImportService: {
     provisionCategories: jest.fn(),
+    provisionCategoryAttributes: jest.fn(),
     submitBundle: jest.fn(),
     listBundles: jest.fn(),
     listJobs: jest.fn(),
@@ -32,8 +36,15 @@ jest.mock('@/services/catalog-import.service', () => ({
     validateBundle: jest.fn(),
     provisionSellers: jest.fn(),
     approveSellerOwnership: jest.fn(),
+    mapImportedCategory: jest.fn(),
     importReadyProducts: jest.fn(),
     retryJob: jest.fn(),
+  },
+}))
+
+jest.mock('@/services/category.service', () => ({
+  categoryService: {
+    getCategories: jest.fn(),
   },
 }))
 
@@ -44,7 +55,7 @@ jest.mock('@hivespace/shared', () => {
     ...actual,
     useAppStore: () => ({
       setLoading: mockSetLoading,
-      notifySuccess: jest.fn(),
+      notifySuccess: mockNotifySuccess,
       notifyError: jest.fn(),
     }),
   }
@@ -86,6 +97,14 @@ const categoryJobFixture: CatalogImportJobHistoryRow = {
   jobId: 'job-categories',
   operationType: 'ProvisionCategories',
   sourceFileName: 'categories.json',
+  bundleId: null,
+}
+
+const categoryAttributeJobFixture: CatalogImportJobHistoryRow = {
+  ...jobFixture,
+  jobId: 'job-category-attributes',
+  operationType: 'ProvisionCategoryAttributes',
+  sourceFileName: 'chunk-0001.json',
   bundleId: null,
 }
 
@@ -196,17 +215,23 @@ describe('useCatalogImportStore', () => {
     jest.clearAllMocks()
     jest.useRealTimers()
     jest.mocked(catalogImportService.listBundles).mockResolvedValue(page([bundleFixture]))
-    jest.mocked(catalogImportService.listJobs).mockImplementation(async (query?: { bundleId?: string; operationType?: string }) => {
-      if (query?.bundleId === 'bundle-001') {
+    jest.mocked(catalogImportService.listJobs).mockImplementation(
+      async (query?: { bundleId?: string; operationType?: string }) => {
+        if (query?.bundleId === 'bundle-001') {
+          return page([jobFixture])
+        }
+
+        if (query?.operationType === 'ProvisionCategories') {
+          return page([categoryJobFixture])
+        }
+
+        if (query?.operationType === 'ProvisionCategoryAttributes') {
+          return page([categoryAttributeJobFixture])
+        }
+
         return page([jobFixture])
-      }
-
-      if (query?.operationType === 'ProvisionCategories') {
-        return page([categoryJobFixture])
-      }
-
-      return page([jobFixture])
-    })
+      },
+    )
     mockBundleDetail()
   })
 
@@ -251,6 +276,20 @@ describe('useCatalogImportStore', () => {
     })
     expect(result.data[0]?.jobId).toBe('job-categories')
     expect(store.categoryProvisioningHistory[0]?.sourceFileName).toBe('categories.json')
+  })
+
+  it('should load category attribute provisioning history from the API', async () => {
+    const store = useCatalogImportStore()
+
+    const result = await store.fetchCategoryAttributeProvisioningHistory({ pageNumber: 2, pageSize: 5 })
+
+    expect(catalogImportService.listJobs).toHaveBeenCalledWith({
+      pageNumber: 2,
+      pageSize: 5,
+      operationType: 'ProvisionCategoryAttributes',
+    })
+    expect(result.data[0]?.jobId).toBe('job-category-attributes')
+    expect(store.categoryAttributeProvisioningHistory[0]?.sourceFileName).toBe('chunk-0001.json')
   })
 
   it('should load job detail and linked bundle detail with paginated sellers products issues and duplicate groups', async () => {
@@ -301,6 +340,46 @@ describe('useCatalogImportStore', () => {
     })
   })
 
+  it('should preserve chunk file name on attribute upload-created job submissions', async () => {
+    jest.mocked(catalogImportService.provisionCategoryAttributes).mockResolvedValue(
+      categoryAttributeJobFixture,
+    )
+    const store = useCatalogImportStore()
+    const payload: CategoryAttributeChunk = {
+      schemaVersion: '2026-08-16',
+      source: { system: 'tiki', type: 'sellercenter_category_attributes', value: 'parent:2' },
+      crawl: {
+        startedAt: '2026-08-16T10:00:00Z',
+        completedAt: '2026-08-16T10:05:00Z',
+        sourceFingerprint: 'sha256:chunk-1',
+        categorySourceFingerprint: 'sha256:categories',
+        checkpointId: null,
+        chunkIndex: 1,
+      },
+      categories: [
+        {
+          externalCategoryId: '1846',
+          productSetId: '9001',
+          status: 'complete',
+          attributes: [{ name: 'Brand' }],
+        },
+      ],
+    }
+
+    await store.provisionCategoryAttributes(payload, 'chunk-0001.json')
+
+    expect(catalogImportService.provisionCategoryAttributes).toHaveBeenCalledWith(
+      payload,
+      'chunk-0001.json',
+    )
+    expect(store.uploadCreatedJob?.jobId).toBe('job-category-attributes')
+    expect(catalogImportService.listJobs).toHaveBeenCalledWith({
+      pageNumber: 1,
+      pageSize: 10,
+      operationType: 'ProvisionCategoryAttributes',
+    })
+  })
+
   it('should provision sellers and refresh job history', async () => {
     jest.mocked(catalogImportService.provisionSellers).mockResolvedValue({
       ...jobFixture,
@@ -342,6 +421,44 @@ describe('useCatalogImportStore', () => {
     expect(catalogImportService.getBundleSummary).toHaveBeenCalledWith('bundle-001')
   })
 
+  it('should load category options for category mapping', async () => {
+    jest.mocked(categoryService.getCategories).mockResolvedValue([
+      {
+        id: 123,
+        name: 'Books',
+        displayName: 'Books',
+        imageFileId: null,
+        imageUrl: null,
+      },
+    ])
+    const store = useCatalogImportStore()
+
+    const result = await store.fetchCategoryOptions()
+
+    expect(categoryService.getCategories).toHaveBeenCalled()
+    expect(result[0]?.id).toBe(123)
+    expect(store.categoryOptions[0]?.displayName).toBe('Books')
+  })
+
+  it('should map imported category and refresh bundle detail', async () => {
+    jest.mocked(catalogImportService.mapImportedCategory).mockResolvedValue({
+      bundleId: 'bundle-001',
+      externalCategoryId: '1846',
+      hiveSpaceCategoryId: 123,
+      status: 'Mapped',
+      affectedProductCount: 2,
+    })
+    const store = useCatalogImportStore()
+
+    await store.mapImportedCategory('bundle-001', '1846', { hiveSpaceCategoryId: 123 })
+
+    expect(catalogImportService.mapImportedCategory).toHaveBeenCalledWith('bundle-001', '1846', {
+      hiveSpaceCategoryId: 123,
+    })
+    expect(catalogImportService.getBundleSummary).toHaveBeenCalledWith('bundle-001')
+    expect(mockNotifySuccess).toHaveBeenCalledWith(expect.any(String), expect.any(String))
+  })
+
   it('should treat ready and warning products as importable draft records', async () => {
     jest.mocked(catalogImportService.importReadyProducts).mockResolvedValue({
       ...jobFixture,
@@ -360,6 +477,42 @@ describe('useCatalogImportStore', () => {
       publicationState: 'Draft',
     })
     expect(store.activeJob?.operationType).toBe('ImportReadyProducts')
+  })
+
+  it('should pass through available publication state for bundle-wide imports', async () => {
+    jest.mocked(catalogImportService.importReadyProducts).mockResolvedValue({
+      ...jobFixture,
+      jobId: 'job-import-available',
+      operationType: 'ImportReadyProducts',
+    })
+    const store = useCatalogImportStore()
+
+    await store.importReadyProducts('bundle-001', {
+      publicationState: 'Available',
+    })
+
+    expect(catalogImportService.importReadyProducts).toHaveBeenCalledWith('bundle-001', {
+      publicationState: 'Available',
+    })
+  })
+
+  it('should pass through unpublish publication state for selected imports', async () => {
+    jest.mocked(catalogImportService.importReadyProducts).mockResolvedValue({
+      ...jobFixture,
+      jobId: 'job-import-unpublish',
+      operationType: 'ImportReadyProducts',
+    })
+    const store = useCatalogImportStore()
+
+    await store.importReadyProducts('bundle-001', {
+      productIds: ['product-001'],
+      publicationState: 'Unpublish',
+    })
+
+    expect(catalogImportService.importReadyProducts).toHaveBeenCalledWith('bundle-001', {
+      productIds: ['product-001'],
+      publicationState: 'Unpublish',
+    })
   })
 
   it('should poll job status until completed and refresh affected bundle detail', async () => {

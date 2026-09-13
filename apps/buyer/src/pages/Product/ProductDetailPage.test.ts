@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals'
+import { ref } from 'vue'
 import { createPinia, setActivePinia } from 'pinia'
 import { fireEvent, render, screen, waitFor } from '@testing-library/vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
@@ -10,12 +11,17 @@ import { productService } from '@/services/product.service'
 import type { GetProductDetailResponse } from '@/types'
 
 const formatMoneyMock = jest.fn()
+const currentUser = ref<{ id: string } | null>(null)
 
 jest.mock('@hivespace/shared', () => {
   const actual = jest.requireActual<typeof import('@hivespace/shared')>('@hivespace/shared')
 
   return {
     ...actual,
+    useAuth: () => ({
+      currentUser,
+      getCurrentUser: jest.fn<() => Promise<typeof currentUser.value>>().mockResolvedValue(currentUser.value),
+    }),
     useMoneyFormatter: () => ({
       formatMoney: formatMoneyMock,
     }),
@@ -123,6 +129,7 @@ const renderProductDetail = async () => {
 
 describe('ProductDetailPage', () => {
   beforeEach(() => {
+    currentUser.value = { id: 'buyer-001' }
     formatMoneyMock.mockReset()
     formatMoneyMock.mockImplementation((value: unknown) => {
       const { amount, currencyCode } = value as {
@@ -235,12 +242,26 @@ describe('ProductDetailPage', () => {
   })
 
   it('should render the fallback address copy', async () => {
+    currentUser.value = { id: 'buyer-001' }
     jest.mocked(addressService.getDefaultAddress).mockRejectedValueOnce(new Error('missing address'))
     await renderProductDetail()
 
     expect(await screen.findByText(
       new RegExp(i18n.global.t('storefront.productDetail.noDefaultAddress')),
     )).toBeTruthy()
+  })
+
+  it('should not load or render the user shipping section when anonymous', async () => {
+    currentUser.value = null
+
+    await renderProductDetail()
+
+    await screen.findByRole('heading', { name: 'Honey Jar' })
+
+    expect(addressService.getDefaultAddress).not.toHaveBeenCalled()
+    expect(screen.queryByRole('heading', {
+      name: i18n.global.t('storefront.productDetail.shippingInfo'),
+    })).toBeNull()
   })
 
   it('should skip adding to cart when the product has no primary sku id', async () => {

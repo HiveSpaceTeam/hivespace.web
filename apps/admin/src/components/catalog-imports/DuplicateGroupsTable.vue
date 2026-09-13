@@ -1,9 +1,20 @@
 <template>
   <section class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="border-b border-gray-200 px-5 py-4 dark:border-gray-800">
-      <h2 class="text-base font-semibold text-gray-900 dark:text-white">
-        {{ $t('catalogImports.sections.duplicates') }}
-      </h2>
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white">
+          {{ $t('catalogImports.sections.duplicates') }}
+        </h2>
+        <div class="w-full max-w-md">
+          <Input
+            :modelValue="searchTerm"
+            :label="$t('catalogImports.search.duplicatesLabel')"
+            :placeholder="$t('catalogImports.search.duplicatesPlaceholder')"
+            type="search"
+            @update:modelValue="value => emit('update:searchTerm', value)"
+          />
+        </div>
+      </div>
     </div>
     <div class="overflow-x-auto">
       <table class="min-w-full">
@@ -34,7 +45,11 @@
           </tr>
           <tr v-if="duplicateGroups.length === 0">
             <td colspan="3" class="px-5 py-12 text-center text-sm text-gray-500">
-              {{ $t('catalogImports.empty.duplicates') }}
+              {{
+                hasSearchTerm
+                  ? $t('catalogImports.empty.duplicatesSearch')
+                  : $t('catalogImports.empty.duplicates')
+              }}
             </td>
           </tr>
         </tbody>
@@ -55,16 +70,26 @@
 </template>
 
 <script setup lang="ts">
-import { Pagination, type PaginationMetadata } from '@hivespace/shared'
+import { computed } from 'vue'
+import { Input, Pagination, type PaginationMetadata } from '@hivespace/shared'
 import type { CatalogImportDuplicateGroup } from '@/types'
 
-defineProps<{
-  duplicateGroups: CatalogImportDuplicateGroup[]
-  pagination: PaginationMetadata
-}>()
+const props = withDefaults(
+  defineProps<{
+    duplicateGroups: CatalogImportDuplicateGroup[]
+    pagination: PaginationMetadata
+    searchTerm?: string
+  }>(),
+  {
+    searchTerm: '',
+  },
+)
 
 const emit = defineEmits<{
+  'update:searchTerm': [searchTerm: string]
   pageChange: [page: number]
   pageSizeChange: [pageSize: number]
 }>()
+
+const hasSearchTerm = computed(() => props.searchTerm.trim().length > 0)
 </script>

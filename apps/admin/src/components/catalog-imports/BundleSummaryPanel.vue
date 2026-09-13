@@ -7,7 +7,9 @@
           {{ bundle.bundleId }}
         </h2>
       </div>
-      <Badge color="info">{{ bundle.status }}</Badge>
+      <Badge :color="statusColor(bundle.status)">
+        {{ $t(`catalogImports.bundleStatuses.${bundle.status}`, bundle.status) }}
+      </Badge>
     </div>
 
     <dl class="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
@@ -56,6 +58,14 @@ import type { CatalogImportBundleSummary } from '@/types'
 const props = defineProps<{
   bundle: CatalogImportBundleSummary
 }>()
+
+const statusColor = (status: string) => {
+  if (status === 'Imported') return 'success'
+  if (status === 'PartiallyImported') return 'warning'
+  if (status === 'NeedsAttention') return 'warning'
+  if (status === 'Validated' || status === 'ReadyToImport') return 'info'
+  return 'light'
+}
 
 const summaryItems = computed(() => [
   {

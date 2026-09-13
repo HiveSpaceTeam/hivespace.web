@@ -1,9 +1,20 @@
 <template>
   <section class="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
     <div class="border-b border-gray-200 px-5 py-4 dark:border-gray-800">
-      <h2 class="text-base font-semibold text-gray-900 dark:text-white">
-        {{ $t('catalogImports.sections.products') }}
-      </h2>
+      <div class="flex flex-wrap items-end justify-between gap-3">
+        <h2 class="text-base font-semibold text-gray-900 dark:text-white">
+          {{ $t('catalogImports.sections.products') }}
+        </h2>
+        <div class="w-full max-w-md">
+          <Input
+            :modelValue="searchTerm"
+            :label="$t('catalogImports.search.productsLabel')"
+            :placeholder="$t('catalogImports.search.productsPlaceholder')"
+            type="search"
+            @update:modelValue="value => emit('update:searchTerm', value)"
+          />
+        </div>
+      </div>
     </div>
     <div class="overflow-x-auto">
       <table class="min-w-full">
@@ -61,13 +72,17 @@
             </td>
             <td class="px-4 py-4">
               <Badge :color="getStatusColor(product.readinessStatus)">
-                {{ product.readinessStatus }}
+                {{ readinessStatusLabel(product.readinessStatus) }}
               </Badge>
             </td>
           </tr>
           <tr v-if="products.length === 0">
             <td :colspan="selectable ? 7 : 6" class="px-5 py-12 text-center text-sm text-gray-500">
-              {{ $t('catalogImports.empty.products') }}
+              {{
+                hasSearchTerm
+                  ? $t('catalogImports.empty.productsSearch')
+                  : $t('catalogImports.empty.products')
+              }}
             </td>
           </tr>
         </tbody>
@@ -92,10 +107,12 @@ import { computed } from 'vue'
 import {
   Badge,
   Checkbox,
+  Input,
   Pagination,
   type PaginationMetadata,
   useMoneyFormatter,
 } from '@hivespace/shared'
+import { useI18n } from 'vue-i18n'
 import type { ImportedProduct } from '@/types'
 
 const props = withDefaults(
@@ -105,20 +122,25 @@ const props = withDefaults(
     selectedProductIds?: string[]
     selectable?: boolean
     disabled?: boolean
+    searchTerm?: string
   }>(),
   {
     selectedProductIds: () => [],
     selectable: false,
+    searchTerm: '',
   },
 )
 
 const emit = defineEmits<{
   'update:selectedProductIds': [productIds: string[]]
+  'update:searchTerm': [searchTerm: string]
   pageChange: [page: number]
   pageSizeChange: [pageSize: number]
 }>()
 
 const { formatMoney } = useMoneyFormatter()
+const { t } = useI18n()
+const hasSearchTerm = computed(() => props.searchTerm.trim().length > 0)
 
 const isSelectable = (product: ImportedProduct) =>
   product.readinessStatus === 'Ready' || product.readinessStatus === 'Warning'
@@ -144,6 +166,9 @@ const getStatusColor = (status: ImportedProduct['readinessStatus']) => {
   if (status === 'Warning') return 'warning'
   return 'info'
 }
+
+const readinessStatusLabel = (status: ImportedProduct['readinessStatus']) =>
+  t(`catalogImports.products.readinessStatuses.${status}`, status)
 
 const emitSelectedProducts = (productIds: string[]) => {
   emit('update:selectedProductIds', [...new Set(productIds)])
